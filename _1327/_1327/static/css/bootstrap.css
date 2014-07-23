@@ -5,8 +5,8 @@
  */
 
 /*!
- * Generated using the Bootstrap Customizer (http://getbootstrap.com/customize/?id=a9baf5404b397e1208ab)
- * Config saved to config.json and https://gist.github.com/a9baf5404b397e1208ab
+ * Generated using the Bootstrap Customizer (http://getbootstrap.com/customize/?id=71d0b5a6a10c59707cfe)
+ * Config saved to config.json and https://gist.github.com/71d0b5a6a10c59707cfe
  */
 /*! normalize.css v3.0.1 | MIT License | git.io/normalize */
 html {
@@ -894,7 +894,7 @@ body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 1.42857143;
-  color: #dddfe1;
+  color: #000000;
   background-color: #ffffff;
 }
 input,
@@ -2628,7 +2628,7 @@ select[multiple].input-lg {
   display: block;
   margin-top: 5px;
   margin-bottom: 10px;
-  color: #ffffff;
+  color: #404040;
 }
 @media (min-width: 768px) {
   .form-inline .form-group {
@@ -2742,7 +2742,7 @@ select[multiple].input-lg {
 }
 .btn:hover,
 .btn:focus {
-  color: #dddfe1;
+  color: #000000;
   text-decoration: none;
 }
 .btn:active,
@@ -2763,7 +2763,7 @@ fieldset[disabled] .btn {
   box-shadow: none;
 }
 .btn-default {
-  color: #dddfe1;
+  color: #000000;
   background-color: #b5b9bd;
   border-color: #a7acb1;
 }
@@ -2772,7 +2772,7 @@ fieldset[disabled] .btn {
 .btn-default:active,
 .btn-default.active,
 .open > .dropdown-toggle.btn-default {
-  color: #dddfe1;
+  color: #000000;
   background-color: #9aa0a5;
   border-color: #878e94;
 }
@@ -2801,7 +2801,7 @@ fieldset[disabled] .btn-default.active {
 }
 .btn-default .badge {
   color: #b5b9bd;
-  background-color: #dddfe1;
+  background-color: #000000;
 }
 .btn-primary {
   color: #ffffff;
@@ -2845,7 +2845,7 @@ fieldset[disabled] .btn-primary.active {
   background-color: #ffffff;
 }
 .btn-success {
-  color: #dddfe1;
+  color: #000000;
   background-color: #f6a800;
   border-color: #dd9700;
 }
@@ -2854,7 +2854,7 @@ fieldset[disabled] .btn-primary.active {
 .btn-success:active,
 .btn-success.active,
 .open > .dropdown-toggle.btn-success {
-  color: #dddfe1;
+  color: #000000;
   background-color: #c38500;
   border-color: #9f6d00;
 }
@@ -2883,7 +2883,7 @@ fieldset[disabled] .btn-success.active {
 }
 .btn-success .badge {
   color: #f6a800;
-  background-color: #dddfe1;
+  background-color: #000000;
 }
 .btn-info {
   color: #ffffff;
@@ -4433,7 +4433,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
   font-size: 75%;
   font-weight: bold;
   line-height: 1;
-  color: #dddfe1;
+  color: #000000;
   text-align: center;
   white-space: nowrap;
   vertical-align: baseline;
@@ -4441,7 +4441,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 }
 a.label:hover,
 a.label:focus {
-  color: #dddfe1;
+  color: #000000;
   text-decoration: none;
   cursor: pointer;
 }
@@ -4595,7 +4595,7 @@ a.thumbnail.active {
 }
 .thumbnail .caption {
   padding: 9px;
-  color: #dddfe1;
+  color: #000000;
 }
 .alert {
   padding: 15px;
@@ -5504,7 +5504,7 @@ button.close {
 .tooltip-inner {
   max-width: 200px;
   padding: 3px 8px;
-  color: #dddfe1;
+  color: #000000;
   text-align: center;
   text-decoration: none;
   background-color: #b5b9bd;
