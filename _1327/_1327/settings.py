@@ -81,10 +81,21 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# Absolute path to the directory static files should be collected to.
+# Don't put anything in this directory yourself; store your static files
+# in apps' "static/" subdirectories and in STATICFILES_DIRS.
+# Example: "/opt/_1327/_1327/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+# Additional locations of static files
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+)
+
 
 # Create a localsettings.py to override settings per machine or user, e.g. for
 # development or different settings in deployments using multiple servers.
-_LOCAL_SETTINGS_FILENAME = os.path.join(SITE_ROOT, "localsettings.py")
+_LOCAL_SETTINGS_FILENAME = os.path.join(BASE_DIR, "localsettings.py")
 if os.path.exists(_LOCAL_SETTINGS_FILENAME):
     execfile(_LOCAL_SETTINGS_FILENAME)
 del _LOCAL_SETTINGS_FILENAME
