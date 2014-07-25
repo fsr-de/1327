@@ -3,57 +3,63 @@
 
 <!DOCTYPE html>
 <html>
-    <head>
-        {% block header %}
-        <title>{% block title %}myHPI{% endblock %}</title>
-        <link rel="stylesheet" href="{% get_static_prefix %}css/bootstrap.min.css">
-        <link rel="stylesheet" href="{% get_static_prefix %}css/bootstrap-theme.min.css">
-        <link rel="stylesheet" href="{% get_static_prefix %}css/1327.css">
-        {% endblock %}
-    </head>
-    <body>
-        <div class="container">
-            <div id="nav">
-                <p>Navigation</p>                
-            </div>
-            <div id="gradient" style="height: 7px"></div>
-            <div id="wrap">
-                {% if messages %}
-                    <div class="row">
-                        <div class="col-md-12">
-                            {% for message in messages %}
-                                <div class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %}">{{ message }}</div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
-                {% block rawcontent %}
-                    <div class="row">
-                        <div class="col-md-12">
-                            {% block content %}
-                            {% endblock %}
-                        </div>
-                    </div>
-                {% endblock %}
-            </div>
-            <div id="footer">
-                <div class="container">
-                    <p class="text-muted">
-                        Powered by <a href="https://github.com/fsr-itse/1327">1327</a>.
-                    </p>
-                </div>
-            </div>
-        </div>
+	<head>
+		{% block header %}
+		<title>{% block title %}myHPI{% endblock %}</title>
+		<link rel="stylesheet" href="{% get_static_prefix %}css/bootstrap.min.css" />
+		<link rel="stylesheet" href="{% get_static_prefix %}css/bootstrap-theme.min.css" />
+		<link rel="stylesheet" href="{% get_static_prefix %}css/1327.css" />
+		{% endblock %}
+	</head>
+	<body>
+		<header>
+			<nav class="container" id="top">
+				Navigation
+			</nav>
+			<div class="container" id="gradient" style="height: 7px"></div>
+		</header>
 
-        {% block scripts %}
-        <script type="text/javascript" src="{% get_static_prefix %}js/bootstrap.min.js"></script>
+		{% if messages %}
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					{% for message in messages %}
+					<div class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %}">{{ message }}</div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+		{% endif %}
 
-        <script type="text/javascript">
-            $(function(){
-                // add a close button to each message and make it work
-                $(".alert").append("<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">×</button>").alert();
-            });
-        </script>
-        {% endblock %}
-    </body>
+		{% block rawcontent %}
+		<div class="container" id="content">
+			<div class="row">
+				<div class="col-md-12">
+					<section>
+						{% block content %}
+						{% endblock %}
+					</section>
+				</div>
+			</div>
+		</div>
+		{% endblock %}
+
+		<div id="footer">
+			<footer class="container">
+				<p class="text-muted">
+					Powered by <a href="https://github.com/fsr-itse/1327">1327</a>.
+				</p>
+			</footer>
+	        </div>
+
+		{% block scripts %}
+		<script type="text/javascript" src="{% get_static_prefix %}js/bootstrap.min.js"></script>
+		<script type="text/javascript">
+			$(function() {
+				// add a close button to each message and make it work
+				$(".alert").append("<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">×</button>").alert();
+			});
+		</script>
+		{% endblock %}
+	</body>
 </html>
