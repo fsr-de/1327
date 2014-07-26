@@ -59,6 +59,7 @@ div#content {
 }
 
 #gradient {
+	height: 7px;
 	background: -webkit-linear-gradient(left, #f6a800 0%, #dd6108 50%, #b1063a 100%); /* For Safari 5.1 to 6.0 */
 	background: -o-linear-gradient(left, #f6a800 0%, #dd6108 50%, #b1063a 100%); /* For Opera 11.1 to 12.0 */
 	background: -moz-linear-gradient(left, #f6a800 0%, #dd6108 50%, #b1063a 100%); /* For Firefox 3.6 to 15 */
