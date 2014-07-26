@@ -8,7 +8,7 @@
 		<title>{% block title %}myHPI{% endblock %}</title>
 		<link rel="stylesheet" href="{% get_static_prefix %}css/bootstrap.min.css" />
 		<link rel="stylesheet" href="{% get_static_prefix %}css/bootstrap-theme.min.css" />
-		<link rel="stylesheet" href="{% get_static_prefix %}css/1327.css" />
+		<link rel="stylesheet" href="{% get_static_prefix %}{% compile 'less/1327.less' %}" />
 		{% endblock %}
 	</head>
 	<body>

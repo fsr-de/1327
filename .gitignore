@@ -53,4 +53,5 @@ coverage.xml
 docs/_build/
 
 # 1327 specific
+_1327/staticfiles/
 _1327/localsettings.py
