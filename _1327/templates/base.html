@@ -1,12 +1,13 @@
 {% load i18n %}
 {% load static %}
 {% load compile_static %}
+{% load bootstrap3 %}
 <!DOCTYPE html>
 <html>
 	<head>
 		{% block header %}
 		<title>{% block title %}myHPI{% endblock %}</title>
-		<link rel="stylesheet" href="{% get_static_prefix %}css/bootstrap.min.css" />
+		{% bootstrap_css %}
 		<link rel="stylesheet" href="{% get_static_prefix %}css/bootstrap-theme.min.css" />
 		<link rel="stylesheet" href="{% get_static_prefix %}{% compile 'less/1327.less' %}" />
 		{% endblock %}
@@ -31,9 +32,7 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-md-12">
-					{% for message in messages %}
-					<div class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %}">{{ message }}</div>
-					{% endfor %}
+					{% bootstrap_messages %}
 				</div>
 			</div>
 		</div>
@@ -60,17 +59,9 @@
 			</footer>
 	        </div>
 
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 		{% block scripts %}
-		<script type="text/javascript" src="{% get_static_prefix %}js/bootstrap.min.js"></script>
-		<script type="text/javascript">
-			{% load coffeescript %}
-			{% inlinecoffeescript %}
-			$ ->
-				# add a close button to each message and make it work
-				$(".alert").append("<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">×</button>").alert()
-			{% endinlinecoffeescript %}
-		</script>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+		{% bootstrap_javascript %}
 		{% endblock %}
 	</body>
 </html>
