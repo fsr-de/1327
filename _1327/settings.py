@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'static_precompiler',
     '_1327.main'
 )
 
@@ -91,6 +92,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 # Additional locations of static files
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
+)
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'static_precompiler.finders.StaticPrecompilerFinder',
 )
 
 # List of callables that know how to import templates from various sources.

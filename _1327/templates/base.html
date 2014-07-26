@@ -1,6 +1,6 @@
 {% load i18n %}
 {% load static %}
-
+{% load compile_static %}
 <!DOCTYPE html>
 <html>
 	<head>
@@ -64,10 +64,12 @@
 		{% block scripts %}
 		<script type="text/javascript" src="{% get_static_prefix %}js/bootstrap.min.js"></script>
 		<script type="text/javascript">
-			$(function() {
-				// add a close button to each message and make it work
-				$(".alert").append("<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">×</button>").alert();
-			});
+			{% load coffeescript %}
+			{% inlinecoffeescript %}
+			$ ->
+				# add a close button to each message and make it work
+				$(".alert").append("<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">×</button>").alert()
+			{% endinlinecoffeescript %}
 		</script>
 		{% endblock %}
 	</body>
