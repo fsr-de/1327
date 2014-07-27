@@ -13,58 +13,50 @@
 		{% endblock %}
 	</head>
 	<body>
-		<header>
-			<h1 class="container">
-				myHPI
-				<div style="float: right;">
-					{% if user.is_authenticated %}
-					Angemeldet als {{user.first_name}} {{user.last_name}}. <a href="{% url 'auth.views.logout' %}">Logout</a>
-					{% else %}
-					<a href="{% url 'auth.views.login' %}">Login</a>
-					{% endif %}
-				</div>
-			</h1>
-			<div class="container" id="gradient"></div>
-			<nav class="container" id="top">
-				<ul>
-					<li><a class="active">Informationen</a></li>
-					<li><a>Umfragen</a></li>
-					<li><a>Fachschaftsrat</a></li>
-					<li><a>StuKo</a></li>
-				</ul>
-			</nav>
-		</header>
+		<div class="container" id="wrapper">
+			<header>
+				<h1 class="container">
+					myHPI
+					<div style="float: right;">
+						{% if user.is_authenticated %}
+						Angemeldet als {{user.first_name}} {{user.last_name}}. <a href="{% url 'auth.views.logout' %}">Logout</a>
+						{% else %}
+						<a href="{% url 'auth.views.login' %}">Login</a>
+						{% endif %}
+					</div>
+				</h1>
+				<div id="gradient"></div>
+				<nav class="container" id="top">
+					<ul>
+						<li><a class="active">Informationen</a></li>
+						<li><a>Umfragen</a></li>
+						<li><a>Fachschaftsrat</a></li>
+						<li><a>StuKo</a></li>
+					</ul>
+				</nav>
+			</header>
 
-		{% if messages %}
-		<div class="container">
-			<div class="row">
-				<div class="col-md-12">
-					{% bootstrap_messages %}
-				</div>
+			{% if messages %}
+			<div class="container">
+				{% bootstrap_messages %}
 			</div>
-		</div>
-		{% endif %}
+			{% endif %}
 
-		{% block rawcontent %}
-		<div class="container" id="content">
-			<div class="row">
-				<div class="col-md-12">
-					<section>
-						{% block content %}
-						{% endblock %}
-					</section>
+			{% block rawcontent %}
+			<section class="container" id="content">
+				{% block content %}
+				{% endblock %}
+			</section>
+			{% endblock %}
+
+			<footer>
+				<div class="container">
+					<p class="text-muted">
+						Powered by <a href="https://github.com/fsr-itse/1327">1327</a>.
+					</p>
 				</div>
-			</div>
-		</div>
-		{% endblock %}
-
-		<div id="footer">
-			<footer class="container">
-				<p class="text-muted">
-					Powered by <a href="https://github.com/fsr-itse/1327">1327</a>.
-				</p>
 			</footer>
-	        </div>
+		</div>
 
 		{% block scripts %}
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
