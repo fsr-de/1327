@@ -1,10 +1,10 @@
 from django import forms
 from django.contrib.auth import authenticate
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 class LoginForm(forms.Form):
-	username = forms.CharField(label = 'User name', max_length = 100)
-	password = forms.CharField(label = 'Password', widget = forms.PasswordInput())
+	username = forms.CharField(label = _('User name'), max_length = 100)
+	password = forms.CharField(label = _('Password'), widget = forms.PasswordInput())
 
 	user_cache = None
 

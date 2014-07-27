@@ -1,16 +1,16 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load bootstrap3 %}
 
 {% block content %}
 	{{ block.super }}
-	<p>Login</p>
 	<form action="{% url 'auth.views.login' %}" method="post" class="form-horizontal" role="form">
 	{% bootstrap_form form layout='horizontal' %}
 	{% csrf_token %}
 	{% buttons %}
 	<div class="col-md-offset-2 col-md-4">
 		<button type="submit" class="btn btn-primary">
-			{% bootstrap_icon "lock" %} Login
+			{% bootstrap_icon "lock" %} {% trans 'Login' %}
 		</button>
 	</div>
 	{% endbuttons %}
