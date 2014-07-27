@@ -8,17 +8,20 @@ class LoginForm(forms.Form):
 
 	user_cache = None
 
-	def clean_password(self):
-		username = self.cleaned_data.get('username')
-		password = self.cleaned_data.get('password')
+	def clean(self):
+		cleaned_data = super(LoginForm, self).clean()
+		username = cleaned_data.get('username')
+		password = cleaned_data.get('password')
 
 		if username and password:
 			self.user_cache = authenticate(username=username, password=password)
 			if self.user_cache is None:
+				self._errors.setdefault('username', forms.util.ErrorList()).append(u"")
+				self._errors.setdefault('password', forms.util.ErrorList()).append(u"")
 				raise forms.ValidationError(_("Please enter a correct username and password."), 'invalid')
 			elif not self.user_cache.is_active:
 				raise forms.ValidationError(_("This account is inactive."), 'inactive')
-		return self.cleaned_data.get('password')
+		return cleaned_data
 
 	def get_user(self):
 		return self.user_cache
