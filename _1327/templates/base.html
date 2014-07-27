@@ -16,6 +16,13 @@
 		<header>
 			<h1 class="container">
 				myHPI
+				<div style="float: right;">
+					{% if user.is_authenticated %}
+					Angemeldet als {{user.first_name}} {{user.last_name}}. <a href="{% url 'auth.views.logout' %}">Logout</a>
+					{% else %}
+					<a href="{% url 'auth.views.login' %}">Login</a>
+					{% endif %}
+				</div>
 			</h1>
 			<div class="container" id="gradient"></div>
 			<nav class="container" id="top">

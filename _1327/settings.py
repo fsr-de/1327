@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'static_precompiler',
     'bootstrap3',
     '_1327.main',
+    '_1327.auth',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -48,6 +49,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
 )
 
 ROOT_URLCONF = '_1327.urls'
@@ -78,6 +80,10 @@ USE_L10N = True
 
 USE_TZ = True
 
+LOGIN_URL = '/login'
+LOGOUT_URL = '/logout'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
