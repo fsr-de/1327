@@ -1,0 +1,10 @@
+language: python
+python:
+  - "3.4"
+install:
+  - pip install -r requirements.txt
+  - pip install coveralls
+script:
+  - coverage run manage.py test _1327.main
+after_success:
+  - coveralls
