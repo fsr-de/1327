@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-26 18:51-0700\n"
+"POT-Creation-Date: 2014-07-29 20:07-0700\n"
 "PO-Revision-Date: 2014-07-26 18:47-0700\n"
 "Last-Translator: Sebastian Brückner <sebbrueckner@gmail.com>\n"
 "Language-Team: \n"
@@ -26,11 +26,11 @@ msgstr "Benutzername"
 msgid "Password"
 msgstr "Passwort"
 
-#: forms.py:22
+#: forms.py:21
 msgid "Please enter a correct username and password."
 msgstr "Bitte gib einen korrekten Benutzernamen und Passwort ein."
 
-#: forms.py:24
+#: forms.py:23
 msgid "This account is inactive."
 msgstr "Dieser Account ist deaktiviert."
 
@@ -38,6 +38,10 @@ msgstr "Dieser Account ist deaktiviert."
 msgid "You have been successfully logged in."
 msgstr "Du hast dich erfolgreich eingeloggt."
 
-#: templates/login.html:13
+#: views.py:24
+msgid "You have been successfully logged out."
+msgstr "Du hast dich erfolgreich ausgeloggt."
+
+#: templates/login.html:5 templates/login.html:14
 msgid "Login"
 msgstr "Login"
