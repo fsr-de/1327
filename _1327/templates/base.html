@@ -25,20 +25,30 @@
 			</div>
 		</div>
 		<div id="gradient"></div>
-		<nav class="navbar">
-			<div class="navbar-first" id="navbar-first">
-				<a class="active">Informationen</a>
-				<a>Umfragen</a>
-				<a>Fachschaftsrat</a>
-				<a>StuKo</a>
-				{% if user.is_admin %}
-					<a class="pull-right" href="{% url 'page_admin.views.index' %}">Admin</a>
-				{% endif %}
+		<nav class="navbar navbar-default" id="top" role="navigation">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#top-navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
 			</div>
-			<div class="navbar-second" id="navbar-second">
-				<a>Erstsemester</a>
-				<a class="active">Ausland</a>
-				<a>Mailinglisten</a>
+			<div class="collapse navbar-collapse" id="top-navbar-collapse">
+				<ul class="nav navbar-nav">
+					{% for item in main_menu %}
+					<li{% if item.selected %} class="active"{% endif %}>
+						<a href="{% url item.link %}">{{ item.title }}</a>
+						{% if item.selected and item.submenu %}
+							<ul class="nav navbar-nav subnav">
+								{% for subitem in item.submenu %}
+									<li{% if subitem.selected %} class="active"{% endif %}><a href="{% url subitem.link %}">{{ subitem.title }}</a></li>
+								{% endfor %}
+							</ul>
+						{% endif %}
+					</li>
+					{% endfor %}
+				</ul>
 			</div>
 		</nav>
 	</header>

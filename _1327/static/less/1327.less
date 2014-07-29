@@ -63,31 +63,52 @@ div.title {
 	background: linear-gradient(left, @hpi-yellow 0%, @hpi-orange 50%, @hpi-red 100%); /* Standard syntax (must be last) */
 }
 
+@media (min-width: @grid-float-breakpoint) {
+	nav#top {
+		height: ((@navbar-height * 2) + 1px);
+	}
+	ul.navbar-nav > li {
+		position: static;
+		
+		ul.subnav {
+			position: absolute;
+			left: @navbar-padding-horizontal;
+		}
+	}
+}
+@media (max-width: @grid-float-breakpoint-max) {
+	nav#top div.navbar-collapse {
+		border: 1px solid @gray;
+		border-radius: @border-radius-base;
+
+		ul.subnav {
+			margin-left: 20px;
+		}
+	}
+}
+
+nav#top ul {
+	float: none;
+}
+.navbar-collapse {
+	background-color: @gray-dark;
+}
 .navbar {
 	margin: 0px;
-	background-color: @gray-dark;
+	background-color: @gray;
 	border: 0px;
 	font-size: 20px;
 }
-.navbar a {
-	color: @gray-lighter;
-	padding-right: 20px;
-}
-.navbar a.active {
-	color: @hpi-yellow;
-}
-.navbar a:hover {
-	text-decoration: none;
-	color: @hpi-orange;
+ul.subnav li a {
+	font-size: 18px;
 }
 
-.navbar-first{
-	padding: 10px 30px;
-}
-.navbar-second{
-	padding: 10px 30px;
-	background-color: @gray;
-	font-size: 16px;
+// Overwrite Bootstrap nav
+.navbar-default .navbar-nav > .active > a {
+	&:hover,
+	&:focus {
+		color: @navbar-default-link-hover-color;
+	}
 }
 
 .pull-right {

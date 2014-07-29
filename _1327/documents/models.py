@@ -35,6 +35,9 @@ class Document(models.Model):
 
 		instance.url_title = slugify(instance.title)
 
+	def __str__(self):
+		return self.title
+
 class TemporaryDocumentText(models.Model):
 	text = models.TextField()
 	document = models.ForeignKey(Document, related_name='document')
