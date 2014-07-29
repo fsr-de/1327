@@ -1,59 +1,62 @@
+{% extends "master.html" %}
 {% load i18n %}
 {% load static %}
+{% load bootstrap3 %}
 
-<!DOCTYPE html>
-<html>
-    <head>
-        {% block header %}
-        <title>{% block title %}myHPI{% endblock %}</title>
-        <link rel="stylesheet" href="{% get_static_prefix %}css/bootstrap.min.css">
-        <link rel="stylesheet" href="{% get_static_prefix %}css/bootstrap-theme.min.css">
-        <link rel="stylesheet" href="{% get_static_prefix %}css/1327.css">
-        {% endblock %}
-    </head>
-    <body>
-        <div class="container">
-            <div id="nav">
-                <p>Navigation</p>                
-            </div>
-            <div id="gradient" style="height: 7px"></div>
-            <div id="wrap">
-                {% if messages %}
-                    <div class="row">
-                        <div class="col-md-12">
-                            {% for message in messages %}
-                                <div class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %}">{{ message }}</div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
-                {% block rawcontent %}
-                    <div class="row">
-                        <div class="col-md-12">
-                            {% block content %}
-                            {% endblock %}
-                        </div>
-                    </div>
-                {% endblock %}
-            </div>
-            <div id="footer">
-                <div class="container">
-                    <p class="text-muted">
-                        Powered by <a href="https://github.com/fsr-itse/1327">1327</a>.
-                    </p>
-                </div>
-            </div>
-        </div>
+{% block body %}
+<div class="container" id="wrapper">
+	<header>
+		<h1 class="container">
+			<div class="user">
+				{% if user.is_authenticated %}
+				Angemeldet als {{user.first_name}} {{user.last_name}}. <a href="{% url 'auth.views.logout' %}">Logout</a>
+				{% else %}
+				<a href="{% url 'auth.views.login' %}">Login</a>
+				{% endif %}
+			</div>
+			<a href="{% url 'main.views.index' %}" class="brand">myHPI</a>
+		</h1>
+		<div id="gradient"></div>
+		<nav class="navbar navbar-default" id="top" role="navigation">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#top-navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+			</div>
+			<div class="collapse navbar-collapse" id="top-navbar-collapse">
+				<ul class="nav navbar-nav">
+					<li><a class="active">Informationen</a></li>
+					<li><a>Umfragen</a></li>
+					<li><a>Fachschaftsrat</a></li>
+					<li><a>StuKo</a></li>
+				</ul>
+			</div>
+		</nav>
+	</header>
 
-        {% block scripts %}
-        <script type="text/javascript" src="{% get_static_prefix %}js/bootstrap.min.js"></script>
+	{% if messages %}
+	<div class="container">
+		{% bootstrap_messages %}
+	</div>
+	{% endif %}
 
-        <script type="text/javascript">
-            $(function(){
-                // add a close button to each message and make it work
-                $(".alert").append("<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">×</button>").alert();
-            });
-        </script>
-        {% endblock %}
-    </body>
-</html>
+	{% block rawcontent %}
+	<section class="container" id="content">
+		<h2>{% block title %}{% endblock title %}</h2>
+		{% block content %}
+		{% endblock %}
+	</section>
+	{% endblock %}
+
+	<footer>
+		<div class="container">
+			<p class="text-muted">
+				Powered by <a href="https://github.com/fsr-itse/1327">1327</a>.
+			</p>
+		</div>
+	</footer>
+</div>
+{% endblock %}

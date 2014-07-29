@@ -1,0 +1,101 @@
+@import "constants.less";
+
+html {
+	height: 100%;
+}
+body {
+	height: 100%;
+	background-color: #d1dfeb;
+}
+
+div#wrapper {
+	position: relative;
+	min-height: 100%;
+	padding: 0;
+	background-color: #ffffff;
+}
+
+h1 {
+	position: relative;
+	margin-top: 0;
+	margin-bottom: 0;
+	height: 70px;
+	background-color: #2d3033;
+	line-height: 70px;
+	color: #ffffff;
+
+	a.brand {
+		color: #ffffff;
+		&:hover {
+			text-decoration: none;
+		}
+	}
+	div.user {
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		padding: 5px;
+		font-size: 14px;
+		line-height: 16px;
+		font-weight: normal;
+	}
+}
+nav#top {
+	height: 40px;
+	background: #2d3033;
+	line-height: 40px;
+	color: #ffffff;
+	z-index: 100000;
+	
+	/* Reset Bootstrap stuff */
+	border: 0;
+	border-radius: 0;
+
+	ul li a {
+		font-size: 20px;
+		color: #ffffff;
+
+		&.active {
+			color: @hpi-yellow;
+		}
+	}
+}
+
+@screen-xs-max: 767px;
+
+@media (max-width: @screen-xs-max) {
+	nav#top div.navbar-collapse {
+		border: 1px solid;
+		border-radius: 4px;
+		background: #2d3033;
+	}
+}
+
+footer {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 40px;
+	background-color: #f5f5f5;
+}
+
+section#content {
+	margin-bottom: 40px;
+}
+h2 {
+	margin: -5px 20px 10px;
+	color: @hpi-orange;
+}
+
+.container .text-muted {
+	margin: 10px 0;
+}
+
+#gradient {
+	height: 7px;
+	background: -webkit-linear-gradient(left, @hpi-yellow 0%, @hpi-orange 50%, @hpi-red 100%); /* For Safari 5.1 to 6.0 */
+	background: -o-linear-gradient(left, @hpi-yellow 0%, @hpi-orange 50%, @hpi-red 100%); /* For Opera 11.1 to 12.0 */
+	background: -moz-linear-gradient(left, @hpi-yellow 0%, @hpi-orange 50%, @hpi-red 100%); /* For Firefox 3.6 to 15 */
+	background: linear-gradient(left, @hpi-yellow 0%, @hpi-orange 50%, @hpi-red 100%); /* Standard syntax (must be last) */
+}

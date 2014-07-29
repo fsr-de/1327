@@ -1,1 +1,6 @@
 Django >=1.6
+django-static-precompiler >=0.7
+# Required by django-static-precompiler:
+six
+
+django-bootstrap3 >=4.8.2

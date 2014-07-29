@@ -3,12 +3,10 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', '_1327.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
+urlpatterns = patterns('_1327',
+	url(r"^$", 'main.views.index'),
+	url(r"^login$", 'auth.views.login'),
+	url(r"^logout$", 'auth.views.logout'),
 
-    url(r"^$", '_1327.main.views.index'),
-
-    url(r'^admin/', include(admin.site.urls)),
+	url(r'^admin/', include(admin.site.urls)),
 )
