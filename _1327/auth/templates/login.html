@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load bootstrap3 %}
 
+{% block title %}{% trans 'Login' %}{% endblock title %}
 {% block content %}
 	{{ block.super }}
 	<form action="{% url 'auth.views.login' %}" method="post" class="form-horizontal" role="form">

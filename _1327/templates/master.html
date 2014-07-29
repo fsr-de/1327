@@ -1,0 +1,22 @@
+{% load static %}
+{% load compile_static %}
+{% load bootstrap3 %}
+<!DOCTYPE html>
+<html>
+<head>
+	{% block header %}
+		<title>myHPI – {% block title %}{% endblock %}</title>
+		{% bootstrap_css %}
+		<link rel="stylesheet" href="{% get_static_prefix %}css/bootstrap-theme.min.css" />
+		<link rel="stylesheet" href="{% get_static_prefix %}{% compile 'less/1327.less' %}" />
+	{% endblock %}
+</head>
+<body>
+{% block body %}
+{% endblock body %}
+{% block scripts %}
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	{% bootstrap_javascript %}
+{% endblock %}
+</body>
+</html>

@@ -1,76 +1,62 @@
+{% extends "master.html" %}
 {% load i18n %}
 {% load static %}
-{% load compile_static %}
 {% load bootstrap3 %}
-<!DOCTYPE html>
-<html>
-	<head>
-		{% block header %}
-		<title>{% block title %}myHPI{% endblock %}</title>
-		{% bootstrap_css %}
-		<link rel="stylesheet" href="{% get_static_prefix %}css/bootstrap-theme.min.css" />
-		<link rel="stylesheet" href="{% get_static_prefix %}{% compile 'less/1327.less' %}" />
-		{% endblock %}
-	</head>
-	<body>
-		<div class="container" id="wrapper">
-			<header>
-				<h1 class="container">
-					myHPI
-					<div style="float: right;">
-						{% if user.is_authenticated %}
-						Angemeldet als {{user.first_name}} {{user.last_name}}. <a href="{% url 'auth.views.logout' %}">Logout</a>
-						{% else %}
-						<a href="{% url 'auth.views.login' %}">Login</a>
-						{% endif %}
-					</div>
-				</h1>
-				<div id="gradient"></div>
-				<nav class="navbar navbar-default" id="top" role="navigation">
-					<div class="navbar-header">
-						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#top-navbar-collapse">
-							<span class="sr-only">Toggle navigation</span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-						</button>
-					</div>
-					<div class="collapse navbar-collapse" id="top-navbar-collapse">
-						<ul class="nav navbar-nav">
-							<li><a class="active">Informationen</a></li>
-							<li><a>Umfragen</a></li>
-							<li><a>Fachschaftsrat</a></li>
-							<li><a>StuKo</a></li>
-						</ul>
-					</div>
-				</nav>
-			</header>
 
-			{% if messages %}
-			<div class="container">
-				{% bootstrap_messages %}
+{% block body %}
+<div class="container" id="wrapper">
+	<header>
+		<h1 class="container">
+			<a href="{% url 'main.views.index' %}">myHPI</a>
+			<div style="float: right;">
+				{% if user.is_authenticated %}
+				Angemeldet als {{user.first_name}} {{user.last_name}}. <a href="{% url 'auth.views.logout' %}">Logout</a>
+				{% else %}
+				<a href="{% url 'auth.views.login' %}">Login</a>
+				{% endif %}
 			</div>
-			{% endif %}
+		</h1>
+		<div id="gradient"></div>
+		<nav class="navbar navbar-default" id="top" role="navigation">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#top-navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+			</div>
+			<div class="collapse navbar-collapse" id="top-navbar-collapse">
+				<ul class="nav navbar-nav">
+					<li><a class="active">Informationen</a></li>
+					<li><a>Umfragen</a></li>
+					<li><a>Fachschaftsrat</a></li>
+					<li><a>StuKo</a></li>
+				</ul>
+			</div>
+		</nav>
+	</header>
 
-			{% block rawcontent %}
-			<section class="container" id="content">
-				{% block content %}
-				{% endblock %}
-			</section>
-			{% endblock %}
+	{% if messages %}
+	<div class="container">
+		{% bootstrap_messages %}
+	</div>
+	{% endif %}
 
-			<footer>
-				<div class="container">
-					<p class="text-muted">
-						Powered by <a href="https://github.com/fsr-itse/1327">1327</a>.
-					</p>
-				</div>
-			</footer>
-		</div>
-
-		{% block scripts %}
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-		{% bootstrap_javascript %}
+	{% block rawcontent %}
+	<section class="container" id="content">
+		<h2>{% block title %}{% endblock title %}</h2>
+		{% block content %}
 		{% endblock %}
-	</body>
-</html>
+	</section>
+	{% endblock %}
+
+	<footer>
+		<div class="container">
+			<p class="text-muted">
+				Powered by <a href="https://github.com/fsr-itse/1327">1327</a>.
+			</p>
+		</div>
+	</footer>
+</div>
+{% endblock %}
