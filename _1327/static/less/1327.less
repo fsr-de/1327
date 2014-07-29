@@ -16,12 +16,29 @@ div#wrapper {
 }
 
 h1 {
+	position: relative;
 	margin-top: 0;
 	margin-bottom: 0;
 	height: 70px;
 	background-color: #2d3033;
 	line-height: 70px;
 	color: #ffffff;
+
+	a.brand {
+		color: #ffffff;
+		&:hover {
+			text-decoration: none;
+		}
+	}
+	div.user {
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		padding: 5px;
+		font-size: 14px;
+		line-height: 16px;
+		font-weight: normal;
+	}
 }
 nav#top {
 	height: 40px;
