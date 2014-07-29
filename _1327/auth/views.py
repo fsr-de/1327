@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib import messages
 from django.shortcuts import redirect, render
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 import forms
 
 def login(request):
@@ -21,4 +21,5 @@ def login(request):
 
 def logout(request):
 	auth_logout(request)
+	messages.success(request, _("You have been successfully logged out."))
 	return redirect(settings.LOGOUT_REDIRECT_URL)
