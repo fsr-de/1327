@@ -2,23 +2,24 @@
 // Variables
 // --------------------------------------------------
 
+@import "constants.less";
 
 //== Colors
 //
 //## Gray and brand colors for use across Bootstrap.
 
 @gray-base:              #000;
-@gray-darker:            lighten(@gray-base, 13.5%); // #222
-@gray-dark:              lighten(@gray-base, 20%);   // #333
-@gray:                   lighten(@gray-base, 33.5%); // #555
-@gray-light:             lighten(@gray-base, 46.7%); // #777
-@gray-lighter:           lighten(@gray-base, 93.5%); // #eee
+@gray-darker:            darken(@brand-primary, 50%);
+@gray-dark:              darken(@brand-primary, 25%);
+@gray:                   @brand-primary;
+@gray-light:             lighten(@brand-primary, 35%);
+@gray-lighter:           lighten(@brand-primary, 70%);
 
-@brand-primary:         #428bca;
-@brand-success:         #5cb85c;
-@brand-info:            #5bc0de;
-@brand-warning:         #f0ad4e;
-@brand-danger:          #d9534f;
+@brand-primary:         #5a6065;
+@brand-success:         @hpi-yellow;
+@brand-info:            #007a9e;
+@brand-warning:         @hpi-orange;
+@brand-danger:          @hpi-red;
 
 
 //== Scaffolding
@@ -26,14 +27,14 @@
 //## Settings for some of the most global styles.
 
 //** Background color for `<body>`.
-@body-bg:               #fff;
+@body-bg:               @gray-lighter;
 //** Global text color on `<body>`.
-@text-color:            @gray-dark;
+@text-color:            @gray-darker;
 
 //** Global textual link color.
-@link-color:            @brand-primary;
+@link-color:            @brand-danger;
 //** Link hover color set via `darken()` function.
-@link-hover-color:      darken(@link-color, 15%);
+@link-hover-color:      @brand-warning;
 
 
 //== Typography
@@ -142,28 +143,28 @@
 
 @btn-font-weight:                normal;
 
-@btn-default-color:              #333;
-@btn-default-bg:                 #fff;
-@btn-default-border:             #ccc;
+@btn-default-color:              @gray-darker;
+@btn-default-bg:                 @gray-light;
+@btn-default-border:             darken(@btn-default-bg, 5%);
 
-@btn-primary-color:              #fff;
+@btn-primary-color:              @gray-lighter;
 @btn-primary-bg:                 @brand-primary;
 @btn-primary-border:             darken(@btn-primary-bg, 5%);
 
-@btn-success-color:              #fff;
+@btn-success-color:              @gray-darker;
 @btn-success-bg:                 @brand-success;
 @btn-success-border:             darken(@btn-success-bg, 5%);
 
-@btn-info-color:                 #fff;
+@btn-info-color:                 @gray-lighter;
 @btn-info-bg:                    @brand-info;
 @btn-info-border:                darken(@btn-info-bg, 5%);
 
 @btn-warning-color:              #fff;
-@btn-warning-bg:                 @brand-warning;
+@btn-warning-bg:                 @gray-lighter;
 @btn-warning-border:             darken(@btn-warning-bg, 5%);
 
 @btn-danger-color:               #fff;
-@btn-danger-bg:                  @brand-danger;
+@btn-danger-bg:                  @gray-lighter;
 @btn-danger-border:              darken(@btn-danger-bg, 5%);
 
 @btn-link-disabled-color:        @gray-light;
@@ -369,7 +370,7 @@
 
 // Inverted navbar
 // Reset inverted navbar basics
-@navbar-inverse-color:                      lighten(@gray-light, 12%);
+@navbar-inverse-color:                      @gray-light;
 @navbar-inverse-bg:                         #222;
 @navbar-inverse-border:                     darken(@navbar-inverse-bg, 10%);
 
@@ -476,20 +477,20 @@
 //
 //## Define colors for form feedback states and, by default, alerts.
 
-@state-success-text:             #3c763d;
-@state-success-bg:               #dff0d8;
+@state-success-text:             @brand-success;
+@state-success-bg:               lighten(@state-success-text, 70%);
 @state-success-border:           darken(spin(@state-success-bg, -10), 5%);
 
-@state-info-text:                #31708f;
-@state-info-bg:                  #d9edf7;
+@state-info-text:                @brand-info;
+@state-info-bg:                  lighten(@state-info-text, 70%);
 @state-info-border:              darken(spin(@state-info-bg, -10), 7%);
 
-@state-warning-text:             #8a6d3b;
-@state-warning-bg:               #fcf8e3;
+@state-warning-text:             @brand-warning;
+@state-warning-bg:               lighten(@state-warning-text, 70%);
 @state-warning-border:           darken(spin(@state-warning-bg, -10), 5%);
 
-@state-danger-text:              #a94442;
-@state-danger-bg:                #f2dede;
+@state-danger-text:              @brand-danger;
+@state-danger-bg:                lighten(@state-danger-text, 70%);
 @state-danger-border:            darken(spin(@state-danger-bg, -10), 5%);
 
 
@@ -500,9 +501,9 @@
 //** Tooltip max width
 @tooltip-max-width:           200px;
 //** Tooltip text color
-@tooltip-color:               #fff;
+@tooltip-color:               @text-color;
 //** Tooltip background color
-@tooltip-bg:                  #000;
+@tooltip-bg:                  @gray-light;
 @tooltip-opacity:             .9;
 
 //** Tooltip arrow width
@@ -558,9 +559,9 @@
 @label-danger-bg:             @brand-danger;
 
 //** Default label text color
-@label-color:                 #fff;
+@label-color:                 @text-color;
 //** Default text color of a linked label
-@label-link-hover-color:      #fff;
+@label-link-hover-color:      @text-color;
 
 
 //== Modals
@@ -626,9 +627,9 @@
 //##
 
 //** Background color of the whole progress component
-@progress-bg:                 #f5f5f5;
+@progress-bg:                 @gray-lighter;
 //** Progress bar text color
-@progress-bar-color:          #fff;
+@progress-bar-color:          @gray-lighter;
 
 //** Default progress bar color
 @progress-bar-bg:             @brand-primary;
@@ -738,7 +739,7 @@
 //
 //##
 
-@well-bg:                     #f5f5f5;
+@well-bg:                     @gray-lighter;
 @well-border:                 darken(@well-bg, 7%);
 
 
@@ -843,5 +844,3 @@
 @dl-horizontal-offset:        @component-offset-horizontal;
 //** Horizontal line color.
 @hr-border:                   @gray-lighter;
-
-
