@@ -1,4 +1,4 @@
-@import "constants.less";
+@import "variables.less";
 
 html {
 	height: 100%;
@@ -41,27 +41,12 @@ h1 {
 	}
 }
 nav#top {
-	height: 40px;
-	background: #2d3033;
-	line-height: 40px;
-	color: #ffffff;
 	z-index: 100000;
-	
-	/* Reset Bootstrap stuff */
-	border: 0;
-	border-radius: 0;
 
 	ul li a {
 		font-size: 20px;
-		color: #ffffff;
-
-		&.active {
-			color: @hpi-yellow;
-		}
 	}
 }
-
-@screen-xs-max: 767px;
 
 @media (max-width: @screen-xs-max) {
 	nav#top div.navbar-collapse {
