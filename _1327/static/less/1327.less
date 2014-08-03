@@ -1,4 +1,4 @@
-@import "constants.less";
+@import "variables.less";
 
 html {
 	height: 100%;
@@ -20,7 +20,7 @@ h1 {
 	margin-top: 0;
 	margin-bottom: 0;
 	height: 70px;
-	background-color: #2d3033;
+	background-color: @gray-dark;
 	line-height: 70px;
 	color: #ffffff;
 
@@ -41,33 +41,17 @@ h1 {
 	}
 }
 nav#top {
-	height: 40px;
-	background: #2d3033;
-	line-height: 40px;
-	color: #ffffff;
 	z-index: 100000;
-	
-	/* Reset Bootstrap stuff */
-	border: 0;
-	border-radius: 0;
 
 	ul li a {
 		font-size: 20px;
-		color: #ffffff;
-
-		&.active {
-			color: @hpi-yellow;
-		}
 	}
 }
 
-@screen-xs-max: 767px;
-
 @media (max-width: @screen-xs-max) {
 	nav#top div.navbar-collapse {
-		border: 1px solid;
-		border-radius: 4px;
-		background: #2d3033;
+		border: 1px solid @gray;
+		border-radius: @border-radius-base;
 	}
 }
 
