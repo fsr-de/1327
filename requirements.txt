@@ -1,4 +1,4 @@
-Django >=1.6
+Django >=1.7
 django-static-precompiler >=0.7
 # Required by django-static-precompiler:
 six
