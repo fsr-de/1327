@@ -16,8 +16,8 @@ class LoginForm(forms.Form):
 		if username and password:
 			self.user_cache = authenticate(username=username, password=password)
 			if self.user_cache is None:
-				self._errors.setdefault('username', forms.util.ErrorList()).append(u"")
-				self._errors.setdefault('password', forms.util.ErrorList()).append(u"")
+				self._errors.setdefault('username', forms.utils.ErrorList()).append("")
+				self._errors.setdefault('password', forms.utils.ErrorList()).append("")
 				raise forms.ValidationError(_("Please enter a correct username and password."), 'invalid')
 			elif not self.user_cache.is_active:
 				raise forms.ValidationError(_("This account is inactive."), 'inactive')
