@@ -7,5 +7,6 @@ install:
   - pip install coveralls
 script:
   - coverage run manage.py test _1327.main
+  - coverage run manage.py test _1327.information_pages
 after_success:
   - coveralls

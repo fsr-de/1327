@@ -1,0 +1,60 @@
+{% load static %}
+{% load i18n %}
+{% load bootstrap3 %}
+
+	<h2>{% trans "Write your new text" %}</h2>
+
+	{% if errors  %}
+		<div class="alert alert-danger alert-margin-bottom" role="alert">{% trans "Please provide the missing information" %}</div>
+	{% endif %}
+	
+	<form class="form-horizontal" action="{{ edit_url }}" method="post" role="form">
+		{% csrf_token %}
+		<div class="form-group {% if 'title' in errors %}has-error{% endif %}">
+			<label for="inputTitle" class="col-sm-2 control-label">Title</label>
+			<div class="col-sm-8">
+				<input type="text" class="form-control" name="title" value="{{ form.data.title }}" placeholder="{% trans 'Your Title...' %}">
+			</div>
+		</div>
+		<div class="form-group {% if 'type' in errors %}has-error{% endif %}">
+			<label for="inputType" class="col-sm-2 control-label">Type</label>
+			<div class="col-sm-8">				
+				<select class="form-control" name="type" id="inputType">
+					{% for id, choice in form.fields.type.choices %}
+						<option value="{{ id }}">{{ choice }}</option>
+					{% endfor %}	
+				</select>
+			</div>
+		</div>
+		<div class="form-group {% if 'text' in errors %}has-error{% endif %}">
+			<label for="inputText" class="col-sm-2 control-label">Text</label>
+			<div class="col-sm-8">
+				<textarea class="form-control" name="text" id="inputText" rows=20 placeholder="{% trans 'Your Text...' %}">{{ form.data.text }}</textarea>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-md-offset-2 col-md-4">
+				<button type="submit" class="btn btn-primary">
+					<i class="glyphicon glyphicon-floppy-disk"></i> {% trans 'Save' %}
+				</button>
+			</div>
+		</div>
+	</form>
+
+	<h2>{% trans "Preview" %}</h2>
+	<div class="divider"></div>
+	<div id="text-preview"></div>
+
+	<!-- mandatory script include -->
+	<script type="text/javascript" src="{% static 'js/markdown.js' %}"></script>
+	<script>
+		function Editor (input, preview) {
+			this.update = function () {
+				preview.html(markdown.toHTML(input.val()));
+			};
+			input.editor = this;
+			input.on('input', this.update);
+			this.update();
+		}
+		new Editor($('#inputText'), $('#text-preview'));
+	</script>

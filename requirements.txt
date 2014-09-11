@@ -4,5 +4,5 @@ django-static-precompiler >=0.7
 six
 
 django-bootstrap3 >=4.8.2
-django-webtest
-WebTest
+webtest >= 2.0.15
+django-webtest >= 1.7.7
