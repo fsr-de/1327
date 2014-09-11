@@ -3,7 +3,7 @@ from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.utils.translation import ugettext_lazy as _
-from _1327.auth.forms import LoginForm
+from _1327.main.forms import LoginForm
 
 def index(request):    
     return render(request, "index.html")
