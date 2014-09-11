@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'static_precompiler',
     'bootstrap3',
     '_1327.main',
+    '_1327.staff',
 )
 
 MIDDLEWARE_CLASSES = (
