@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 import os
 BASE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "_1327")
 
+AUTH_USER_MODEL = 'main.UserProfile'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
