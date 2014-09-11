@@ -9,9 +9,9 @@
 		<h1 class="container">
 			<div class="user">
 				{% if user.is_authenticated %}
-				Angemeldet als {{user.first_name}} {{user.last_name}}. <a href="{% url 'auth.views.logout' %}">Logout</a>
+				Angemeldet als {{user.first_name}} {{user.last_name}}. <a href="{% url 'main.views.logout' %}">Logout</a>
 				{% else %}
-				<a href="{% url 'auth.views.login' %}">Login</a>
+				<a href="{% url 'main.views.login' %}">Login</a>
 				{% endif %}
 			</div>
 			<a href="{% url 'main.views.index' %}" class="brand">myHPI</a>
