@@ -20,7 +20,7 @@ div.title {
 	color: @gray-lighter;
 }
 
-h1 {
+a.brand {
 	position: relative;
 	margin-top: 0;
 	margin-bottom: 0;
@@ -28,12 +28,10 @@ h1 {
 	
 	line-height: 70px;
 	color: @gray-lighter;
+	font-size: 36px;
 
-	a.brand {
-		color: @gray-lighter;
-		&:hover {
-			text-decoration: none;
-		}
+	&:hover {
+		text-decoration: none;
 	}
 }
 
@@ -80,8 +78,10 @@ section#content {
 	margin-bottom: 40px;
 	padding-left: 30px;
 }
-h2 {	
+.headline {	
 	color: @hpi-orange;
+	font-size: 26px;
+	padding-top: 20px;
 }
 
 .messages {

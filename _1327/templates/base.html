@@ -9,7 +9,7 @@
 		<div class="container title">
 			<table class="col-sm-12">
 				<td class="col-sm-7">
-					<h1><a href="{% url 'main.views.index' %}" class="brand">myHPI</a></h1>
+					<a href="{% url 'main.views.index' %}" class="brand">myHPI</a>
 				</td>
 				<td class="col-sm-4" align="right">
 					{% if user.is_authenticated %}
@@ -52,7 +52,7 @@
 
 	{% block rawcontent %}
 	<section class="container" id="content">
-		<h2>{% block title %}{% endblock title %}</h2>
+		<p class="headline">{% block title %}{% endblock title %}</p>
 		{% block content %}
 		{% endblock %}
 	</section>
