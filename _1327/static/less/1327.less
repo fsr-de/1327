@@ -5,14 +5,19 @@ html {
 }
 body {
 	height: 100%;
-	background-color: #d1dfeb;
+	background-color: @gray-lighter;
 }
 
 div#wrapper {
 	position: relative;
 	min-height: 100%;
 	padding: 0;
-	background-color: #ffffff;
+	background-color: @white;
+}
+
+div.title {
+	background-color: @gray-dark;
+	color: @gray-lighter;
 }
 
 h1 {
@@ -20,60 +25,16 @@ h1 {
 	margin-top: 0;
 	margin-bottom: 0;
 	height: 70px;
-	background-color: @gray-dark;
+	
 	line-height: 70px;
-	color: #ffffff;
+	color: @gray-lighter;
 
 	a.brand {
-		color: #ffffff;
+		color: @gray-lighter;
 		&:hover {
 			text-decoration: none;
 		}
 	}
-	div.user {
-		position: absolute;
-		bottom: 0;
-		right: 0;
-		padding: 5px;
-		font-size: 14px;
-		line-height: 16px;
-		font-weight: normal;
-	}
-}
-nav#top {
-	z-index: 100000;
-
-	ul li a {
-		font-size: 20px;
-	}
-}
-
-@media (max-width: @screen-xs-max) {
-	nav#top div.navbar-collapse {
-		border: 1px solid @gray;
-		border-radius: @border-radius-base;
-	}
-}
-
-footer {
-	position: absolute;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	height: 40px;
-	background-color: #f5f5f5;
-}
-
-section#content {
-	margin-bottom: 40px;
-}
-h2 {
-	margin: -5px 20px 10px;
-	color: @hpi-orange;
-}
-
-.container .text-muted {
-	margin: 10px 0;
 }
 
 #gradient {
@@ -82,4 +43,65 @@ h2 {
 	background: -o-linear-gradient(left, @hpi-yellow 0%, @hpi-orange 50%, @hpi-red 100%); /* For Opera 11.1 to 12.0 */
 	background: -moz-linear-gradient(left, @hpi-yellow 0%, @hpi-orange 50%, @hpi-red 100%); /* For Firefox 3.6 to 15 */
 	background: linear-gradient(left, @hpi-yellow 0%, @hpi-orange 50%, @hpi-red 100%); /* Standard syntax (must be last) */
+}
+
+.navbar {
+	margin: 0px;
+	background-color: @gray-dark;
+	border: 0px;
+	font-size: 20px;
+}
+.navbar a {
+	color: @gray-lighter;
+	padding-right: 20px;
+}
+.navbar a.active {
+	color: @hpi-yellow;
+}
+.navbar a:hover {
+	text-decoration: none;
+}
+
+.navbar-first{
+	padding: 10px 30px;
+}
+.navbar-second{
+	padding: 10px 30px;
+	background-color: @gray;
+	font-size: 16px;
+}
+
+section#content {
+	margin-bottom: 40px;
+	padding-left: 30px;
+}
+h2 {	
+	color: @hpi-orange;
+}
+
+.messages {
+	margin-top: 10px;
+}
+.alert {
+	margin: 0;
+	padding: 8px;
+}
+.alert-dismissable .close {
+	right: 2px;
+}
+
+footer {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 40px;
+	background-color: @gray-light;
+	color: @gray;
+	padding-left: 15px;
+}
+
+footer p {
+	margin: 10px 0 10px 0;
+	color: @gray;
 }

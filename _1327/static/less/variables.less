@@ -8,21 +8,22 @@
 @hpi-red:    #b1063a;
 @hpi-gray:   #5a6065;
 @hpi-blue:   #007a9e;
+@white:      #ffffff;
 
 //== Colors
 //
 //## Gray and brand colors for use across Bootstrap.
 
 @gray-base:              #000;
-@gray-darker:            darken(@brand-primary, 50%);
-@gray-dark:              darken(@brand-primary, 25%);
+@gray-darker:            darken(@brand-primary, 30%);
+@gray-dark:              darken(@brand-primary, 20%);
 @gray:                   @brand-primary;
 @gray-light:             lighten(@brand-primary, 35%);
-@gray-lighter:           lighten(@brand-primary, 70%);
+@gray-lighter:           lighten(@brand-primary, 55%);
 
 @brand-primary:         @hpi-gray;
-@brand-success:         @hpi-yellow;
-@brand-info:            @hpi-blue;
+@brand-success:         @hpi-blue;
+@brand-info:            @hpi-yellow;
 @brand-warning:         @hpi-orange;
 @brand-danger:          @hpi-red;
 
@@ -483,11 +484,11 @@
 //## Define colors for form feedback states and, by default, alerts.
 
 @state-success-text:             @brand-success;
-@state-success-bg:               lighten(@state-success-text, 70%);
+@state-success-bg:               lighten(@state-success-text, 60%);
 @state-success-border:           darken(spin(@state-success-bg, -10), 5%);
 
 @state-info-text:                @brand-info;
-@state-info-bg:                  lighten(@state-info-text, 70%);
+@state-info-bg:                  lighten(@state-info-text, 50%);
 @state-info-border:              darken(spin(@state-info-bg, -10), 7%);
 
 @state-warning-text:             @brand-warning;
@@ -694,7 +695,7 @@
 
 //** Border color for elements within panels
 @panel-inner-border:          #ddd;
-@panel-footer-bg:             #f5f5f5;
+@panel-footer-bg:             @gray-dark;
 
 @panel-default-text:          @gray-dark;
 @panel-default-border:        #ddd;
