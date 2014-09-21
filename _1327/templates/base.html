@@ -32,8 +32,8 @@
 				<a>Umfragen</a>
 				<a>Fachschaftsrat</a>
 				<a>StuKo</a>
-				{% if user.is_staff %}
-					<a class="pull-right" href="{% url 'staff.views.index' %}">Staff</a>
+				{% if user.is_admin %}
+					<a class="pull-right" href="{% url 'page_admin.views.index' %}">Admin</a>
 				{% endif %}
 			</div>
 			<div class="navbar-second" id="navbar-second">

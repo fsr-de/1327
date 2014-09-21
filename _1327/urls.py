@@ -7,7 +7,7 @@ urlpatterns = patterns('_1327',
 	url(r"^$", 'main.views.index'),
 	url(r"^login$", 'main.views.login'),
 	url(r"^logout$", 'main.views.logout'),
-	url(r'^staff/', include('_1327.staff.urls')),
+	url(r'^page_admin/', include('_1327.page_admin.urls')),
 
 	url(r'^admin/', include(admin.site.urls)),
 )
