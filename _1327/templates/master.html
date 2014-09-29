@@ -8,14 +8,17 @@
 		<title>myHPI – {% block title %}{% endblock %}</title>
 		<link rel="stylesheet" href="{% get_static_prefix %}{% compile 'less/bootstrap.less' %}" />
 		<link rel="stylesheet" href="{% get_static_prefix %}{% compile 'less/1327.less' %}" />
+		{% block css %}{% endblock %}
+
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+		{% bootstrap_javascript %}
 	{% endblock %}
 </head>
 <body>
 {% block body %}
 {% endblock body %}
 {% block scripts %}
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-	{% bootstrap_javascript %}
+	
 {% endblock %}
 </body>
 </html>
