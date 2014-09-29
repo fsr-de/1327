@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'static_precompiler',
     'bootstrap3',
+    'reversion',
     '_1327.main',
     '_1327.page_admin',
     '_1327.information_pages',

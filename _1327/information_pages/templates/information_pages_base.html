@@ -19,7 +19,7 @@
 				<a href="{% url 'information_pages:edit' document.url_title %}" role="tab">{% trans "Edit" %}</a>
 			</li>
 			<li {% if active_page == 'versions' %}class="active"{% endif %}>
-				<a href="#versions" role="tab">{% trans "Versions" %}</a>
+				<a href="{% url 'information_pages:versions' document.url_title %}" role="tab">{% trans "Versions" %}</a>
 			</li>
 		</ul>
 		{% endif %}

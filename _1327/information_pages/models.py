@@ -4,9 +4,11 @@ from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
+import reversion
+
 from _1327.main.models import UserProfile
 
-
+@reversion.register
 class Document(models.Model):
 
 	author = models.ForeignKey(UserProfile, related_name='documents')

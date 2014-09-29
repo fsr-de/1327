@@ -6,3 +6,4 @@ six
 django-bootstrap3 >=4.8.2
 webtest >= 2.0.15
 django-webtest >= 1.7.7
+django-reversion >= 1.8.4

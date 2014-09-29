@@ -1,0 +1,86 @@
+{% load static %}
+{% load i18n %}
+
+{# if you want to reuse this template you need to provide the following data: #}
+{# a tuple looking as follows: (number_of_version, version of the document, text_to_diff) #}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/diffview.css' %}">
+
+<h2>{% trans "Select versions you want to diff" %}</h2>
+
+<form class="form-horizontal" role="form">
+	<div class="form-group">
+		<label for="select-version1" class="col-sm-2 control-label">{% trans "Version A" %}</label>
+		<div class="col-sm-8">
+			<select class="form-control version-control" id="select-version1">
+				{% for id, version in versions %}
+					<option value="{{ id }}">{{ id }} - {{ version.revision.date_created }}, {{ version.revision.comment }} by {{ version.revision.user }}</option>
+				{% endfor %}
+			</select>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="select-version2" class="col-sm-2 control-label">{% trans "Version B" %}</label>
+		<div class="col-sm-8">
+			<select class="form-control version-control" id="select-version2">
+				{% for id, version, text in versions %}
+					<option value="{{ id }}">{{ id }} - {{ version.revision.date_created }}, {{ version.revision.comment }} by {{ version.revision.user }}</option>
+				{% endfor %}
+			</select>
+		</div>
+	</div>
+</form>
+
+<div class="row">
+    <div class="col-sm-offset-1 col-sm-9" id="diffDisplay"></div>
+</div>
+
+<script type="text/javascript" src="{% static 'js/difflib.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/diffview.js' %}"></script>
+<script>
+    // initialise the diff creation
+    var versions = {};
+    {% for id, version, text in versions %}
+        versions[{{ id }}] = "{{ text }}";
+    {% endfor %}
+
+    // select the second last and last element in selects
+    $('#select-version1 option[value=' + (Object.keys(versions).length - 2) + ']').attr('selected', 'selected');
+    $('#select-version2 option[value=' + (Object.keys(versions).length - 1) + ']').attr('selected', 'selected');
+
+    var version1Selected = versions[$('#select-version1').find(':selected').val()];
+    var version2Selected = versions[$('#select-version2').find(':selected').val()];
+    createDiff();
+
+    // in case one of the selects change update the diffs
+    $('.version-control').change(function (event) {
+        var target = event.currentTarget;
+        target.id == 'select-version1' ? version1Selected = versions[target.selectedIndex] : version2Selected = versions[target.selectedIndex];
+        createDiff();
+    });
+
+    function createDiff () {
+        // get the necessary data in the correct format
+        var versionA = difflib.stringAsLines(version1Selected);
+        var versionB = difflib.stringAsLines(version2Selected);
+
+        // empty the result display diff
+        var display = $('#diffDisplay');
+        display.empty();
+
+        // create the diff
+        var sequenceMatcher = new difflib.SequenceMatcher(versionA, versionB);
+        var opcodes = sequenceMatcher.get_opcodes();
+
+        //show it to the user
+        display.append(diffview.buildView({
+            baseTextLines: versionA,
+            newTextLines: versionB,
+            opcodes: opcodes,
+            baseTextName: "Version A",
+            newTextName: "Version B",
+            viewType: 0
+        }));
+    }
+
+</script>
