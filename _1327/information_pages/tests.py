@@ -1,25 +1,22 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.db import transaction
-
 from django_webtest import WebTest
 import reversion
 
 from _1327.main.models import UserProfile
-from _1327.information_pages.models import Document
+from _1327.documents.models import Document
 
 
 class TestDocument(TestCase):
 
 	def setUp(self):
-
 		self.user = UserProfile.objects.create_user(username="testuser", email="test@test.de", password="top_secret")
 		self.user.save()
 		
 
 	def test_slugification(self):
-		
-		document = Document(title="titlea", text="text", type=1, author=self.user)
+		document = Document(title="titlea", text="text", type='I', author=self.user)
 		self.assertEqual(document.url_title, '')
 		document.save()
 		self.assertEqual(document.url_title, "titlea")
@@ -33,19 +30,17 @@ class TestEditor(WebTest):
 	csrf_checks = False
 
 	def setUp(self):
-
 		self.user = UserProfile.objects.create_superuser(username="testuser", email="test@test.de", password="top_secret")
 		self.user.is_verified = True
 		self.user.is_active = True
 		self.user.is_admin = True
 		self.user.save()
 
-		self.document = Document(title="title", text="text", type=1, author=self.user)
+		self.document = Document(title="title", text="text", type='I', author=self.user)
 		self.document.save()
 
 
 	def test_get_editor(self):
-
 		response = self.app.get(reverse('information_pages:edit', args=[self.document.url_title]))
 		self.assertEqual(response.status_code, 302)
 
@@ -65,7 +60,6 @@ class TestEditor(WebTest):
 		self.assertEqual(document.url_title, 'new-title')
 
 	def test_editor_error(self):
-
 		for string in ['', ' ']:
 
 			response = self.app.get(reverse('information_pages:edit', args=[self.document.url_title]), user="testuser")
@@ -82,21 +76,19 @@ class TestVersions(WebTest):
 	csrf_checks = False
 
 	def setUp(self):
-
 		self.user = UserProfile.objects.create_superuser(username="testuser", email="test@test.de", password="top_secret")
 		self.user.is_verified = True
 		self.user.is_active = True
 		self.user.is_admin = True
 		self.user.save()
 
-		self.document = Document(title="title", text="text", type=1, author=self.user)
+		self.document = Document(title="title", text="text", type='I', author=self.user)
 		with transaction.atomic(), reversion.create_revision():
-				self.document.save()
-				reversion.set_user(self.user)
-				reversion.set_comment('test version')
+			self.document.save()
+			reversion.set_user(self.user)
+			reversion.set_comment('test version')
 
 	def test_get_version_page(self):
-
 		response = self.app.get(reverse('information_pages:versions', args=[self.document.url_title]))
 		self.assertEqual(response.status_code, 302)
 
@@ -104,7 +96,6 @@ class TestVersions(WebTest):
 		self.assertEqual(response.status_code, 200)
 
 	def test_save_version(self):
-
 		# first get all current versions of the document from the database
 		document = Document.objects.get()
 		versions = reversion.get_for_object(document)
@@ -128,9 +119,3 @@ class TestVersions(WebTest):
 		# check whether the comment of the version correct
 		self.assertEqual(versions[0].revision.comment, 'hallo Bibi Blocksberg')
 		self.assertEqual(versions[1].revision.comment, 'test version')
-
-
-
-
-
-

@@ -1,7 +1,8 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from _1327.information_pages.models import Document
+from _1327.documents.models import Document
+
 
 class StrippedCharField(forms.CharField):
 	"""

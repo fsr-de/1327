@@ -3,10 +3,10 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
-
 import reversion
 
 from _1327.main.models import UserProfile
+
 
 @reversion.register
 class Document(models.Model):
@@ -15,11 +15,11 @@ class Document(models.Model):
 	title = models.CharField(max_length=255)
 	url_title = models.SlugField()
 	text = models.TextField()
-	type = models.IntegerField(default=1)
+	type = models.CharField(max_length=5, default='I')
 
 	types = (
-		(1, _('Information')),
-		(2, _('Protocol')),
+		('I', _('Information')),
+		('P', _('Protocol')),
 	)
 
 	@receiver(pre_save)

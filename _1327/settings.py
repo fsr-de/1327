@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'reversion',
     '_1327.main',
     '_1327.page_admin',
+    '_1327.documents',
     '_1327.information_pages',
 )
 
