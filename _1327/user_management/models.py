@@ -33,10 +33,10 @@ class UserManager(BaseUserManager):
 
 
 class UserProfile(AbstractBaseUser, PermissionsMixin):
-	username = models.CharField(max_length=255, unique=True, verbose_name=_('username'))
-	email = models.EmailField(max_length=255, blank=True, null=True, verbose_name=_('email address'))
-	first_name = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("first name"))
-	last_name = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("last name"))
+	username = models.CharField(max_length=255, unique=True, verbose_name=_('User name'))
+	email = models.EmailField(max_length=255, blank=True, null=True, verbose_name=_('Email address'))
+	first_name = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("First name"))
+	last_name = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Last name"))
 	is_active = models.BooleanField(default=True)
 	is_admin = models.BooleanField(default=False)
 

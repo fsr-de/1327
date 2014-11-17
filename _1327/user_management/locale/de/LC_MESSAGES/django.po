@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-29 20:07-0700\n"
-"PO-Revision-Date: 2014-07-26 18:47-0700\n"
+"POT-Creation-Date: 2014-11-17 22:45+0000\n"
+"PO-Revision-Date: 2014-11-17 22:47+0000\n"
 "Last-Translator: Sebastian Brückner <sebbrueckner@gmail.com>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -18,13 +18,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: forms.py:6
-msgid "User name"
-msgstr "Benutzername"
-
-#: forms.py:7
+#: admin.py:12 forms.py:7
 msgid "Password"
 msgstr "Passwort"
+
+#: admin.py:13
+msgid "Password confirmation"
+msgstr "Passwortbestätigung"
+
+#: admin.py:24
+msgid "Passwords don't match"
+msgstr "Passwörter stimmen nicht überein"
+
+#: forms.py:6 models.py:36
+msgid "User name"
+msgstr "Benutzername"
 
 #: forms.py:21
 msgid "Please enter a correct username and password."
@@ -34,14 +42,30 @@ msgstr "Bitte gib einen korrekten Benutzernamen und Passwort ein."
 msgid "This account is inactive."
 msgstr "Dieser Account ist deaktiviert."
 
-#: views.py:13
+#: models.py:9
+msgid "Users must have a username"
+msgstr "Benutzer brauchen einen Benutzernamen"
+
+#: models.py:37
+msgid "Email address"
+msgstr "E-Mail-Adresse"
+
+#: models.py:38
+msgid "First name"
+msgstr "Vorname"
+
+#: models.py:39
+msgid "Last name"
+msgstr "Nachname"
+
+#: templates/login.html:5 templates/login.html.py:14
+msgid "Login"
+msgstr "Login"
+
+#: views.py:14
 msgid "You have been successfully logged in."
 msgstr "Du hast dich erfolgreich eingeloggt."
 
-#: views.py:24
+#: views.py:25
 msgid "You have been successfully logged out."
 msgstr "Du hast dich erfolgreich ausgeloggt."
-
-#: templates/login.html:5 templates/login.html:14
-msgid "Login"
-msgstr "Login"
