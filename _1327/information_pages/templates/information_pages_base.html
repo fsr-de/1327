@@ -9,25 +9,25 @@
 {% endblock %}
 
 {% block content %}
-    {% block information_page_nav %}
-        {% if request.user.is_staff %}
-        <ul class="nav nav-pills" role="tablist">
-            <li {% if active_page == 'view' %}class="active"{% endif %}>
-                <a href="{% url 'information_pages:view_information' document.url_title %}" role="tab">{% trans "View" %}</a>
-            </li>
-            <li {% if active_page == 'edit' %}class="active"{% endif %}>
-                <a href="{% url 'information_pages:edit' document.url_title %}" role="tab">{% trans "Edit" %}</a>
-            </li>
-            <li {% if active_page == 'versions' %}class="active"{% endif %}>
-                <a href="{% url 'information_pages:versions' document.url_title %}" role="tab">{% trans "Versions" %}</a>
-            </li>
-        </ul>
-        {% endif %}
-    {% endblock %}
-    <div class="meta-information">
-        {% trans "Written by: " %}{{ document.author }}
-    </div>
-    <div class="divider"></div>
+	{% block information_page_nav %}
+		{% if request.user.is_staff %}
+		<ul class="nav nav-pills" role="tablist">
+			<li {% if active_page == 'view' %}class="active"{% endif %}>
+				<a href="{% url 'information_pages:view_information' document.url_title %}" role="tab">{% trans "View" %}</a>
+			</li>
+			<li {% if active_page == 'edit' %}class="active"{% endif %}>
+				<a href="{% url 'information_pages:edit' document.url_title %}" role="tab">{% trans "Edit" %}</a>
+			</li>
+			<li {% if active_page == 'versions' %}class="active"{% endif %}>
+				<a href="{% url 'information_pages:versions' document.url_title %}" role="tab">{% trans "Versions" %}</a>
+			</li>
+		</ul>
+		{% endif %}
+	{% endblock %}
+	<div class="meta-information">
+		{% trans "Written by: " %}{{ document.author }}
+	</div>
+	<div class="divider"></div>
 	{% block information_page_content %}
 		<div class="markdown-text">
 			{{ document.text }}
