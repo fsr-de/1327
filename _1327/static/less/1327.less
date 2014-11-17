@@ -98,10 +98,25 @@ section#content {
 	margin-bottom: 40px;
 	padding-left: 30px;
 }
-.headline {	
-	color: @hpi-orange;
-	font-size: 26px;
-	padding-top: 20px;
+
+.headline {
+    margin: 10px 0;
+}
+.headline-triangle {
+    display: inline-block;
+    height: 0px;
+    width: 0px;
+    border-top: @headline-height solid @hpi-yellow;
+    border-right: 18px solid transparent;
+}
+.headline-box {
+    vertical-align: top;
+    display: inline-block;
+    line-height: @headline-height;
+    height: @headline-height;
+    background-color: @hpi-yellow;
+    font-size: 26px;
+    padding: 0 20px 0 30px;
 }
 
 .messages {
