@@ -36,7 +36,7 @@ div.title {
 	}
 
 	div.logo {
-		margin: 10px -15px 10px 15px;
+		margin: 10px -10px 10px 10px;
 		width: 80px;
 		height: 50px;
 		float: right;
@@ -51,7 +51,7 @@ div.title {
 			position: absolute;
 			bottom: 6px;
 			right: 0;
-			margin-right: 95px;
+			margin-right: 120px;
 		}
 	}
 }
@@ -95,13 +95,28 @@ div.title {
 }
 
 section#content {
-	margin-bottom: 40px;
+	margin-bottom: 50px;
 	padding-left: 30px;
 }
-.headline {	
-	color: @hpi-orange;
+
+.headline {
+	margin: 10px 0;
+}
+.headline-triangle {
+	display: inline-block;
+	height: 0px;
+	width: 0px;
+	border-top: @headline-height solid @hpi-yellow;
+	border-right: 18px solid transparent;
+}
+.headline-box {
+	vertical-align: top;
+	display: inline-block;
+	line-height: @headline-height;
+	height: @headline-height;
+	background-color: @hpi-yellow;
 	font-size: 26px;
-	padding-top: 20px;
+	padding: 0 20px 0 30px;
 }
 
 .messages {
