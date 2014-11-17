@@ -1,4 +1,9 @@
 /*
+This code is based on the project stated below. It was changed in adaption for 1327.
+*/
+@import "variables.less";
+
+/*
 This is part of jsdifflib v1.0. <http://github.com/cemerick/jsdifflib>
 
 Copyright 2007 - 2011 Chas Emerick <cemerick@snowtide.com>. All rights reserved.
@@ -27,9 +32,10 @@ The views and conclusions contained in the software and documentation are those 
 authors and should not be interpreted as representing official policies, either expressed
 or implied, of Chas Emerick.
 */
+
 table.diff {
 	border-collapse:collapse;
-	border:1px solid darkgray;
+	border:1px solid @gray;
 	white-space:pre-wrap;
     display: table;
     margin-left: auto;
@@ -41,18 +47,21 @@ table.diff tbody {
 }
 table.diff tbody th {
 	font-family:verdana,arial,'Bitstream Vera Sans',helvetica,sans-serif;
-	background:#EED;
+	background:@gray-lighter;
 	font-size:11px;
 	font-weight:normal;
-	border:1px solid #BBC;
-	color:#886;
+	border:1px solid @gray;
+	color:@gray-dark;
 	padding:.3em .5em .1em 2em;
 	text-align:right;
 	vertical-align:top
 }
+table.diff tbody tr {
+	height:25px;
+}
 table.diff thead {
-	border-bottom:1px solid #BBC;
-	background:#EFEFEF;
+	border-bottom:1px solid @gray;
+	background:@gray-light;
 	font-family:Verdana
 }
 table.diff thead th.texttitle {
@@ -64,25 +73,25 @@ table.diff tbody td {
 	vertical-align:top;
 }
 table.diff .empty {
-	background-color:#DDD;
+	background-color:@gray-lighter;
 }
 table.diff .replace {
-	background-color:#FD8
+	background-color:lighten(@hpi-yellow, 30%);
 }
 table.diff .delete {
-	background-color:#E99;
+	background-color:lighten(@hpi-red, 50%);
 }
 table.diff .skip {
-	background-color:#EFEFEF;
-	border:1px solid #AAA;
-	border-right:1px solid #BBC;
+	background-color:@gray-lighter;
+	border:1px solid @gray;
+	border-right:1px solid @gray;
 }
 table.diff .insert {
-	background-color:#9E9
+	background-color:lighten(@hpi-blue, 60%);
 }
 table.diff th.author {
     display: none;
 	text-align:right;
-	border-top:1px solid #BBC;
-	background:#EFEFEF
+	border-top:1px solid @gray-lighter;
+	background:@white
 }

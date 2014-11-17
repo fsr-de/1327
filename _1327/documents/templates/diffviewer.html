@@ -1,10 +1,11 @@
 {% load static %}
 {% load i18n %}
+{% load compile_static %}
 
 {# if you want to reuse this template you need to provide the following data: #}
 {# a tuple looking as follows: (number_of_version, version of the document, text_to_diff) #}
 
-<link rel="stylesheet" type="text/css" href="{% static 'css/diffview.css' %}">
+<link rel="stylesheet" href="{% get_static_prefix %}{% compile 'less/diffview.less' %}" />
 
 <h2>{% trans "Select versions you want to diff" %}</h2>
 
