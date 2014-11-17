@@ -8,7 +8,7 @@
 		<div class="alert alert-danger alert-margin-bottom" role="alert">{% trans "Please provide the missing information" %}</div>
 	{% endif %}
 	
-	<form class="form-horizontal" action="{{ edit_url }}" method="post" role="form">
+	<form class="form-horizontal" action="{{ edit_url }}" method="post" role="form" id="document-form">
 		{% csrf_token %}
 		<div class="form-group {% if 'title' in errors %}has-error{% endif %}">
 			<label for="inputTitle" class="col-sm-2 control-label">{% trans "Title" %}</label>
@@ -55,12 +55,29 @@
 	<script type="text/javascript" src="{% static 'js/markdown.js' %}"></script>
 	<script>
 		function Editor (input, preview) {
-			this.update = function () {
+            this.update = function () {
 				preview.html(markdown.toHTML(input.val()));
 			};
-			input.editor = this;
+            input.editor = this;
 			input.on('input', this.update);
-			this.update();
+            this.update();
 		}
+        var text = $('#inputText').val();
+        function save() {
+            if(text != $('#inputText').val()) {
+                text = $('#inputText').val();
+
+                var form = $('#document-form');
+                var serializedData = form.serialize();
+
+                 $.ajax({
+                    url: "{% url 'information_pages:autosave' document.url_title %}",
+                    type: "post",
+                    data: serializedData
+                });
+            }
+            setTimeout(function() { save(); }, 10000);
+        }
 		new Editor($('#inputText'), $('#text-preview'));
+        save();
 	</script>

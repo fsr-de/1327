@@ -4,7 +4,7 @@ from django.db import transaction
 from django.template import RequestContext
 import reversion
 
-from _1327.documents.models import Document
+from _1327.documents.models import Document, TemporaryDocumentText
 from _1327.documents.forms import TextForm
 
 
@@ -53,6 +53,24 @@ def handle_edit(request, document):
 	context['document'] = document
 	return context
 
+def handle_autosave(request, document):
+	context = RequestContext(request)
+	if request.method == 'POST':
+		form = TextForm(request.POST)
+		text_strip = request.POST['text'].strip()
+		if text_strip != '':
+			cleaned_data = form.cleaned_data
+
+			if document is None:
+				temporary_document_text = TemporaryDocumentText()
+			elif document.text != cleaned_data['text']:
+				temporary_document_text, created = TemporaryDocumentText.objects.get_or_create(document=document)
+				temporary_document_text.document = document
+			else:
+				return
+
+			temporary_document_text.text = cleaned_data['text']
+			temporary_document_text.save()
 
 def prepare_versions(request, document):
 	context = RequestContext(request)
