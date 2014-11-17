@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 import os
 BASE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "_1327")
 
-AUTH_USER_MODEL = 'main.UserProfile'
+AUTH_USER_MODEL = 'user_management.UserProfile'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     '_1327.page_admin',
     '_1327.documents',
     '_1327.information_pages',
+    '_1327.user_management',
 )
 
 MIDDLEWARE_CLASSES = (

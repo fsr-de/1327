@@ -4,7 +4,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.utils.translation import ugettext_lazy as _
 
-from _1327.main.models import UserProfile
+from .models import UserProfile
 
 
 class UserCreationForm(forms.ModelForm):
