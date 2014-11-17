@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -32,14 +32,13 @@ class UserManager(BaseUserManager):
 		return user
 
 
-class UserProfile(AbstractBaseUser):
+class UserProfile(AbstractBaseUser, PermissionsMixin):
 	username = models.CharField(max_length=255, unique=True, verbose_name=_('username'))
 	email = models.EmailField(max_length=255, blank=True, null=True, verbose_name=_('email address'))
 	first_name = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("first name"))
 	last_name = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("last name"))
 	is_active = models.BooleanField(default=True)
 	is_admin = models.BooleanField(default=False)
-	is_superuser = models.BooleanField(default=False)
 
 	USERNAME_FIELD = 'username'
 	REQUIRED_FIELDS = []
