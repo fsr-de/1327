@@ -1,4 +1,3 @@
-from django.contrib import auth
 from django.contrib.auth.decorators import user_passes_test
 
 def login_required(func):

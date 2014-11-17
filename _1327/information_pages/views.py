@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 
-from _1327.main.decorators import admin_required
+from _1327.user_management.decorators import admin_required
 from _1327.documents.utils import handle_edit, prepare_versions
 from _1327.documents.models import Document
 

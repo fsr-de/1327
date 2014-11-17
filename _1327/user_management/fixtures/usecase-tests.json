@@ -1,7 +1,7 @@
 [
 	{
 		"pk": 1,
-		"model": "main.userprofile",
+		"model": "user_management.userprofile",
 		"fields": {
 			"username": "user",
 			"password": "pbkdf2_sha256$12000$uH9Cc7pBkaxQ$XLVGZKTbCyuDlgFQB65Mn5SAm6v/2kjpCTct1td2VTo=",
@@ -11,7 +11,7 @@
 	},
 	{
 		"pk": 2,
-		"model": "main.userprofile",
+		"model": "user_management.userprofile",
 		"fields": {
 			"username": "admin",
 			"password": "pbkdf2_sha256$12000$uH9Cc7pBkaxQ$XLVGZKTbCyuDlgFQB65Mn5SAm6v/2kjpCTct1td2VTo=",
@@ -23,7 +23,7 @@
 	},
 	{
 		"pk": 3,
-		"model": "main.userprofile",
+		"model": "user_management.userprofile",
 		"fields": {
 			"username": "noname",
 			"password": "pbkdf2_sha256$12000$uH9Cc7pBkaxQ$XLVGZKTbCyuDlgFQB65Mn5SAm6v/2kjpCTct1td2VTo="
@@ -31,7 +31,7 @@
 	},
 	{
 		"pk": 4,
-		"model": "main.userprofile",
+		"model": "user_management.userprofile",
 		"fields": {
 			"username": "nofirstname",
 			"password": "pbkdf2_sha256$12000$uH9Cc7pBkaxQ$XLVGZKTbCyuDlgFQB65Mn5SAm6v/2kjpCTct1td2VTo=",
@@ -40,7 +40,7 @@
 	},
 	{
 		"pk": 5,
-		"model": "main.userprofile",
+		"model": "user_management.userprofile",
 		"fields": {
 			"username": "nolastname",
 			"password": "pbkdf2_sha256$12000$uH9Cc7pBkaxQ$XLVGZKTbCyuDlgFQB65Mn5SAm6v/2kjpCTct1td2VTo=",
