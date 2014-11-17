@@ -8,10 +8,6 @@ from _1327.documents.models import Document
 from _1327.documents.forms import TextForm
 
 
-class FormValidException(Exception):
-	pass
-
-
 def handle_edit(request, document):
 	context = RequestContext(request)
 	if request.method == 'POST':
@@ -38,7 +34,9 @@ def handle_edit(request, document):
 				document.save()
 				reversion.set_user(request.user)
 				reversion.set_comment(cleaned_data['comment'])
-			raise FormValidException
+			context['document'] = document
+			context['success'] = True
+			return context
 		else:
 			context['errors'] = form.errors
 			context['form'] = form
