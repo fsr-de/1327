@@ -4,7 +4,7 @@ from django_webtest import WebTest
 import reversion
 
 from _1327.user_management.models import UserProfile
-from _1327.documents.models import Document
+from .models import Document
 
 
 class TestRevertion(WebTest):

@@ -1,7 +1,7 @@
 from django.contrib import admin
 import reversion
 
-from _1327.documents.models import Document
+from .models import Document
 
 
 class DocumentAdmin(reversion.VersionAdmin):
