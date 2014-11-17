@@ -1,6 +1,5 @@
 from django import forms
 from django.contrib import admin
-from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.utils.translation import ugettext_lazy as _
@@ -62,7 +61,7 @@ class UserProfileAdmin(UserAdmin):
 	fieldsets = (
 		(None, {'fields': ('username', 'email', 'password')}),
 		('Personal info', {'fields': ('first_name','last_name',)}),
-		('Permissions', {'fields': ('is_admin','is_superuser',)}),
+		('Permissions', {'fields': ('is_admin','is_superuser', 'groups', 'user_permissions',)}),
 	)
 	# add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
 	# overrides get_fieldsets to use this attribute when creating a user.
@@ -74,10 +73,6 @@ class UserProfileAdmin(UserAdmin):
 	)
 	search_fields = ('username',)
 	ordering = ('username',)
-	filter_horizontal = ()
 
 # Now register the new UserAdmin...
 admin.site.register(UserProfile, UserProfileAdmin)
-# ... and, since we're not using Django's built-in permissions,
-# unregister the Group model from admin.
-admin.site.unregister(Group)
