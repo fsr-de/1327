@@ -1,4 +1,5 @@
 @import "variables.less";
+@import "../bootstrap/less/mixins.less";
 
 html {
 	height: 100%;
@@ -18,23 +19,42 @@ div#wrapper {
 div.title {
 	background-color: @gray-dark;
 	color: @gray-lighter;
-}
 
-a.brand {
-	position: relative;
-	margin-top: 0;
-	margin-bottom: 0;
-	height: 70px;
-	
-	line-height: 70px;
-	color: @gray-lighter;
-	font-size: 36px;
+	a.brand {
+		position: relative;
+		margin-top: 0;
+		margin-bottom: 0;
+		height: 70px;
 
-	&:hover {
-		text-decoration: none;
+		line-height: 70px;
+		color: @gray-lighter;
+		font-size: 36px;
+
+		&:hover {
+			text-decoration: none;
+		}
+	}
+
+	div.logo {
+		margin: 10px -15px 10px 15px;
+		width: 80px;
+		height: 50px;
+		float: right;
+		background-image: url(../images/logo-fsr-white.svg);
+	}
+
+	div.header {
+		.clearfix();
+		position: relative;
+
+		div.text {
+			position: absolute;
+			bottom: 6px;
+			right: 0;
+			margin-right: 95px;
+		}
 	}
 }
-
 #gradient {
 	height: 7px;
 	background: -webkit-linear-gradient(left, @hpi-yellow 0%, @hpi-orange 50%, @hpi-red 100%); /* For Safari 5.1 to 6.0 */
