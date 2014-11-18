@@ -1,7 +1,6 @@
 import json
 
 from django.db import transaction
-from django.template import RequestContext
 import reversion
 
 from .forms import TextForm
@@ -34,8 +33,7 @@ def handle_edit(request, document):
 	return False, form
 
 
-def prepare_versions(request, document):
-	context = RequestContext(request)
+def prepare_versions(document):
 	versions = reversion.get_for_object(document).reverse()
 
 	# prepare data for the template
@@ -43,8 +41,4 @@ def prepare_versions(request, document):
 	for id, version in enumerate(versions):
 		version_list.append((id, version, json.dumps(version.field_dict['text']).strip('"')))
 
-	context['document'] = document
-	context['versions'] = version_list
-	context['url_title'] = document.url_title
-
-	return context
+	return version_list
