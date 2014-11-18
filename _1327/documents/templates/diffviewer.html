@@ -72,7 +72,7 @@
 		$.post('{% url "documents:revert" %}',
 				{
 					id: selectedVersionId,
-					url_title: '{{ url_title }}'
+					url_title: '{{ document.url_title }}'
 				},
 				function (data, textStatus, jqXHR) {
 					location.reload();
