@@ -4,8 +4,7 @@ from django.db import transaction
 from django.template import RequestContext
 import reversion
 
-from _1327.documents.models import Document
-from _1327.documents.forms import TextForm
+from .forms import TextForm
 
 
 def handle_edit(request, document):

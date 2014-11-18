@@ -4,7 +4,7 @@ from django.db import transaction
 from django_webtest import WebTest
 import reversion
 
-from _1327.main.models import UserProfile
+from _1327.user_management.models import UserProfile
 from _1327.documents.models import Document
 
 
