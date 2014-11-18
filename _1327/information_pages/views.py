@@ -1,5 +1,4 @@
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import render, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.http import HttpResponseRedirect
@@ -18,28 +17,30 @@ def edit(request, title):
 		messages.success(request, _("Successfully saved changes"))
 		return HttpResponseRedirect(reverse('information_pages:edit', args=[document.url_title]))
 	else:
-		return render_to_response("information_pages_edit.html", {
+		return render(request, "information_pages_edit.html", {
 			'document': document,
 			'edit_url': reverse('information_pages:edit', args=[document.url_title]),
 			'form': form,
 			'active_page': 'edit',
-		}, context_instance=RequestContext(request))
+		})
 
 @admin_required
 def versions(request, title):
 	# get all versions of the document
 	document = get_object_or_404(Document, url_title=title, type='I')
-	context = prepare_versions(request, document)
-	context['active_page'] = 'versions'
+	document_versions = prepare_versions(document)
 
-	return render_to_response('information_pages_versions.html', context_instance=context)
+	return render(request, 'information_pages_versions.html', {
+		'active_page': 'versions',
+		'versions': document_versions,
+		'document': document,
+	})
 
 
 def view_information(request, title):
 	document = get_object_or_404(Document, url_title=title, type='I')
 
-	context = RequestContext(request)
-	context['document'] = document
-	context['active_page'] = 'view'
-
-	return render_to_response('information_pages_base.html', context_instance=context)
+	return render(request, 'information_pages_base.html', {
+		'document': document,
+		'active_page': 'view',
+	})
