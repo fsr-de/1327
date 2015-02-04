@@ -102,21 +102,15 @@ section#content {
 .headline {
 	margin: 10px 0;
 }
-.headline-triangle {
-	display: inline-block;
-	height: 0px;
-	width: 0px;
-	border-top: @headline-height solid @hpi-yellow;
-	border-right: 18px solid transparent;
-}
-.headline-box {
-	vertical-align: top;
-	display: inline-block;
-	line-height: @headline-height;
-	height: @headline-height;
-	background-color: @hpi-yellow;
+.headline-text {
 	font-size: 26px;
-	padding: 0 20px 0 30px;
+	dominant-baseline: hanging;
+}
+.headline-bar {
+	fill: @hpi-yellow;
+}
+.headline-bar-shadow {
+	fill: @hpi-gray;
 }
 
 .messages {
