@@ -37,6 +37,7 @@
 
 
 {% block scripts %}
+	{{ block.super }}
 	{% block information_pages_scripts %}
 		<script type="text/javascript" src="{% static 'js/markdown.js' %}"></script>
 		<script>
