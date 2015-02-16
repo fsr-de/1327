@@ -23,6 +23,14 @@ def handle_edit(request, document):
 				document.save()
 				reversion.set_user(request.user)
 				reversion.set_comment(cleaned_data['comment'])
+
+			# delete Autosave
+			try:
+				autosave = TemporaryDocumentText.objects.get(document=document)
+				autosave.delete()
+			except TemporaryDocumentText.DoesNotExist:
+				pass
+
 			return True, form
 	else:
 		form_data = {
@@ -35,9 +43,9 @@ def handle_edit(request, document):
 
 
 def handle_autosave(request, document):
-	context = RequestContext(request)
 	if request.method == 'POST':
 		form = TextForm(request.POST)
+		form.is_valid()
 		text_strip = request.POST['text'].strip()
 		if text_strip != '':
 			cleaned_data = form.cleaned_data
