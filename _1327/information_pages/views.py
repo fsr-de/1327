@@ -21,7 +21,7 @@ def edit(request, title):
 			'document': document,
 			'edit_url': reverse('information_pages:edit', args=[document.url_title]),
 			'form': form,
-			'active_page': 'edit'
+			'active_page': 'edit',
 		})
 
 @admin_required
