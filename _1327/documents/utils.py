@@ -15,7 +15,6 @@ def handle_edit(request, document):
 
 			document.title = cleaned_data['title']
 			document.text = cleaned_data['text']
-			document.type = cleaned_data['type']
 			document.author = request.user
 
 			# save the document and also save the user and the comment the user added
@@ -51,7 +50,6 @@ def handle_edit(request, document):
 		form_data = {
 			'title': document.title,
 			'text': text,
-			'type': document.type,
 		}
 		form = TextForm(form_data)
 		form.autosave = autosaved

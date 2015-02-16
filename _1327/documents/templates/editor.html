@@ -20,7 +20,7 @@
 				<input type="text" class="form-control" name="title" value="{{ form.data.title }}" placeholder="{% trans 'Your Title...' %}">
 			</div>
 		</div>
-		<div class="form-group {% if 'type' in form.errors %}has-error{% endif %}">
+		<!--<div class="form-group {% if 'type' in form.errors %}has-error{% endif %}">
 			<label for="inputType" class="col-sm-2 control-label">{% trans "Type" %}</label>
 			<div class="col-sm-9">				
 				<select class="form-control" name="type" id="inputType">
@@ -29,7 +29,7 @@
 					{% endfor %}	
 				</select>
 			</div>
-		</div>
+		</div>-->
 		<div class="form-group {% if 'text' in form.errors %}has-error{% endif %}">
 			<label for="inputText" class="col-sm-2 control-label">{% trans "Text" %}</label>
 			<div class="col-sm-9">

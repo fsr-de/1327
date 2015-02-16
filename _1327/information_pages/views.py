@@ -1,17 +1,22 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.translation import ugettext_lazy as _
+from django.forms.formsets import formset_factory
+from guardian.decorators import permission_required_or_403
+from guardian.shortcuts import get_perms
+from guardian.models import Group
 
-from _1327.user_management.decorators import admin_required
-from _1327.documents.utils import handle_edit, handle_autosave, prepare_versions
+from _1327.documents.utils import handle_edit, prepare_versions, handle_autosave
 from _1327.documents.models import Document
+from _1327.documents.forms import PermissionForm
+from _1327.information_pages.models import InformationDocument
+from _1327.user_management.shortcuts import get_object_or_error
 
 
-@admin_required
 def edit(request, title):
-	document = get_object_or_404(Document, url_title=title, type='I')
+	document = get_object_or_error(InformationDocument, request.user, ['information_pages.change_informationdocument'], url_title=title)
 	success, form = handle_edit(request, document)
 	if success:
 		messages.success(request, _("Successfully saved changes"))
@@ -24,21 +29,20 @@ def edit(request, title):
 			'active_page': 'edit',
 		})
 
-@admin_required
+@permission_required_or_403('change_informationdocument', (Document, 'url_title', 'title'), accept_global_perms=True)
 def autosave(request, title):
 	document = None
 	try:
-		document = Document.objects.get(url_title=title, type='I')
+		document = InformationDocument.objects.get(url_title=title)
 	except Document.DoesNotExist:
 		pass
 
 	handle_autosave(request, document)
 	return HttpResponse()
 
-@admin_required
 def versions(request, title):
 	# get all versions of the document
-	document = get_object_or_404(Document, url_title=title, type='I')
+	document = get_object_or_error(InformationDocument, request.user, ['information_pages.change_informationdocument'], url_title=title)
 	document_versions = prepare_versions(document)
 
 	return render(request, 'information_pages_versions.html', {
@@ -49,9 +53,41 @@ def versions(request, title):
 
 
 def view_information(request, title):
-	document = get_object_or_404(Document, url_title=title, type='I')
+	document = get_object_or_error(InformationDocument, request.user, ['documents.view_document'], url_title=title)
 
 	return render(request, 'information_pages_base.html', {
 		'document': document,
 		'active_page': 'view',
+	})
+
+
+def permissions(request, title):
+	document = get_object_or_error(InformationDocument, request.user, ['information_pages.change_informationdocument'], url_title=title)
+
+	permissionFS = formset_factory(form=PermissionForm, extra=0)
+	groups = Group.objects.all()
+
+	initial_data = []
+	for group in groups:
+		group_permissions = get_perms(group, document)
+		data = {
+			"change_permission": "change_informationdocument" in group_permissions,
+			"delete_permission": "delete_informationdocument" in group_permissions,
+			"view_permission": "view_informationdocument" in group_permissions,
+			"group_name": group.name,
+		}
+		initial_data.append(data)
+
+	formset = permissionFS(request.POST or None, initial=initial_data)
+	if request.POST and formset.is_valid():
+		for form in formset:
+			form.save(document)
+		messages.success(request, _("Successfully changed permissions"))
+
+		return HttpResponseRedirect(reverse('information_pages:permissions', args=[document.url_title]))
+
+	return render(request, 'information_pages_permissions.html', {
+		'document': document,
+		'formset': formset,
+		'active_page': 'permissions',
 	})

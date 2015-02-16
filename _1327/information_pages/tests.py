@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from django.db import transaction
 from django_webtest import WebTest
 import reversion
+from _1327.information_pages.models import InformationDocument
 
 from _1327.user_management.models import UserProfile
 from _1327.documents.models import Document
@@ -16,7 +17,7 @@ class TestDocument(TestCase):
 		
 
 	def test_slugification(self):
-		document = Document(title="titlea", text="text", type='I', author=self.user)
+		document = InformationDocument(title="titlea", text="text", author=self.user)
 		self.assertEqual(document.url_title, '')
 		document.save()
 		self.assertEqual(document.url_title, "titlea")
@@ -36,13 +37,13 @@ class TestEditor(WebTest):
 		self.user.is_admin = True
 		self.user.save()
 
-		self.document = Document(title="title", text="text", type='I', author=self.user)
+		self.document = InformationDocument(title="title", text="text", author=self.user)
 		self.document.save()
 
 
 	def test_get_editor(self):
-		response = self.app.get(reverse('information_pages:edit', args=[self.document.url_title]))
-		self.assertEqual(response.status_code, 302)
+		response = self.app.get(reverse('information_pages:edit', args=[self.document.url_title]), status=403)
+		self.assertEqual(response.status_code, 403)
 
 		response = self.app.get(reverse('information_pages:edit', args=[self.document.url_title]), user="testuser")
 		self.assertEqual(response.status_code, 200)
@@ -82,15 +83,15 @@ class TestVersions(WebTest):
 		self.user.is_admin = True
 		self.user.save()
 
-		self.document = Document(title="title", text="text", type='I', author=self.user)
+		self.document = InformationDocument(title="title", text="text", author=self.user)
 		with transaction.atomic(), reversion.create_revision():
 			self.document.save()
 			reversion.set_user(self.user)
 			reversion.set_comment('test version')
 
 	def test_get_version_page(self):
-		response = self.app.get(reverse('information_pages:versions', args=[self.document.url_title]))
-		self.assertEqual(response.status_code, 302)
+		response = self.app.get(reverse('information_pages:versions', args=[self.document.url_title]), status=403)
+		self.assertEqual(response.status_code, 403)
 
 		response = self.app.get(reverse('information_pages:versions', args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)

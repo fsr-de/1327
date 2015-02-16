@@ -41,6 +41,8 @@ INSTALLED_APPS = (
 	'static_precompiler',
 	'bootstrap3',
 	'reversion',
+	'guardian',
+	'polymorphic',
 	'_1327.main',
 	'_1327.page_admin',
 	'_1327.documents',
@@ -57,6 +59,16 @@ MIDDLEWARE_CLASSES = (
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
 	'django.middleware.locale.LocaleMiddleware',
 )
+
+AUTHENTICATION_BACKENDS = (
+	'django.contrib.auth.backends.ModelBackend',
+	'guardian.backends.ObjectPermissionBackend',
+)
+
+# needed by django-guardian library
+ANONYMOUS_USER_ID = -1
+GUARDIAN_RAISE_403 = True
+
 
 ROOT_URLCONF = '_1327.urls'
 
