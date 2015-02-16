@@ -7,23 +7,22 @@
 <div class="container" id="wrapper">
 	<header>
 		<div class="container title">
-			<table class="col-sm-12">
-				<td class="col-sm-7">
-					<a href="{% url 'main.views.index' %}" class="brand">myHPI</a>
-				</td>
-				<td class="col-sm-4" align="right">
+			<div class="col-sm-4">
+				<a href="{% url 'main.views.index' %}" class="brand">myHPI</a>
+			</div>
+			<div class="col-sm-8 header">
+				<div class="logo"></div>
+				<div class="text">
 					{% if user.is_authenticated %}
-						Angemeldet als {{user.username}}
+						Angemeldet als {{user.username}}.
 					{% endif %}
-				</td>
-				<td class="col-sm-1" align="right">
 					{% if user.is_authenticated %}
-						<a href="{% url 'main.views.logout' %}">Logout</a>
+						<a href="{% url 'user_management.views.logout' %}">Logout</a>
 					{% else %}
-						<a href="{% url 'main.views.login' %}">Login</a>
+						<a href="{% url 'user_management.views.login' %}">Login</a>
 					{% endif %}
-				</td>
-			</table>
+				</div>
+			</div>
 		</div>
 		<div id="gradient"></div>
 		<nav class="navbar">
@@ -51,8 +50,20 @@
 	{% endif %}
 
 	{% block rawcontent %}
+	<div class="headline">
+		<svg height="60" width="100%">
+			<defs>
+				<filter id="shadow" width="200%" height="200%">
+					<feOffset result="offOut" in="SourceGraphic" dx="3" dy="5"></feOffset>
+					<feGaussianBlur result="blurOut" in="offOut" stdDeviation="3"></feGaussianBlur>
+				</filter>
+			</defs>
+			<polygon class="headline-bar-shadow" filter="url(#shadow)"></polygon>
+			<polygon class="headline-bar"></polygon>
+			<text class="headline-text" dx="30" dy="15">{% block title %}{% endblock %}</text>
+		</svg>		
+	</div>
 	<section class="container" id="content">
-		<p class="headline">{% block title %}{% endblock title %}</p>
 		{% block content %}
 		{% endblock %}
 	</section>
@@ -64,4 +75,19 @@
 		</div>
 	</footer>
 </div>
+{% endblock %}
+
+
+{% block scripts %}
+    {{ block.super }}
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+        	// resize headline bar to fit the text
+        	var l = $('.headline-text')[0].getComputedTextLength() + 50;
+        	var points = "-10,0 " + (l+18) + ",0 " + l + ",50 -10,50";
+        	$('.headline-bar')[0].setAttribute('points', points);
+			$('.headline-bar-shadow')[0].setAttribute('points', points);
+        });
+    </script>
 {% endblock %}

@@ -5,9 +5,9 @@ from django.utils.translation import ugettext_lazy as _
 import reversion
 from reversion.models import RevertError
 
-from _1327.documents.models import Document
-from _1327.main.models import UserProfile
-from _1327.main.decorators import admin_required
+from _1327.user_management.models import UserProfile
+from _1327.user_management.decorators import admin_required
+from .models import Document
 
 
 @admin_required

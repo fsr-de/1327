@@ -1,6 +1,14 @@
+The software is licensed under the MIT license.
+The source repository may include logos, names or other trademarks of the
+Hasso Plattner Institute, the Fachschaftsrat IT-Systems Engineering or other
+entities; potential usage restrictions for these elements still apply and are
+not touched by the software license.
+
+
 The MIT License (MIT)
 
-Copyright (c) 2014 FSR ITSE
+Copyright (c) 2014 by Fachschaftsrat IT-Systems Engineering
+Johannes Wolf, Christian Bartz, Sebastian Brückner, Lukas Faber, Steffen Kötte
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

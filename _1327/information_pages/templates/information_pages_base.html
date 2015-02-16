@@ -24,19 +24,20 @@
 		</ul>
 		{% endif %}
 	{% endblock %}
+	<div class="meta-information">
+		{% trans "Written by: " %}{{ document.author }}
+	</div>
+	<div class="divider"></div>
 	{% block information_page_content %}
 		<div class="markdown-text">
 			{{ document.text }}
-		</div>
-		<div class="divider"></div>
-		<div class="meta-information">
-			{% trans "Written by: " %}{{ document.author }}
 		</div>
 	{% endblock %}
 {% endblock %}
 
 
 {% block scripts %}
+	{{ block.super }}
 	{% block information_pages_scripts %}
 		<script type="text/javascript" src="{% static 'js/markdown.js' %}"></script>
 		<script>

@@ -5,7 +5,7 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 import reversion
 
-from _1327.main.models import UserProfile
+from _1327.user_management.models import UserProfile
 
 
 @reversion.register

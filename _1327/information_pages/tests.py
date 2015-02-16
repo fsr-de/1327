@@ -4,7 +4,7 @@ from django.db import transaction
 from django_webtest import WebTest
 import reversion
 
-from _1327.main.models import UserProfile
+from _1327.user_management.models import UserProfile
 from _1327.documents.models import Document
 
 
@@ -53,9 +53,9 @@ class TestEditor(WebTest):
 
 		form.set('comment', 'changed title')
 		form.set('title', 'new-title')
-		form.submit('submit')
-
-
+		response = form.submit('submit')
+		self.assertRedirects(response, reverse('information_pages:edit', args=['new-title']))
+		
 		document = Document.objects.get(url_title='new-title')
 		self.assertEqual(document.url_title, 'new-title')
 

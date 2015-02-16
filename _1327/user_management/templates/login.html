@@ -5,7 +5,7 @@
 {% block title %}{% trans 'Login' %}{% endblock title %}
 {% block content %}
 	{{ block.super }}
-	<form action="{% url 'main.views.login' %}" method="post" class="form-horizontal" role="form">
+	<form action="{% url 'user_management.views.login' %}" method="post" class="form-horizontal" role="form">
 	{% bootstrap_form form layout='horizontal' %}
 	{% csrf_token %}
 	{% buttons %}

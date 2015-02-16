@@ -1,7 +1,6 @@
 from django_webtest import WebTest
-import webtest
 
-from _1327.main.models import UserProfile
+from .models import UserProfile
 
 class UsecaseTests(WebTest):
 	fixtures = ['usecase-tests']
