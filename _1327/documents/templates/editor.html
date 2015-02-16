@@ -7,8 +7,12 @@
 	{% if form.errors  %}
 		<div class="alert alert-danger alert-margin-bottom" role="alert">{% trans "Please provide the missing information" %}</div>
 	{% endif %}
+
+    {% if form.autosave  %}
+		<div class="alert alert-danger alert-margin-bottom" role="alert">{% trans "This document was autosaved on" %} {{ form.autosave_date }}{% trans ", you can restore unsaved changes:" %} <a href="{{ edit_url }}?restore" class="btn-sm btn-default" role="button">{% trans "Click here" %}</a></div>
+	{% endif %}
 	
-	<form class="form-horizontal" action="{{ edit_url }}" method="post" role="form">
+	<form class="form-horizontal" action="{{ edit_url }}" method="post" role="form" id="document-form">
 		{% csrf_token %}
 		<div class="form-group {% if 'title' in form.errors %}has-error{% endif %}">
 			<label for="inputTitle" class="col-sm-2 control-label">{% trans "Title" %}</label>
@@ -62,5 +66,22 @@
 			input.on('input', this.update);
 			this.update();
 		}
+		var text = $('#inputText').val();
+		function save() {
+			if(text != $('#inputText').val()) {
+				text = $('#inputText').val();
+
+				var form = $('#document-form');
+				var serializedData = form.serialize();
+
+				$.ajax({
+					url: "{% url 'information_pages:autosave' document.url_title %}",
+					type: "post",
+					data: serializedData
+				});
+			}
+			setTimeout(function() { save(); }, 10000);
+		}
 		new Editor($('#inputText'), $('#text-preview'));
+		save();
 	</script>

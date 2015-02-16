@@ -34,3 +34,8 @@ class Document(models.Model):
 			return
 
 		instance.url_title = slugify(instance.title)
+
+class TemporaryDocumentText(models.Model):
+	text = models.TextField()
+	document = models.ForeignKey(Document, related_name='document')
+	created = models.DateTimeField(auto_now=True)
