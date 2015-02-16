@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block rawcontent %}
+	{{ block.super }}
+	<div class="col-sm-12 container content">
+		{% block content %}
+		{% endblock %}
+	</div>
+{% endblock %}
