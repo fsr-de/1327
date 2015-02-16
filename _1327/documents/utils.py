@@ -55,7 +55,8 @@ def handle_edit(request, document):
 		}
 		form = TextForm(form_data)
 		form.autosave = autosaved
-		form.autosave_date = autosave.created
+		if autosaved:
+			form.autosave_date = autosave.created
 
 	return False, form
 
