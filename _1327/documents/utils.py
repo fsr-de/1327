@@ -33,12 +33,30 @@ def handle_edit(request, document):
 
 			return True, form
 	else:
+
+		# load Autosave
+		try:
+			autosave = TemporaryDocumentText.objects.get(document=document)
+			text = autosave.text
+			autosaved = True
+		except TemporaryDocumentText.DoesNotExist:
+			text = document.text
+			autosaved = False
+
+		if 'restore' not in request.GET:
+			text = document.text
+		else:
+			autosaved = False
+
 		form_data = {
 			'title': document.title,
-			'text': document.text,
+			'text': text,
 			'type': document.type,
 		}
 		form = TextForm(form_data)
+		form.autosave = autosaved
+		form.autosave_date = autosave.created
+
 	return False, form
 
 

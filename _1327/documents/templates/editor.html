@@ -7,6 +7,10 @@
 	{% if form.errors  %}
 		<div class="alert alert-danger alert-margin-bottom" role="alert">{% trans "Please provide the missing information" %}</div>
 	{% endif %}
+
+    {% if form.autosave  %}
+		<div class="alert alert-danger alert-margin-bottom" role="alert">{% trans "This document was autosaved on" %} {{ form.autosave_date }}{% trans ", you can restore unsaved changes:" %} <a href="{{ edit_url }}?restore" class="btn-sm btn-default" role="button">{% trans "Click here" %}</a></div>
+	{% endif %}
 	
 	<form class="form-horizontal" action="{{ edit_url }}" method="post" role="form" id="document-form">
 		{% csrf_token %}
