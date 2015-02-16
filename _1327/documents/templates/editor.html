@@ -59,29 +59,29 @@
 	<script type="text/javascript" src="{% static 'js/markdown.js' %}"></script>
 	<script>
 		function Editor (input, preview) {
-            this.update = function () {
+			this.update = function () {
 				preview.html(markdown.toHTML(input.val()));
 			};
-            input.editor = this;
+			input.editor = this;
 			input.on('input', this.update);
-            this.update();
+			this.update();
 		}
-        var text = $('#inputText').val();
-        function save() {
-            if(text != $('#inputText').val()) {
-                text = $('#inputText').val();
+		var text = $('#inputText').val();
+		function save() {
+			if(text != $('#inputText').val()) {
+				text = $('#inputText').val();
 
-                var form = $('#document-form');
-                var serializedData = form.serialize();
+				var form = $('#document-form');
+				var serializedData = form.serialize();
 
-                 $.ajax({
-                    url: "{% url 'information_pages:autosave' document.url_title %}",
-                    type: "post",
-                    data: serializedData
-                });
-            }
-            setTimeout(function() { save(); }, 10000);
-        }
+				$.ajax({
+					url: "{% url 'information_pages:autosave' document.url_title %}",
+					type: "post",
+					data: serializedData
+				});
+			}
+			setTimeout(function() { save(); }, 10000);
+		}
 		new Editor($('#inputText'), $('#text-preview'));
-        save();
+		save();
 	</script>
