@@ -6,6 +6,8 @@ class LoginForm(forms.Form):
 	username = forms.CharField(label = _('User name'), max_length = 100)
 	password = forms.CharField(label = _('Password'), widget = forms.PasswordInput())
 
+	username.widget.attrs.update({'autofocus' : 'autofocus'})
+
 	user_cache = None
 
 	def clean(self):
