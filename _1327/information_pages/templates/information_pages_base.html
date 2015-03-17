@@ -9,20 +9,20 @@
 {% endblock %}
 
 {% block sidebar %}
+	<div class="meta-information">
+		{% trans "Author" %}: {{ document.author }}
+	</div>
 	{% block information_page_nav %}
 		{% if request.user.is_staff %}
-		<a class="btn btn-sm btn-sidebar {% if active_page == 'view' %}btn-warning{% else %}btn-default{% endif %}" href="{% url 'information_pages:view_information' document.url_title %}" role="tab">{% trans "View" %}</a>
-		<a class="btn btn-sm btn-sidebar {% if active_page == 'edit' %}btn-warning{% else %}btn-default{% endif %}" href="{% url 'information_pages:edit' document.url_title %}" role="tab">{% trans "Edit" %}</a>
-		<a class="btn btn-sm btn-sidebar {% if active_page == 'versions' %}btn-warning{% else %}btn-default{% endif %}" href="{% url 'information_pages:versions' document.url_title %}" role="tab">{% trans "Versions" %}</a>
+			<div class="divider"></div>
+			<a class="btn btn-sm btn-sidebar {% if active_page == 'view' %}btn-warning{% else %}btn-default{% endif %}" href="{% url 'information_pages:view_information' document.url_title %}" role="tab">{% trans "View" %}</a>
+			<a class="btn btn-sm btn-sidebar {% if active_page == 'edit' %}btn-warning{% else %}btn-default{% endif %}" href="{% url 'information_pages:edit' document.url_title %}" role="tab">{% trans "Edit" %}</a>
+			<a class="btn btn-sm btn-sidebar {% if active_page == 'versions' %}btn-warning{% else %}btn-default{% endif %}" href="{% url 'information_pages:versions' document.url_title %}" role="tab">{% trans "Versions" %}</a>
 		{% endif %}
 	{% endblock %}
 {% endblock %}
 
 {% block content %}	
-	<div class="meta-information">
-		{% trans "Written by: " %}{{ document.author }}
-	</div>
-	<div class="divider"></div>
 	{% block information_page_content %}
 		<div class="markdown-text">{{ document.text }}</div>
 	{% endblock %}
