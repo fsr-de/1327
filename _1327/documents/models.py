@@ -2,25 +2,24 @@ from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
-from django.utils.translation import ugettext_lazy as _
+from polymorphic import PolymorphicModel
 import reversion
 
 from _1327.user_management.models import UserProfile
 
 
 @reversion.register
-class Document(models.Model):
+class Document(PolymorphicModel):
 
 	author = models.ForeignKey(UserProfile, related_name='documents')
 	title = models.CharField(max_length=255)
 	url_title = models.SlugField()
 	text = models.TextField()
-	type = models.CharField(max_length=5, default='I')
 
-	types = (
-		('I', _('Information')),
-		('P', _('Protocol')),
-	)
+	class Meta:
+		permissions = (
+			('view_document', 'User/Group is allowed to view that document'),
+		)
 
 	@receiver(pre_save)
 	def slugify_callback(sender, instance, *args, **kwargs):

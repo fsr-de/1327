@@ -2,22 +2,23 @@ from django.shortcuts import get_object_or_404, Http404
 from django.http import HttpResponse, HttpResponseServerError, HttpResponseBadRequest
 from django.db import transaction
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes.models import ContentType
+
 import reversion
 from reversion.models import RevertError
 
+from _1327.documents.models import Document
 from _1327.user_management.models import UserProfile
-from _1327.user_management.decorators import admin_required
-from .models import Document
+from _1327.user_management.shortcuts import get_object_or_error
 
 
-@admin_required
 def revert(request):
 	if not request.is_ajax() or not request.POST:
 		raise Http404
 
 	version_id = request.POST['id']
 	document_url_title = request.POST['url_title']
-	document = get_object_or_404(Document, url_title=document_url_title)
+	document = get_object_or_error(Document, request.user, ['change_document'], url_title=document_url_title)
 	versions = reversion.get_for_object(document)
 
 	# find the we want to revert to
@@ -37,7 +38,8 @@ def revert(request):
 		return HttpResponseServerError('Could not revert the version')
 
 	fields = revert_version.field_dict
-	reverted_document = Document(author=UserProfile.objects.get(pk=fields.pop('author')), **revert_version.field_dict)
+	document_class = ContentType.objects.get_for_id(fields.pop('polymorphic_ctype')).model_class()
+	reverted_document = document_class(author=UserProfile.objects.get(pk=fields.pop('author')), **revert_version.field_dict)
 	with transaction.atomic(), reversion.create_revision():
 				reverted_document.save()
 				reversion.set_user(request.user)

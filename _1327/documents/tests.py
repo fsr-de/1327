@@ -2,6 +2,7 @@ from django.core.urlresolvers import reverse
 from django.db import transaction
 from django_webtest import WebTest
 import reversion
+from _1327.information_pages.models import InformationDocument
 
 from _1327.user_management.models import UserProfile
 from .models import Document
@@ -18,7 +19,7 @@ class TestRevertion(WebTest):
 		self.user.is_admin = True
 		self.user.save()
 
-		document = Document(title="title", text="text", type='I', author=self.user)
+		document = Document(title="title", text="text", author=self.user)
 		with transaction.atomic(), reversion.create_revision():
 				document.save()
 				reversion.set_user(self.user)
@@ -36,11 +37,11 @@ class TestRevertion(WebTest):
 		versions = reversion.get_for_object(document)
 		self.assertEqual(len(versions), 2)
 
-		response = self.app.post(reverse('documents:revert'), {'id': versions[1].pk, 'url_title': document.url_title})
-		self.assertEqual(response.status_code, 302)
+		response = self.app.post(reverse('documents:revert'), {'id': versions[1].pk, 'url_title': document.url_title}, status=404)
+		self.assertEqual(response.status_code, 404)
 
-		response = self.app.post(reverse('documents:revert'), {'id': versions[1].pk, 'url_title': document.url_title}, xhr=True)
-		self.assertEqual(response.status_code, 302)
+		response = self.app.post(reverse('documents:revert'), {'id': versions[1].pk, 'url_title': document.url_title}, status=403, xhr=True)
+		self.assertEqual(response.status_code, 403)
 
 		response = self.app.post(reverse('documents:revert'), {'id': versions[1].pk, 'url_title': document.url_title}, user=self.user, status=404)
 		self.assertEqual(response.status_code, 404)
@@ -73,7 +74,7 @@ class TestAutosave(WebTest):
 		self.user.is_admin = True
 		self.user.save()
 
-		document = Document(title="title", text="text", type='I', author=self.user)
+		document = InformationDocument(title="title", text="text", author=self.user)
 		with transaction.atomic(), reversion.create_revision():
 				document.save()
 				reversion.set_user(self.user)
@@ -90,7 +91,7 @@ class TestAutosave(WebTest):
 		self.assertEqual(form.get('text').value, 'text')
 
 		# autosave AUTO
-		response = self.app.post(reverse('information_pages:autosave', args=[document.url_title]), {'text': 'AUTO', 'title': form.get('title').value, 'comment' : ''}, user=self.user, xhr=True)
+		response = self.app.post(reverse('information_pages:autosave', args=[document.url_title]), {'text': 'AUTO', 'title': form.get('title').value, 'comment': ''}, user=self.user, xhr=True)
 		self.assertEqual(response.status_code, 200)
 
 		# if not loading autosave text should be still text
