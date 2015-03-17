@@ -2,13 +2,13 @@
 {% load i18n %}
 {% load bootstrap3 %}
 
-	<h2>{% trans "Write your new text" %}</h2>
+	<h2>{% trans "Edit page" %}</h2>
 
-	{% if form.errors  %}
+	{% if form.errors %}
 		<div class="alert alert-danger alert-margin-bottom" role="alert">{% trans "Please provide the missing information" %}</div>
 	{% endif %}
 
-    {% if form.autosave  %}
+    {% if form.autosave %}
 		<div class="alert alert-danger alert-margin-bottom" role="alert">{% trans "This document was autosaved on" %} {{ form.autosave_date }}{% trans ", you can restore unsaved changes:" %} <a href="{{ edit_url }}?restore" class="btn-sm btn-default" role="button">{% trans "Click here" %}</a></div>
 	{% endif %}
 	
@@ -16,13 +16,13 @@
 		{% csrf_token %}
 		<div class="form-group {% if 'title' in form.errors %}has-error{% endif %}">
 			<label for="inputTitle" class="col-sm-2 control-label">{% trans "Title" %}</label>
-			<div class="col-sm-8">
+			<div class="col-sm-9">
 				<input type="text" class="form-control" name="title" value="{{ form.data.title }}" placeholder="{% trans 'Your Title...' %}">
 			</div>
 		</div>
 		<div class="form-group {% if 'type' in form.errors %}has-error{% endif %}">
 			<label for="inputType" class="col-sm-2 control-label">{% trans "Type" %}</label>
-			<div class="col-sm-8">				
+			<div class="col-sm-9">				
 				<select class="form-control" name="type" id="inputType">
 					{% for id, choice in form.fields.type.choices %}
 						<option value="{{ id }}">{{ choice }}</option>
@@ -32,13 +32,13 @@
 		</div>
 		<div class="form-group {% if 'text' in form.errors %}has-error{% endif %}">
 			<label for="inputText" class="col-sm-2 control-label">{% trans "Text" %}</label>
-			<div class="col-sm-8">
+			<div class="col-sm-9">
 				<textarea class="form-control" name="text" id="inputText" rows=20 placeholder="{% trans 'Your Text...' %}">{{ form.data.text }}</textarea>
 			</div>
 		</div>
 		<div class="form-group {% if 'comment' in form.errors %}has-error{% endif %}">
 			<label for="inputComment" class="col-sm-2 control-label">{% trans "Comment" %}</label>
-			<div class="col-sm-8">
+			<div class="col-sm-9">
 				<input type="text" class="form-control" name="comment" value="{{ form.data.comment }}" placeholder="{% trans 'What did you do?' %}">
 			</div>
 		</div>
