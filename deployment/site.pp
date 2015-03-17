@@ -70,4 +70,15 @@ node default {
         wsgi_process_group          => 'wsgi',
         wsgi_script_aliases         => { '/' => '/vagrant/_1327/wsgi.py' },
     }
+
+    exec { 'auto_cd_vagrant':
+        provider    => shell,
+        command     => 'echo "\ncd /vagrant" >> /home/vagrant/.bashrc'
+    }
+
+    exec { 'alias_python_python3':
+        provider    => shell,
+        # the sudo thing makes "sudo python foo" work
+        command     => 'echo "\nalias python=python3\nalias sudo=\'sudo \'" >> /home/vagrant/.bashrc'
+    }
 }
