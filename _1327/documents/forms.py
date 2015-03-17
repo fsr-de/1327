@@ -50,7 +50,7 @@ class PermissionForm(forms.Form):
 					assign_perm(permission.codename, group, model)
 				else:
 					remove_perm(permission.codename, group, model)
-			elif "View" in str(permission):
+			elif "view" in str(permission):
 				if self.cleaned_data["view_permission"]:
 					assign_perm(permission.codename, group, model)
 				else:

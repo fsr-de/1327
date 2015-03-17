@@ -18,7 +18,7 @@ class Document(PolymorphicModel):
 
 	class Meta:
 		permissions = (
-			('view_document', 'User/Group is allowed to View that Document'),
+			('view_document', 'User/Group is allowed to view that document'),
 		)
 
 	@receiver(pre_save)

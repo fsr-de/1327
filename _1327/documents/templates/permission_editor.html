@@ -9,14 +9,19 @@
 	<div class="form-group">
 		<div class="row">
 			<div class="col-md-2">{% trans "Role" %}</div>
+			<div class="col-md-offset-1 col-md-2">{% trans "View" %}</div>
 			<div class="col-md-offset-1 col-md-2">{% trans "Edit" %}</div>
 			<div class="col-md-offset-1 col-md-2">{% trans "Delete" %}</div>
-			<div class="col-md-offset-1 col-md-2">{% trans "View" %}</div>
 		</div>
 		{% for form in formset %}
 			<div class="row">
 				{{ form.group_name }}
 				<div class="col-md-2">{{ form.group_name.value }}</div>
+				<div class="col-md-offset-1 col-md-2">
+					<label class="checkbox-inline">
+						{{ form.view_permission }}
+					</label>
+				</div>
 				<div class="col-md-offset-1 col-md-2">
 					<label class="checkbox-inline">
 						{{ form.change_permission }}
@@ -25,11 +30,6 @@
 				<div class="col-md-offset-1 col-md-2">
 					<label class="checkbox-inline">
 						{{ form.delete_permission }}
-					</label>
-				</div>
-			<div class="col-md-offset-1 col-md-2">
-					<label class="checkbox-inline">
-						{{ form.view_permission }}
 					</label>
 				</div>
 			</div>

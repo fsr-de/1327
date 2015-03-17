@@ -82,7 +82,7 @@ def permissions(request, title):
 	if request.POST and formset.is_valid():
 		for form in formset:
 			form.save(document)
-		messages.success(request, _("Successfully changed permissions"))
+		messages.success(request, _("Permissions have been changed successfully."))
 
 		return HttpResponseRedirect(reverse('information_pages:permissions', args=[document.url_title]))
 
