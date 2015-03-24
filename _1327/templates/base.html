@@ -7,11 +7,11 @@
 <div class="container main-container" id="wrapper">
 	<header>
 		<div class="container title">
-			<div class="col-sm-4">
-				<a href="{% url 'main.views.index' %}" class="brand">myHPI</a>
+			<div class="col-sm-2">
+				<a href="{% url 'main.views.index' %}"><div class="myhpi-logo"></div></a>
 			</div>
-			<div class="col-sm-8 header">
-				<div class="logo"></div>
+			<div class="col-sm-10 header">
+				<div class="fsr-logo"></div>
 				<div class="text">
 					{% if user.is_authenticated %}
 						Angemeldet als {{user.username}}.
