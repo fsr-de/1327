@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django_webtest import WebTest
+from guardian.shortcuts import assign_perm
 import reversion
 from _1327.information_pages.models import InformationDocument
 
@@ -25,6 +26,30 @@ class TestDocument(TestCase):
 		document.title="bla-keks-kekskeks"
 		document.save()
 		self.assertEqual(document.url_title, "bla-keks-kekskeks")
+
+
+class TestDocumentWeb(WebTest):
+
+	def setUp(self):
+		self.user = UserProfile.objects.create_user(username="testuser", email="test@test.de", password="top_secret")
+		self.user.save()
+
+	def test_url_shows_document(self):
+		title = "Document title"
+		text = "This is the document text."
+		author = self.user
+		document = InformationDocument(title=title, text=text, author=author)
+		document.save()
+
+		assign_perm('view_informationdocument', author, document)
+		self.assertTrue(author.has_perm('view_informationdocument', document))
+
+		self.assertTrue(document.get_url(), msg="InformationDocument should return a URL")
+
+		response = self.app.get(document.get_url(), user=author)
+
+		self.assertIn(title.encode("utf-8"), response.body, msg="The displayed page should contain the document's title")
+
 
 class TestEditor(WebTest):
 

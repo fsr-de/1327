@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils.text import slugify
@@ -24,5 +25,8 @@ class InformationDocument(Document):
 			return
 
 		instance.url_title = slugify(instance.title)
+
+	def get_url(self):
+		return reverse('information_pages:view_information', args=(self.url_title, ))
 
 reversion.register(InformationDocument, follow=["document_ptr"])
