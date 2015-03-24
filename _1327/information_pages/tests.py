@@ -1,8 +1,10 @@
+from django.contrib.auth.models import Group
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django_webtest import WebTest
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import assign_perm, get_perms_for_model, remove_perm
+from guardian.utils import get_anonymous_user
 import reversion
 from _1327.information_pages.models import InformationDocument
 
@@ -96,6 +98,37 @@ class TestEditor(WebTest):
 			self.assertEqual(response.status_code, 200)
 			self.assertIn('has-error', str(response.body))
 
+	def test_editor_permissions_for_single_user(self):
+		test_user = UserProfile.objects.create_user("testuser2")
+
+		# test that test_user is not allowed to use editor
+		response = self.app.get(reverse('information_pages:edit', args=[self.document.url_title]), user="testuser2", status=403)
+		self.assertEqual(response.status_code, 403)
+
+		# give that user the necessary permission and check again
+		assign_perm('change_informationdocument', test_user, self.document)
+
+		# it should work now
+		response = self.app.get(reverse('information_pages:edit', args=[self.document.url_title]), user="testuser2")
+		self.assertEqual(response.status_code, 200)
+
+	def test_editor_permissions_for_groups(self):
+		test_user = UserProfile.objects.create_user("testuser2")
+		test_group = Group.objects.create(name="testgroup")
+		test_user.groups.add(test_group)
+
+		# user should not be able to use the editor
+		response = self.app.get(reverse('information_pages:edit', args=[self.document.url_title]), user="testuser2", status=403)
+		self.assertEqual(response.status_code, 403)
+
+		# add permission to group
+		assign_perm('change_informationdocument', test_group, self.document)
+
+		# user should now be able to use the editor
+		response = self.app.get(reverse('information_pages:edit', args=[self.document.url_title]), user="testuser2")
+		self.assertEqual(response.status_code, 200)
+
+
 
 class TestVersions(WebTest):
 
@@ -145,3 +178,71 @@ class TestVersions(WebTest):
 		# check whether the comment of the version correct
 		self.assertEqual(versions[0].revision.comment, 'hallo Bibi Blocksberg')
 		self.assertEqual(versions[1].revision.comment, 'test version')
+
+
+class TestPermissions(WebTest):
+
+	def setUp(self):
+		self.user = UserProfile.objects.create_user("testuser")
+		self.user.save()
+
+		self.group = Group.objects.create(name="test_group")
+		for permission in get_perms_for_model(InformationDocument):
+			permission_name = "{}.{}".format(permission.content_type.app_label, permission.codename)
+			assign_perm(permission_name, self.group)
+		self.group.save()
+
+		document = InformationDocument(title="title", text="text", author=self.user)
+		document.save()
+
+	def test_view_permissions_for_logged_in_user(self):
+		# check that user is not allowed to see information document
+		document = Document.objects.get()
+
+		response = self.app.get(reverse('information_pages:view_information', args=[document.url_title]), user="testuser", status=403)
+		self.assertEqual(response.status_code, 403)
+
+		# grant view permission to that user
+		assign_perm('view_informationdocument', self.user, document)
+		response = self.app.get(reverse('information_pages:view_information', args=[document.url_title]), user="testuser")
+		self.assertEqual(response.status_code, 200)
+		remove_perm('view_informationdocument', self.user, document)
+
+		# check that user is not allowed to see page anymore
+		response = self.app.get(reverse('information_pages:view_information', args=[document.url_title]), user="testuser", status=403)
+		self.assertEqual(response.status_code, 403)
+
+		# add user to test group and test that he is now allowed to see that document
+		self.user.groups.add(self.group)
+		self.user.save()
+
+		response = self.app.get(reverse('information_pages:view_information', args=[document.url_title]), user="testuser")
+		self.assertEqual(response.status_code, 200)
+
+	def test_view_permissions_for_anonymous_user(self):
+		anonymous_user = get_anonymous_user()
+		document = Document.objects.get()
+
+		# check that anonymous user is not allowed to see that document
+		response = self.app.get(reverse('information_pages:view_information', args=[document.url_title]), status=403)
+		self.assertEqual(response.status_code, 403)
+
+		# allow anonymous users to see that document and test that
+		assign_perm('view_informationdocument', anonymous_user, document)
+
+		# it should work now
+		response = self.app.get(reverse('information_pages:view_information', args=[document.url_title]))
+		self.assertEqual(response.status_code, 200)
+
+		remove_perm('view_informationdocument', anonymous_user, document)
+
+		# check that anonymous user is not allowed to see page anymore
+		response = self.app.get(reverse('information_pages:view_information', args=[document.url_title]), status=403)
+		self.assertEqual(response.status_code, 403)
+
+		# test the same with group
+		anonymous_user.groups.add(self.group)
+		anonymous_user.save()
+
+		response = self.app.get(reverse('information_pages:view_information', args=[document.url_title]))
+		self.assertEqual(response.status_code, 200)
