@@ -13,6 +13,9 @@ class MenuItem(models.Model):
 
 	parent = models.ForeignKey('self', blank=True, null=True, related_name='children')
 
+	class Meta:
+		ordering = ['order']
+
 	def __str__(self):
 		return self.title
 
