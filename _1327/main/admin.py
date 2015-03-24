@@ -20,6 +20,12 @@ class MenuItemAdminForm(forms.ModelForm):
 				raise ValidationError(_('This link is not valid.'), code='nonexistent')
 		return data
 
+	def clean(self):
+		if self.cleaned_data['link'] and self.cleaned_data['document']:
+			raise ValidationError(_('You are only allowed to define one of Document and Link'))
+
+		return self.cleaned_data
+
 
 class MenuItemAdmin(admin.ModelAdmin):
 	form = MenuItemAdminForm
