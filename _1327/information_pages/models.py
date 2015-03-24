@@ -5,7 +5,6 @@ import reversion
 from _1327.documents.models import Document
 
 
-@reversion.register
 class InformationDocument(Document):
 
 	class Meta:
@@ -25,3 +24,5 @@ class InformationDocument(Document):
 			return
 
 		instance.url_title = slugify(instance.title)
+
+reversion.register(InformationDocument, follow=["document_ptr"])
