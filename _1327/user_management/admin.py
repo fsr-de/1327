@@ -92,6 +92,7 @@ class GroupAdminForm(forms.ModelForm):
 										   required=False)
 
 	class Meta:
+		exclude = []
 		model = Group
 
 	def __init__(self, *args, **kwargs):
