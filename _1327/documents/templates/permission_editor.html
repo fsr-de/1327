@@ -7,35 +7,29 @@
 	{% csrf_token %}
 	{{ formset.management_form }}
 	<div class="form-group">
-		<div class="row">
-			<div class="col-md-2">{% trans "Role" %}</div>
-			<div class="col-md-offset-1 col-md-2">{% trans "View" %}</div>
-			<div class="col-md-offset-1 col-md-2">{% trans "Edit" %}</div>
-			<div class="col-md-offset-1 col-md-2">{% trans "Delete" %}</div>
-		</div>
-		{% for form in formset %}
-			<div class="row">
-				{{ form.group_name }}
-				<div class="col-md-2">{{ form.group_name.value }}</div>
-				<div class="col-md-offset-1 col-md-2">
-					<label class="checkbox-inline">
-						{{ form.view_permission }}
-					</label>
-				</div>
-				<div class="col-md-offset-1 col-md-2">
-					<label class="checkbox-inline">
-						{{ form.change_permission }}
-					</label>
-				</div>
-				<div class="col-md-offset-1 col-md-2">
-					<label class="checkbox-inline">
-						{{ form.delete_permission }}
-					</label>
-				</div>
-			</div>
-		{% endfor %}
+		<table class="table table-striped vertically-aligned table-narrow" >
+			<thead>
+				<tr>
+					<th class="col-md-6">{% trans "Role" %}</th>
+					<th class="col-md-2 text-center">{% trans "View" %}</th>
+					<th class="col-md-2 text-center">{% trans "Edit" %}</th>
+					<th class="col-md-2 text-center">{% trans "Delete" %}</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for form in formset %}
+				<tr>
+					{{ form.group_name }}
+					<td>{{ form.group_name.value }}</td>
+					<td class="text-center">{{ form.view_permission }}</td>
+					<td class="text-center">{{ form.change_permission }}</td>
+					<td class="text-center">{{ form.delete_permission }}</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
 	</div>
 	<div class="form-group">
-		<button type="submit" class="btn btn-default">{% trans "Save" %}</button>
+		<button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
 	</div>
 </form>
