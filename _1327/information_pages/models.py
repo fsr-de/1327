@@ -12,17 +12,5 @@ class InformationDocument(Document):
 			('view_informationdocument', 'User/Group is allowed to view that information'),
 		)
 
-	@receiver(pre_save)
-	def slugify_callback(sender, instance, *args, **kwargs):
-		"""
-			creates a slugified title that can be used as URL to the Document
-			This will be used to identify a document that a user wants to see.
-			In case someone creates a document with the same title it is not not defined
-			which document might show up. So please try to avoid that ;)
-		"""
-		if sender != InformationDocument:
-			return
-
-		instance.url_title = slugify(instance.title)
 
 reversion.register(InformationDocument, follow=["document_ptr"])
