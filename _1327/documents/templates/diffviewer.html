@@ -9,120 +9,27 @@
 
 <h2>{% trans "Diff page versions" %}</h2>
 
-<form class="form-horizontal" role="form">
-	<div class="form-group">
-		<label for="select-version1" class="col-sm-2 control-label">{% trans "Version A" %}</label>
-		<div class="col-sm-6">
-			<select class="form-control version-control" id="select-version1">
-				{% for id, version in versions %}
-					<option value="{{ id }}">{{ id }} - {{ version.revision.date_created }}, {{ version.revision.comment }} by {{ version.revision.user }}</option>
-				{% endfor %}
-			</select>
-		</div>
-	</div>
-	<div class="form-group">
-		<label for="select-version2" class="col-sm-2 control-label">{% trans "Version B" %}</label>
-		<div class="col-sm-6">
-			<select class="form-control version-control" id="select-version2">
-				{% for id, version, text in versions %}
-					<option value="{{ id }}">{{ id }} - {{ version.revision.date_created }}, {{ version.revision.comment }} by {{ version.revision.user }}</option>
-				{% endfor %}
-			</select>
-		</div>
-		<button type="button" class="btn btn-primary" id="button-revert-version" data-toggle="modal" data-target="#confirmation-modal">{% trans "Revert to this version" %}</button>
-	</div>
-</form>
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th colspan="2">Revision</th>
+			<th colspan="2">Compare</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for id, version in versions %}
+		<tr>
+			<td>{{ id }}</td>
+			<td>{{ version.revision.date_created }}, {{ version.revision.comment }} by {{ version.revision.user }}</td>
+			<td><input type="radio" class="version-control" name="compare-a" value="{{ id }}"></td>
+			<td><input type="radio" class="version-control" name="compare-b" value="{{ id }}"></td>
+			<td><button type="button" class="btn btn-primary version-revert-button" data-toggle="modal" data-target="#confirmation-modal" data-revision-id="{{ version.pk }}" data-revision-name="{{ version.revision.date_created }}, {{ version.revision.comment }} by {{ version.revision.user }}">{% trans "Revert to this version" %}</button></td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
 
 <div class="row">
-	<div class="col-sm-offset-1 diffview" id="diffDisplay"></div>
+	<div class="col-sm-12 diffview" id="diffDisplay"></div>
 </div>
-
-<div class="modal fade" id="confirmation-modal" tabindex="-1" role="dialog" aria-labelledby="confirmation-title" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span></button>
-				<h4 class="modal-title" id="confirmation-title">{% trans "Do you really want to revert to this version?" %}</h4>
-			</div>
-			<div class="modal-body">
-				<strong>{% trans "Version you want to revert to: " %}<span id="version-to-revert-display"></span></strong>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-success" id="revert-button">{% trans "Revert" %}</button>
-				<button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
-			</div>
-		</div>
-	</div>
-</div>
-
-<script type="text/javascript" src="{% static 'js/difflib.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/diffview.js' %}"></script>
-<script>
-
-	// initialise site logic
-	$('#button-revert-version').on('click', function (event) {
-		// get currently selected version
-		var selectedVersion = $('#select-version2').find(':selected');
-		$('#version-to-revert-display').text(selectedVersion.text());
-	});
-
-	$('#revert-button').on('click', function (event) {
-		// tell the server to revert the version of the current document to the selected version
-		var selectedVersionId = versions[$('#select-version2').find(':selected').val()][0];
-		$.post('{% url "documents:revert" %}',
-				{
-					id: selectedVersionId,
-					url_title: '{{ document.url_title }}'
-				},
-				function (data, textStatus, jqXHR) {
-					location.reload();
-				}).fail(function (error) {
-					console.log(error);
-					alert('{% trans "An error occured. The revision could not be reverted" %}');
-					$('#confirmation-modal').modal('toggle');
-				});
-	});
-
-	// in case one of the selects change update the diffs
-	$('.version-control').change(function (event) {
-		createDiff();
-	});
-
-	// initialise the diff creation
-	var versions = [];
-	{% for id, version, text in versions %}
-		versions.push([{{ version.pk }}, "{{ text }}"]);
-	{% endfor %}
-
-	// select the second last and last element in selects
-	$('#select-version1 option[value=' + (versions.length - 2) + ']').attr('selected', 'selected');
-	$('#select-version2 option[value=' + (versions.length - 1) + ']').attr('selected', 'selected');
-
-
-	createDiff();
-
-	function createDiff () {
-		// get the necessary data in the correct format
-		var versionA = difflib.stringAsLines(versions[$('#select-version1').find(':selected').val()][1]);
-		var versionB = difflib.stringAsLines(versions[$('#select-version2').find(':selected').val()][1]);
-
-		// empty the result display diff
-		var display = $('#diffDisplay');
-		display.empty();
-
-		// create the diff
-		var sequenceMatcher = new difflib.SequenceMatcher(versionA, versionB);
-		var opcodes = sequenceMatcher.get_opcodes();
-
-		//show it to the user
-		display.append(diffview.buildView({
-			baseTextLines: versionA,
-			newTextLines: versionB,
-			opcodes: opcodes,
-			baseTextName: "{% trans "Version A" %}",
-			newTextName: "{% trans "Version B" %}",
-			viewType: 0
-		}));
-	}
-
-</script>

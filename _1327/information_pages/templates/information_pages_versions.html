@@ -8,3 +8,8 @@
 {% block information_page_content %}
 	{% include 'diffviewer.html' %}
 {% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+{% include 'diffviewer_scripts.html' %}
+{% endblock %}
