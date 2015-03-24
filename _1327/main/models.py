@@ -1,4 +1,5 @@
 from _1327.documents.models import Document
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -14,3 +15,9 @@ class MenuItem(models.Model):
 
 	def __str__(self):
 		return self.title
+
+	def get_url(self):
+		if self.link:
+			return reverse(self.link)
+		elif self.document:
+			return self.document.get_url()

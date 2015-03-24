@@ -38,11 +38,11 @@
 				<ul class="nav navbar-nav">
 					{% for item in main_menu %}
 					<li{% if item.selected %} class="active"{% endif %}>
-						<a href="{% url item.link %}">{{ item.title }}</a>
+						<a href="{{ item.get_url }}">{{ item.title }}</a>
 						{% if item.selected and item.submenu %}
 							<ul class="nav navbar-nav subnav">
 								{% for subitem in item.submenu %}
-									<li{% if subitem.selected %} class="active"{% endif %}><a href="{% url subitem.link %}">{{ subitem.title }}</a></li>
+									<li{% if subitem.selected %} class="active"{% endif %}><a href="{{ subitem.get_url }}">{{ subitem.title }}</a></li>
 								{% endfor %}
 							</ul>
 						{% endif %}

@@ -172,3 +172,15 @@ class TestSignals(TestCase):
 		remove_perm(model_permissions[0].codename, group, test_object)
 		test_object.save()
 		self.assertFalse(test_user.has_perm(model_permissions[0].codename, test_object))
+
+
+class TestUrls(TestCase):
+
+	def test_document_subclasses_override_get_url_method(self):
+		for subclass in Document.__subclasses__():
+			if hasattr(subclass, "Meta") and hasattr(subclass.Meta, "abstract") and subclass.Meta.abstract:
+				# abstract classes do not have to override the get_url method
+				continue
+
+			msg = "All non-abstract subclasses of Document should override the get_url method"
+			self.assertIsNot(subclass.get_url, Document.get_url, msg=msg)

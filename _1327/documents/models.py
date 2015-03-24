@@ -22,6 +22,9 @@ class Document(PolymorphicModel):
 	def __str__(self):
 		return self.title
 
+	def get_url(self):
+		raise NotImplementedError()
+
 
 class TemporaryDocumentText(models.Model):
 	text = models.TextField()
