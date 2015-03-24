@@ -53,7 +53,7 @@ def versions(request, title):
 
 
 def view_information(request, title):
-	document = get_object_or_error(InformationDocument, request.user, ['documents.view_document'], url_title=title)
+	document = get_object_or_error(InformationDocument, request.user, ['information_pages.view_document'], url_title=title)
 
 	return render(request, 'information_pages_base.html', {
 		'document': document,
