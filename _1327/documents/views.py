@@ -39,7 +39,16 @@ def revert(request):
 
 	fields = revert_version.field_dict
 	document_class = ContentType.objects.get_for_id(fields.pop('polymorphic_ctype')).model_class()
-	reverted_document = document_class(author=UserProfile.objects.get(pk=fields.pop('author')), **revert_version.field_dict)
+
+	# Remove all references to parent objects.
+	keys_to_remove = []
+	for key in fields.keys():
+		if "_ptr" in key:
+			keys_to_remove.append(key)
+	for key in keys_to_remove:
+		fields.pop(key)
+
+	reverted_document = document_class(author_id=fields.pop('author'), **fields)
 	with transaction.atomic(), reversion.create_revision():
 				reverted_document.save()
 				reversion.set_user(request.user)
