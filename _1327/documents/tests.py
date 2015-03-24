@@ -174,13 +174,30 @@ class TestSignals(TestCase):
 		self.assertFalse(test_user.has_perm(model_permissions[0].codename, test_object))
 
 
-class TestUrls(TestCase):
+class TestSubclassConstraints(TestCase):
+
+	def is_abstract_model(self, cls):
+		return hasattr(cls._meta, "abstract") and cls._meta.abstract
+
+	def has_permissions(self, cls):
+		return hasattr(cls._meta, "permissions")
 
 	def test_document_subclasses_override_get_url_method(self):
 		for subclass in Document.__subclasses__():
-			if hasattr(subclass, "Meta") and hasattr(subclass.Meta, "abstract") and subclass.Meta.abstract:
+			if self.is_abstract_model(subclass):
 				# abstract classes do not have to override the get_url method
 				continue
 
 			msg = "All non-abstract subclasses of Document should override the get_url method"
 			self.assertIsNot(subclass.get_url, Document.get_url, msg=msg)
+
+	def test_view_permissions(self):
+		for subclass in Document.__subclasses__():
+			if self.is_abstract_model(subclass):
+				continue
+
+			self.assertTrue(self.has_permissions(subclass), msg="All Document subclasses must specify permissions in their Meta class")
+			self.assertTrue(hasattr(subclass, "VIEW_PERMISSION_NAME"), msg="All Document subclasses must specify a VIEW_PERMISSION_NAME field")
+
+			permission_names = [permission[0] for permission in subclass._meta.permissions]
+			self.assertIn(subclass.VIEW_PERMISSION_NAME, permission_names, msg="All Document subclasses must declare the permission named in VIEW_PERMISSION_NAME")
