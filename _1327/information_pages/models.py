@@ -6,11 +6,16 @@ import reversion
 from _1327.documents.models import Document
 
 
+INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME = 'view_informationdocument'
+
+
 class InformationDocument(Document):
 
-	class Meta:
+	VIEW_PERMISSION_NAME = INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME
+
+	class Meta(Document.Meta):
 		permissions = (
-			('view_informationdocument', 'User/Group is allowed to view that information'),
+			(INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME, 'User/Group is allowed to view that document'),
 		)
 
 

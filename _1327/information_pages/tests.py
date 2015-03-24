@@ -43,8 +43,8 @@ class TestDocumentWeb(WebTest):
 		document = InformationDocument(title=title, text=text, author=author)
 		document.save()
 
-		assign_perm('view_informationdocument', author, document)
-		self.assertTrue(author.has_perm('view_informationdocument', document))
+		assign_perm(InformationDocument.VIEW_PERMISSION_NAME, author, document)
+		self.assertTrue(author.has_perm(InformationDocument.VIEW_PERMISSION_NAME, document))
 
 		self.assertTrue(document.get_url(), msg="InformationDocument should return a URL")
 
@@ -101,6 +101,8 @@ class TestEditor(WebTest):
 	def test_editor_permissions_for_single_user(self):
 		test_user = UserProfile.objects.create_user("testuser2")
 
+		assign_perm(InformationDocument.VIEW_PERMISSION_NAME, test_user, self.document)
+
 		# test that test_user is not allowed to use editor
 		response = self.app.get(reverse('information_pages:edit', args=[self.document.url_title]), user="testuser2", status=403)
 		self.assertEqual(response.status_code, 403)
@@ -116,6 +118,8 @@ class TestEditor(WebTest):
 		test_user = UserProfile.objects.create_user("testuser2")
 		test_group = Group.objects.create(name="testgroup")
 		test_user.groups.add(test_group)
+
+		assign_perm(InformationDocument.VIEW_PERMISSION_NAME, test_group, self.document)
 
 		# user should not be able to use the editor
 		response = self.app.get(reverse('information_pages:edit', args=[self.document.url_title]), user="testuser2", status=403)
@@ -203,10 +207,10 @@ class TestPermissions(WebTest):
 		self.assertEqual(response.status_code, 403)
 
 		# grant view permission to that user
-		assign_perm('view_informationdocument', self.user, document)
+		assign_perm(InformationDocument.VIEW_PERMISSION_NAME, self.user, document)
 		response = self.app.get(reverse('information_pages:view_information', args=[document.url_title]), user="testuser")
 		self.assertEqual(response.status_code, 200)
-		remove_perm('view_informationdocument', self.user, document)
+		remove_perm(InformationDocument.VIEW_PERMISSION_NAME, self.user, document)
 
 		# check that user is not allowed to see page anymore
 		response = self.app.get(reverse('information_pages:view_information', args=[document.url_title]), user="testuser", status=403)
@@ -228,13 +232,13 @@ class TestPermissions(WebTest):
 		self.assertEqual(response.status_code, 403)
 
 		# allow anonymous users to see that document and test that
-		assign_perm('view_informationdocument', anonymous_user, document)
+		assign_perm(InformationDocument.VIEW_PERMISSION_NAME, anonymous_user, document)
 
 		# it should work now
 		response = self.app.get(reverse('information_pages:view_information', args=[document.url_title]))
 		self.assertEqual(response.status_code, 200)
 
-		remove_perm('view_informationdocument', anonymous_user, document)
+		remove_perm(InformationDocument.VIEW_PERMISSION_NAME, anonymous_user, document)
 
 		# check that anonymous user is not allowed to see page anymore
 		response = self.app.get(reverse('information_pages:view_information', args=[document.url_title]), status=403)

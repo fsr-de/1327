@@ -13,6 +13,8 @@ class MenuItem(models.Model):
 
 	parent = models.ForeignKey('self', blank=True, null=True, related_name='children')
 
+	staff_only = models.BooleanField(default=False, verbose_name=_("Display for staff only"))
+
 	class Meta:
 		ordering = ['order']
 
@@ -24,3 +26,17 @@ class MenuItem(models.Model):
 			return reverse(self.link)
 		elif self.document:
 			return self.document.get_url()
+
+	def can_view(self, user):
+		if user.is_superuser:
+			return True
+
+		if self.staff_only and not user.is_staff:
+			return False
+
+		if self.document:
+			can_view_document = user.has_perm(self.document.get_view_permission())
+			can_view_document |= user.has_perm(self.document.get_view_permission(), self.document)
+			return can_view_document
+
+		return True

@@ -19,5 +19,3 @@ def get_object_or_error(klass, user, permissions, *args, **kwargs):
 		if not user.has_perm(permission, obj):
 			raise PermissionDenied
 	return obj
-
-
