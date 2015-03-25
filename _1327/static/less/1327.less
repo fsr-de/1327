@@ -1,6 +1,12 @@
 @import "variables.less";
 @import "../bootstrap/less/mixins.less";
 
+// Fix bootstrap:
+.modal-dialog {
+	z-index: @zindex-modal-background + 1;
+}
+// End fix.
+
 html {
 	height: 100%;
 }
