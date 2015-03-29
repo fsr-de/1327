@@ -26,7 +26,7 @@ node default {
     } ->
     exec { "install less":
         provider => shell,
-        command => 'npm install -g less'
+        command => 'npm install -g less coffee-script'
     }
 
 
