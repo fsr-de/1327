@@ -2,12 +2,10 @@ language: python
 python:
   - "3.4"
 install:
-  - npm install -g less
+  - npm install -g less coffee-script
   - pip install -r requirements.txt
   - pip install coveralls
 script:
-  - coverage run manage.py test _1327.documents
-  - coverage run manage.py test _1327.information_pages
-  - coverage run manage.py test _1327.main
+  - coverage run manage.py test
 after_success:
   - coveralls
