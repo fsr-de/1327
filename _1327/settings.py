@@ -48,6 +48,7 @@ INSTALLED_APPS = (
 	'_1327.page_admin',
 	'_1327.documents',
 	'_1327.information_pages',
+	'_1327.minutes',
 	'_1327.user_management',
 )
 

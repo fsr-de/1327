@@ -5,6 +5,9 @@ import reversion
 
 from _1327.information_pages.admin import InformationDocumentAdmin
 from _1327.information_pages.models import InformationDocument
+from _1327.minutes.admin import MinutesDocumentAdmin
+from _1327.minutes.models import MinutesDocument
+
 from .models import Document, Attachment
 
 
@@ -12,6 +15,7 @@ class DocumentAdmin(GuardedModelAdmin, reversion.VersionAdmin, PolymorphicParent
 	base_model = Document
 	child_models = (
 		(InformationDocument, InformationDocumentAdmin),
+		(MinutesDocument, MinutesDocumentAdmin),
 	)
 
 	list_display = ('title', 'author')
