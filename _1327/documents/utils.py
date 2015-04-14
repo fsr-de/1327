@@ -1,10 +1,11 @@
 import json
+import re
 
 from django.db import transaction
 import reversion
 
 from _1327.documents.models import TemporaryDocumentText
-from _1327.documents.forms import TextForm
+from _1327.documents.forms import TextForm, AttachmentForm
 
 
 def handle_edit(request, document):
@@ -87,3 +88,21 @@ def prepare_versions(document):
 		version_list.append((id, version, json.dumps(version.field_dict['text']).strip('"')))
 
 	return version_list
+
+
+def handle_attachment(request, document):
+	if request.method == "POST":
+		form = AttachmentForm(request.POST, request.FILES)
+		if form.is_valid():
+			instance = form.save(commit=False)
+			if instance.displayname == '':
+				instance.displayname = instance.file.name
+			if not re.search(r'\.\w+$', instance.displayname):
+				file_type = re.search(r'\.(\w+)$', instance.file.name).group(1)
+				instance.displayname = "{}.{}".format(instance.displayname, file_type)
+			instance.document = document
+			instance.save()
+			return True, form
+	else:
+		form = AttachmentForm()
+	return False, form

@@ -5,7 +5,7 @@ import reversion
 
 from _1327.information_pages.admin import InformationDocumentAdmin
 from _1327.information_pages.models import InformationDocument
-from .models import Document
+from .models import Document, Attachment
 
 
 class DocumentAdmin(GuardedModelAdmin, reversion.VersionAdmin, PolymorphicParentModelAdmin):
@@ -17,3 +17,9 @@ class DocumentAdmin(GuardedModelAdmin, reversion.VersionAdmin, PolymorphicParent
 	list_display = ('author', 'title', 'text')
 
 admin.site.register(Document, DocumentAdmin)
+
+
+class AttachmentAdmin(admin.ModelAdmin):
+	pass
+
+admin.site.register(Attachment, AttachmentAdmin)

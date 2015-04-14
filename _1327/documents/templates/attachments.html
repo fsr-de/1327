@@ -1,0 +1,101 @@
+{% load i18n %}
+{% load filename %}
+
+{% block information_page_content %}
+	<h2>{% trans "Add an attachment" %}</h2>
+
+	{% if form.errors %}
+		<div class="alert alert-danger alert-margin-bottom" role="alert">{% trans "Please provide the missing information" %}</div>
+	{% endif %}
+
+	<form class="form-horizontal" action="{{ edit_url }}" method="post" role="form" enctype="multipart/form-data">
+		{% csrf_token %}
+		<div class="form-group {% if 'displayname' in form.errors %}has-error{% endif %}">
+			<label for="inputFile" class="col-sm-2 control-label">{% trans "Displayname" %}</label>
+			<div class="col-sm-9">
+				<input type="text" class="form-control" name="displayname" value="{{ form.data.displayname }}" placeholder="{% trans "Optional displayname..." %}">
+			</div>
+		</div>
+		<div class="form-group {% if 'file' in form.errors %}has-error{% endif %}">
+			<label for="inputFile" class="col-sm-2 control-label">{% trans "Attachment" %}</label>
+			<div class="col-sm-9">
+				<input type="file" class="form-control" name="file" value="{{ form.data.file }}" placeholder="{% trans "Your Attachment..." %}">
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-offset-2 col-sm-4">
+				<button type="submit" class="btn btn-primary">
+					<i class="glyphicon glyphicon-floppy-disk"></i> {% trans 'Save' %}
+				</button>
+			</div>
+		</div>
+	</form>
+
+	<h2>{% trans "Already uploaded attachments" %}</h2>
+	<div class="col-sm-12">
+		<table class="table table-striped">
+			<thead>
+				<th>{% trans "Displayname" %}</th>
+				<th>{% trans "Filename" %}</th>
+				<th>{% trans "Created" %}</th>
+			</thead>
+			{% for attachment in attachments %}
+				<tr>
+					<td>
+						<input type="hidden" class="attachmentinput" name="file" value="{{ attachment.id }}">
+						<a href="{% url 'documents:download_attachment' %}?attachment_id={{ attachment.id }}">{{ attachment.displayname }}</a>
+					</td>
+					<td>{{ attachment.file.name|filename }}</td>
+					<td>{{ attachment.created }}</td>
+					<td>
+						<button type="button" data-displayname="{{ attachment.displayname }}" data-toggle="modal"
+						        data-target="#confirmAttachmentDeleteModal" class="delete-attachment btn btn-warning">
+							{% trans "Delete" %}
+						</button>
+					</td>
+				</tr>
+
+			{% endfor %}
+		</table>
+	</div>
+
+	<div class="modal fade" id="confirmAttachmentDeleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<div class="modal-title">{% trans "Please Confirm" %}</div>
+				</div>
+				<div class="modal-body">
+					{% blocktrans %}
+					Do you really want to delete the Attachment <span id="attachment-name"></span>?
+					{% endblocktrans %}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" id="accept-delete">{% trans "Yes" %}</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">{% trans "No" %}</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		$('#confirmAttachmentDeleteModal').on('show.bs.modal', function (event){
+			var button = $(event.relatedTarget);
+			var input = button.closest('tr').find('input.attachmentinput');
+			$('#attachment-name').html(button.data['displayname']);
+            var deleteButton = $('#accept-delete');
+            deleteButton.off('click');
+			deleteButton.on('click', function (event){
+				$.post("{% url "documents:delete_attachment" %}", {'id': input.attr('value')}, function (data, textStatus, jqXHR) {
+					location.reload()
+				});
+			});
+		});
+	</script>
+
+
+{% endblock %}
+

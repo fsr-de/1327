@@ -3,6 +3,8 @@ from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
 from guardian.shortcuts import get_perms_for_model, assign_perm, remove_perm
 
+from .models import Attachment
+
 
 class StrippedCharField(forms.CharField):
 	"""
@@ -31,7 +33,6 @@ class PermissionForm(forms.Form):
 	view_permission = forms.BooleanField(required=False)
 	group_name = forms.CharField(required=False)
 
-
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.fields["group_name"].widget = forms.HiddenInput()
@@ -55,3 +56,9 @@ class PermissionForm(forms.Form):
 					assign_perm(permission.codename, group, model)
 				else:
 					remove_perm(permission.codename, group, model)
+
+
+class AttachmentForm(forms.ModelForm):
+	class Meta:
+		model = Attachment
+		exclude = ('document',)
