@@ -1,4 +1,6 @@
+import tempfile
 from django.contrib.auth.models import Group
+from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.test import TestCase
@@ -8,7 +10,7 @@ import reversion
 from _1327.information_pages.models import InformationDocument
 
 from _1327.user_management.models import UserProfile
-from .models import Document
+from .models import Document, Attachment
 
 
 class TestRevertion(WebTest):
@@ -201,3 +203,191 @@ class TestSubclassConstraints(TestCase):
 
 			permission_names = [permission[0] for permission in subclass._meta.permissions]
 			self.assertIn(subclass.VIEW_PERMISSION_NAME, permission_names, msg="All Document subclasses must declare the permission named in VIEW_PERMISSION_NAME")
+
+
+class TestAttachments(WebTest):
+	"""
+		Tests creating, viewing and deleting attachments
+		InformationDocuments are used as testclass. It is assumed that the behavior is similar with other documenttypes
+	"""
+
+	csrf_checks = False
+
+	def setUp(self):
+		self.user = UserProfile.objects.create_superuser("test", "test", "test@test.test")
+
+		self.group = Group.objects.create(name="testgroup")
+		for permission in get_perms_for_model(InformationDocument):
+			permission_name = "{}.{}".format(permission.content_type.app_label, permission.codename)
+			assign_perm(permission_name, self.group)
+		self.group.save()
+
+		self.group_user = UserProfile.objects.create_user("groupuser", "test", "test@test.test")
+		self.group_user.groups.add(self.group)
+		self.group_user.save()
+
+		self.document = InformationDocument(author=self.user, title="test", text="blabla")
+		self.document.save()
+
+		self.content = "test content of test attachment"
+		attachment_file = ContentFile(self.content)
+		self.attachment = Attachment.objects.create(document=self.document)
+		self.attachment.file.save('temp.txt', attachment_file)
+		self.attachment.save()
+
+	def tearDown(self):
+		for attachment in self.document.attachments.all():
+			attachment.file.delete()
+		self.attachment.file.delete()
+
+	def test_create_attachment(self):
+		upload_files = [
+			('file', 'test.txt', bytes(tempfile.SpooledTemporaryFile(max_size=10000, prefix='txt', mode='r')))
+		]
+
+		# test that user who has no change permission on a document can not add an attachment
+		# and neither see the corresponding page
+		normal_user = UserProfile.objects.create_user("normal", "test", "normal@test.test")
+
+		response = self.app.get(reverse('information_pages:attachments', args=[self.document.url_title]),
+									user=normal_user,
+									expect_errors=True)
+		self.assertEqual(response.status_code, 403)
+
+		response = self.app.post(reverse('information_pages:attachments', args=[self.document.url_title]),
+									content_type='multipart/form-data',
+									upload_files=upload_files,
+									user=normal_user,
+									expect_errors=True)
+		self.assertEqual(response.status_code, 403)
+
+		# test that user who is allowed to view the document may not add attachments to it
+		# and neither see the corresponding page
+		assign_perm("view_informationdocument", normal_user, self.document)
+
+		response = self.app.get(reverse('information_pages:attachments', args=[self.document.url_title]),
+									user=normal_user,
+									expect_errors=True)
+		self.assertEqual(response.status_code, 403)
+
+		response = self.app.post(reverse('information_pages:attachments', args=[self.document.url_title]),
+									content_type='multipart/form-data',
+									upload_files=upload_files,
+									user=normal_user,
+									expect_errors=True)
+		self.assertEqual(response.status_code, 403)
+
+		# test that member of group who has according permissions is allowed to upload attachments
+		# and to see the corresponding page
+		response = self.app.get(reverse('information_pages:attachments', args=[self.document.url_title]),
+									user=self.group_user)
+		self.assertEqual(response.status_code, 200)
+
+		response = self.app.post(reverse('information_pages:attachments', args=[self.document.url_title]),
+									content_type='multipart/form-data',
+									upload_files=upload_files,
+									user=self.group_user)
+		self.assertEqual(response.status_code, 200)
+
+		# test that superuser is allowed to upload attachments and to see the corresponding page
+		response = self.app.get(reverse('information_pages:attachments', args=[self.document.url_title]),
+									user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		response = self.app.post(reverse('information_pages:attachments', args=[self.document.url_title]),
+									content_type='multipart/form-data',
+									upload_files=upload_files,
+									user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+	def test_delete_attachment(self):
+		params = {
+			'id': self.attachment.id,
+		}
+
+		# try to delete an attachment as user with no permissions at all (anonymous user)
+		response = self.app.get(reverse('documents:delete_attachment'), params=params, expect_errors=True)
+		self.assertEqual(response.status_code, 404, msg="GET Requests are not allowed to work")
+
+		response = self.app.get(reverse('documents:delete_attachment'), params=params, expect_errors=True, xhr=True)
+		self.assertEqual(response.status_code, 404, msg="GET Requests are not allowed to work")
+
+		response = self.app.post(reverse('documents:delete_attachment'), params=params, expect_errors=True)
+		self.assertEqual(response.status_code, 404, msg="Requests that are not AJAX should return a 404 error")
+
+		response = self.app.post(reverse('documents:delete_attachment'), params=params, expect_errors=True, xhr=True)
+		self.assertEqual(response.status_code, 403,
+						msg="If users have no permissions they should not be able to delete an attachment")
+
+		# try to delete an attachment as user with no permissions
+		normal_user = UserProfile.objects.create_user("normal", "test", "normal@test.test")
+		response = self.app.post(reverse('documents:delete_attachment'), params=params, expect_errors=True, xhr=True,
+								user=normal_user)
+		self.assertEqual(response.status_code, 403,
+						msg="If users have no permissions they should not be able to delete an attachment")
+
+		# try to delete an attachment as user with wrong permissions
+		assign_perm(InformationDocument.get_view_permission(), normal_user, self.document)
+		response = self.app.post(reverse('documents:delete_attachment'), params=params, expect_errors=True, xhr=True,
+								user=normal_user)
+		self.assertEqual(response.status_code, 403,
+						msg="If users has no permissions they should not be able to delete an attachment")
+
+		# try to delete an attachment as user with correct permissions
+		response = self.app.post(reverse('documents:delete_attachment'), params=params, xhr=True,
+								user=self.group_user)
+		self.assertEqual(response.status_code, 200,
+						msg="Users with the correct permissions for a document should be able to delete an attachment")
+
+		# re create the attachment
+		self.attachment.save()
+
+		# try to delete an attachment as superuser
+		response = self.app.post(reverse('documents:delete_attachment'), params=params, xhr=True,
+								user=self.user)
+		self.assertEqual(response.status_code, 200,
+						msg="Users with the correct permissions for a document should be able to delete an attachment")
+
+	def test_view_attachment(self):
+		params = {
+			'attachment_id': self.attachment.id,
+		}
+
+		# test that a user with insufficient permissions is not allowed to view/download an attachment
+		# be an anonymous user
+		response = self.app.post(reverse('documents:download_attachment'), params=params, expect_errors=True)
+		self.assertEqual(response.status_code, 400, msg="Should be bad request as user used wrong request method")
+
+		response = self.app.get(reverse('documents:download_attachment'), params=params, expect_errors=True)
+		self.assertEqual(response.status_code, 403, msg="Should be forbidden as user has insufficient permissions")
+
+		# test viewing an attachment using a user with insufficient permissions
+		normal_user = UserProfile.objects.create_user("normal", "test", "normal@test.test")
+		assign_perm('change_informationdocument', normal_user, self.document)
+
+		response = self.app.get(reverse('documents:download_attachment'), params=params, expect_errors=True,
+								user=normal_user)
+		self.assertEqual(response.status_code, 403, msg="Should be forbidden as user has insufficient permissions")
+
+		# grant the correct permission to the user an try again
+		assign_perm(InformationDocument.get_view_permission(), normal_user, self.document)
+
+		response = self.app.get(reverse('documents:download_attachment'), params=params, user=normal_user)
+		self.assertEqual(response.status_code, 200,
+						msg="Users with sufficient permissions should be able to download an attachment")
+		self.assertEqual(response.body.decode('utf-8'), self.content,
+						msg="An attachment that has been downloaded should contain its original content")
+
+		# try the same with a user that is in a group having the correct permission
+		response = self.app.get(reverse('documents:download_attachment'), params=params, user=self.group_user)
+		self.assertEqual(response.status_code, 200,
+						msg="Users with sufficient permissions should be able to download an attachment")
+		self.assertEqual(response.body.decode('utf-8'), self.content,
+						msg="An attachment that has been downloaded should contain its original content")
+
+		# make sure that a superuser is always allowed to download an attachment
+		response = self.app.get(reverse('documents:download_attachment'), params=params, user=self.user)
+		self.assertEqual(response.status_code, 200,
+						msg="Users with sufficient permissions should be able to download an attachment")
+		self.assertEqual(response.body.decode('utf-8'), self.content,
+						msg="An attachment that has been downloaded should contain its original content")
