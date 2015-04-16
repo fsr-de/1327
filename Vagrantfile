@@ -10,12 +10,6 @@ Vagrant.configure("2") do |config|
   config.vm.network :forwarded_port, guest: 80, host: 8000
   config.vm.network :forwarded_port, guest: 8000, host: 8080
 
-  config.vm.provider :virtualbox do |vb, override|
-    vb.customize ["modifyvm", :id, "--memory", "1024"]
-
-    override.vm.box_url = "https://vagrantcloud.com/puppetlabs/boxes/ubuntu-14.04-64-puppet/versions/1/providers/virtualbox.box"
-  end
-
   config.vm.provision :puppet do |puppet|
     puppet.module_path = "deployment/modules"
     puppet.manifests_path = "deployment"
