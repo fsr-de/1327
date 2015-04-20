@@ -114,6 +114,19 @@ STATIC_URL = '/static/'
 # Example: "/opt/_1327/_1327/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
+# Absolute path to the directory user uploaded files (like pdf and png) should be put in.
+# Example: "/opt/_1327/_1327/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+# the Backend used for downloading attachments may be one of the following:
+# `sendfile.backends.development` - for use with django development server only. DO NOT USE IN PRODUCTION
+# `sendfile.backends.simple` - "simple" backend that uses Django file objects to attempt to stream files from disk (note middleware may cause files to be loaded fully into memory)
+# `sendfile.backends.xsendfile` - sets X-Sendfile header (as used by mod_xsendfile/apache and lighthttpd)
+# `sendfile.backends.mod_wsgi` - sets Location with 200 code to trigger internal redirect (daemon mode mod_wsgi only - see below)
+# `sendfile.backends.nginx` - sets X-Accel-Redirect header to trigger internal redirect to file
+# see https://github.com/johnsensible/django-sendfile for further information
+SENDFILE_BACKEND = 'sendfile.backends.development'
+
 # Additional locations of static files
 STATICFILES_DIRS = (
 	os.path.join(BASE_DIR, "static"),

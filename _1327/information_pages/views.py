@@ -4,11 +4,10 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.translation import ugettext_lazy as _
 from django.forms.formsets import formset_factory
-from guardian.decorators import permission_required_or_403
 from guardian.shortcuts import get_perms
 from guardian.models import Group
 
-from _1327.documents.utils import handle_edit, prepare_versions, handle_autosave
+from _1327.documents.utils import handle_edit, prepare_versions, handle_autosave, handle_attachment
 from _1327.documents.models import Document
 from _1327.documents.forms import PermissionForm
 from _1327.information_pages.models import InformationDocument
@@ -29,6 +28,7 @@ def edit(request, title):
 			'active_page': 'edit',
 		})
 
+
 def autosave(request, title):
 	document = None
 	try:
@@ -38,6 +38,7 @@ def autosave(request, title):
 
 	handle_autosave(request, document)
 	return HttpResponse()
+
 
 def versions(request, title):
 	# get all versions of the document
@@ -56,6 +57,7 @@ def view_information(request, title):
 
 	return render(request, 'information_pages_base.html', {
 		'document': document,
+		'attachments': document.attachments.all(),
 		'active_page': 'view',
 	})
 
@@ -90,3 +92,20 @@ def permissions(request, title):
 		'formset': formset,
 		'active_page': 'permissions',
 	})
+
+
+def attachments(request, title):
+	document = get_object_or_error(InformationDocument, request.user, ['information_pages.change_informationdocument'], url_title=title)
+
+	success, form = handle_attachment(request, document)
+	if success:
+		messages.success(request, _("File has been uploaded successfully!"))
+		return HttpResponseRedirect(reverse("information_pages:attachments", args=[document.url_title]))
+	else:
+		return render(request, "information_pages_attachments.html", {
+			'document': document,
+			'edit_url': reverse('information_pages:attachments', args=[document.url_title]),
+			'form': form,
+			'attachments': document.attachments.all(),
+			'active_page': 'attachments',
+		})

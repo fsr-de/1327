@@ -43,3 +43,11 @@ class TemporaryDocumentText(models.Model):
 	text = models.TextField()
 	document = models.ForeignKey(Document, related_name='document')
 	created = models.DateTimeField(auto_now=True)
+
+
+class Attachment(models.Model):
+
+	displayname = models.TextField(max_length=255, blank=True, default="")
+	document = models.ForeignKey(Document, related_name='attachments')
+	created = models.DateTimeField(auto_now=True)
+	file = models.FileField(upload_to="documents/%y/%m/")
