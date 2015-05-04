@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, Http404
 from django.http import HttpResponse, HttpResponseServerError, HttpResponseBadRequest, HttpResponseForbidden
-from django.db import transaction
+from django.db import transaction, models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 
@@ -43,17 +43,28 @@ def revert(request):
 	fields = revert_version.field_dict
 	document_class = ContentType.objects.get_for_id(fields.pop('polymorphic_ctype')).model_class()
 
-	# Remove all references to parent objects.
-	keys_to_remove = []
+	# Remove all references to parent objects, rename ForeignKeyFields, extract ManyToManyFields.
+	new_fields = fields.copy()
+	many_to_many_fields = {}
 	for key in fields.keys():
 		if "_ptr" in key:
-			keys_to_remove.append(key)
-	for key in keys_to_remove:
-		fields.pop(key)
+			del new_fields[key]
+			continue
+		if hasattr(document_class, key):
+			field = getattr(document_class, key).field
+			if isinstance(field, models.ManyToManyField):
+				many_to_many_fields[key] = fields[key]
+			else:
+				new_fields[field.attname] = fields[key]
+			del new_fields[key]
 
-	reverted_document = document_class(author_id=fields.pop('author'), **fields)
+	reverted_document = document_class(**new_fields)
 	with transaction.atomic(), reversion.create_revision():
 		reverted_document.save()
+		# Restore ManyToManyFields
+		for key in many_to_many_fields.keys():
+			getattr(reverted_document, key).clear()
+			getattr(reverted_document, key).add(*many_to_many_fields[key])
 		reversion.set_user(request.user)
 		reversion.set_comment(
 			_('reverted to revision \"{revision_comment}\"'.format(revision_comment=revert_version.revision.comment)))
