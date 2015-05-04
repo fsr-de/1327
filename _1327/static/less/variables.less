@@ -26,11 +26,12 @@
 @gray-light:             lighten(@brand-primary, 35%);
 @gray-lighter:           lighten(@brand-primary, 55%);
 
-@brand-primary:         @hpi-gray;
-@brand-success:         @green;
-@brand-info:            @hpi-blue;
-@brand-warning:         @hpi-orange;
-@brand-danger:          @hpi-red;
+@brand-default:          @gray-light;
+@brand-primary:          @hpi-gray;
+@brand-success:          @green;
+@brand-info:             @hpi-blue;
+@brand-warning:          @hpi-orange;
+@brand-danger:           @hpi-red;
 
 
 //== Scaffolding
@@ -156,29 +157,29 @@
 
 @btn-font-weight:                normal;
 
-@btn-default-color:              @gray;
-@btn-default-bg:                 lighten(@btn-default-color, 60%);
-@btn-default-border:             @btn-default-color;
+@btn-default-color:              @gray-darker;
+@btn-default-bg:                 @gray-lighter;
+@btn-default-border:             darken(@gray-light, 10%);
 
-@btn-primary-color:              @brand-primary;
-@btn-primary-bg:                 lighten(@btn-primary-color, 50%);
-@btn-primary-border:             @btn-primary-color;
+@btn-primary-color:              @gray-darker;
+@btn-primary-bg:                 @gray-light;
+@btn-primary-border:             darken(@gray-light, 10%);
 
-@btn-success-color:              @brand-success;
-@btn-success-bg:                 lighten(@btn-success-color, 60%);
-@btn-success-border:             @btn-success-color;
+@btn-success-color:              @gray-lighter;
+@btn-success-bg:                 @brand-success;
+@btn-success-border:             darken(@brand-success, 10%);
 
-@btn-info-color:                 @brand-info;
-@btn-info-bg:                    lighten(@btn-info-color, 60%);
-@btn-info-border:                @btn-info-color;
+@btn-info-color:                 @gray-lighter;
+@btn-info-bg:                    @brand-info;
+@btn-info-border:                darken(@brand-info, 10%);
 
-@btn-warning-color:              @brand-warning;
-@btn-warning-bg:                 lighten(@btn-warning-color, 50%);
-@btn-warning-border:             @btn-warning-color;
+@btn-warning-color:              @gray-lighter;
+@btn-warning-bg:                 @brand-warning;
+@btn-warning-border:             darken(@brand-warning, 10%);
 
-@btn-danger-color:               @brand-danger;
-@btn-danger-bg:                  lighten(@btn-danger-color, 60%);
-@btn-danger-border:              @btn-danger-color;
+@btn-danger-color:               @gray-lighter;
+@btn-danger-bg:                  @brand-danger;
+@btn-danger-border:              darken(@brand-danger, 10%);
 
 @btn-link-disabled-color:        @gray-light;
 
@@ -502,21 +503,21 @@
 //
 //## Define colors for form feedback states and, by default, alerts.
 
-@state-success-text:             @brand-info;
-@state-success-bg:               lighten(@state-success-text, 60%);
-@state-success-border:           @state-success-text;
+@state-success-text:             @brand-success;
+@state-success-bg:               @brand-success;
+@state-success-border:           darken(@brand-success, 10%);
 
 @state-info-text:                @brand-info;
-@state-info-bg:                  lighten(@state-info-text, 60%);
-@state-info-border:              @state-info-text;
+@state-info-bg:                  @brand-info;
+@state-info-border:              darken(@brand-info, 10%);
 
 @state-warning-text:             @brand-warning;
-@state-warning-bg:               lighten(@state-warning-text, 50%);
-@state-warning-border:           @state-warning-text;
+@state-warning-bg:               @brand-warning;
+@state-warning-border:           darken(@brand-warning, 10%);
 
 @state-danger-text:              @brand-danger;
-@state-danger-bg:                lighten(@state-danger-text, 60%);
-@state-danger-border:            @state-danger-text;
+@state-danger-bg:                @brand-danger;
+@state-danger-border:            darken(@brand-danger, 10%);
 
 
 //== Tooltips
@@ -571,7 +572,7 @@
 //##
 
 //** Default label background color
-@label-default-bg:            @gray-light;
+@label-default-bg:            darken(@brand-default, 10%);
 //** Primary label background color
 @label-primary-bg:            @brand-primary;
 //** Success label background color
@@ -584,9 +585,9 @@
 @label-danger-bg:             @brand-danger;
 
 //** Default label text color
-@label-color:                 @text-color;
+@label-color:                 @gray-lighter;
 //** Default text color of a linked label
-@label-link-hover-color:      @text-color;
+@label-link-hover-color:      @gray-light;
 
 
 //== Modals
@@ -631,19 +632,19 @@
 @alert-link-font-weight:      bold;
 
 @alert-success-bg:            @state-success-bg;
-@alert-success-text:          @state-success-text;
+@alert-success-text:          @gray-lighter;
 @alert-success-border:        @state-success-border;
 
 @alert-info-bg:               @state-info-bg;
-@alert-info-text:             @state-info-text;
+@alert-info-text:             @gray-lighter;
 @alert-info-border:           @state-info-border;
 
 @alert-warning-bg:            @state-warning-bg;
-@alert-warning-text:          @state-warning-text;
+@alert-warning-text:          @gray-lighter;
 @alert-warning-border:        @state-warning-border;
 
 @alert-danger-bg:             @state-danger-bg;
-@alert-danger-text:           @state-danger-text;
+@alert-danger-text:           @gray-lighter;
 @alert-danger-border:         @state-danger-border;
 
 
@@ -718,29 +719,29 @@
 @panel-inner-border:          #ddd;
 @panel-footer-bg:             @gray-dark;
 
-@panel-default-text:          @gray-dark;
-@panel-default-border:        #ddd;
-@panel-default-heading-bg:    #f5f5f5;
+@panel-default-text:          @gray-darker;
+@panel-default-border:        @brand-primary;
+@panel-default-heading-bg:    @brand-default;
 
-@panel-primary-text:          #fff;
-@panel-primary-border:        @brand-primary;
+@panel-primary-text:          @gray-lighter;
+@panel-primary-border:        @gray-darker;
 @panel-primary-heading-bg:    @brand-primary;
 
-@panel-success-text:          @state-success-text;
-@panel-success-border:        @state-success-border;
-@panel-success-heading-bg:    @state-success-bg;
+@panel-success-text:          @gray-darker;
+@panel-success-border:        @brand-success;
+@panel-success-heading-bg:    lighten(@brand-success, 55%);
 
-@panel-info-text:             @state-info-text;
-@panel-info-border:           @state-info-border;
-@panel-info-heading-bg:       @state-info-bg;
+@panel-info-text:             @gray-darker;
+@panel-info-border:           @brand-info;
+@panel-info-heading-bg:       lighten(@brand-info, 55%);
 
-@panel-warning-text:          @state-warning-text;
-@panel-warning-border:        @state-warning-border;
-@panel-warning-heading-bg:    @state-warning-bg;
+@panel-warning-text:          @gray-darker;
+@panel-warning-border:        @brand-warning;
+@panel-warning-heading-bg:    lighten(@brand-warning, 48%);
 
-@panel-danger-text:           @state-danger-text;
-@panel-danger-border:         @state-danger-border;
-@panel-danger-heading-bg:     @state-danger-bg;
+@panel-danger-text:           @gray-darker;
+@panel-danger-border:         @brand-danger;
+@panel-danger-heading-bg:     lighten(@brand-danger, 55%);
 
 
 //== Thumbnails
