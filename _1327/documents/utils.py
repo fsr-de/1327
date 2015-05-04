@@ -16,6 +16,7 @@ def handle_edit(request, document):
 			document.title = cleaned_data['title']
 			document.text = cleaned_data['text']
 			document.author = request.user
+			document.initial = False
 
 			# save the document and also save the user and the comment the user added
 			with transaction.atomic(), reversion.create_revision():

@@ -29,7 +29,7 @@
 		<div class="form-group {% if 'comment' in form.errors %}has-error{% endif %}">
 			<label for="inputComment" class="col-sm-2 control-label">{% trans "Comment" %}</label>
 			<div class="col-sm-9">
-				<input type="text" class="form-control" name="comment" value="{{ form.data.comment }}" placeholder="{% trans 'What did you do?' %}">
+				<input type="text" class="form-control" name="comment" value="{% if document.initial %}{% trans "Created document" %}{% else %}{{ form.data.comment }}{% endif %}" placeholder="{% trans 'What did you do?' %}">
 			</div>
 		</div>
 		<div class="form-group">

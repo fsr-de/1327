@@ -1,12 +1,13 @@
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
 from django.contrib import messages
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.utils.translation import ugettext_lazy as _
+from django.utils.text import slugify
 from django.forms.formsets import formset_factory
-from guardian.decorators import permission_required_or_403
 from guardian.shortcuts import get_perms
 from guardian.models import Group
+from datetime import datetime
 
 from _1327.documents.utils import handle_edit, prepare_versions, handle_autosave
 from _1327.documents.models import Document
@@ -14,6 +15,14 @@ from _1327.documents.forms import PermissionForm
 from _1327.information_pages.models import InformationDocument
 from _1327.user_management.shortcuts import get_object_or_error
 
+def create(request):
+	if request.user.has_perm("information_pages.add_informationdocument"):
+		title = _("New Page from {}").format(str(datetime.now()));
+		url_title = slugify(title)
+		document, created = InformationDocument.objects.get_or_create(author=request.user, url_title=url_title, title=title)
+		return edit(request, url_title)
+	else:
+		return HttpResponseForbidden()
 
 def edit(request, title):
 	document = get_object_or_error(InformationDocument, request.user, ['information_pages.change_informationdocument'], url_title=title)

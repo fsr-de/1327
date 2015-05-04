@@ -4,6 +4,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('_1327.information_pages.views',
+	url(r"create/$", 'create', name='create'),
 	url(r"edit/(?P<title>[\w-]+)/$", 'edit', name='edit'),
 	url(r"autosave/(?P<title>[\w-]+)/$", 'autosave', name='autosave'),
 	url(r"versions/(?P<title>[\w-]+)/$", 'versions', name="versions"),
