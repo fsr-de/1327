@@ -48,6 +48,13 @@
 						{% endif %}
 					</li>
 					{% endfor %}
+					{% if CAN_CREATE_INFORMATIONPAGE %}
+						<li class="pull-right">
+							<a href="{% url 'information_pages:create' %}">
+								<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+							</a>
+						</li>
+					{% endif %}
 				</ul>
 			</div>
 		</nav>

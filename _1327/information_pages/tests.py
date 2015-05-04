@@ -228,25 +228,115 @@ class TestPermissions(WebTest):
 		document = Document.objects.get()
 
 		# check that anonymous user is not allowed to see that document
-		response = self.app.get(reverse('information_pages:view_information', args=[document.url_title]), status=403)
+		response = self.app.get(reverse('information_pages:view_information', args=[document.url_title]), user=anonymous_user, status=403)
 		self.assertEqual(response.status_code, 403)
 
 		# allow anonymous users to see that document and test that
 		assign_perm(InformationDocument.VIEW_PERMISSION_NAME, anonymous_user, document)
 
 		# it should work now
-		response = self.app.get(reverse('information_pages:view_information', args=[document.url_title]))
+		response = self.app.get(reverse('information_pages:view_information', args=[document.url_title]), user=anonymous_user)
 		self.assertEqual(response.status_code, 200)
 
 		remove_perm(InformationDocument.VIEW_PERMISSION_NAME, anonymous_user, document)
 
 		# check that anonymous user is not allowed to see page anymore
-		response = self.app.get(reverse('information_pages:view_information', args=[document.url_title]), status=403)
+		response = self.app.get(reverse('information_pages:view_information', args=[document.url_title]), user=anonymous_user, status=403)
 		self.assertEqual(response.status_code, 403)
 
 		# test the same with group
 		anonymous_user.groups.add(self.group)
 		anonymous_user.save()
 
-		response = self.app.get(reverse('information_pages:view_information', args=[document.url_title]))
+		response = self.app.get(reverse('information_pages:view_information', args=[document.url_title]), user=anonymous_user)
 		self.assertEqual(response.status_code, 200)
+
+	def test_create_permissions_for_logged_in_user(self):
+		# check that user is not allowed to create an information document
+		response = self.app.get(reverse('information_pages:create'), user="testuser", status=403)
+		self.assertEqual(response.status_code, 403)
+
+		# grant add and change permission to that user
+		assign_perm('information_pages.add_informationdocument', self.user)
+		assign_perm('information_pages.change_informationdocument', self.user)
+
+		response = self.app.get(reverse('information_pages:create'), user="testuser")
+		self.assertEqual(response.status_code, 200)
+		remove_perm('information_pages.add_informationdocument', self.user)
+		remove_perm('information_pages.change_informationdocument', self.user)
+
+		# check that user is not allowed to see page anymore
+		response = self.app.get(reverse('information_pages:create'), user="testuser", status=403)
+		self.assertEqual(response.status_code, 403)
+
+		# add user to test group and test that he is now allowed to create a information document
+		self.user.groups.add(self.group)
+		self.user.save()
+
+		response = self.app.get(reverse('information_pages:create'), user="testuser")
+		self.assertEqual(response.status_code, 200)
+
+	def test_create_permissions_for_anonymous_user(self):
+		anonymous_user = get_anonymous_user()
+
+		# check that anonymous user is not allowed to see that document
+		response = self.app.get(reverse('information_pages:create'), user=anonymous_user, status=403)
+		self.assertEqual(response.status_code, 403)
+
+		# allow anonymous users to see that document and test that
+		assign_perm('information_pages.add_informationdocument', anonymous_user)
+		assign_perm('information_pages.change_informationdocument', anonymous_user)
+
+		# it should work now
+		response = self.app.get(reverse('information_pages:create'), user=anonymous_user)
+		self.assertEqual(response.status_code, 200)
+
+		remove_perm('information_pages.add_informationdocument', anonymous_user)
+		remove_perm('information_pages.change_informationdocument', anonymous_user)
+
+		# check that anonymous user is not allowed to see page anymore
+		response = self.app.get(reverse('information_pages:create'), user=anonymous_user, status=403)
+		self.assertEqual(response.status_code, 403)
+
+		# test the same with group
+		anonymous_user.groups.add(self.group)
+		anonymous_user.save()
+
+		response = self.app.get(reverse('information_pages:create'))
+		self.assertEqual(response.status_code, 200)
+
+class TestNewPage(WebTest):
+
+	csrf_checks = False
+
+	def setUp(self):
+		self.user = UserProfile.objects.create_superuser(username="testuser", email="test@test.de", password="top_secret")
+		self.user.is_verified = True
+		self.user.is_active = True
+		self.user.is_admin = True
+		self.user.save()
+
+	def test_save_new_page(self):
+		# get the editor page and save the site
+		response = self.app.get(reverse('information_pages:create'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		form = response.form
+		text = "Hallo Bibi Blocksberg!"
+		form.set('text', text)
+		form.set('title', text)
+		form.set('comment', text)
+		response = form.submit().follow()
+		self.assertEqual(response.status_code, 200)
+
+		document = InformationDocument.objects.get(title=text)
+
+		# check whether number of versions is correct
+		versions = reversion.get_for_object(document)
+		self.assertEqual(len(versions), 1)
+
+		# check whether the properties of the new document are correct
+		self.assertEqual(document.title, text)
+		self.assertEqual(document.text, text)
+		self.assertEqual(versions[0].revision.comment, text)
+

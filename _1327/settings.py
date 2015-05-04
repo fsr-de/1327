@@ -153,7 +153,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 	"django.core.context_processors.static",
 	"django.core.context_processors.request",
 	"django.contrib.messages.context_processors.messages",
-	"_1327.main.context_processors.menu"
+	"_1327.main.context_processors.menu",
+	"_1327.main.context_processors.can_create_informationpage",
 )
 
 TEMPLATE_DIRS = (
