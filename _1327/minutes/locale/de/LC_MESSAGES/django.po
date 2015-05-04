@@ -1,0 +1,89 @@
+# 1327 minutes application: German translation.
+# Copyright © 2015 fsr-itse
+# This file is distributed under the same license as the 1327 package.
+# Sebastian Brückner <sebbrueckner@gmail.com>, 2015.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-05-06 01:21+0200\n"
+"PO-Revision-Date: 2015-05-04 18:04+0000\n"
+"Last-Translator: Sebastian Brückner <sebbrueckner@gmail.com>\n"
+"Language-Team: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: models.py:20
+msgid "Date"
+msgstr "Datum"
+
+#: models.py:22
+msgid "Unpublished"
+msgstr "Unveröffentlicht"
+
+#: models.py:23
+msgid "Published"
+msgstr "Veröffentlicht"
+
+#: models.py:24
+msgid "Internal"
+msgstr "Intern"
+
+#: models.py:25
+msgid "State"
+msgstr "Status"
+
+#: models.py:26 templates/minutes_base.html:15
+msgid "Moderator"
+msgstr "Sitzungsleiter"
+
+#: models.py:27 templates/minutes_base.html:19
+msgid "Participants"
+msgstr "Teilnehmer"
+
+#: models.py:32 models.py:33
+msgid "Minutes"
+msgid_plural "Minutes"
+msgstr[0] "Protokoll"
+msgstr[1] "Protokolle"
+
+#: templates/minutes_base.html:17
+msgid "Minute taker"
+msgstr "Protokollführender"
+
+#: templates/minutes_base.html:29
+msgid "View"
+msgstr "Anzeigen"
+
+#: templates/minutes_base.html:30
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: templates/minutes_base.html:31 templates/minutes_base.html.py:43
+msgid "Attachments"
+msgstr "Anhänge"
+
+#: templates/minutes_base.html:32
+msgid "Permissions"
+msgstr "Berechtigungen"
+
+#: templates/minutes_base.html:33
+msgid "Versions"
+msgstr "Versionen"
+
+#: views.py:21
+msgid "Successfully saved changes"
+msgstr "Änderungen erfolgreich gespeichert"
+
+#: views.py:84
+msgid "Permissions have been changed successfully."
+msgstr "Berechtigungen erfolgreich gespeichert"
+
+#: views.py:100
+msgid "File has been uploaded successfully!"
+msgstr "Datei erfolgreich hochgeladen!"
