@@ -3,6 +3,7 @@
 {% load compile_static %}
 {% load i18n %}
 {% load bootstrap3 %}
+{% load guardian_tags %}
 
 {% block title %}
 	{{ document.title }}
@@ -13,7 +14,8 @@
 		{% trans "Author" %}: {{ document.author }}
 	</div>
 	{% block information_page_nav %}
-		{% if request.user.is_staff %}
+		{% get_obj_perms request.user for document as "document_perms" %}
+		{% if "change_informationdocument" in document_perms %}
 			<div class="divider"></div>
 			<a class="btn btn-sm btn-sidebar {% if active_page == 'view' %}btn-warning{% else %}btn-default{% endif %}" href="{% url 'information_pages:view_information' document.url_title %}" role="tab">{% trans "View" %}</a>
 			<a class="btn btn-sm btn-sidebar {% if active_page == 'edit' %}btn-warning{% else %}btn-default{% endif %}" href="{% url 'information_pages:edit' document.url_title %}" role="tab">{% trans "Edit" %}</a>
