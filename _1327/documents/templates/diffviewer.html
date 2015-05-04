@@ -24,7 +24,11 @@
 			<td>{{ version.revision.date_created }}, {{ version.revision.comment }} by {{ version.revision.user }}</td>
 			<td><input type="radio" class="version-control" name="compare-a" value="{{ id }}"></td>
 			<td><input type="radio" class="version-control" name="compare-b" value="{{ id }}"></td>
-			<td><button type="button" class="btn btn-primary version-revert-button" data-toggle="modal" data-target="#confirmation-modal" data-revision-id="{{ version.pk }}" data-revision-name="{{ version.revision.date_created }}, {{ version.revision.comment }} by {{ version.revision.user }}">{% trans "Revert to this version" %}</button></td>
+			<td>
+				{% if not forloop.last %}
+					<button type="button" class="btn btn-primary version-revert-button" data-toggle="modal" data-target="#confirmation-modal" data-revision-id="{{ version.pk }}" data-revision-name="{{ version.revision.date_created }}, {{ version.revision.comment }} by {{ version.revision.user }}">{% trans "Revert to this version" %}</button>
+				{% endif %}
+			</td>
 		</tr>
 		{% endfor %}
 	</tbody>
