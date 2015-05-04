@@ -47,15 +47,19 @@
 
 	<!-- mandatory script include -->
 	<script type="text/javascript" src="{% static 'js/markdown.js' %}"></script>
+	<script type="text/javascript" src="{% static 'bootstrap-markdown/js/bootstrap-markdown.js' %}"></script>
 	<script>
-		function Editor (input, preview) {
-			this.update = function () {
-				preview.html(markdown.toHTML(input.val()));
-			};
-			input.editor = this;
-			input.on('input', this.update);
-			this.update();
-		}
+		$("#inputText").markdown({
+			autofocus:true,
+			resize:"both",
+			hiddenButtons:"cmdPreview",
+			onChange: function(e) {
+				$('#text-preview').html(markdown.toHTML($('#inputText').val()));
+			},
+			onShow: function(e) {
+				this.onChange(e);
+			}
+		});
 		var text = $('#inputText').val();
 		function save() {
 			if(text != $('#inputText').val()) {
@@ -72,6 +76,5 @@
 			}
 			setTimeout(function() { save(); }, 10000);
 		}
-		new Editor($('#inputText'), $('#text-preview'));
 		save();
 	</script>
