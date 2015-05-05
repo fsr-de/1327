@@ -1,0 +1,25 @@
+{% extends 'base_with_sidebar.html' %}
+{% load i18n %}
+
+{% block title %}
+	{% blocktrans count counter=2 %}Minutes{% plural %}Minutes{% endblocktrans %}
+{% endblock %}
+
+{% block sidebar %}
+<ul>
+	{% for year in years %}
+	<li><a href="#year{{ year.year }}">{{ year.year }}</a></li>
+	{% endfor %}
+</ul>
+{% endblock %}
+
+{% block content %}
+{% for year in years %}
+<h2 id="year{{ year.year }}">{{ year.year }}</h2>
+<ul>
+	{% for m in year.minutes %}
+	<li><a href="{{ m.get_url }}">{{ m.title}}</a></li>
+	{% endfor %}
+</ul>
+{% endfor %}
+{% endblock %}
