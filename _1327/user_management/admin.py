@@ -62,15 +62,17 @@ class UserProfileAdmin(UserAdmin):
 	list_filter = ('is_admin',)
 	fieldsets = (
 		(None, {'fields': ('username', 'email', 'password')}),
-		('Personal info', {'fields': ('first_name','last_name',)}),
-		('Permissions', {'fields': ('is_admin','is_superuser', 'groups', 'user_permissions',)}),
+		('Personal info', {'fields': ('first_name', 'last_name',)}),
+		('Permissions', {'fields': ('is_admin', 'is_superuser', 'groups', 'user_permissions',)}),
 	)
 	# add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
 	# overrides get_fieldsets to use this attribute when creating a user.
 	add_fieldsets = (
-		(None, {
-			'classes': ('wide',),
-			'fields': ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')}
+		(
+			None, {
+				'classes': ('wide',),
+				'fields': ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')
+			}
 		),
 	)
 	search_fields = ('username',)
@@ -87,9 +89,11 @@ class GroupAdminForm(forms.ModelForm):
 		based on: https://djangosnippets.org/snippets/2452/
 
 	"""
-	users = forms.ModelMultipleChoiceField(queryset=UserProfile.objects.all(),
-										   widget=FilteredSelectMultiple(_('Users'), False),
-										   required=False)
+	users = forms.ModelMultipleChoiceField(
+		queryset=UserProfile.objects.all(),
+		widget=FilteredSelectMultiple(_('Users'), False),
+		required=False
+	)
 
 	class Meta:
 		exclude = []
@@ -111,9 +115,11 @@ class GroupAdminForm(forms.ModelForm):
 			group.user_set = self.cleaned_data['users']
 		else:
 			old_save_m2m = self.save_m2m
+
 			def new_save_m2m():
 				old_save_m2m()
 				group.user_set = self.cleaned_data['users']
+
 			self.save_m2m = new_save_m2m
 		return group
 

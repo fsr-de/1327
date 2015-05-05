@@ -2,10 +2,10 @@ from django_webtest import WebTest
 
 from .models import UserProfile
 
+
 class UsecaseTests(WebTest):
 	fixtures = ['usecase-tests']
 	extra_environ = {'HTTP_ACCEPT_LANGUAGE': 'en'}
-	
 
 	def test_login(self):
 		page = self.app.get(("/login"), user="")
@@ -20,7 +20,6 @@ class UsecaseTests(WebTest):
 		login_form['password'] = "test"
 
 		self.assertEqual(login_form.submit().status_code, 302)
-
 
 	def test_name(self):
 		user = UserProfile.objects.get(username='noname')

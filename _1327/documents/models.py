@@ -17,7 +17,7 @@ class Document(PolymorphicModel):
 	title = models.CharField(max_length=255)
 	url_title = models.SlugField()
 	text = models.TextField()
-	initial = models.BooleanField(default=True) # whether the document was just created and not yet manually saved
+	initial = models.BooleanField(default=True)  # whether the document was just created and not yet manually saved
 
 	VIEW_PERMISSION_NAME = DOCUMENT_VIEW_PERMISSION_NAME
 

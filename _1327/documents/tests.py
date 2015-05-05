@@ -14,7 +14,6 @@ from .models import Document, Attachment
 
 
 class TestRevertion(WebTest):
-
 	csrf_checks = False
 
 	def setUp(self):
@@ -68,8 +67,8 @@ class TestRevertion(WebTest):
 		self.assertEqual(versions[0].object.text, "text")
 		self.assertEqual(versions[0].revision.comment, 'reverted to revision "test version"')
 
-class TestAutosave(WebTest):
 
+class TestAutosave(WebTest):
 	csrf_checks = False
 
 	def setUp(self):
@@ -106,17 +105,17 @@ class TestAutosave(WebTest):
 		self.assertEqual(form.get('text').value, 'text')
 
 		# if loading autosave text should be AUTO
-		response = self.app.get(reverse('information_pages:edit', args=[document.url_title]), {'restore' : ''}, user=self.user)
+		response = self.app.get(reverse('information_pages:edit', args=[document.url_title]), {'restore': ''}, user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.form
 		self.assertEqual(form.get('text').value, 'AUTO')
 
 		# second autosave AUTO2
-		response = self.app.post(reverse('information_pages:autosave', args=[document.url_title]), {'text': 'AUTO2', 'title': form.get('title').value, 'comment' : ''}, user=self.user, xhr=True)
+		response = self.app.post(reverse('information_pages:autosave', args=[document.url_title]), {'text': 'AUTO2', 'title': form.get('title').value, 'comment': ''}, user=self.user, xhr=True)
 		self.assertEqual(response.status_code, 200)
 
 		# if loading autosave text should be AUTO2
-		response = self.app.get(reverse('information_pages:edit', args=[document.url_title]), {'restore' : ''}, user=self.user)
+		response = self.app.get(reverse('information_pages:edit', args=[document.url_title]), {'restore': ''}, user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.form
 		self.assertEqual(form.get('text').value, 'AUTO2')
@@ -249,55 +248,65 @@ class TestAttachments(WebTest):
 		# and neither see the corresponding page
 		normal_user = UserProfile.objects.create_user("normal", "test", "normal@test.test")
 
-		response = self.app.get(reverse('information_pages:attachments', args=[self.document.url_title]),
-									user=normal_user,
-									expect_errors=True)
+		response = self.app.get(
+			reverse('information_pages:attachments', args=[self.document.url_title]),
+			user=normal_user,
+			expect_errors=True
+		)
 		self.assertEqual(response.status_code, 403)
 
-		response = self.app.post(reverse('information_pages:attachments', args=[self.document.url_title]),
-									content_type='multipart/form-data',
-									upload_files=upload_files,
-									user=normal_user,
-									expect_errors=True)
+		response = self.app.post(
+			reverse('information_pages:attachments', args=[self.document.url_title]),
+			content_type='multipart/form-data',
+			upload_files=upload_files,
+			user=normal_user,
+			expect_errors=True
+		)
 		self.assertEqual(response.status_code, 403)
 
 		# test that user who is allowed to view the document may not add attachments to it
 		# and neither see the corresponding page
 		assign_perm("view_informationdocument", normal_user, self.document)
 
-		response = self.app.get(reverse('information_pages:attachments', args=[self.document.url_title]),
-									user=normal_user,
-									expect_errors=True)
+		response = self.app.get(
+			reverse('information_pages:attachments', args=[self.document.url_title]),
+			user=normal_user,
+			expect_errors=True
+		)
 		self.assertEqual(response.status_code, 403)
 
-		response = self.app.post(reverse('information_pages:attachments', args=[self.document.url_title]),
-									content_type='multipart/form-data',
-									upload_files=upload_files,
-									user=normal_user,
-									expect_errors=True)
+		response = self.app.post(
+			reverse('information_pages:attachments', args=[self.document.url_title]),
+			content_type='multipart/form-data',
+			upload_files=upload_files,
+			user=normal_user,
+			expect_errors=True
+		)
 		self.assertEqual(response.status_code, 403)
 
 		# test that member of group who has according permissions is allowed to upload attachments
 		# and to see the corresponding page
-		response = self.app.get(reverse('information_pages:attachments', args=[self.document.url_title]),
-									user=self.group_user)
+		response = self.app.get(reverse('information_pages:attachments', args=[self.document.url_title]), user=self.group_user)
 		self.assertEqual(response.status_code, 200)
 
-		response = self.app.post(reverse('information_pages:attachments', args=[self.document.url_title]),
-									content_type='multipart/form-data',
-									upload_files=upload_files,
-									user=self.group_user)
+		response = self.app.post(
+			reverse('information_pages:attachments', args=[self.document.url_title]),
+			content_type='multipart/form-data',
+			upload_files=upload_files,
+			user=self.group_user
+		)
 		self.assertEqual(response.status_code, 200)
 
 		# test that superuser is allowed to upload attachments and to see the corresponding page
-		response = self.app.get(reverse('information_pages:attachments', args=[self.document.url_title]),
-									user=self.user)
+		response = self.app.get(reverse('information_pages:attachments', args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		response = self.app.post(reverse('information_pages:attachments', args=[self.document.url_title]),
-									content_type='multipart/form-data',
-									upload_files=upload_files,
-									user=self.user)
+		response = self.app.post(
+			reverse('information_pages:attachments', args=[self.document.url_title]),
+			content_type='multipart/form-data',
+			upload_files=upload_files,
+			user=self.user
+		)
 		self.assertEqual(response.status_code, 200)
 
 	def test_delete_attachment(self):
@@ -316,37 +325,48 @@ class TestAttachments(WebTest):
 		self.assertEqual(response.status_code, 404, msg="Requests that are not AJAX should return a 404 error")
 
 		response = self.app.post(reverse('documents:delete_attachment'), params=params, expect_errors=True, xhr=True)
-		self.assertEqual(response.status_code, 403,
-						msg="If users have no permissions they should not be able to delete an attachment")
+		self.assertEqual(
+			response.status_code,
+			403,
+			msg="If users have no permissions they should not be able to delete an attachment"
+		)
 
 		# try to delete an attachment as user with no permissions
 		normal_user = UserProfile.objects.create_user("normal", "test", "normal@test.test")
-		response = self.app.post(reverse('documents:delete_attachment'), params=params, expect_errors=True, xhr=True,
-								user=normal_user)
-		self.assertEqual(response.status_code, 403,
-						msg="If users have no permissions they should not be able to delete an attachment")
+		response = self.app.post(reverse('documents:delete_attachment'), params=params, expect_errors=True, xhr=True, user=normal_user)
+		self.assertEqual(
+			response.status_code,
+			403,
+			msg="If users have no permissions they should not be able to delete an attachment"
+		)
 
 		# try to delete an attachment as user with wrong permissions
 		assign_perm(InformationDocument.get_view_permission(), normal_user, self.document)
-		response = self.app.post(reverse('documents:delete_attachment'), params=params, expect_errors=True, xhr=True,
-								user=normal_user)
-		self.assertEqual(response.status_code, 403,
-						msg="If users has no permissions they should not be able to delete an attachment")
+		response = self.app.post(reverse('documents:delete_attachment'), params=params, expect_errors=True, xhr=True, user=normal_user)
+		self.assertEqual(
+			response.status_code,
+			403,
+			msg="If users has no permissions they should not be able to delete an attachment"
+		)
 
 		# try to delete an attachment as user with correct permissions
-		response = self.app.post(reverse('documents:delete_attachment'), params=params, xhr=True,
-								user=self.group_user)
-		self.assertEqual(response.status_code, 200,
-						msg="Users with the correct permissions for a document should be able to delete an attachment")
+		response = self.app.post(reverse('documents:delete_attachment'), params=params, xhr=True, user=self.group_user)
+		self.assertEqual(
+			response.status_code,
+			200,
+			msg="Users with the correct permissions for a document should be able to delete an attachment"
+		)
 
 		# re create the attachment
 		self.attachment.save()
 
 		# try to delete an attachment as superuser
-		response = self.app.post(reverse('documents:delete_attachment'), params=params, xhr=True,
-								user=self.user)
-		self.assertEqual(response.status_code, 200,
-						msg="Users with the correct permissions for a document should be able to delete an attachment")
+		response = self.app.post(reverse('documents:delete_attachment'), params=params, xhr=True, user=self.user)
+		self.assertEqual(
+			response.status_code,
+			200,
+			msg="Users with the correct permissions for a document should be able to delete an attachment"
+		)
 
 	def test_view_attachment(self):
 		params = {
@@ -365,29 +385,46 @@ class TestAttachments(WebTest):
 		normal_user = UserProfile.objects.create_user("normal", "test", "normal@test.test")
 		assign_perm('change_informationdocument', normal_user, self.document)
 
-		response = self.app.get(reverse('documents:download_attachment'), params=params, expect_errors=True,
-								user=normal_user)
+		response = self.app.get(reverse('documents:download_attachment'), params=params, expect_errors=True, user=normal_user)
 		self.assertEqual(response.status_code, 403, msg="Should be forbidden as user has insufficient permissions")
 
 		# grant the correct permission to the user an try again
 		assign_perm(InformationDocument.get_view_permission(), normal_user, self.document)
 
 		response = self.app.get(reverse('documents:download_attachment'), params=params, user=normal_user)
-		self.assertEqual(response.status_code, 200,
-						msg="Users with sufficient permissions should be able to download an attachment")
-		self.assertEqual(response.body.decode('utf-8'), self.content,
-						msg="An attachment that has been downloaded should contain its original content")
+		self.assertEqual(
+			response.status_code,
+			200,
+			msg="Users with sufficient permissions should be able to download an attachment"
+		)
+		self.assertEqual(
+			response.body.decode('utf-8'),
+			self.content,
+			msg="An attachment that has been downloaded should contain its original content"
+		)
 
 		# try the same with a user that is in a group having the correct permission
 		response = self.app.get(reverse('documents:download_attachment'), params=params, user=self.group_user)
-		self.assertEqual(response.status_code, 200,
-						msg="Users with sufficient permissions should be able to download an attachment")
-		self.assertEqual(response.body.decode('utf-8'), self.content,
-						msg="An attachment that has been downloaded should contain its original content")
+		self.assertEqual(
+			response.status_code,
+			200,
+			msg="Users with sufficient permissions should be able to download an attachment"
+		)
+		self.assertEqual(
+			response.body.decode('utf-8'),
+			self.content,
+			msg="An attachment that has been downloaded should contain its original content"
+		)
 
 		# make sure that a superuser is always allowed to download an attachment
 		response = self.app.get(reverse('documents:download_attachment'), params=params, user=self.user)
-		self.assertEqual(response.status_code, 200,
-						msg="Users with sufficient permissions should be able to download an attachment")
-		self.assertEqual(response.body.decode('utf-8'), self.content,
-						msg="An attachment that has been downloaded should contain its original content")
+		self.assertEqual(
+			response.status_code,
+			200,
+			msg="Users with sufficient permissions should be able to download an attachment"
+		)
+		self.assertEqual(
+			response.body.decode('utf-8'),
+			self.content,
+			msg="An attachment that has been downloaded should contain its original content"
+		)
