@@ -80,10 +80,8 @@ div.title {
 }
 
 .gradient {
-	background: -webkit-linear-gradient(left, @hpi-yellow 0%, @hpi-orange 50%, @hpi-red 100%); /* For Safari 5.1 to 6.0 */
-	background: -o-linear-gradient(left, @hpi-yellow 0%, @hpi-orange 50%, @hpi-red 100%); /* For Opera 11.1 to 12.0 */
-	background: -moz-linear-gradient(left, @hpi-yellow 0%, @hpi-orange 50%, @hpi-red 100%); /* For Firefox 3.6 to 15 */
-	background: linear-gradient(left, @hpi-yellow 0%, @hpi-orange 50%, @hpi-red 100%); /* Standard syntax (must be last) */
+	#gradient.horizontal-three-colors(@hpi-yellow, @hpi-orange, 50%, @hpi-red);
+	background-repeat: repeat-y;
 }
 
 @media (min-width: @grid-float-breakpoint) {
@@ -134,10 +132,6 @@ ul.subnav li a {
 	}
 }
 
-.pull-right {
-	padding-right: 0px !important;
-}
-
 section#content {
 	margin-bottom: 50px;
 	padding-left: 30px;
@@ -160,12 +154,10 @@ section#content {
 .messages {
 	margin-top: 10px;
 }
-.alert {
+.messages .alert {
 	margin: 0;
-	padding: 8px;
 }
 .alert-dismissable .close {
-	right: 2px;
 	color: @gray-darker;
 }
 
