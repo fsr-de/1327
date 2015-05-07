@@ -31,6 +31,9 @@ def mark_selected(request, menu_item):
 	if current_view == item_view:
 		menu_item.selected = True
 		return True
+	if item_view.startswith('admin:') and current_view.startswith('admin:'):
+		menu_item.selected = True
+		return True
 
 def can_create_informationpage(request):
 	return {'CAN_CREATE_INFORMATIONPAGE': request.user.has_perm("information_pages.add_informationdocument")}

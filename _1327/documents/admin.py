@@ -14,7 +14,7 @@ class DocumentAdmin(GuardedModelAdmin, reversion.VersionAdmin, PolymorphicParent
 		(InformationDocument, InformationDocumentAdmin),
 	)
 
-	list_display = ('author', 'title', 'text')
+	list_display = ('title', 'author')
 
 admin.site.register(Document, DocumentAdmin)
 
