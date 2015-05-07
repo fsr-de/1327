@@ -45,6 +45,10 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
 
 	objects = UserManager()
 
+	class Meta:
+		verbose_name = _("User profile")
+		verbose_name_plural = _("User profiles")
+
 	def get_full_name(self):
 		if self.first_name and self.last_name:
 			return self.first_name + ' ' + self.last_name
