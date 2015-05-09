@@ -11,3 +11,5 @@ django-reversion >= 1.8.4
 django-guardian >= 1.2.5
 django-polymorphic >= 0.6.1
 django-sendfile >= 0.3.6
+
+Markdown >= 2.6.0
