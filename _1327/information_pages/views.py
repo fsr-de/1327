@@ -8,6 +8,8 @@ from django.forms.formsets import formset_factory
 from guardian.shortcuts import get_perms
 from guardian.models import Group
 from datetime import datetime
+import markdown
+from markdown.extensions.toc import TocExtension
 
 from _1327.documents.utils import handle_edit, prepare_versions, handle_autosave, handle_attachment
 from _1327.documents.models import Document
@@ -67,8 +69,13 @@ def versions(request, title):
 def view_information(request, title):
 	document = get_object_or_error(InformationDocument, request.user, [InformationDocument.get_view_permission()], url_title=title)
 
+	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2)])
+	text = md.convert(document.text)
+
 	return render(request, 'information_pages_base.html', {
 		'document': document,
+		'text': text,
+		'toc': md.toc,
 		'attachments': document.attachments.all(),
 		'active_page': 'view',
 	})

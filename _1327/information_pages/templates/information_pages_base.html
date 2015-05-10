@@ -10,6 +10,7 @@
 {% endblock %}
 
 {% block sidebar %}
+	{{ toc|safe }}
 	<dl class="meta-information">
 		<dt>{% trans "Author" %}</dt>
 		<dd>{{ document.author }}</dd>
@@ -31,7 +32,7 @@
 
 {% block content %}
 	{% block information_page_content %}
-		<div class="markdown-text">{{ document.text }}</div>
+		<div>{{ text|safe }}</div>
 		{% if attachments %}
 			<div class="divider"></div>
 			<h2>{% trans "Attachments" %}</h2>
@@ -43,17 +44,5 @@
 				</div>
 			{% endfor %}
 		{% endif %}
-	{% endblock %}
-{% endblock %}
-
-
-{% block scripts %}
-	{{ block.super }}
-	{% block information_pages_scripts %}
-		<script type="text/javascript" src="{% static 'js/markdown.js' %}"></script>
-		<script>
-			var markdownContainer = $('.markdown-text');
-			markdownContainer.html(markdown.toHTML(markdownContainer.text()));
-		</script>
 	{% endblock %}
 {% endblock %}
