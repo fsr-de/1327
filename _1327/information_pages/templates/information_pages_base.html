@@ -10,24 +10,26 @@
 {% endblock %}
 
 {% block sidebar %}
-	{{ toc|safe }}
 	<dl class="meta-information">
 		<dt>{% trans "Author" %}</dt>
 		<dd>{{ document.author }}</dd>
 		<dt>{% trans "Created" %}</dt>
-		<dd>{{ document.created }}</dd>
+		<dd>{{ document.created|date:"d. M Y, H:i" }}</dd>
 	</dl>
+	<div class="divider"></div>
 	{% block information_page_nav %}
 		{% get_obj_perms request.user for document as "document_perms" %}
 		{% if "change_informationdocument" in document_perms %}
-			<div class="divider"></div>
 			<a class="btn btn-sm btn-sidebar {% if active_page == 'view' %}btn-warning{% else %}btn-default{% endif %}" href="{% url 'information_pages:view_information' document.url_title %}" role="tab">{% trans "View" %}</a>
 			<a class="btn btn-sm btn-sidebar {% if active_page == 'edit' %}btn-warning{% else %}btn-default{% endif %}" href="{% url 'information_pages:edit' document.url_title %}" role="tab">{% trans "Edit" %}</a>
 			<a class="btn btn-sm btn-sidebar {% if active_page == 'attachments' %}btn-warning{% else %}btn-default{% endif %}" href="{% url 'information_pages:attachments' document.url_title %}" role="tab">{% trans "Attachments" %}</a>
 			<a class="btn btn-sm btn-sidebar {% if active_page == 'permissions' %}btn-warning{% else %}btn-default{% endif %}" href="{% url 'information_pages:permissions' document.url_title %}" role="tab">{% trans "Permissions" %}</a>
 			<a class="btn btn-sm btn-sidebar {% if active_page == 'versions' %}btn-warning{% else %}btn-default{% endif %}" href="{% url 'information_pages:versions' document.url_title %}" role="tab">{% trans "Versions" %}</a>
+			<div class="divider"></div>
 		{% endif %}
 	{% endblock %}
+	<p class="toc-heading">{% trans "Table of Contents" %}</p>
+	{{ toc|safe }}
 {% endblock %}
 
 {% block content %}
@@ -45,4 +47,17 @@
 			{% endfor %}
 		{% endif %}
 	{% endblock %}
+{% endblock %}
+
+
+{% block scripts %}
+	{{ block.super }}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			// add link text to title of all elements in toc to enable tooltips with full text
+			$('.toc a').each(function() {
+				this.title = this.text;
+			});
+		});
+	</script>
 {% endblock %}
