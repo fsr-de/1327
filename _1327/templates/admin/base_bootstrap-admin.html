@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block rawcontent %}
+{{ block.super }}
+
+{% load admin_static bootstrap_admin_template_tags i18n %}{% load firstof from future %}
+
+<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static 'admin/css/base.css' %}{% endblock %}" />
+{% block extrastyle %}{% endblock %}
+
+<div class="container-fluid">
+	<div class="row">
+		{% block content_container %}
+			<div id="content" class="{% if is_displaying_menu %}col-xs-6 col-xs-offset-6 col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2{% else %}col-sm-12{% endif %} main {% block coltype %}colM{% endblock %}">
+				{% block breadcrumbs %}
+					<ol class="breadcrumb">
+						<li class="home">
+							<a href="{% url 'admin:index' %}" title="{% trans 'Home' %}"><span class="glyphicon glyphicon-home"></span></a>
+						</li>
+						<li class="active">{% if title %}{{ title }}{% endif %}</li>
+					</ol>
+				{% endblock %}
+
+				{% block messages %}
+					{% if messages %}
+						{% for message in messages %}
+							<div role="alert" class="messagelist alert alert-{% if message.tags == 'info' %}success{% else %}{{ message.tags }}{% endif %} fade in">
+								<button data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span><span class="sr-only">{% trans "Close" %}</span></button>
+								{{ message|capfirst }}
+							</div>
+						{% endfor %}
+					{% endif %}
+				{% endblock messages %}
+
+				{% block content %}
+					{% block object-tools %}{% endblock %}
+					{{ content }}
+				{% endblock %}
+			</div>
+		{% endblock content_container %}
+	</div>
+</div>
+
+{% block bootstrap_admin_js %}
+	<script src="{% static 'bootstrap_admin/js/bootstrap.min.js' %}"></script>
+	<script src="{% static 'bootstrap_admin/js/base.js' %}"></script>
+{% endblock bootstrap_admin_js %}
+
+{% block js %}{% endblock js %}
+
+{% endblock %}
