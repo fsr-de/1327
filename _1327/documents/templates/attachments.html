@@ -69,9 +69,7 @@
 					<div class="modal-title">{% trans "Please Confirm" %}</div>
 				</div>
 				<div class="modal-body">
-					{% blocktrans %}
-					Do you really want to delete the Attachment <span id="attachment-name"></span>?
-					{% endblocktrans %}
+					{% blocktrans with name='<strong id="attachment-name"></strong>' %}Do you really want to delete the Attachment {{ name }}?{% endblocktrans %}
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-primary" id="accept-delete">{% trans "Yes" %}</button>
@@ -85,7 +83,7 @@
 		$('#confirmAttachmentDeleteModal').on('show.bs.modal', function (event){
 			var button = $(event.relatedTarget);
 			var input = button.closest('tr').find('input.attachmentinput');
-			$('#attachment-name').html(button.data['displayname']);
+			$('#attachment-name').text(button.data('displayname'));
             var deleteButton = $('#accept-delete');
             deleteButton.off('click');
 			deleteButton.on('click', function (event){
