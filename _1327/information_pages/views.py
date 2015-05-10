@@ -15,14 +15,16 @@ from _1327.documents.forms import PermissionForm
 from _1327.information_pages.models import InformationDocument
 from _1327.user_management.shortcuts import get_object_or_error
 
+
 def create(request):
 	if request.user.has_perm("information_pages.add_informationdocument"):
-		title = _("New Page from {}").format(str(datetime.now()));
+		title = _("New Page from {}").format(str(datetime.now()))
 		url_title = slugify(title)
 		document, created = InformationDocument.objects.get_or_create(author=request.user, url_title=url_title, title=title)
 		return edit(request, url_title)
 	else:
 		return HttpResponseForbidden()
+
 
 def edit(request, title):
 	document = get_object_or_error(InformationDocument, request.user, ['information_pages.change_informationdocument'], url_title=title)

@@ -80,6 +80,7 @@ def handle_autosave(request, document):
 			temporary_document_text.text = cleaned_data['text']
 			temporary_document_text.save()
 
+
 def prepare_versions(document):
 	versions = reversion.get_for_object(document).reverse()
 

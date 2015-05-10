@@ -17,7 +17,6 @@ class TestDocument(TestCase):
 	def setUp(self):
 		self.user = UserProfile.objects.create_user(username="testuser", email="test@test.de", password="top_secret")
 		self.user.save()
-		
 
 	def test_slugification(self):
 		document = InformationDocument(title="titlea", text="text", author=self.user)
@@ -25,7 +24,7 @@ class TestDocument(TestCase):
 		document.save()
 		self.assertEqual(document.url_title, "titlea")
 
-		document.title="bla-keks-kekskeks"
+		document.title = "bla-keks-kekskeks"
 		document.save()
 		self.assertEqual(document.url_title, "bla-keks-kekskeks")
 
@@ -54,7 +53,6 @@ class TestDocumentWeb(WebTest):
 
 
 class TestEditor(WebTest):
-
 	csrf_checks = False
 
 	def setUp(self):
@@ -66,7 +64,6 @@ class TestEditor(WebTest):
 
 		self.document = InformationDocument(title="title", text="text", author=self.user)
 		self.document.save()
-
 
 	def test_get_editor(self):
 		response = self.app.get(reverse('information_pages:edit', args=[self.document.url_title]), status=403)
@@ -83,7 +80,7 @@ class TestEditor(WebTest):
 		form.set('title', 'new-title')
 		response = form.submit('submit')
 		self.assertRedirects(response, reverse('information_pages:edit', args=['new-title']))
-		
+
 		document = Document.objects.get(url_title='new-title')
 		self.assertEqual(document.url_title, 'new-title')
 
@@ -133,9 +130,7 @@ class TestEditor(WebTest):
 		self.assertEqual(response.status_code, 200)
 
 
-
 class TestVersions(WebTest):
-
 	csrf_checks = False
 
 	def setUp(self):
@@ -305,8 +300,8 @@ class TestPermissions(WebTest):
 		response = self.app.get(reverse('information_pages:create'))
 		self.assertEqual(response.status_code, 200)
 
-class TestNewPage(WebTest):
 
+class TestNewPage(WebTest):
 	csrf_checks = False
 
 	def setUp(self):
@@ -339,4 +334,3 @@ class TestNewPage(WebTest):
 		self.assertEqual(document.title, text)
 		self.assertEqual(document.text, text)
 		self.assertEqual(versions[0].revision.comment, text)
-

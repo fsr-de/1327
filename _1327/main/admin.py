@@ -22,7 +22,7 @@ class MenuItemAdminForm(forms.ModelForm):
 
 	def clean(self):
 		if 'link' in self.cleaned_data and self.cleaned_data['link'] and\
-				'document' in self.cleaned_data and self.cleaned_data['document']:
+			'document' in self.cleaned_data and self.cleaned_data['document']:
 			raise ValidationError(_('You are only allowed to define one of Document and Link'))
 
 		return self.cleaned_data

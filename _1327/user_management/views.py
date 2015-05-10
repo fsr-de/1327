@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from .forms import LoginForm
 
+
 def login(request):
 	if request.method == 'POST':
 		form = LoginForm(request.POST)
@@ -19,6 +20,7 @@ def login(request):
 	return render(request, "login.html", {
 		'form': form
 	})
+
 
 def logout(request):
 	auth_logout(request)
