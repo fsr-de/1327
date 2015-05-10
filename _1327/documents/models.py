@@ -12,7 +12,7 @@ DOCUMENT_VIEW_PERMISSION_NAME = 'view_document'
 
 @reversion.register
 class Document(PolymorphicModel):
-
+	created = models.DateTimeField(auto_now_add=True)
 	author = models.ForeignKey(UserProfile, related_name='documents')
 	title = models.CharField(max_length=255)
 	url_title = models.SlugField()

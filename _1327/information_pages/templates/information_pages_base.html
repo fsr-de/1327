@@ -10,9 +10,12 @@
 {% endblock %}
 
 {% block sidebar %}
-	<div class="meta-information">
-		{% trans "Author" %}: {{ document.author }}
-	</div>
+	<dl class="meta-information">
+		<dt>{% trans "Author" %}</dt>
+		<dd>{{ document.author }}</dd>
+		<dt>{% trans "Created" %}</dt>
+		<dd>{{ document.created }}</dd>
+	</dl>
 	{% block information_page_nav %}
 		{% get_obj_perms request.user for document as "document_perms" %}
 		{% if "change_informationdocument" in document_perms %}
