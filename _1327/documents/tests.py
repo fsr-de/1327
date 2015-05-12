@@ -1,4 +1,3 @@
-import tempfile
 from django.contrib.auth.models import Group
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
@@ -6,9 +5,11 @@ from django.db import transaction
 from django.test import TestCase
 from django_webtest import WebTest
 from guardian.shortcuts import get_perms_for_model, assign_perm, get_perms, remove_perm
+from model_mommy import mommy
 import reversion
-from _1327.information_pages.models import InformationDocument
+import tempfile
 
+from _1327.information_pages.models import InformationDocument
 from _1327.user_management.models import UserProfile
 from .models import Document, Attachment
 
@@ -131,7 +132,7 @@ class TestSignals(TestCase):
 		# create a new document for every subclass of document
 		# and see whether the url_title is automatically created
 		for obj_id, subclass in enumerate(Document.__subclasses__()):
-			new_document = subclass.objects.create(title="test_{}".format(obj_id), author=self.user)
+			new_document = mommy.make(subclass, title="test_{}".format(obj_id), author=self.user)
 			self.assertEqual(new_document.url_title, "test_{}".format(obj_id))
 
 	def test_group_permission_hook(self):
@@ -148,7 +149,7 @@ class TestSignals(TestCase):
 				assign_perm(permission_name, group)
 
 			# test whether the permission hook works
-			test_object = subclass.objects.create(title="test", author=self.user)
+			test_object = mommy.make(subclass, title="test", author=self.user)
 			user_permissions = get_perms(group, test_object)
 			self.assertNotEqual(len(user_permissions), 0)
 
