@@ -27,7 +27,6 @@ class UserManager(BaseUserManager):
 			last_name=last_name
 		)
 		user.is_superuser = True
-		user.is_admin = True
 		user.save()
 		return user
 
@@ -38,7 +37,6 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
 	first_name = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("First name"))
 	last_name = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Last name"))
 	is_active = models.BooleanField(default=True)
-	is_admin = models.BooleanField(default=False)
 
 	USERNAME_FIELD = 'username'
 	REQUIRED_FIELDS = []
@@ -63,4 +61,4 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
 		return self.get_full_name()
 
 	def is_staff(self):
-		return self.is_admin
+		return self.is_superuser

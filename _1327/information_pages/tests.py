@@ -59,7 +59,6 @@ class TestEditor(WebTest):
 		self.user = UserProfile.objects.create_superuser(username="testuser", email="test@test.de", password="top_secret")
 		self.user.is_verified = True
 		self.user.is_active = True
-		self.user.is_admin = True
 		self.user.save()
 
 		self.document = InformationDocument(title="title", text="text", author=self.user)
@@ -137,7 +136,6 @@ class TestVersions(WebTest):
 		self.user = UserProfile.objects.create_superuser(username="testuser", email="test@test.de", password="top_secret")
 		self.user.is_verified = True
 		self.user.is_active = True
-		self.user.is_admin = True
 		self.user.save()
 
 		self.document = InformationDocument(title="title", text="text", author=self.user)
@@ -308,7 +306,6 @@ class TestNewPage(WebTest):
 		self.user = UserProfile.objects.create_superuser(username="testuser", email="test@test.de", password="top_secret")
 		self.user.is_verified = True
 		self.user.is_active = True
-		self.user.is_admin = True
 		self.user.save()
 
 	def test_save_new_page(self):

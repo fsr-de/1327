@@ -20,7 +20,6 @@ class TestRevertion(WebTest):
 		self.user = UserProfile.objects.create_superuser('test', 'test', 'test@test.test', 'test', 'test')
 		self.user.is_active = True
 		self.user.is_verified = True
-		self.user.is_admin = True
 		self.user.save()
 
 		document = Document(title="title", text="text", author=self.user)
@@ -75,7 +74,6 @@ class TestAutosave(WebTest):
 		self.user = UserProfile.objects.create_superuser('test', 'test', 'test@test.test', 'test', 'test')
 		self.user.is_active = True
 		self.user.is_verified = True
-		self.user.is_admin = True
 		self.user.save()
 
 		document = InformationDocument(title="title", text="text", author=self.user)
