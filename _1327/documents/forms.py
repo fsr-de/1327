@@ -19,9 +19,8 @@ class StrippedCharField(forms.CharField):
 
 
 class TextForm(forms.Form):
-
 	title = StrippedCharField(label=_('Title'), max_length=255, required=True)
-	text = StrippedCharField(label=_('Text'), required=True)
+	text = StrippedCharField(widget=forms.Textarea, label=_('Text'), required=True)
 	comment = StrippedCharField(label=_('Comment'), max_length=255, required=True)
 
 
