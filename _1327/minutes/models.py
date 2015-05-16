@@ -5,6 +5,7 @@ from datetime import datetime
 
 import reversion
 
+from _1327.documents.forms import DocumentForm
 from _1327.documents.models import Document
 from _1327.user_management.models import UserProfile
 
@@ -42,3 +43,10 @@ class MinutesDocument(Document):
 		return reverse('minutes:edit', args=(self.url_title, ))
 
 reversion.register(MinutesDocument, follow=["document_ptr"])
+
+
+class MinutesDocumentForm(DocumentForm):
+	class Meta(DocumentForm.Meta):
+		model = MinutesDocument
+
+MinutesDocument.Form = MinutesDocumentForm
