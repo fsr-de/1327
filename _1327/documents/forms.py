@@ -60,6 +60,8 @@ class PermissionForm(forms.Form):
 
 
 class AttachmentForm(forms.ModelForm):
+	displayname = StrippedCharField(max_length=255, required=False)
+
 	class Meta:
 		model = Attachment
 		exclude = ('document',)

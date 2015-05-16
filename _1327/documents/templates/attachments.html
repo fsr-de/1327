@@ -1,34 +1,20 @@
 {% load i18n %}
 {% load filename %}
+{% load bootstrap3 %}
 
 {% block information_page_content %}
 	<h2>{% trans "Add an attachment" %}</h2>
 
-	{% if form.errors %}
-		<div class="alert alert-danger alert-margin-bottom" role="alert">{% trans "Please provide the missing information" %}</div>
-	{% endif %}
-
-	<form class="form-horizontal" action="{{ edit_url }}" method="post" role="form" enctype="multipart/form-data">
+	<form action="{{ edit_url }}" method="post" class="form-horizontal" role="form" enctype="multipart/form-data">
+		{% bootstrap_form form layout='horizontal' %}
 		{% csrf_token %}
-		<div class="form-group {% if 'displayname' in form.errors %}has-error{% endif %}">
-			<label for="inputFile" class="col-sm-2 control-label">{% trans "Display name" %}</label>
-			<div class="col-sm-9">
-				<input type="text" class="form-control" name="displayname" value="{{ form.data.displayname }}" placeholder="{% trans "Optional display name..." %}">
-			</div>
-		</div>
-		<div class="form-group {% if 'file' in form.errors %}has-error{% endif %}">
-			<label for="inputFile" class="col-sm-2 control-label">{% trans "Attachment" %}</label>
-			<div class="col-sm-9">
-				<input type="file" class="form-control" name="file" value="{{ form.data.file }}" placeholder="{% trans "Your Attachment..." %}">
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-offset-2 col-sm-4">
+		{% buttons %}
+			<div class="col-md-offset-2 col-md-9">
 				<button type="submit" class="btn btn-primary">
-					<i class="glyphicon glyphicon-floppy-disk"></i> {% trans 'Save' %}
+					{% bootstrap_icon "floppy-disk" %} {% trans 'Save' %}
 				</button>
 			</div>
-		</div>
+		{% endbuttons %}
 	</form>
 
 	<h2>{% trans "Already uploaded attachments" %}</h2>
