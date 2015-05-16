@@ -8,11 +8,13 @@ from .models import Attachment
 
 class StrippedCharField(forms.CharField):
 	"""
-		CharField that does not allow to save string that only contain whitespaces
+		CharField that saves trimmed strings
 	"""
 
 	def to_python(self, value):
 		super(StrippedCharField, self).to_python(value)
+		if value is None:
+			return None
 		return value.strip()
 
 
