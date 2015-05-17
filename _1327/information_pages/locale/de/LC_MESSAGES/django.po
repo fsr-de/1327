@@ -1,0 +1,80 @@
+# 1327 documents application: German translation.
+# Copyright © 2015 fsr-itse
+# This file is distributed under the same license as the 1327 package.
+# Sebastian Brückner <sebbrueckner@gmail.com>, 2015.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-05-18 20:30+0200\n"
+"PO-Revision-Date: 2015-05-18 20:30+0200\n"
+"Last-Translator: Sebastian Brückner <sebbrueckner@gmail.com>\n"
+"Language-Team: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: models.py:15
+msgid "Information document"
+msgstr "Informationsseite"
+
+#: models.py:16
+msgid "Information documents"
+msgstr "Informationsseiten"
+
+#: templates/information_pages/admin_app_name.html:2
+msgid "Information pages"
+msgstr "Informationsseiten"
+
+#: templates/information_pages_base.html:14
+msgid "Author"
+msgstr "Autor"
+
+#: templates/information_pages_base.html:16
+msgid "Created"
+msgstr "Erstellt"
+
+#: templates/information_pages_base.html:23
+msgid "View"
+msgstr "Anzeigen"
+
+#: templates/information_pages_base.html:24
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: templates/information_pages_base.html:25
+#: templates/information_pages_base.html:40
+msgid "Attachments"
+msgstr "Anhänge"
+
+#: templates/information_pages_base.html:26
+msgid "Permissions"
+msgstr "Berechtigungen"
+
+#: templates/information_pages_base.html:27
+msgid "Versions"
+msgstr "Versionen"
+
+#: templates/information_pages_base.html:31
+msgid "Table of Contents"
+msgstr "Inhaltsverzeichnis"
+
+#: views.py:23
+msgid "New Page from {}"
+msgstr "Neue Seite vom {}"
+
+#: views.py:35
+msgid "Successfully saved changes"
+msgstr "Änderungen erfolgreich gespeichert"
+
+#: views.py:106
+msgid "Permissions have been changed successfully."
+msgstr "Berechtigungen erfolgreich gespeichert"
+
+#: views.py:122
+msgid "File has been uploaded successfully!"
+msgstr "Datei erfolgreich hochgeladen"

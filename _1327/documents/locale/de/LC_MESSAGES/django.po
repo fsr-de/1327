@@ -1,0 +1,209 @@
+# 1327 documents application: German translation.
+# Copyright © 2015 fsr-itse
+# This file is distributed under the same license as the 1327 package.
+# Sebastian Brückner <sebbrueckner@gmail.com>, 2015.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-05-18 20:30+0200\n"
+"PO-Revision-Date: 2015-05-18 20:30+0200\n"
+"Last-Translator: Sebastian Brückner <sebbrueckner@gmail.com>\n"
+"Language-Team: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: forms.py:21 templates/editor.html:18
+msgid "Title"
+msgstr "Titel"
+
+#: forms.py:22 templates/editor.html:24
+msgid "Text"
+msgstr "Text"
+
+#: forms.py:23 templates/editor.html:30
+msgid "Comment"
+msgstr "Kommentar"
+
+#: models.py:25 models.py:53
+msgid "Document"
+msgstr "Dokument"
+
+#: models.py:26 templates/documents/admin_app_name.html:2
+msgid "Documents"
+msgstr "Dokumente"
+
+#: models.py:52 templates/attachments.html:14 templates/attachments.html.py:38
+msgid "Display name"
+msgstr "Angezeigter Name"
+
+#: models.py:54 templates/attachments.html:40
+msgid "Created"
+msgstr "Erstellt"
+
+#: models.py:55
+msgid "File"
+msgstr "Datei"
+
+#: models.py:58 templates/attachments.html:20
+msgid "Attachment"
+msgstr "Anhang"
+
+#: models.py:59
+msgid "Attachments"
+msgstr "Anhänge"
+
+#: templates/attachments.html:5
+msgid "Add an attachment"
+msgstr "Anhang hinzufügen"
+
+#: templates/attachments.html:8 templates/editor.html:8
+msgid "Please provide the missing information"
+msgstr "Bitte fülle die übrigen Felder aus"
+
+#: templates/attachments.html:16
+msgid "Optional display name..."
+msgstr "Optionaler Anzeigename"
+
+#: templates/attachments.html:22
+msgid "Your Attachment..."
+msgstr "Anhang"
+
+#: templates/attachments.html:28 templates/editor.html:38
+#: templates/permission_editor.html:33
+msgid "Save"
+msgstr "Sichern"
+
+#: templates/attachments.html:34
+msgid "Already uploaded attachments"
+msgstr "Bereits hochgeladene Anhänge"
+
+#: templates/attachments.html:39
+msgid "Filename"
+msgstr "Dateiname"
+
+#: templates/attachments.html:53 templates/permission_editor.html:16
+msgid "Delete"
+msgstr "Löschen"
+
+#: templates/attachments.html:69
+msgid "Please Confirm"
+msgstr "Bitte bestätigen"
+
+#: templates/attachments.html:72
+#, python-format
+msgid "Do you really want to delete the Attachment %(name)s?"
+msgstr "Willst du den Anhang %(name)s wirklich löschen?"
+
+#: templates/attachments.html:75
+msgid "Yes"
+msgstr "Ja"
+
+#: templates/attachments.html:76
+msgid "No"
+msgstr "Nein"
+
+#: templates/diffviewer.html:10
+msgid "Diff page versions"
+msgstr "Versions-Unterschiede"
+
+#: templates/diffviewer.html:29
+msgid "Revert to this version"
+msgstr "Version wiederherstellen"
+
+#: templates/diffviewer_scripts.html:9 templates/diffviewer_scripts.html:17
+msgid "Close"
+msgstr "Schließen"
+
+#: templates/diffviewer_scripts.html:10
+msgid "Do you really want to revert to this version?"
+msgstr "Willst du diese Version wirklich wiederherstellen?"
+
+#: templates/diffviewer_scripts.html:13
+msgid "Version you want to revert to:"
+msgstr "Wiederherzustellende Version:"
+
+#: templates/diffviewer_scripts.html:16
+msgid "Revert"
+msgstr "Wiederherstellen"
+
+#: templates/diffviewer_scripts.html:47
+msgid "An error occurred. The revision could not be reverted."
+msgstr ""
+"Ein Fehler ist aufgetreten. Die Version konnte nicht wiederhergestellt "
+"werden."
+
+#: templates/diffviewer_scripts.html:75
+msgid "Version A"
+msgstr "Version A"
+
+#: templates/diffviewer_scripts.html:76
+msgid "Version B"
+msgstr "Version B"
+
+#: templates/editor.html:5
+msgid "Edit page"
+msgstr "Seite bearbeiten"
+
+#: templates/editor.html:12
+#, python-format
+msgid "This document was autosaved on %(date)s\""
+msgstr "Dieses Dokument wurde am %(date)s automatisch gespeichert"
+
+#: templates/editor.html:12
+msgid "you can restore unsaved changes:"
+msgstr "du kannst ungespeicherte Änderungen wiederherstellen:"
+
+#: templates/editor.html:12
+msgid "Click here"
+msgstr "Hier klicken"
+
+#: templates/editor.html:20
+msgid "Your Title..."
+msgstr "Titel"
+
+#: templates/editor.html:26
+msgid "Your Text..."
+msgstr "Text"
+
+#: templates/editor.html:32
+msgid "Created document"
+msgstr "Dokument erstellt"
+
+#: templates/editor.html:32
+msgid "What did you do?"
+msgstr "Was hast du geändert?"
+
+#: templates/editor.html:44
+msgid "Preview"
+msgstr "Vorschau"
+
+#: templates/permission_editor.html:4
+msgid "Edit Permissions"
+msgstr "Berechtigungen bearbeiten"
+
+#: templates/permission_editor.html:13
+msgid "Role"
+msgstr "Rolle"
+
+#: templates/permission_editor.html:14
+msgid "View"
+msgstr "Anzeigen"
+
+#: templates/permission_editor.html:15
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: views.py:70
+#, python-brace-format
+msgid "reverted to revision \"{revision_comment}\""
+msgstr "Version \"{revision_comment}\" wiederhergestellt"
+
+#: views.py:86
+msgid "Successfully deleted Attachment!"
+msgstr "Anhang erfolgreich gelöscht!"

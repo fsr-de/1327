@@ -11,9 +11,9 @@
 	<form class="form-horizontal" action="{{ edit_url }}" method="post" role="form" enctype="multipart/form-data">
 		{% csrf_token %}
 		<div class="form-group {% if 'displayname' in form.errors %}has-error{% endif %}">
-			<label for="inputFile" class="col-sm-2 control-label">{% trans "Displayname" %}</label>
+			<label for="inputFile" class="col-sm-2 control-label">{% trans "Display name" %}</label>
 			<div class="col-sm-9">
-				<input type="text" class="form-control" name="displayname" value="{{ form.data.displayname }}" placeholder="{% trans "Optional displayname..." %}">
+				<input type="text" class="form-control" name="displayname" value="{{ form.data.displayname }}" placeholder="{% trans "Optional display name..." %}">
 			</div>
 		</div>
 		<div class="form-group {% if 'file' in form.errors %}has-error{% endif %}">
@@ -35,7 +35,7 @@
 	<div class="col-sm-12">
 		<table class="table table-striped">
 			<thead>
-				<th>{% trans "Displayname" %}</th>
+				<th>{% trans "Display name" %}</th>
 				<th>{% trans "Filename" %}</th>
 				<th>{% trans "Created" %}</th>
 			</thead>
