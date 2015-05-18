@@ -18,7 +18,7 @@ class DocumentAdmin(GuardedModelAdmin, reversion.VersionAdmin, PolymorphicParent
 		(MinutesDocument, MinutesDocumentAdmin),
 	)
 
-	list_display = ('title', 'author')
+	list_display = ('title', 'author', 'url_title')
 
 admin.site.register(Document, DocumentAdmin)
 
