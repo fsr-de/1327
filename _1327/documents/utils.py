@@ -7,6 +7,14 @@ import reversion
 from _1327.documents.models import TemporaryDocumentText
 from _1327.documents.forms import TextForm, AttachmentForm
 
+def get_new_autosaved_pages_for_user(user):
+	autosaved_pages = []
+	all_temp_documents = TemporaryDocumentText.objects.all()
+	for temp_document in all_temp_documents:
+		document = temp_document.document
+		if len(reversion.get_for_object(document)) == 0 and document.author == user:
+			autosaved_pages.append(document)
+	return autosaved_pages
 
 def handle_edit(request, document):
 	if request.method == 'POST':
