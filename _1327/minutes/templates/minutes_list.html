@@ -18,7 +18,7 @@
 <h2 id="year{{ year.year }}">{{ year.year }}</h2>
 <ul>
 	{% for m in year.minutes %}
-	<li><a href="{{ m.get_url }}">{{ m.title}}</a></li>
+	<li><a href="{{ m.get_view_url }}">{{ m.title}}</a></li>
 	{% endfor %}
 </ul>
 {% endfor %}
