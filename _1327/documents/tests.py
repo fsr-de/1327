@@ -239,7 +239,7 @@ class TestSubclassConstraints(TestCase):
 				continue
 
 			msg = "All non-abstract subclasses of Document should override the get_url method"
-			self.assertIsNot(subclass.get_url, Document.get_url, msg=msg)
+			self.assertIsNot(subclass.get_view_url, Document.get_view_url, msg=msg)
 
 	def test_view_permissions(self):
 		for subclass in Document.__subclasses__():

@@ -45,9 +45,9 @@ class TestDocumentWeb(WebTest):
 		assign_perm(InformationDocument.VIEW_PERMISSION_NAME, author, document)
 		self.assertTrue(author.has_perm(InformationDocument.VIEW_PERMISSION_NAME, document))
 
-		self.assertTrue(document.get_url(), msg="InformationDocument should return a URL")
+		self.assertTrue(document.get_view_url(), msg="InformationDocument should return a URL")
 
-		response = self.app.get(document.get_url(), user=author)
+		response = self.app.get(document.get_view_url(), user=author)
 
 		self.assertIn(title.encode("utf-8"), response.body, msg="The displayed page should contain the document's title")
 

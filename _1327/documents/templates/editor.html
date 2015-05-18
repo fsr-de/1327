@@ -9,14 +9,14 @@
 	{% endif %}
 
     {% if form.autosave %}
-		<div class="alert alert-danger alert-margin-bottom" role="alert">{% blocktrans with date=form.autosave_date %}This document was autosaved on {{ date }}"{% endblocktrans %}, {% trans "you can restore unsaved changes:" %} <a href="{{ edit_url }}?restore" class="btn-sm btn-default" role="button">{% trans "Click here" %}</a></div>
+		<div class="alert alert-danger alert-margin-bottom" role="alert">{% blocktrans with date=form.autosave_date %}This document was autosaved on {{ date }}"{% endblocktrans %}, {% trans "you can restore unsaved changes:" %} <a href="{{ document.get_edit_url }}?restore" class="btn-sm btn-default" role="button">{% trans "Click here" %}</a></div>
 	{% endif %}
 
 	{% for new_autosaved_page in new_autosaved_pages %}
-		<div class="alert alert-danger alert-margin-bottom" role="alert">{% trans "There is a new document autosaved on" %} {{ new_autosaved_page.created }}{% trans ", you can restore this unsaved page:" %} <a href="{% url 'information_pages:edit' new_autosaved_page.url_title %}?restore" class="btn-sm btn-default" role="button">{% trans "Click here" %}</a></div>
+		<div class="alert alert-danger alert-margin-bottom" role="alert">{% trans "There is a new document autosaved on" %} {{ new_autosaved_page.created }}{% trans ", you can restore this unsaved page:" %} <a href="{{ new_autosaved_page.get_edit_url }}?restore" class="btn-sm btn-default" role="button">{% trans "Click here" %}</a></div>
 	{%  endfor %}
 
-	<form class="form-horizontal" action="{{ edit_url }}" method="post" role="form" id="document-form">
+	<form class="form-horizontal" action="{{ document.get_edit_url }}" method="post" role="form" id="document-form">
 		{% csrf_token %}
 		<div class="form-group {% if 'title' in form.errors %}has-error{% endif %}">
 			<label for="inputTitle" class="col-sm-2 control-label">{% trans "Title" %}</label>

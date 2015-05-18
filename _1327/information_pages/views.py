@@ -39,7 +39,6 @@ def edit(request, title, new_autosaved_pages=[]):
 	else:
 		return render(request, "information_pages_edit.html", {
 			'document': document,
-			'edit_url': reverse('information_pages:edit', args=[document.url_title]),
 			'form': form,
 			'active_page': 'edit',
 			'creation': (len(reversion.get_for_object(document)) == 0),

@@ -31,7 +31,10 @@ class Document(PolymorphicModel):
 	def __str__(self):
 		return self.title
 
-	def get_url(self):
+	def get_view_url(self):
+		raise NotImplementedError()
+
+	def get_edit_url(self):
 		raise NotImplementedError()
 
 	@classmethod
