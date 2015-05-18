@@ -10,7 +10,6 @@ urlpatterns = patterns('_1327',
 	url(r"^minutes/", include('_1327.minutes.urls', namespace='minutes')),
 	url(r"^login$", 'user_management.views.login'),
 	url(r"^logout$", 'user_management.views.logout'),
-	url(r'^page_admin/', include('_1327.page_admin.urls')),
 
 	url(r'^admin/', include(admin.site.urls)),
 )
