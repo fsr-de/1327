@@ -12,7 +12,7 @@ import markdown
 import reversion
 from markdown.extensions.toc import TocExtension
 
-from _1327.documents.utils import handle_edit, prepare_versions, handle_autosave, handle_attachment, get_new_autosaved_pages_for_user
+from _1327.documents.utils import handle_edit, prepare_versions, handle_autosave, handle_attachment, get_new_autosaved_pages_for_user, delete_old_empty_pages
 from _1327.documents.models import Document
 from _1327.documents.forms import PermissionForm
 from _1327.information_pages.models import InformationDocument
@@ -21,6 +21,7 @@ from _1327.user_management.shortcuts import get_object_or_error
 
 def create(request):
 	if request.user.has_perm("information_pages.add_informationdocument"):
+		delete_old_empty_pages()
 		title = _("New Page from {}").format(str(datetime.now()))
 		url_title = slugify(title)
 		InformationDocument.objects.get_or_create(author=request.user, url_title=url_title, title=title)
