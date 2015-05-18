@@ -1,0 +1,69 @@
+{% extends 'base_with_sidebar.html' %}
+{% load static %}
+{% load compile_static %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% load guardian_tags %}
+
+{% block title %}
+	{{ document.title }}
+{% endblock %}
+
+{% block sidebar %}
+	<dl class="meta-information">
+		<dt>{% trans "Moderator" %}</dt>
+		<dd>{{ document.moderator }}</dd>
+		<dt>{% trans "Minute taker" %}</dt>
+		<dd>{{ document.author }}</dd>
+		<dt>{% trans "Participants" %}</dt>
+		{% for participant in document.participants.all %}
+		<dd>{{ participant }}</dd>
+		{% endfor %}
+		<dt>{% trans "Created" %}</dt>
+		<dd>{{ document.created|date:"d. M Y, H:i" }}</dd>
+	</dl>
+	<div class="divider"></div>
+	{% block minutes_nav %}
+		{% get_obj_perms request.user for document as "document_perms" %}
+		{% if "change_minutesdocument" in document_perms %}
+			<a class="btn btn-sm btn-sidebar {% if active_page == 'view' %}btn-warning{% else %}btn-default{% endif %}" href="{% url 'minutes:view' document.url_title %}" role="tab">{% trans "View" %}</a>
+			<a class="btn btn-sm btn-sidebar {% if active_page == 'edit' %}btn-warning{% else %}btn-default{% endif %}" href="{% url 'minutes:edit' document.url_title %}" role="tab">{% trans "Edit" %}</a>
+			<a class="btn btn-sm btn-sidebar {% if active_page == 'attachments' %}btn-warning{% else %}btn-default{% endif %}" href="{% url 'minutes:attachments' document.url_title %}" role="tab">{% trans "Attachments" %}</a>
+			<a class="btn btn-sm btn-sidebar {% if active_page == 'permissions' %}btn-warning{% else %}btn-default{% endif %}" href="{% url 'minutes:permissions' document.url_title %}" role="tab">{% trans "Permissions" %}</a>
+			<a class="btn btn-sm btn-sidebar {% if active_page == 'versions' %}btn-warning{% else %}btn-default{% endif %}" href="{% url 'minutes:versions' document.url_title %}" role="tab">{% trans "Versions" %}</a>
+			<div class="divider"></div>
+		{% endif %}
+	{% endblock %}
+	<p class="toc-heading">{% trans "Table of Contents" %}</p>
+	{{ toc|safe }}
+{% endblock %}
+
+{% block content %}
+	{% block minutes_content %}
+		<div>{{ text|safe }}</div>
+		{% if attachments %}
+			<div class="divider"></div>
+			<h2>{% trans "Attachments" %}</h2>
+			{% for attachment in attachments %}
+				<div class="row">
+					<div class="col-sm-4">
+						<a href="{% url 'documents:download_attachment' %}?attachment_id={{ attachment.id }}">{{ attachment.displayname }}</a>
+					</div>
+				</div>
+			{% endfor %}
+		{% endif %}
+	{% endblock %}
+{% endblock %}
+
+
+{% block scripts %}
+	{{ block.super }}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			// add link text to title of all elements in toc to enable tooltips with full text
+			$('.toc a').each(function() {
+				this.title = this.text;
+			});
+		});
+	</script>
+{% endblock %}

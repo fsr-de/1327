@@ -1,0 +1,11 @@
+{% extends 'minutes_base.html' %}
+{% load static %}
+
+{% block minutes_content %}
+	{% include 'diffviewer.html' %}
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+{% include 'diffviewer_scripts.html' %}
+{% endblock %}
