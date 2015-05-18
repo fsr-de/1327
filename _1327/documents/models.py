@@ -1,5 +1,6 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 from polymorphic import PolymorphicModel
 
 import reversion
@@ -21,6 +22,8 @@ class Document(PolymorphicModel):
 	VIEW_PERMISSION_NAME = DOCUMENT_VIEW_PERMISSION_NAME
 
 	class Meta:
+		verbose_name = _("Document")
+		verbose_name_plural = _("Documents")
 		permissions = (
 			(DOCUMENT_VIEW_PERMISSION_NAME, 'User/Group is allowed to view that document'),
 		)
@@ -46,8 +49,11 @@ class TemporaryDocumentText(models.Model):
 
 
 class Attachment(models.Model):
+	displayname = models.TextField(max_length=255, blank=True, default="", verbose_name=_("Display name"))
+	document = models.ForeignKey(Document, related_name='attachments', verbose_name=_("Document"))
+	created = models.DateTimeField(auto_now=True, verbose_name=_("Created"))
+	file = models.FileField(upload_to="documents/%y/%m/", verbose_name=_("File"))
 
-	displayname = models.TextField(max_length=255, blank=True, default="")
-	document = models.ForeignKey(Document, related_name='attachments')
-	created = models.DateTimeField(auto_now=True)
-	file = models.FileField(upload_to="documents/%y/%m/")
+	class Meta:
+		verbose_name = _("Attachment")
+		verbose_name_plural = _("Attachments")

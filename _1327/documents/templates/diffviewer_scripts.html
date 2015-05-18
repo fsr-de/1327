@@ -44,7 +44,7 @@
 				location.reload()
 			.fail (error) ->
 				console.log(error)
-				alert('{% trans "An error occurred. The revision could not be reverted" %}')
+				alert('{% trans "An error occurred. The revision could not be reverted." %}')
 				$('#confirmation-modal').modal 'toggle'
 
 		$('.version-control').change (event) ->

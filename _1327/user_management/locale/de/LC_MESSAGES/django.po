@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-07 14:18+0200\n"
-"PO-Revision-Date: 2015-05-07 14:18+0200\n"
+"POT-Creation-Date: 2015-05-18 20:30+0200\n"
+"PO-Revision-Date: 2015-05-18 20:30+0200\n"
 "Last-Translator: Sebastian Brückner <sebbrueckner@gmail.com>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: admin.py:14 forms.py:7
+#: admin.py:14 forms.py:8
 msgid "Password"
 msgstr "Passwort"
 
@@ -30,19 +30,19 @@ msgstr "Passwortbestätigung"
 msgid "Passwords don't match"
 msgstr "Passwörter stimmen nicht überein"
 
-#: admin.py:91
+#: admin.py:94
 msgid "Users"
 msgstr "Benutzer"
 
-#: forms.py:6 models.py:36
+#: forms.py:7 models.py:35
 msgid "User name"
 msgstr "Benutzername"
 
-#: forms.py:23
+#: forms.py:24
 msgid "Please enter a correct username and password."
 msgstr "Bitte gib einen korrekten Benutzernamen und Passwort ein."
 
-#: forms.py:25
+#: forms.py:26
 msgid "This account is inactive."
 msgstr "Dieser Account ist deaktiviert."
 
@@ -50,23 +50,23 @@ msgstr "Dieser Account ist deaktiviert."
 msgid "Users must have a username"
 msgstr "Benutzer brauchen einen Benutzernamen"
 
-#: models.py:37
+#: models.py:36
 msgid "Email address"
 msgstr "E-Mail-Adresse"
 
-#: models.py:38
+#: models.py:37
 msgid "First name"
 msgstr "Vorname"
 
-#: models.py:39
+#: models.py:38
 msgid "Last name"
 msgstr "Nachname"
 
-#: models.py:49
+#: models.py:47
 msgid "User profile"
 msgstr "Benutzerprofil"
 
-#: models.py:50
+#: models.py:48
 msgid "User profiles"
 msgstr "Benutzerprofile"
 
@@ -74,10 +74,14 @@ msgstr "Benutzerprofile"
 msgid "Login"
 msgstr "Login"
 
-#: views.py:14
+#: templates/user_management/admin_app_name.html:2
+msgid "User management"
+msgstr "Benutzerverwaltung"
+
+#: views.py:15
 msgid "You have been successfully logged in."
 msgstr "Du hast dich erfolgreich eingeloggt."
 
-#: views.py:25
+#: views.py:27
 msgid "You have been successfully logged out."
 msgstr "Du hast dich erfolgreich ausgeloggt."
