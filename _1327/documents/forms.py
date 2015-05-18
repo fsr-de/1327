@@ -8,18 +8,19 @@ from .models import Attachment
 
 class StrippedCharField(forms.CharField):
 	"""
-		CharField that does not allow to save string that only contain whitespaces
+		CharField that saves trimmed strings
 	"""
 
 	def to_python(self, value):
 		super(StrippedCharField, self).to_python(value)
+		if value is None:
+			return None
 		return value.strip()
 
 
 class TextForm(forms.Form):
-
 	title = StrippedCharField(label=_('Title'), max_length=255, required=True)
-	text = StrippedCharField(label=_('Text'), required=True)
+	text = StrippedCharField(widget=forms.Textarea, label=_('Text'), required=True)
 	comment = StrippedCharField(label=_('Comment'), max_length=255, required=True)
 
 
@@ -59,6 +60,8 @@ class PermissionForm(forms.Form):
 
 
 class AttachmentForm(forms.ModelForm):
+	displayname = StrippedCharField(max_length=255, required=False)
+
 	class Meta:
 		model = Attachment
 		exclude = ('document',)

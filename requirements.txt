@@ -3,7 +3,7 @@ django-static-precompiler >=0.7
 # Required by django-static-precompiler:
 six
 
-django-bootstrap3 >=4.8.2
+django-bootstrap3 >= 5.4.0
 django-admin-bootstrapped >= 2.4, < 2.5
 webtest >= 2.0.15
 django-webtest >= 1.7.7
