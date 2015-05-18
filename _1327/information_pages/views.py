@@ -9,9 +9,10 @@ from guardian.shortcuts import get_perms
 from guardian.models import Group
 from datetime import datetime
 import markdown
+import reversion
 from markdown.extensions.toc import TocExtension
 
-from _1327.documents.utils import handle_edit, prepare_versions, handle_autosave, handle_attachment
+from _1327.documents.utils import handle_edit, prepare_versions, handle_autosave, handle_attachment, get_new_autosaved_pages_for_user
 from _1327.documents.models import Document
 from _1327.documents.forms import PermissionForm
 from _1327.information_pages.models import InformationDocument
@@ -22,13 +23,14 @@ def create(request):
 	if request.user.has_perm("information_pages.add_informationdocument"):
 		title = _("New Page from {}").format(str(datetime.now()))
 		url_title = slugify(title)
-		document, created = InformationDocument.objects.get_or_create(author=request.user, url_title=url_title, title=title)
-		return edit(request, url_title, True)
+		InformationDocument.objects.get_or_create(author=request.user, url_title=url_title, title=title)
+		new_autosaved_pages = get_new_autosaved_pages_for_user(request.user);
+		return edit(request, url_title, new_autosaved_pages)
 	else:
 		return HttpResponseForbidden()
 
 
-def edit(request, title, creation=False):
+def edit(request, title, new_autosaved_pages=[]):
 	document = get_object_or_error(InformationDocument, request.user, ['information_pages.change_informationdocument'], url_title=title)
 	success, form = handle_edit(request, document)
 	if success:
@@ -37,10 +39,10 @@ def edit(request, title, creation=False):
 	else:
 		return render(request, "information_pages_edit.html", {
 			'document': document,
-			'edit_url': reverse('information_pages:edit', args=[document.url_title]),
 			'form': form,
 			'active_page': 'edit',
-			'creation': creation,
+			'creation': (len(reversion.get_for_object(document)) == 0),
+			'new_autosaved_pages' : new_autosaved_pages,
 		})
 
 

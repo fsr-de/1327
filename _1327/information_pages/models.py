@@ -18,7 +18,10 @@ class InformationDocument(Document):
 			(INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME, 'User/Group is allowed to view that document'),
 		)
 
-	def get_url(self):
+	def get_view_url(self):
 		return reverse('information_pages:view_information', args=(self.url_title, ))
+
+	def get_edit_url(self):
+		return reverse('information_pages:edit', args=(self.url_title, ))
 
 reversion.register(InformationDocument, follow=["document_ptr"])

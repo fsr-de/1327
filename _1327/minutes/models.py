@@ -35,7 +35,10 @@ class MinutesDocument(Document):
 			(MINUTES_VIEW_PERMISSION_NAME, 'User/Group is allowed to view those minutes'),
 		)
 
-	def get_url(self):
+	def get_view_url(self):
 		return reverse('minutes:view', args=(self.url_title, ))
+
+	def get_edit_url(self):
+		return reverse('minutes:edit', args=(self.url_title, ))
 
 reversion.register(MinutesDocument, follow=["document_ptr"])

@@ -1,3 +1,4 @@
+from django.utils.text import slugify
 from django.contrib.auth.models import Group
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
@@ -76,6 +77,7 @@ class TestAutosave(WebTest):
 		self.user.is_active = True
 		self.user.is_verified = True
 		self.user.save()
+		self.user2 = mommy.make(UserProfile, is_superuser=True)
 
 		document = InformationDocument(title="title", text="text", author=self.user)
 		with transaction.atomic(), reversion.create_revision():
@@ -118,6 +120,54 @@ class TestAutosave(WebTest):
 		self.assertEqual(response.status_code, 200)
 		form = response.form
 		self.assertEqual(form.get('text').value, 'AUTO2')
+
+	def test_autosave_newPage(self):
+		# create document
+		response = self.app.get(reverse('information_pages:create'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		form = response.form
+		url_title = slugify(form.get('title').value);
+
+		# autosave AUTO
+		response = self.app.post(reverse('information_pages:autosave', args=[url_title]), {'text': 'AUTO', 'title': form.get('title').value, 'comment': ''}, user=self.user, xhr=True)
+		self.assertEqual(response.status_code, 200)
+
+		# on the new page site should be a banner with a restore link
+		response = self.app.get(reverse('information_pages:create'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn((reverse('information_pages:edit', args=[url_title])+'?restore'), str(response.body))
+
+		# on the new page site should be a banner with a restore link but not for another user
+		response = self.app.get(reverse('information_pages:create'), user=self.user2)
+		self.assertEqual(response.status_code, 200)
+		self.assertNotIn((reverse('information_pages:edit', args=[url_title])+'?restore'), str(response.body))
+
+		# create second document
+		response = self.app.get(reverse('information_pages:create'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		form = response.form
+		url_title2 = slugify(form.get('title').value);
+
+		# autosave second document AUTO
+		response = self.app.post(reverse('information_pages:autosave', args=[url_title2]), {'text': 'AUTO', 'title': form.get('title').value, 'comment': ''}, user=self.user, xhr=True)
+		self.assertEqual(response.status_code, 200)
+
+		# on the new page site should be a banner with a restore link for both sites
+		response = self.app.get(reverse('information_pages:create'), user=self.user)
+		self.assertIn((reverse('information_pages:edit', args=[url_title])+'?restore'), str(response.body))
+		self.assertIn((reverse('information_pages:edit', args=[url_title2])+'?restore'), str(response.body))
+
+		# if not loading autosave text should be still empty
+		response = self.app.get(reverse('information_pages:edit', args=[url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		form = response.form
+		self.assertEqual(form.get('text').value, '')
+
+		# if loading autosave text should be AUTO
+		response = self.app.get(reverse('information_pages:edit', args=[url_title]), {'restore': ''}, user=self.user)
+		self.assertEqual(response.status_code, 200)
+		form = response.form
+		self.assertEqual(form.get('text').value, 'AUTO')
 
 
 class TestSignals(TestCase):
@@ -189,7 +239,7 @@ class TestSubclassConstraints(TestCase):
 				continue
 
 			msg = "All non-abstract subclasses of Document should override the get_url method"
-			self.assertIsNot(subclass.get_url, Document.get_url, msg=msg)
+			self.assertIsNot(subclass.get_view_url, Document.get_view_url, msg=msg)
 
 	def test_view_permissions(self):
 		for subclass in Document.__subclasses__():
