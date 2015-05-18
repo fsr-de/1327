@@ -23,7 +23,7 @@
 		<div class="form-group {% if 'text' in form.errors %}has-error{% endif %}">
 			<label for="inputText" class="col-sm-2 control-label">{% trans "Text" %}</label>
 			<div class="col-sm-9">
-				<textarea class="form-control" name="text" id="inputText" rows=20 placeholder="{% trans 'Your Text...' %}">{{ form.data.text }}</textarea>
+				<textarea name="text" id="inputText" rows=20 placeholder="{% trans 'Your Text...' %}">{{ form.data.text }}</textarea>
 			</div>
 		</div>
 		<div class="form-group {% if 'comment' in form.errors %}has-error{% endif %}">
