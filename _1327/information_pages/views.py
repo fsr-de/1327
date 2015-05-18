@@ -23,12 +23,12 @@ def create(request):
 		title = _("New Page from {}").format(str(datetime.now()))
 		url_title = slugify(title)
 		document, created = InformationDocument.objects.get_or_create(author=request.user, url_title=url_title, title=title)
-		return edit(request, url_title)
+		return edit(request, url_title, True)
 	else:
 		return HttpResponseForbidden()
 
 
-def edit(request, title):
+def edit(request, title, creation=False):
 	document = get_object_or_error(InformationDocument, request.user, ['information_pages.change_informationdocument'], url_title=title)
 	success, form = handle_edit(request, document)
 	if success:
@@ -40,6 +40,7 @@ def edit(request, title):
 			'edit_url': reverse('information_pages:edit', args=[document.url_title]),
 			'form': form,
 			'active_page': 'edit',
+			'creation': creation,
 		})
 
 
