@@ -49,6 +49,7 @@ INSTALLED_APPS = (
 	'_1327.information_pages',
 	'_1327.minutes',
 	'_1327.user_management',
+	'_1327.polls',
 )
 
 MIDDLEWARE_CLASSES = (

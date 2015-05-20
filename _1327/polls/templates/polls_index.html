@@ -1,0 +1,62 @@
+{% extends 'base_without_sidebar.html' %}
+
+{% load i18n %}
+
+{% block title %}
+	{% trans "Polls" %}
+{% endblock %}
+
+{% block content %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-title">
+                {% trans "Polls you can vote for" %}
+            </div>
+        </div>
+        {% if running_polls|length == 0 %}
+            <div class="panel-body">
+                <em>{% trans "There are no polls you can vote for." %}</em>
+            </div>
+        {% else %}
+            <table class="table table-striped">
+                <tr>
+                    <th>{% trans "Poll" %}</th>
+                    <th>{% trans "Open until" %}</th>
+                </tr>
+                {% for poll in running_polls %}
+                    <tr>
+                        <td><a href="{% url "polls:vote" poll.id %}">{{ poll.title }}</a></td>
+                        <td>{{ poll.end_date }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-title">
+                {% trans "Results of Polls" %}
+            </div>
+        </div>
+        {% if finished_polls|length == 0 %}
+        <div class="panel-body">
+            <em>{% trans "There are no results you can see." %}</em>
+        </div>
+        {% else %}
+        <table class="table table-striped">
+            <tr>
+                <th>{% trans "Question" %}</th>
+                <th>{% trans "End Date" %}</th>
+            </tr>
+            {% for poll in finished_polls %}
+                <tr>
+                    <td><a href="{% url "polls:results" poll.id %}">{{ poll.title }}</a></td>
+                    <td>{{ poll.end_date }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+    </div>
+
+{% endblock %}
