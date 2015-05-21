@@ -44,10 +44,10 @@
 				this.onChange(e);
 			}
 		});
-		var text = $('#inputText').val();
+		var text = $('#id_text').val();
 		function save() {
-			if(text != $('#inputText').val()) {
-				text = $('#inputText').val();
+			if(text != $('#id_text').val()) {
+				text = $('#id_text').val();
 
 				var form = $('#document-form');
 				var serializedData = form.serialize();
