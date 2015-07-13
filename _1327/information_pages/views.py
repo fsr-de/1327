@@ -35,7 +35,7 @@ def edit(request, title, new_autosaved_pages=[]):
 	success, form = handle_edit(request, document)
 	if success:
 		messages.success(request, _("Successfully saved changes"))
-		return HttpResponseRedirect(reverse('information_pages:edit', args=[document.url_title]))
+		return HttpResponseRedirect(reverse('information_pages:view_information', args=[document.url_title]))
 	else:
 		return render(request, "information_pages_edit.html", {
 			'document': document,
