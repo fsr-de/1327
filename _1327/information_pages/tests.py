@@ -78,7 +78,7 @@ class TestEditor(WebTest):
 		form.set('comment', 'changed title')
 		form.set('title', 'new-title')
 		response = form.submit('submit')
-		self.assertRedirects(response, reverse('information_pages:edit', args=['new-title']))
+		self.assertRedirects(response, reverse('information_pages:view_information', args=['new-title']))
 
 		document = Document.objects.get(url_title='new-title')
 		self.assertEqual(document.url_title, 'new-title')

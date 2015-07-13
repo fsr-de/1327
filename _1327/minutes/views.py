@@ -40,7 +40,7 @@ def edit(request, title):
 	success, form = handle_edit(request, document)
 	if success:
 		messages.success(request, _("Successfully saved changes"))
-		return HttpResponseRedirect(reverse('minutes:edit', args=[document.url_title]))
+		return HttpResponseRedirect(reverse('minutes:view', args=[document.url_title]))
 	else:
 		return render(request, "minutes_edit.html", {
 			'document': document,
