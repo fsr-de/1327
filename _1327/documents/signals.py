@@ -1,4 +1,5 @@
 from django.contrib.auth.models import Group
+from django.db.models import SlugField
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 from django.utils.text import slugify
@@ -17,7 +18,14 @@ def slugify_callback(sender, instance, *args, **kwargs):
 	if sender not in Document.__subclasses__():
 		return
 
-	instance.url_title = slugify(instance.title)
+	# get the max_length of a slug field as we need to make sure it is no longer than that
+	# as slugify is not doing that for us
+	for field in Document._meta.fields:
+		if isinstance(field, SlugField):
+			instance.url_title = slugify(instance.title)[:field.max_length]
+			return
+
+
 
 
 @receiver(post_save)

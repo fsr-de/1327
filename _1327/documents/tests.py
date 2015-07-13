@@ -1,4 +1,6 @@
 from django.utils.text import slugify
+import reversion
+import tempfile
 from django.contrib.auth.models import Group
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
@@ -7,8 +9,6 @@ from django.test import TestCase
 from django_webtest import WebTest
 from guardian.shortcuts import get_perms_for_model, assign_perm, get_perms, remove_perm
 from model_mommy import mommy
-import reversion
-import tempfile
 
 from _1327.information_pages.models import InformationDocument
 from _1327.user_management.models import UserProfile
@@ -19,12 +19,9 @@ class TestRevertion(WebTest):
 	csrf_checks = False
 
 	def setUp(self):
-		self.user = UserProfile.objects.create_superuser('test', 'test', 'test@test.test', 'test', 'test')
-		self.user.is_active = True
-		self.user.is_verified = True
-		self.user.save()
+		self.user = mommy.make(UserProfile, is_superuser=True)
 
-		document = Document(title="title", text="text", author=self.user)
+		document = mommy.prepare(Document, author=self.user, text="text")
 		with transaction.atomic(), reversion.create_revision():
 				document.save()
 				reversion.set_user(self.user)
@@ -73,13 +70,9 @@ class TestAutosave(WebTest):
 	csrf_checks = False
 
 	def setUp(self):
-		self.user = UserProfile.objects.create_superuser('test', 'test', 'test@test.test', 'test', 'test')
-		self.user.is_active = True
-		self.user.is_verified = True
-		self.user.save()
-		self.user2 = mommy.make(UserProfile, is_superuser=True)
+		self.user = mommy.make(UserProfile, is_superuser=True)
 
-		document = InformationDocument(title="title", text="text", author=self.user)
+		document = mommy.prepare(InformationDocument, author=self.user, text="text")
 		with transaction.atomic(), reversion.create_revision():
 				document.save()
 				reversion.set_user(self.user)
@@ -126,7 +119,7 @@ class TestAutosave(WebTest):
 		response = self.app.get(reverse('information_pages:create'), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.form
-		url_title = slugify(form.get('title').value);
+		url_title = slugify(form.get('title').value)
 
 		# autosave AUTO
 		response = self.app.post(reverse('information_pages:autosave', args=[url_title]), {'text': 'AUTO', 'title': form.get('title').value, 'comment': ''}, user=self.user, xhr=True)
@@ -137,8 +130,9 @@ class TestAutosave(WebTest):
 		self.assertEqual(response.status_code, 200)
 		self.assertIn((reverse('information_pages:edit', args=[url_title])+'?restore'), str(response.body))
 
+		user2 = mommy.make(UserProfile, is_superuser=True)
 		# on the new page site should be a banner with a restore link but not for another user
-		response = self.app.get(reverse('information_pages:create'), user=self.user2)
+		response = self.app.get(reverse('information_pages:create'), user=user2)
 		self.assertEqual(response.status_code, 200)
 		self.assertNotIn((reverse('information_pages:edit', args=[url_title])+'?restore'), str(response.body))
 
@@ -146,7 +140,7 @@ class TestAutosave(WebTest):
 		response = self.app.get(reverse('information_pages:create'), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.form
-		url_title2 = slugify(form.get('title').value);
+		url_title2 = slugify(form.get('title').value)
 
 		# autosave second document AUTO
 		response = self.app.post(reverse('information_pages:autosave', args=[url_title2]), {'text': 'AUTO', 'title': form.get('title').value, 'comment': ''}, user=self.user, xhr=True)
@@ -173,8 +167,7 @@ class TestAutosave(WebTest):
 class TestSignals(TestCase):
 
 	def setUp(self):
-		self.user = UserProfile.objects.create_superuser('test', 'test', 'test@test.test', 'test', 'test')
-		self.user.save()
+		self.user = mommy.make(UserProfile, is_superuser=True)
 
 	def test_slugify_hook(self):
 		# create a new document for every subclass of document
@@ -205,8 +198,8 @@ class TestSignals(TestCase):
 				self.assertIn(permission.codename, user_permissions)
 
 	def test_possibility_to_change_permission_for_groups(self):
-		group = Group.objects.create(name="FSR")
-		test_user = UserProfile.objects.create_user("test2", "test")
+		group = mommy.make(Group, name="FSR")
+		test_user = mommy.make(UserProfile)
 		test_user.groups.add(group)
 		test_user.save()
 
@@ -217,7 +210,7 @@ class TestSignals(TestCase):
 
 		# test whether we can remove a permission from the group
 		# the permission should not be added again
-		test_object = InformationDocument.objects.create(title="test", author=self.user)
+		test_object = mommy.make(InformationDocument, author=self.user)
 		self.assertTrue(test_user.has_perm(model_permissions[0].codename, test_object))
 		remove_perm(model_permissions[0].codename, group, test_object)
 		test_object.save()
@@ -262,24 +255,23 @@ class TestAttachments(WebTest):
 	csrf_checks = False
 
 	def setUp(self):
-		self.user = UserProfile.objects.create_superuser("test", "test", "test@test.test")
+		self.user = mommy.make(UserProfile, is_superuser=True)
 
-		self.group = Group.objects.create(name="testgroup")
+		self.group = mommy.make(Group, make_m2m=True)
 		for permission in get_perms_for_model(InformationDocument):
 			permission_name = "{}.{}".format(permission.content_type.app_label, permission.codename)
 			assign_perm(permission_name, self.group)
 		self.group.save()
 
-		self.group_user = UserProfile.objects.create_user("groupuser", "test", "test@test.test")
+		self.group_user = mommy.make(UserProfile)
 		self.group_user.groups.add(self.group)
 		self.group_user.save()
 
-		self.document = InformationDocument(author=self.user, title="test", text="blabla")
-		self.document.save()
+		self.document = mommy.make(InformationDocument, author=self.user)
 
 		self.content = "test content of test attachment"
 		attachment_file = ContentFile(self.content)
-		self.attachment = Attachment.objects.create(document=self.document)
+		self.attachment = mommy.make(Attachment, document=self.document)
 		self.attachment.file.save('temp.txt', attachment_file)
 		self.attachment.save()
 
@@ -295,7 +287,7 @@ class TestAttachments(WebTest):
 
 		# test that user who has no change permission on a document can not add an attachment
 		# and neither see the corresponding page
-		normal_user = UserProfile.objects.create_user("normal", "test", "normal@test.test")
+		normal_user = mommy.make(UserProfile)
 
 		response = self.app.get(
 			reverse('information_pages:attachments', args=[self.document.url_title]),
@@ -381,7 +373,7 @@ class TestAttachments(WebTest):
 		)
 
 		# try to delete an attachment as user with no permissions
-		normal_user = UserProfile.objects.create_user("normal", "test", "normal@test.test")
+		normal_user = mommy.make(UserProfile)
 		response = self.app.post(reverse('documents:delete_attachment'), params=params, expect_errors=True, xhr=True, user=normal_user)
 		self.assertEqual(
 			response.status_code,
@@ -431,7 +423,7 @@ class TestAttachments(WebTest):
 		self.assertEqual(response.status_code, 403, msg="Should be forbidden as user has insufficient permissions")
 
 		# test viewing an attachment using a user with insufficient permissions
-		normal_user = UserProfile.objects.create_user("normal", "test", "normal@test.test")
+		normal_user = mommy.make(UserProfile)
 		assign_perm('change_informationdocument', normal_user, self.document)
 
 		response = self.app.get(reverse('documents:download_attachment'), params=params, expect_errors=True, user=normal_user)
