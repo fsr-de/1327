@@ -98,7 +98,9 @@ def download_attachment(request):
 		return HttpResponseForbidden()
 
 	filename = os.path.join(settings.MEDIA_ROOT, attachment.file.name)
-	return sendfile(request, filename, attachment=True, attachment_filename=attachment.displayname)
+	is_attachment = not request.GET.get('embed', None)
+
+	return sendfile(request, filename, attachment=is_attachment, attachment_filename=attachment.displayname)
 
 
 def update_attachment_order(request):
@@ -116,3 +118,19 @@ def update_attachment_order(request):
 		attachment.index = index
 		attachment.save()
 	return HttpResponse()
+
+
+def get_attachments(request, document_id):
+	if not request.is_ajax():
+		raise Http404
+
+	document = Document.objects.get(pk=document_id)
+	if not document.can_be_changed_by(request.user):
+		return HttpResponseForbidden()
+
+	attachments = document.attachments.all()
+	data = {}
+	for attachment in attachments:
+		data[attachment.id] = attachment.displayname
+
+	return HttpResponse(json.dumps(data))

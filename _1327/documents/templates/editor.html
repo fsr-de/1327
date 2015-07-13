@@ -28,6 +28,25 @@
 	<div class="divider"></div>
 	<div id="text-preview"></div>
 
+	<div class="modal fade" id="selectImageAttachment" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<div class="modal-title">{% trans "Select Image:" %}</div>
+				</div>
+				<div class="modal-body">
+					<select class="form-control" id="attachmentModalSelect"></select>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" id="setImage">{% trans "OK" %}</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<!-- mandatory script include -->
 	<script type="text/javascript" src="{% static 'js/markdown.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/jquery.hotkeys.js' %}"></script>
@@ -36,13 +55,50 @@
 		$("#id_text").removeClass('form-control').markdown({
 			autofocus:true,
 			resize:"both",
-			hiddenButtons:"cmdPreview",
+			hiddenButtons: ["cmdPreview", "cmdImage"],
 			onChange: function(e) {
 				$('#text-preview').html(markdown.toHTML($('#id_text').val()));
 			},
 			onShow: function(e) {
 				this.onChange(e);
-			}
+			},
+			additionalButtons: [
+				[{
+					name: "ImageGroup",
+					data: [{
+						name: "cmdAddImage",
+						toggle: false,
+						title: "Add Image",
+						icon: "glyphicon glyphicon-picture",
+						callback: function (e) {
+							// get all attachments
+							$.get(
+								"{% url "documents:get_attachments" document.id %}",
+								{},
+								function (data, textStatus, jqXHR) {
+									var newOptions = JSON.parse(data);
+									var select = $('#attachmentModalSelect');
+									var options = select.prop('options');
+									$('option', select).remove();
+									$.each(newOptions, function (val, text) {
+										options[options.length] = new Option(text, val);
+									});
+							});
+							var modalItem = $('#selectImageAttachment');
+							modalItem.modal();
+							$('#setImage').on("click", function (event) {
+								var selectedAttachment = $('#attachmentModalSelect').val();
+								var chunk = "![Image Alt]({% url 'documents:download_attachment' %}?attachment_id=" + selectedAttachment + "&embed=True)";
+								e.replaceSelection(chunk);
+								var cursor = e.getSelection();
+
+								e.setSelection(cursor, cursor + chunk.length);
+								modalItem.modal('hide');
+							});
+						}
+					}]
+				}]
+			]
 		});
 		var text = $('#id_text').val();
 		function save() {
