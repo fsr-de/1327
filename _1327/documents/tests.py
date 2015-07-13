@@ -173,7 +173,7 @@ class TestSignals(TestCase):
 		# create a new document for every subclass of document
 		# and see whether the url_title is automatically created
 		for obj_id, subclass in enumerate(Document.__subclasses__()):
-			new_document = mommy.make(subclass, title="test_{}".format(obj_id), author=self.user)
+			new_document = mommy.make(subclass, title="test_{}".format(obj_id), url_title="", author=self.user)
 			self.assertEqual(new_document.url_title, "test_{}".format(obj_id))
 
 	def test_group_permission_hook(self):

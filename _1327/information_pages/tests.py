@@ -1,6 +1,7 @@
 from django.contrib.auth.models import Group
 from django.test import TestCase
 from django.core.urlresolvers import reverse
+from django.utils.text import slugify
 from django.db import transaction
 from django_webtest import WebTest
 from guardian.shortcuts import assign_perm, get_perms_for_model, remove_perm
@@ -24,7 +25,7 @@ class TestDocument(TestCase):
 		document.save()
 		self.assertEqual(document.url_title, "titlea")
 
-		document.title = "bla-keks-kekskeks"
+		document.url_title = "bla-keks-kekskeks"
 		document.save()
 		self.assertEqual(document.url_title, "bla-keks-kekskeks")
 
@@ -68,11 +69,12 @@ class TestEditor(WebTest):
 
 		form.set('comment', 'changed title')
 		form.set('title', 'new-title')
+		form.set('url_title', 'new-url-title')
 		response = form.submit('submit')
-		self.assertRedirects(response, reverse('information_pages:view_information', args=['new-title']))
+		self.assertRedirects(response, reverse('information_pages:view_information', args=['new-url-title']))
 
-		document = Document.objects.get(url_title='new-title')
-		self.assertEqual(document.url_title, 'new-title')
+		document = Document.objects.get(url_title='new-url-title')
+		self.assertEqual(document.url_title, 'new-url-title')
 
 	def test_editor_error(self):
 		for string in ['', ' ']:
@@ -153,6 +155,7 @@ class TestVersions(WebTest):
 		new_string = self.document.text + "\nHallo Bibi Blocksberg!!"
 		form.set('text', new_string)
 		form.set('comment', 'hallo Bibi Blocksberg')
+		form.set('url_title', 'bibi-blocksberg')
 		response = form.submit().follow()
 		self.assertEqual(response.status_code, 200)
 
@@ -301,6 +304,7 @@ class TestNewPage(WebTest):
 		form.set('text', text)
 		form.set('title', text)
 		form.set('comment', text)
+		form.set('url_title', slugify(text))
 		response = form.submit().follow()
 		self.assertEqual(response.status_code, 200)
 

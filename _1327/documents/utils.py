@@ -31,6 +31,7 @@ def handle_edit(request, document):
 		if form.is_valid():
 			cleaned_data = form.cleaned_data
 
+			document.url_title = cleaned_data['url_title']
 			document.author = request.user
 
 			# save the document and also save the user and the comment the user added
@@ -62,6 +63,7 @@ def handle_edit(request, document):
 		if 'restore' in request.GET and autosave is not None:
 			form_data = {
 				'text': autosave.text,
+				'url_title': document.url_title,
 			}
 			form = DocumentForm(initial=form_data, instance=document)
 		else:
