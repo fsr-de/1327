@@ -1,3 +1,4 @@
+import json
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, Http404
 from django.http import HttpResponse, HttpResponseServerError, HttpResponseBadRequest, HttpResponseForbidden
@@ -77,8 +78,7 @@ def delete_attachment(request):
 		attachment = Attachment.objects.get(id=request.POST['id'])
 		# check whether user has permission to change the document the attachment belongs to
 		document = attachment.document
-		class_name = document.__class__.__name__.lower()
-		if not request.user.has_perm('change_{}'.format(class_name), document):
+		if not document.can_be_changed_by(request.user):
 			return HttpResponseForbidden()
 
 		attachment.file.delete()
@@ -100,3 +100,20 @@ def download_attachment(request):
 
 	filename = os.path.join(settings.MEDIA_ROOT, attachment.file.name)
 	return sendfile(request, filename, attachment=True, attachment_filename=attachment.displayname)
+
+
+def update_attachment_order(request):
+	data = request.POST
+	if data is None or not request.is_ajax():
+		raise Http404
+
+	for pk, index in data._iteritems():
+		attachment = get_object_or_404(Attachment, pk=pk)
+		# check that user is allowed to make changes to attachment
+		document = attachment.document
+		if not document.can_be_changed_by(request.user):
+			return HttpResponseForbidden()
+
+		attachment.index = index
+		attachment.save()
+	return HttpResponse()

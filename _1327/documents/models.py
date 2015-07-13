@@ -44,6 +44,9 @@ class Document(PolymorphicModel):
 		permission = "{}.{}".format(app_label, klass.VIEW_PERMISSION_NAME)
 		return permission
 
+	def can_be_changed_by(self, user):
+		raise NotImplementedError
+
 
 class TemporaryDocumentText(models.Model):
 	text = models.TextField()
@@ -56,6 +59,8 @@ class Attachment(models.Model):
 	document = models.ForeignKey(Document, related_name='attachments', verbose_name=_("Document"))
 	created = models.DateTimeField(auto_now=True, verbose_name=_("Created"))
 	file = models.FileField(upload_to="documents/%y/%m/", verbose_name=_("File"))
+
+	index = models.IntegerField(verbose_name=_("ordering index"), default=0)
 
 	class Meta:
 		verbose_name = _("Attachment")

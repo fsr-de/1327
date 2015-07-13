@@ -83,7 +83,7 @@ def view(request, title):
 		'document': document,
 		'text': text,
 		'toc': md.toc,
-		'attachments': document.attachments.all(),
+		'attachments': document.attachments.all().order_by('index'),
 		'active_page': 'view',
 	})
 
@@ -132,6 +132,6 @@ def attachments(request, title):
 			'document': document,
 			'edit_url': reverse('minutes:attachments', args=[document.url_title]),
 			'form': form,
-			'attachments': document.attachments.all(),
+			'attachments': document.attachments.all().order_by('index'),
 			'active_page': 'attachments',
 		})
