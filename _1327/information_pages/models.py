@@ -24,5 +24,9 @@ class InformationDocument(Document):
 	def get_edit_url(self):
 		return reverse('information_pages:edit', args=(self.url_title, ))
 
+	def can_be_changed_by(self, user):
+		permission_name = 'change_informationdocument'
+		return user.has_perm(permission_name, self) or user.has_perm(permission_name)
+
 reversion.register(InformationDocument, follow=["document_ptr"])
 

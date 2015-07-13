@@ -42,6 +42,10 @@ class MinutesDocument(Document):
 	def get_edit_url(self):
 		return reverse('minutes:edit', args=(self.url_title, ))
 
+	def can_be_changed_by(self, user):
+		permission_name = 'change_minutesdocument'
+		return user.has_perm(permission_name, self) or user.has_perm(permission_name)
+
 reversion.register(MinutesDocument, follow=["document_ptr"])
 
 

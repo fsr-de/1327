@@ -44,6 +44,9 @@ class Document(PolymorphicModel):
 		permission = "{}.{}".format(app_label, klass.VIEW_PERMISSION_NAME)
 		return permission
 
+	def can_be_changed_by(self, user):
+		raise NotImplementedError
+
 
 class TemporaryDocumentText(models.Model):
 	text = models.TextField()
