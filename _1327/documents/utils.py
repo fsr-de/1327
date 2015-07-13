@@ -2,9 +2,11 @@ import json
 import re
 
 from django.db import transaction
+from django.conf import settings
+from django.utils import timezone
 import reversion
 
-from _1327.documents.models import TemporaryDocumentText
+from _1327.documents.models import Document, TemporaryDocumentText
 from _1327.documents.forms import DocumentForm, AttachmentForm
 
 def get_new_autosaved_pages_for_user(user):
@@ -15,6 +17,13 @@ def get_new_autosaved_pages_for_user(user):
 		if len(reversion.get_for_object(document)) == 0 and document.author == user:
 			autosaved_pages.append(document)
 	return autosaved_pages
+
+def delete_old_empty_pages():
+	all_documents = Document.objects.filter(created__lte = timezone.now() - settings.DELETE_EMPTY_PAGE_AFTER)
+	for document in all_documents:
+		if len(reversion.get_for_object(document)) == 0 and \
+			not TemporaryDocumentText.objects.filter(document=document).exists():
+				document.delete()
 
 def handle_edit(request, document):
 	if request.method == 'POST':

@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from datetime import timedelta
 
 BASE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "_1327")
 
@@ -28,6 +29,7 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
+DELETE_EMPTY_PAGE_AFTER = timedelta(hours=1)
 
 # Application definition
 
