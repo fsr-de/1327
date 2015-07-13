@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import Group
+from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from guardian.shortcuts import get_perms_for_model, assign_perm, remove_perm
 
@@ -19,11 +20,22 @@ class StrippedCharField(forms.CharField):
 
 
 class DocumentForm(forms.ModelForm):
+	url_title = StrippedCharField(label=_('URL'), max_length=255, required=True)
 	comment = StrippedCharField(label=_('Comment'), max_length=255, required=True)
 
 	class Meta:
 		model = Document
-		fields = ['title', 'text', 'comment']
+		fields = ['title', 'text', 'comment', 'url_title']
+
+	FORBIDDEN_URLS = ["admin", "login", "logout", "documents", "minutes", "polls"]
+	def clean_url_title(self):
+		super().clean()
+		url_title = self.cleaned_data['url_title']
+		if url_title in self.FORBIDDEN_URLS:
+			raise ValidationError(_('The URL used for this page is not allowed.'))
+		if Document.objects.filter(url_title=url_title).exists():
+			raise ValidationError(_('The URL used for this page is already taken.'))
+		return url_title
 
 Document.Form = DocumentForm
 

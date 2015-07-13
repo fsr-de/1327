@@ -8,7 +8,7 @@ from _1327.documents.models import Document
 
 
 @receiver(pre_save)
-def slugify_callback(sender, instance, *args, **kwargs):
+def pre_save_document(sender, instance, *args, **kwargs):
 	"""
 		creates a slugified title that can be used as URL to the Document
 		This will be used to identify a document that a user wants to see.
@@ -21,11 +21,9 @@ def slugify_callback(sender, instance, *args, **kwargs):
 	# get the max_length of a slug field as we need to make sure it is no longer than that
 	# as slugify is not doing that for us
 	for field in Document._meta.fields:
-		if isinstance(field, SlugField):
+		if isinstance(field, SlugField) and instance.url_title == "":
 			instance.url_title = slugify(instance.title)[:field.max_length]
 			return
-
-
 
 
 @receiver(post_save)
