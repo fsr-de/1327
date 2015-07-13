@@ -1,6 +1,7 @@
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 import reversion
+
 from _1327.documents.models import Document
 
 
@@ -8,7 +9,6 @@ INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME = 'view_informationdocument'
 
 
 class InformationDocument(Document):
-
 	VIEW_PERMISSION_NAME = INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME
 
 	class Meta(Document.Meta):
@@ -25,3 +25,4 @@ class InformationDocument(Document):
 		return reverse('information_pages:edit', args=(self.url_title, ))
 
 reversion.register(InformationDocument, follow=["document_ptr"])
+

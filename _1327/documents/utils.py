@@ -5,7 +5,7 @@ from django.db import transaction
 import reversion
 
 from _1327.documents.models import TemporaryDocumentText
-from _1327.documents.forms import TextForm, AttachmentForm
+from _1327.documents.forms import DocumentForm, AttachmentForm
 
 def get_new_autosaved_pages_for_user(user):
 	autosaved_pages = []
@@ -18,12 +18,10 @@ def get_new_autosaved_pages_for_user(user):
 
 def handle_edit(request, document):
 	if request.method == 'POST':
-		form = TextForm(request.POST)
+		form = document.Form(request.POST, instance=document)
 		if form.is_valid():
 			cleaned_data = form.cleaned_data
 
-			document.title = cleaned_data['title']
-			document.text = cleaned_data['text']
 			document.author = request.user
 
 			# save the document and also save the user and the comment the user added
@@ -41,26 +39,24 @@ def handle_edit(request, document):
 
 			return True, form
 	else:
-
 		# load Autosave
+		autosave = None
 		try:
 			autosave = TemporaryDocumentText.objects.get(document=document)
-			text = autosave.text
 			autosaved = True
 		except TemporaryDocumentText.DoesNotExist:
-			text = document.text
 			autosaved = False
 
-		if 'restore' not in request.GET:
-			text = document.text
+		if 'restore' in request.GET:
+			autosaved = False
+
+		if 'restore' in request.GET and autosave is not None:
+			form_data = {
+				'text': autosave.text,
+			}
+			form = DocumentForm(initial=form_data, instance=document)
 		else:
-			autosaved = False
-
-		form_data = {
-			'title': document.title,
-			'text': text,
-		}
-		form = TextForm(form_data)
+			form = DocumentForm(instance=document)
 		form.autosave = autosaved
 		if autosaved:
 			form.autosave_date = autosave.created
@@ -70,7 +66,7 @@ def handle_edit(request, document):
 
 def handle_autosave(request, document):
 	if request.method == 'POST':
-		form = TextForm(request.POST)
+		form = DocumentForm(request.POST)
 		form.is_valid()
 		text_strip = request.POST['text'].strip()
 		if text_strip != '':

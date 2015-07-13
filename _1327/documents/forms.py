@@ -3,7 +3,7 @@ from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
 from guardian.shortcuts import get_perms_for_model, assign_perm, remove_perm
 
-from .models import Attachment
+from .models import Attachment, Document
 
 
 class StrippedCharField(forms.CharField):
@@ -18,10 +18,14 @@ class StrippedCharField(forms.CharField):
 		return value.strip()
 
 
-class TextForm(forms.Form):
-	title = StrippedCharField(label=_('Title'), max_length=255, required=True)
-	text = StrippedCharField(widget=forms.Textarea, label=_('Text'), required=True)
+class DocumentForm(forms.ModelForm):
 	comment = StrippedCharField(label=_('Comment'), max_length=255, required=True)
+
+	class Meta:
+		model = Document
+		fields = ['title', 'text', 'comment']
+
+Document.Form = DocumentForm
 
 
 class PermissionForm(forms.Form):
