@@ -469,3 +469,37 @@ class TestAttachments(WebTest):
 			self.content,
 			msg="An attachment that has been downloaded should contain its original content"
 		)
+
+	def test_sort_attachments(self):
+		mommy.make(Attachment, _quantity=3, document=self.document)
+
+		attachments = Attachment.objects.all()
+		old_attachment_order = {}
+		for index, attachment in enumerate(attachments):
+			self.assertEqual(attachment.index, 0)
+			attachment.index = index
+			attachment.save()
+			old_attachment_order[attachment.id] = index
+
+		# reverse ordering of attachments
+		attachments = Attachment.objects.all().order_by('-index')
+		new_attachment_order = {}
+		for index, attachment in enumerate(attachments):
+			new_attachment_order[attachment.id] = index
+
+		response = self.app.post(
+			reverse('documents:update_attachment_order'),
+			new_attachment_order,
+			xhr=True,
+			user=self.user,
+		)
+		self.assertEqual(response.status_code, 200)
+
+		# check that all indices changed
+		attachments = Attachment.objects.all().order_by('index')
+		for attachment in attachments:
+			self.assertNotEqual(
+				attachment.index,
+				old_attachment_order[attachment.id],
+				msg="Old id and new id should not be the same",
+			)
