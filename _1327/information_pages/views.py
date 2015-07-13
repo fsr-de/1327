@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
 from django.contrib import messages
-from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse, Http404
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
 from django.forms.formsets import formset_factory
@@ -79,7 +79,7 @@ def view_information(request, title):
 		'document': document,
 		'text': text,
 		'toc': md.toc,
-		'attachments': document.attachments.all(),
+		'attachments': document.attachments.all().order_by('index'),
 		'active_page': 'view',
 	})
 
@@ -128,6 +128,6 @@ def attachments(request, title):
 			'document': document,
 			'edit_url': reverse('information_pages:attachments', args=[document.url_title]),
 			'form': form,
-			'attachments': document.attachments.all(),
+			'attachments': document.attachments.all().order_by('index'),
 			'active_page': 'attachments',
 		})

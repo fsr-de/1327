@@ -60,6 +60,8 @@ class Attachment(models.Model):
 	created = models.DateTimeField(auto_now=True, verbose_name=_("Created"))
 	file = models.FileField(upload_to="documents/%y/%m/", verbose_name=_("File"))
 
+	index = models.IntegerField(verbose_name=_("ordering index"), default=0)
+
 	class Meta:
 		verbose_name = _("Attachment")
 		verbose_name_plural = _("Attachments")

@@ -21,12 +21,14 @@
 	<div class="col-sm-12">
 		<table class="table table-striped">
 			<thead>
+				<th></th>
 				<th>{% trans "Display name" %}</th>
 				<th>{% trans "Filename" %}</th>
 				<th>{% trans "Created" %}</th>
 			</thead>
 			{% for attachment in attachments %}
-				<tr>
+				<tr data-index="{{ attachment.index }}" data-id="{{ attachment.id }}" class="sortable">
+					<td class="sorthandle"><span class="glyphicon glyphicon-move"></span></td>
 					<td>
 						<input type="hidden" class="attachmentinput" name="file" value="{{ attachment.id }}">
 						<a href="{% url 'documents:download_attachment' %}?attachment_id={{ attachment.id }}">{{ attachment.displayname }}</a>
@@ -77,6 +79,21 @@
 					location.reload()
 				});
 			});
+		});
+
+		$('tbody').sortable({
+			items: '.sortable',
+			handle: '.sorthandle',
+			update: function (event, ui) {
+				var rows = ui.item.parent().children();
+				var newOrder = {};
+				rows.each(function (index, element) {
+					element = $(element);
+					element.data('index', index);
+					newOrder[element.data('id')] = index;
+				});
+				$.post("{% url "documents:update_attachment_order" %}", newOrder, function (){});
+			}
 		});
 	</script>
 
