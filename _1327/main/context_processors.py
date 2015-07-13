@@ -20,14 +20,16 @@ def mark_selected(request, menu_item):
 		if mark_selected(request, child):
 			menu_item.selected = True
 			return True
-	current_view = request.resolver_match.view_name
-	item_view = menu_item.link
-	if current_view == item_view:
-		menu_item.selected = True
-		return True
-	if item_view.startswith('admin:') and current_view.startswith('admin:'):
-		menu_item.selected = True
-		return True
+	current_view = request.resolver_match
+	if current_view is not None:
+		current_view_name = current_view.view_name
+		item_view = menu_item.link
+		if current_view_name == item_view:
+			menu_item.selected = True
+			return True
+		if item_view.startswith('admin:') and current_view_name.startswith('admin:'):
+			menu_item.selected = True
+			return True
 
 
 def can_create_informationpage(request):
