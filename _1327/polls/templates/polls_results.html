@@ -14,6 +14,11 @@
             </div>
         </div>
     {% endif %}
+	{%  if poll.max_allowed_number_of_answers > 1 %}
+		<div class="alert alert-info" role="alert">
+			{% blocktrans with max_allowed_number_of_answers=poll.max_allowed_number_of_answers %}Every participant had up to {{ max_allowed_number_of_answers }} votes.{% endblocktrans %}
+		</div>
+	{%  endif %}
 
     <table class="table table-striped">
         <tr>

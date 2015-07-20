@@ -12,7 +12,7 @@ class Poll(models.Model):
 	description = models.TextField(default="", blank=True)
 	start_date = models.DateField()
 	end_date = models.DateField()
-	is_multiple_choice_question = models.BooleanField(default=True)
+	max_allowed_number_of_answers = models.IntegerField(default=1)
 	participants = models.ManyToManyField(UserProfile, related_name="polls", blank=True)
 
 	VIEW_PERMISSION_NAME = QUESTION_VIEW_PERMISSION_NAME

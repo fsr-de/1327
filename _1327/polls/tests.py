@@ -203,13 +203,16 @@ class PollVoteTests(WebTest):
 		self.assertRedirects(response, reverse('polls:results', args=[self.poll.id]))
 
 	def test_start_vote_multiple_choice_poll(self):
+		self.poll.max_allowed_number_of_answers = 2
+		self.poll.save()
+
 		response = self.app.get(reverse('polls:vote', args=[self.poll.id]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		self.assertIn(b"checkbox", response.body)
 		self.assertNotIn(b"radio", response.body)
 
 	def test_start_vote_single_choice_poll(self):
-		self.poll.is_multiple_choice_question = False
+		self.poll.max_allowed_number_of_answers = 1
 		self.poll.save()
 
 		response = self.app.get(reverse('polls:vote', args=[self.poll.id]), user=self.user)
@@ -228,7 +231,7 @@ class PollVoteTests(WebTest):
 		self.assertRedirects(response, reverse('polls:vote', args=[self.poll.id]))
 
 	def test_vote_single_choice_submitting_more_than_one_choice(self):
-		self.poll.is_multiple_choice_question = False
+		self.poll.max_allowed_number_of_answers = 1
 		self.poll.save()
 
 		data = []
@@ -239,7 +242,7 @@ class PollVoteTests(WebTest):
 		self.assertRedirects(response, reverse('polls:vote', args=[self.poll.id]))
 
 	def test_vote_single_choice_correctly(self):
-		self.poll.is_multiple_choice_question = False
+		self.poll.max_allowed_number_of_answers = 1
 		self.poll.save()
 
 		choice = self.poll.choices.first()
@@ -253,6 +256,8 @@ class PollVoteTests(WebTest):
 		self.assertRedirects(response, reverse('polls:results', args=[self.poll.id]))
 
 	def test_vote_multiple_choice_correctly(self):
+		self.poll.max_allowed_number_of_answers = self.poll.choices.count()
+		self.poll.save()
 		data = []
 		votes = []
 		for choice in self.poll.choices.all():
