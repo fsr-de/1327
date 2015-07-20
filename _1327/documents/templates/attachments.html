@@ -25,6 +25,9 @@
 				<th>{% trans "Display name" %}</th>
 				<th>{% trans "Filename" %}</th>
 				<th>{% trans "Created" %}</th>
+				<th data-toggle="tooltip" data-placement="top" title="{% trans "Untick if attachment is only used as embedded image" %}">
+					{% trans "Downloadable" %} <span class="label label-info">?</span>
+				</th>
 			</thead>
 			{% for attachment in attachments %}
 				<tr data-index="{{ attachment.index }}" data-id="{{ attachment.id }}" class="sortable">
@@ -35,9 +38,15 @@
 					</td>
 					<td>{{ attachment.file.name|filename }}</td>
 					<td>{{ attachment.created }}</td>
+
+					<td class="text-center">
+						<div class="checkbox">
+							<input class="change-downloadable" type="checkbox" {% if attachment.downloadable %}checked{% endif %} name="downloadable">
+						</div>
+					</td>
 					<td>
 						<button type="button" data-displayname="{{ attachment.displayname }}" data-toggle="modal"
-						        data-target="#confirmAttachmentDeleteModal" class="delete-attachment btn btn-warning">
+								data-target="#confirmAttachmentDeleteModal" class="delete-attachment btn btn-warning">
 							{% trans "Delete" %}
 						</button>
 					</td>
@@ -72,8 +81,8 @@
 			var button = $(event.relatedTarget);
 			var input = button.closest('tr').find('input.attachmentinput');
 			$('#attachment-name').text(button.data('displayname'));
-            var deleteButton = $('#accept-delete');
-            deleteButton.off('click');
+			var deleteButton = $('#accept-delete');
+			deleteButton.off('click');
 			deleteButton.on('click', function (event){
 				$.post("{% url "documents:delete_attachment" %}", {'id': input.attr('value')}, function (data, textStatus, jqXHR) {
 					location.reload()
@@ -95,6 +104,24 @@
 				$.post("{% url "documents:update_attachment_order" %}", newOrder, function (){});
 			}
 		});
+
+		$('.change-downloadable').on('change', function (event) {
+			var tableRow = $(this.closest('tr'));
+			var attachmentId = tableRow.data('id');
+			var checked = this.checked;
+			$.post(
+				"{% url 'documents:change_attachment_downloadable' %}",
+				{id: attachmentId, downloadable: checked},
+				function () {
+					tableRow.effect("highlight", {color: "#69a700"}, 2000);
+				}
+			).error(function () {
+				tableRow.effect("highlight", {color: "#b1063a"}, 2000);
+			});
+
+		});
+
+		$('[data-toggle="tooltip"]').tooltip();
 	</script>
 
 

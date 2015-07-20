@@ -134,3 +134,19 @@ def get_attachments(request, document_id):
 		data[attachment.id] = attachment.displayname
 
 	return HttpResponse(json.dumps(data))
+
+
+def change_attachment_downloadable(request):
+	if not request.POST or not request.is_ajax():
+		raise Http404
+
+	attachment_id = request.POST['id']
+	downloadable = json.loads(request.POST['downloadable'])
+
+	attachment = Attachment.objects.get(pk=attachment_id)
+	if not attachment.document.can_be_changed_by(request.user):
+		return HttpResponseForbidden()
+
+	attachment.downloadable = downloadable
+	attachment.save()
+	return HttpResponse()

@@ -96,7 +96,7 @@ def view(request, title):
 		'document': document,
 		'text': text,
 		'toc': md.toc,
-		'attachments': document.attachments.all().order_by('index'),
+		'attachments': document.attachments.filter(downloadable=True).order_by('index'),
 		'active_page': 'view',
 	})
 
