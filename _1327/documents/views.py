@@ -131,6 +131,9 @@ def get_attachments(request, document_id):
 	attachments = document.attachments.all()
 	data = {}
 	for attachment in attachments:
+		file_type = attachment.displayname.lower().split('.')[-1]
+		if file_type not in settings.SUPPORTED_IMAGE_TYPES:
+			continue
 		data[attachment.id] = attachment.displayname
 
 	return HttpResponse(json.dumps(data))

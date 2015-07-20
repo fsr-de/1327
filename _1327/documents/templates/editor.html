@@ -39,6 +39,11 @@
 				</div>
 				<div class="modal-body">
 					<select class="form-control" id="attachmentModalSelect"></select>
+					<div class="divider"></div>
+					<h2>Preview</h2>
+					<div class="preview">
+						<img id="attachment-preview" style="width: 100%; height: 100%;" />
+					</div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-primary" id="setImage">{% trans "OK" %}</button>
@@ -63,6 +68,7 @@
 				this.onChange(e);
 			},
 			additionalButtons: [
+				// exchange the old image button by a new button
 				[{
 					name: "ImageGroup",
 					data: [{
@@ -76,30 +82,61 @@
 								"{% url "documents:get_attachments" document.id %}",
 								{},
 								function (data, textStatus, jqXHR) {
+									// prepare the select in the modal
 									var newOptions = JSON.parse(data);
 									var select = $('#attachmentModalSelect');
+									if ($.isEmptyObject(newOptions)) {
+										// if there are no pictures disable the select
+										select.attr('disabled', 'disabled');
+										return;
+									} else {
+										select.attr('disabled', false);
+									}
 									var options = select.prop('options');
 									$('option', select).remove();
 									$.each(newOptions, function (val, text) {
 										options[options.length] = new Option(text, val);
 									});
+									// trigger the change event in order to show the preview of the pre selected
+									// image
+									select.trigger('change');
 							});
+
 							var modalItem = $('#selectImageAttachment');
 							modalItem.modal();
-							$('#setImage').on("click", function (event) {
-								var selectedAttachment = $('#attachmentModalSelect').val();
+
+							// set the click handler on the ok button that adds the image to the text
+							// and closes the modal
+							var setButton = $('#setImage');
+							setButton.off('click');
+							setButton.on("click", function (event) {
+								var select = $('#attachmentModalSelect');
+								if (select.attr('disabled')) {
+									modalItem.modal('hide');
+									return;
+								}
+								// find the right spot to insert the text and create the correct markdown
+								var selectedAttachment = select.val();
 								var chunk = "![Image Alt]({% url 'documents:download_attachment' %}?attachment_id=" + selectedAttachment + "&embed=True)";
 								e.replaceSelection(chunk);
 								var cursor = e.getSelection();
 
 								e.setSelection(cursor, cursor + chunk.length);
 								modalItem.modal('hide');
+								$('#id_text').trigger('change');
 							});
 						}
 					}]
 				}]
 			]
 		});
+
+		// handler to update the preview in the modal
+		$('#attachmentModalSelect').on('change', function (event) {
+			var selectedAttachment = $(this).val();
+			$('#attachment-preview').attr('src', "{% url 'documents:download_attachment' %}?attachment_id=" + selectedAttachment + "&embed=True");
+		});
+
 		var text = $('#id_text').val();
 		function save() {
 			if(text != $('#id_text').val()) {
