@@ -1,3 +1,4 @@
+import json
 from django.utils.text import slugify
 import reversion
 import tempfile
@@ -503,3 +504,104 @@ class TestAttachments(WebTest):
 				old_attachment_order[attachment.id],
 				msg="Old id and new id should not be the same",
 			)
+
+	def test_attachment_change_downloadable(self):
+		self.assertTrue(self.attachment.downloadable, "attachments are downloadable by default")
+		response = self.app.post(
+			reverse('documents:change_attachment_downloadable'),
+			{'id': self.attachment.id, 'downloadable': 'false'},
+			user=self.user,
+			xhr=True,
+		)
+		self.assertEqual(response.status_code, 200, "it should be possible to change the downloadable state")
+		attachment = Attachment.objects.get(pk=self.attachment.id)
+		self.assertFalse(attachment.downloadable)
+
+	def test_attachment_change_downloadable_wrong_permissions(self):
+		self.assertTrue(self.attachment.downloadable)
+		user = mommy.make(UserProfile)
+		response = self.app.post(
+			reverse('documents:change_attachment_downloadable'),
+			{'id': self.attachment.id, 'downloadable': 'false'},
+			user=user,
+			xhr=True,
+			expect_errors=True
+		)
+		self.assertEqual(response.status_code, 403)
+
+	def test_attachment_change_downloadable_wrong_request_type(self):
+		response = self.app.get(
+			reverse('documents:change_attachment_downloadable'),
+			{'id': self.attachment.id, 'downloadable': 'false'},
+			user=self.user,
+			xhr=True,
+			expect_errors=True,
+		)
+		self.assertEqual(response.status_code, 404)
+
+	def test_attachment_change_downloadable_no_ajax(self):
+		response = self.app.post(
+			reverse('documents:change_attachment_downloadable'),
+			{'id': self.attachment.id, 'downloadable': 'false'},
+			user=self.user,
+			expect_errors=True,
+		)
+		self.assertEqual(response.status_code, 404)
+
+	def test_attachment_change_downloadable_view(self):
+		attachment = mommy.make(Attachment, document=self.document, displayname="pic.jpg", downloadable=False)
+		response = self.app.get(
+			reverse('information_pages:view_information', args=[self.document.url_title]),
+			user=self.user,
+		)
+		self.assertEqual(response.status_code, 200)
+		self.assertNotIn(attachment.displayname, response.body.decode('utf-8'))
+
+	def test_attachment_get_all_attachments_no_images(self):
+		response = self.app.get(
+			reverse('documents:get_attachments', args=[self.document.id]),
+			user=self.user,
+			xhr=True,
+		)
+		self.assertEqual(response.status_code, 200)
+		returned_data = json.loads(response.body.decode('utf-8'))
+		self.assertEqual(len(returned_data), 0)
+
+	def test_attachment_get_all_attachments(self):
+		attachment = mommy.make(Attachment, displayname="pic.jpg", document=self.document)
+		attachment.save()
+
+		response = self.app.get(
+			reverse('documents:get_attachments', args=[self.document.id]),
+			user=self.user,
+			xhr=True,
+		)
+		self.assertEqual(response.status_code, 200)
+		returned_data = json.loads(response.body.decode('utf-8'))
+		self.assertEqual(len(returned_data), 1)
+
+	def test_attachment_get_all_attachments_wrong_user(self):
+		user = mommy.make(UserProfile)
+		response = self.app.get(
+			reverse('documents:get_attachments', args=[self.document.id]),
+			user=user,
+			xhr=True,
+			expect_errors=True,
+		)
+		self.assertEqual(response.status_code, 403)
+
+	def test_attachment_get_all_attachments_no_ajax(self):
+		response = self.app.get(
+			reverse('documents:get_attachments', args=[self.document.id]),
+			user=self.user,
+			expect_errors=True,
+		)
+		self.assertEqual(response.status_code, 404)
+
+	def test_attachment_get_all_attachments_no_document_id(self):
+		response = self.app.get(
+			reverse('documents:get_attachments', args=[self.document.id]),
+			user=self.user,
+			expect_errors=True,
+		)
+		self.assertEqual(response.status_code, 404)
