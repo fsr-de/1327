@@ -33,7 +33,7 @@ class DocumentForm(forms.ModelForm):
 		url_title = self.cleaned_data['url_title']
 		if url_title in self.FORBIDDEN_URLS:
 			raise ValidationError(_('The URL used for this page is not allowed.'))
-		if Document.objects.filter(url_title=url_title).exists():
+		if Document.objects.filter(url_title=url_title).exclude(id=self.instance.id).exists():
 			raise ValidationError(_('The URL used for this page is already taken.'))
 		return url_title
 
