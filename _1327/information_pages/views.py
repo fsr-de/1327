@@ -1,12 +1,14 @@
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse, Http404
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
 from django.forms.formsets import formset_factory
 from guardian.shortcuts import get_perms
 from guardian.models import Group
+from guardian.utils import get_anonymous_user
 from datetime import datetime
 import markdown
 import reversion
@@ -76,12 +78,17 @@ def view_information(request, title):
 	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2)])
 	text = md.convert(document.text)
 
+	anonymous_rights = get_anonymous_user().has_perm(InformationDocument.VIEW_PERMISSION_NAME, document)
+	edit_rights = request.user.has_perm("change_informationdocument", document)
+	permission_warning = edit_rights and not anonymous_rights
+
 	return render(request, 'information_pages_base.html', {
 		'document': document,
 		'text': text,
 		'toc': md.toc,
 		'attachments': document.attachments.all().order_by('index'),
 		'active_page': 'view',
+		'permission_warning' : permission_warning,
 	})
 
 
