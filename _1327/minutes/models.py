@@ -54,3 +54,12 @@ class MinutesDocumentForm(DocumentForm):
 		model = MinutesDocument
 
 MinutesDocument.Form = MinutesDocumentForm
+
+
+class MinutesLabel(models.Model):
+	title = models.CharField(max_length=255)
+	minutes = models.ManyToManyField(MinutesDocument, related_name="labels", blank=True)
+
+	def __str__(self):
+		return self.title
+
