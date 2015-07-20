@@ -8,6 +8,6 @@ from _1327.information_pages.models import InformationDocument
 
 class InformationDocumentAdmin(GuardedModelAdmin, PolymorphicChildModelAdmin):
 	base_model = Document
-	list_display = ('title', 'author', 'url_title')
+	list_display = ('title', 'url_title')
 
 admin.site.register(InformationDocument, InformationDocumentAdmin)

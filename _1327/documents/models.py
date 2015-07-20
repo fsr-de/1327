@@ -14,7 +14,6 @@ DOCUMENT_VIEW_PERMISSION_NAME = 'view_document'
 @reversion.register
 class Document(PolymorphicModel):
 	created = models.DateTimeField(auto_now_add=True)
-	author = models.ForeignKey(UserProfile, related_name='documents')
 	title = models.CharField(max_length=255)
 	url_title = models.SlugField()
 	text = models.TextField()
@@ -47,11 +46,18 @@ class Document(PolymorphicModel):
 	def can_be_changed_by(self, user):
 		raise NotImplementedError
 
+	def authors(self):
+		authors = set()
+		versions = reversion.get_for_object(self)
+		for version in versions:
+			authors.add(version.revision.user)
+		return authors
 
 class TemporaryDocumentText(models.Model):
 	text = models.TextField()
 	document = models.ForeignKey(Document, related_name='document')
 	created = models.DateTimeField(auto_now=True)
+	author = models.ForeignKey(UserProfile, related_name='temporary_documents')
 
 
 class Attachment(models.Model):

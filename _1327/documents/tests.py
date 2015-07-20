@@ -21,7 +21,7 @@ class TestRevertion(WebTest):
 	def setUp(self):
 		self.user = mommy.make(UserProfile, is_superuser=True)
 
-		document = mommy.prepare(Document, author=self.user, text="text")
+		document = mommy.prepare(Document, text="text")
 		with transaction.atomic(), reversion.create_revision():
 				document.save()
 				reversion.set_user(self.user)
@@ -72,7 +72,7 @@ class TestAutosave(WebTest):
 	def setUp(self):
 		self.user = mommy.make(UserProfile, is_superuser=True)
 
-		document = mommy.prepare(InformationDocument, author=self.user, text="text")
+		document = mommy.prepare(InformationDocument, text="text")
 		with transaction.atomic(), reversion.create_revision():
 				document.save()
 				reversion.set_user(self.user)
@@ -122,7 +122,7 @@ class TestAutosave(WebTest):
 		url_title = slugify(form.get('title').value)
 
 		# autosave AUTO
-		response = self.app.post(reverse('information_pages:autosave', args=[url_title]), {'text': 'AUTO', 'title': form.get('title').value, 'comment': ''}, user=self.user, xhr=True)
+		response = self.app.post(reverse('information_pages:autosave', args=[url_title]), {'text': 'AUTO', 'title': form.get('title').value, 'comment': ''}, xhr=True)
 		self.assertEqual(response.status_code, 200)
 
 		# on the new page site should be a banner with a restore link
@@ -173,7 +173,7 @@ class TestSignals(TestCase):
 		# create a new document for every subclass of document
 		# and see whether the url_title is automatically created
 		for obj_id, subclass in enumerate(Document.__subclasses__()):
-			new_document = mommy.make(subclass, title="test_{}".format(obj_id), url_title="", author=self.user)
+			new_document = mommy.make(subclass, title="test_{}".format(obj_id), url_title="")
 			self.assertEqual(new_document.url_title, "test_{}".format(obj_id))
 
 	def test_group_permission_hook(self):
@@ -190,7 +190,7 @@ class TestSignals(TestCase):
 				assign_perm(permission_name, group)
 
 			# test whether the permission hook works
-			test_object = mommy.make(subclass, title="test", author=self.user)
+			test_object = mommy.make(subclass, title="test")
 			user_permissions = get_perms(group, test_object)
 			self.assertNotEqual(len(user_permissions), 0)
 
@@ -210,7 +210,7 @@ class TestSignals(TestCase):
 
 		# test whether we can remove a permission from the group
 		# the permission should not be added again
-		test_object = mommy.make(InformationDocument, author=self.user)
+		test_object = mommy.make(InformationDocument)
 		self.assertTrue(test_user.has_perm(model_permissions[0].codename, test_object))
 		remove_perm(model_permissions[0].codename, group, test_object)
 		test_object.save()
@@ -267,7 +267,7 @@ class TestAttachments(WebTest):
 		self.group_user.groups.add(self.group)
 		self.group_user.save()
 
-		self.document = mommy.make(InformationDocument, author=self.user)
+		self.document = mommy.make(InformationDocument)
 
 		self.content = "test content of test attachment"
 		attachment_file = ContentFile(self.content)
