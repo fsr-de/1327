@@ -12,18 +12,29 @@ from _1327.user_management.models import UserProfile
 
 class PollModelTests(TestCase):
 
-    def setUp(self):
-        self.poll = mommy.make(Poll)
-
     def test_percentage(self):
         num_votes = 10
         num_choices = 3
-        mommy.make(Choice, poll=self.poll, _quantity=num_choices, votes=num_votes)
+        num_participants = 5
 
-        expected_percentage = num_votes * 100 / (num_choices * num_votes)
-        for choice in self.poll.choices.all():
+        user = mommy.make(UserProfile, _quantity=num_participants)
+        poll = mommy.make(Poll, participants=user)
+
+        mommy.make(Choice, poll=poll, _quantity=num_choices, votes=num_votes)
+
+        expected_percentage = num_votes * 100 / num_participants
+        for choice in poll.choices.all():
             self.assertAlmostEqual(choice.percentage(), expected_percentage, 2)
 
+    def test_percentage_with_no_participants(self):
+        poll = mommy.make(Poll)
+
+        num_choices = 3
+        mommy.make(Choice, poll=poll, _quantity=num_choices, votes=0)
+
+        expected_percentage = 0
+        for choice in poll.choices.all():
+            self.assertAlmostEqual(choice.percentage(), expected_percentage, 2)
 
 class PollViewTests(WebTest):
 

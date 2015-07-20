@@ -33,5 +33,7 @@ class Choice(models.Model):
 		return self.text
 
 	def percentage(self):
-		total_votes_for_poll = Choice.objects.filter(poll=self.poll).aggregate(Sum('votes'))['votes__sum']
-		return self.votes * 100 / total_votes_for_poll
+		participant_count = self.poll.participants.count()
+		if participant_count == 0:
+			return 0
+		return self.votes * 100 / participant_count
