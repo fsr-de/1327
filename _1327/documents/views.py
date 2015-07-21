@@ -37,7 +37,7 @@ def revert(request):
 		return HttpResponseBadRequest('Could not find document')
 
 	try:
-		revert_version.revision.revert(delete=True)
+		revert_version.revision.revert(delete=False)
 	except RevertError:
 		return HttpResponseServerError('Could not revert the version')
 
