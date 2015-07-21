@@ -12,7 +12,7 @@ class Poll(models.Model):
 	description = models.TextField(default="", blank=True)
 	start_date = models.DateField()
 	end_date = models.DateField()
-	is_multiple_choice_question = models.BooleanField(default=True)
+	max_allowed_number_of_answers = models.IntegerField(default=1)
 	participants = models.ManyToManyField(UserProfile, related_name="polls", blank=True)
 
 	VIEW_PERMISSION_NAME = QUESTION_VIEW_PERMISSION_NAME
@@ -33,5 +33,7 @@ class Choice(models.Model):
 		return self.text
 
 	def percentage(self):
-		total_votes_for_poll = Choice.objects.filter(poll=self.poll).aggregate(Sum('votes'))['votes__sum']
-		return self.votes * 100 / total_votes_for_poll
+		participant_count = self.poll.participants.count()
+		if participant_count == 0:
+			return 0
+		return self.votes * 100 / participant_count

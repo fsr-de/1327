@@ -67,10 +67,9 @@ def vote(request, poll_id):
 		if len(choices) == 0:
 			messages.error(request, _("You must select one Choice at least!"))
 			return HttpResponseRedirect(reverse('polls:vote', args=[poll_id]))
-		if not poll.is_multiple_choice_question:
-			if len(choices) != 1:
-				messages.error(request, _("You can only select one option!"))
-				return HttpResponseRedirect(reverse('polls:vote', args=[poll_id]))
+		if len(choices) > poll.max_allowed_number_of_answers:
+			messages.error(request, _("You can only select up to {} options!").format(poll.max_allowed_number_of_answers))
+			return HttpResponseRedirect(reverse('polls:vote', args=[poll_id]))
 
 		for choice_id in choices:
 			choice = poll.choices.get(id=choice_id)
@@ -86,7 +85,7 @@ def vote(request, poll_id):
 		'polls_vote.html',
 		{
 			"poll": poll,
-			"widget": "checkbox" if poll.is_multiple_choice_question else "radio"
+			"widget": "checkbox" if poll.max_allowed_number_of_answers != 1 else "radio"
 		}
 	)
 

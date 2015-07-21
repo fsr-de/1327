@@ -7,12 +7,17 @@
 
 {% block content %}
 	{% if poll.description != "" %}
-        <div class="panel panel-default">
-            <div class="panel-body">
-                {{ poll.description }}
-            </div>
-        </div>
-    {% endif %}
+		<div class="panel panel-default">
+			<div class="panel-body">
+				{{ poll.description }}
+			</div>
+		</div>
+	{% endif %}
+	{%  if poll.max_allowed_number_of_answers > 1 %}
+		<div class="alert alert-info" role="alert">
+			{% blocktrans with max_allowed_number_of_answers=poll.max_allowed_number_of_answers %}You have up to {{ max_allowed_number_of_answers }} votes.{% endblocktrans %}
+		</div>
+	{%  endif %}
 
 	<form action="{% url 'polls:vote' poll.id %}" method="post" class="form-horizontal" role="form">
 		{% csrf_token %}
