@@ -20,7 +20,7 @@ class TestDocument(TestCase):
 		self.user = mommy.make(UserProfile)
 
 	def test_slugification(self):
-		document = InformationDocument(title="titlea", text="text", author=self.user)
+		document = InformationDocument(title="titlea", text="text")
 		self.assertEqual(document.url_title, '')
 		document.save()
 		self.assertEqual(document.url_title, "titlea")
@@ -37,7 +37,7 @@ class TestDocumentWeb(WebTest):
 
 	def test_url_shows_document(self):
 		title = "Document title"
-		document = mommy.make(InformationDocument, title=title, author=self.user)
+		document = mommy.make(InformationDocument, title=title)
 
 		assign_perm(InformationDocument.VIEW_PERMISSION_NAME, self.user, document)
 		self.assertTrue(self.user.has_perm(InformationDocument.VIEW_PERMISSION_NAME, document))
@@ -128,7 +128,7 @@ class TestVersions(WebTest):
 	def setUp(self):
 		self.user = mommy.make(UserProfile, is_superuser=True)
 
-		self.document = mommy.prepare(InformationDocument, author=self.user)
+		self.document = mommy.prepare(InformationDocument)
 		with transaction.atomic(), reversion.create_revision():
 			self.document.save()
 			reversion.set_user(self.user)
@@ -179,7 +179,7 @@ class TestPermissions(WebTest):
 			assign_perm(permission_name, self.group)
 		self.group.save()
 
-		mommy.make(InformationDocument, author=self.user)
+		mommy.make(InformationDocument)
 
 	def test_view_permissions_for_logged_in_user(self):
 		# check that user is not allowed to see information document

@@ -26,7 +26,7 @@ def create(request):
 		delete_old_empty_pages()
 		title = _("New Page from {}").format(str(datetime.now()))
 		url_title = slugify(title)
-		InformationDocument.objects.get_or_create(author=request.user, url_title=url_title, title=title)
+		InformationDocument.objects.get_or_create(url_title=url_title, title=title)
 		new_autosaved_pages = get_new_autosaved_pages_for_user(request.user);
 		return edit(request, url_title, new_autosaved_pages)
 	else:

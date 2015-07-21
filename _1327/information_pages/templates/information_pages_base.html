@@ -11,8 +11,8 @@
 
 {% block sidebar %}
 	<dl class="meta-information">
-		<dt>{% trans "Author" %}</dt>
-		<dd>{{ document.author }}</dd>
+		<dt>{% blocktrans count counter=document.authors|length %}Author{% plural %}Authors{% endblocktrans %}</dt>
+		<dd>{% for author in document.authors %}{{ author }}{% if not forloop.last %}, {% endif %}{% endfor %}</dd>
 		<dt>{% trans "Created" %}</dt>
 		<dd>{{ document.created|date:"d. M Y, H:i" }}</dd>
 	</dl>

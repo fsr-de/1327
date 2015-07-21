@@ -25,6 +25,7 @@ class MinutesDocument(Document):
 		(INTERNAL, _('Internal')),
 	), default=UNPUBLISHED, verbose_name=_("State"))
 	moderator = models.ForeignKey(UserProfile, related_name='moderations', verbose_name=_("Moderator"))
+	author = models.ForeignKey(UserProfile, related_name='documents')
 	participants = models.ManyToManyField(UserProfile, related_name='participations', verbose_name=_("Participants"))
 
 	VIEW_PERMISSION_NAME = MINUTES_VIEW_PERMISSION_NAME

@@ -14,7 +14,7 @@ def get_new_autosaved_pages_for_user(user):
 	all_temp_documents = TemporaryDocumentText.objects.all()
 	for temp_document in all_temp_documents:
 		document = temp_document.document
-		if len(reversion.get_for_object(document)) == 0 and document.author == user:
+		if len(reversion.get_for_object(document)) == 0 and temp_document.author == user:
 			autosaved_pages.append(document)
 	return autosaved_pages
 
@@ -32,7 +32,6 @@ def handle_edit(request, document):
 			cleaned_data = form.cleaned_data
 
 			document.url_title = cleaned_data['url_title']
-			document.author = request.user
 
 			# save the document and also save the user and the comment the user added
 			with transaction.atomic(), reversion.create_revision():
@@ -84,9 +83,9 @@ def handle_autosave(request, document):
 			cleaned_data = form.cleaned_data
 
 			if document is None:
-				temporary_document_text = TemporaryDocumentText()
+				temporary_document_text = TemporaryDocumentText(author=request.user)
 			elif document.text != cleaned_data['text']:
-				temporary_document_text, created = TemporaryDocumentText.objects.get_or_create(document=document)
+				temporary_document_text, created = TemporaryDocumentText.objects.get_or_create(document=document, author=request.user)
 				temporary_document_text.document = document
 			else:
 				return
