@@ -4,7 +4,6 @@ stage { 'pre':
 
 node default {
     # update apt
-
     class { 'apt':
         stage    => pre
     }
@@ -49,7 +48,7 @@ node default {
     } -> exec { '/vagrant/requirements.txt':
         provider       => shell,
         command        => 'pip3 --log-file /tmp/pip.log install -r /vagrant/requirements.txt'
-    } -> class { '1327':
+    } -> class { 'd1327':
         db_connector   => 'postgresql_psycopg2'
     }
 
