@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 from _1327.user_management.models import UserProfile
 
@@ -27,6 +28,8 @@ class Choice(models.Model):
 	text = models.CharField(max_length=255)
 	description = models.TextField(default="", blank=True)
 	votes = models.IntegerField(default=0)
+
+	index = models.IntegerField(verbose_name=_("ordering index"), default=0)
 
 	def __str__(self):
 		return self.text

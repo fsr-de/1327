@@ -2,10 +2,12 @@ import datetime
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.http import Http404, HttpResponseRedirect
-from django.shortcuts import render
+from django.forms import inlineformset_factory
+from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden
 from django.utils.translation import ugettext_lazy as _
+from django.shortcuts import render
 
+from _1327.polls.forms import PollForm, ChoiceForm
 from _1327.polls.models import Poll
 from _1327.user_management.shortcuts import get_object_or_error
 
@@ -27,6 +29,32 @@ def list(request):
 		{
 			"running_polls": running_polls,
 			"finished_polls": finished_polls,
+		}
+	)
+
+
+def create(request):
+	if not request.user.has_perm("polls.add_poll"):
+		return HttpResponseForbidden()
+
+	InlineChoiceFormset = inlineformset_factory(Poll, Choice, form=ChoiceForm, extra=2, can_delete=True)
+
+	form = PollForm(request.POST or None)
+	formset = InlineChoiceFormset(request.POST or None)
+	if form.is_valid() and formset.is_valid():
+		poll = form.save()
+		choices = formset.save(commit=False)
+		for choice in choices:
+			choice.poll = poll
+			choice.save()
+
+		messages.success(request, _("Successfully created new Poll."))
+		return HttpResponseRedirect(reverse('polls:list'))
+
+	return render(request, "polls_create_poll.html",
+		{
+			'form': form,
+			'formset': formset,
 		}
 	)
 
@@ -88,3 +116,4 @@ def vote(request, poll_id):
 			"widget": "checkbox" if poll.max_allowed_number_of_answers != 1 else "radio"
 		}
 	)
+

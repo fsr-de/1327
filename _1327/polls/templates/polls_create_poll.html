@@ -1,0 +1,78 @@
+{% extends 'base_without_sidebar.html' %}
+
+{% load i18n %}
+{% load bootstrap3 %}
+{% load static %}
+
+{% block title %}
+	{% trans "Create a new Poll" %}
+{% endblock %}
+
+{% block content %}
+	<form action="{% url "polls:create" %}" method="post" class="form-horizontal" role="form" id="document-form">
+		{% csrf_token %}
+		{% bootstrap_form form layout='horizontal' %}
+
+		<h3>{% trans "Choices for Poll" %}</h3>
+		<div class="divider"></div>
+		{{ formset.management_form }}
+		<table id="choice-formset" class="table table-striped">
+			<thead>
+				<tr>
+					<th></th>
+					<th>{% trans "Text" %}</th>
+					<th>{% trans "Description" %}</th>
+					<th>{% trans "Delete?" %}</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for form_element in formset %}
+					<tr class="sortable">
+						{% for field in form_element.hidden_fields %}
+							{{ field }}
+						{% endfor %}
+						<td class="sorthandle"><span class="glyphicon glyphicon-move"></span></td>
+						<td>{{ form_element.text.errors }} {% bootstrap_field form_element.text layout='horizontal' show_label=False horizontal_label_class="" %}</td>
+						<td>{{ form_element.description.errors }} {% bootstrap_field form_element.description layout='horizontal' show_label=False horizontal_label_class="" %}</td>
+						<td>{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		{% buttons %}
+		<div class="col-md-9">
+			<button type="submit" class="btn btn-primary">
+				{% bootstrap_icon "floppy-disk" %} {% trans 'Save' %}
+			</button>
+		</div>
+		{% endbuttons %}
+	</form>
+
+	<script type="text/javascript" src="{% static 'js/jquery.formset.js' %}"></script>
+	<script>
+		// enable formset functionality
+		$('#choice-formset tbody tr').formset({
+			prefix: '{{ formset.prefix }}'
+		});
+
+		// make forms sortable
+		$('#choice-formset tbody').sortable({
+			items: '.sortable',
+			handle: '.sorthandle',
+			update: function (event, ui) {
+				var rows = ui.item.parent().children('.sortable');
+				var newOrder = {};
+				rows.each(function (index, element) {
+					element = $(element).children("input[name*='index']");
+					element.val(index);
+				});
+
+			}
+		});
+
+		// add datepicker to date inputs
+		$("input[name*='date']").datepicker({
+			dateFormat: "dd/mm/yy"
+		});
+	</script>
+{% endblock %}
