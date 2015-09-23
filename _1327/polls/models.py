@@ -31,6 +31,9 @@ class Choice(models.Model):
 
 	index = models.IntegerField(verbose_name=_("ordering index"), default=0)
 
+	class Meta:
+		ordering = ['index']
+
 	def __str__(self):
 		return self.text
 

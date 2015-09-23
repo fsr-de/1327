@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block content %}
-	<form action="{% url "polls:create" %}" method="post" class="form-horizontal" role="form" id="document-form">
+	<form action="{{ url }}" method="post" class="form-horizontal" role="form" id="document-form">
 		{% csrf_token %}
 		{% bootstrap_form form layout='horizontal' %}
 
@@ -32,9 +32,9 @@
 							{{ field }}
 						{% endfor %}
 						<td class="sorthandle"><span class="glyphicon glyphicon-move"></span></td>
-						<td>{{ form_element.text.errors }} {% bootstrap_field form_element.text layout='horizontal' show_label=False horizontal_label_class="" %}</td>
-						<td>{{ form_element.description.errors }} {% bootstrap_field form_element.description layout='horizontal' show_label=False horizontal_label_class="" %}</td>
-						<td>{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>
+						<td>{% bootstrap_field form_element.text layout='horizontal' show_label=False horizontal_label_class="" %}</td>
+						<td>{% bootstrap_field form_element.description layout='horizontal' show_label=False horizontal_label_class="" %}</td>
+						<td>{% if form_element.instance.pk %}{{ form_element.DELETE }}{% endif %}</td>
 					</tr>
 				{% endfor %}
 			</tbody>
@@ -50,9 +50,27 @@
 
 	<script type="text/javascript" src="{% static 'js/jquery.formset.js' %}"></script>
 	<script>
+		function setOrderIndex(row, index) {
+			var text = row.find("input[name*='text']");
+			var description = row.find("input[name*='description']");
+			var orderIndex = row.children("input[name*='index']");
+
+			if (text.val() === "" && description.val() === "") {
+				// if the row is empty (has no text in the input fields) set the order to 0 (default),
+				// so that the one extra row doesn't change its initial value
+				orderIndex.val(0);
+			} else {
+				orderIndex.val(index);
+			}
+		}
+
 		// enable formset functionality
 		$('#choice-formset tbody tr').formset({
-			prefix: '{{ formset.prefix }}'
+			prefix: '{{ formset.prefix }}',
+			deleteCssClass: 'delete',
+			added: function(row) {
+				row.find("input[name*='index']").val(row.parent().children().length);
+			}
 		});
 
 		// make forms sortable
@@ -61,13 +79,18 @@
 			handle: '.sorthandle',
 			update: function (event, ui) {
 				var rows = ui.item.parent().children('.sortable');
-				var newOrder = {};
-				rows.each(function (index, element) {
-					element = $(element).children("input[name*='index']");
-					element.val(index);
+				rows.each(function (index, row) {
+					setOrderIndex($(row));
 				});
-
 			}
+		});
+
+		$('form').submit(function () {
+			var rows = $('.sortable');
+			rows.each(function (index, row) {
+				setOrderIndex($(row), index)
+			});
+			return true;
 		});
 
 		// add datepicker to date inputs

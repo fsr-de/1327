@@ -3,12 +3,12 @@ import datetime
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.forms import inlineformset_factory
-from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden
-from django.utils.translation import ugettext_lazy as _
+from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import render
+from django.utils.translation import ugettext_lazy as _
 
-from _1327.polls.forms import PollForm, ChoiceForm
-from _1327.polls.models import Poll
+from _1327.polls.forms import ChoiceForm, PollForm
+from _1327.polls.models import Choice, Poll
 from _1327.user_management.shortcuts import get_object_or_error
 
 
@@ -33,30 +33,42 @@ def list(request):
 	)
 
 
-def create(request):
+def create(request, poll=None, url=None, success_message=_("Successfully created new Poll.")):
 	if not request.user.has_perm("polls.add_poll"):
 		return HttpResponseForbidden()
 
-	InlineChoiceFormset = inlineformset_factory(Poll, Choice, form=ChoiceForm, extra=2, can_delete=True)
+	InlineChoiceFormset = inlineformset_factory(Poll, Choice, form=ChoiceForm, extra=2 if poll is None else 1, can_delete=True)
 
-	form = PollForm(request.POST or None)
-	formset = InlineChoiceFormset(request.POST or None)
+	form = PollForm(request.POST or None, instance=poll)
+	formset = InlineChoiceFormset(request.POST or None, instance=poll)
 	if form.is_valid() and formset.is_valid():
 		poll = form.save()
 		choices = formset.save(commit=False)
+
+		for choice_to_delete in formset.deleted_objects:
+			choice_to_delete.delete()
+
 		for choice in choices:
 			choice.poll = poll
 			choice.save()
 
-		messages.success(request, _("Successfully created new Poll."))
+		messages.success(request, success_message)
 		return HttpResponseRedirect(reverse('polls:list'))
 
-	return render(request, "polls_create_poll.html",
+	return render(
+		request,
+		"polls_create_poll.html",
 		{
+			'url': url if url is not None else reverse('polls:create'),
 			'form': form,
 			'formset': formset,
 		}
 	)
+
+
+def edit(request, poll_id):
+	poll = get_object_or_error(Poll, request.user, ['polls.change_poll'], id=poll_id)
+	return create(request, poll=poll, url=reverse('polls:edit', args=[poll_id]), success_message=_("Successfully updated Poll."))
 
 
 def results(request, poll_id):
@@ -116,4 +128,3 @@ def vote(request, poll_id):
 			"widget": "checkbox" if poll.max_allowed_number_of_answers != 1 else "radio"
 		}
 	)
-
