@@ -6,8 +6,8 @@
 <head>
 	{% block header %}
 		<title>myHPI – {% block title %}{% endblock %}</title>
-		<link rel="stylesheet" href="{% get_static_prefix %}{% compile 'less/bootstrap.less' %}" />
-		<link rel="stylesheet" href="{% get_static_prefix %}{% compile 'less/1327.less' %}" />
+		<link rel="stylesheet" href="{% static 'less/bootstrap.less'|compile %}" />
+		<link rel="stylesheet" href="{% static 'less/1327.less'|compile %}" />
 		<link rel="shortcut icon" type="image/x-icon" href="{{STATIC_URL}}/images/favicon.ico"/>
 		<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
 		{% block css %}{% endblock %}

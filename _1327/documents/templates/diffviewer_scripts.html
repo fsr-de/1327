@@ -1,4 +1,4 @@
-{% load coffeescript %}
+{% load compile_static %}
 {% load i18n %}
 {% load static %}
 
@@ -23,7 +23,7 @@
 <script type="text/javascript" src="{% static 'js/difflib.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/diffview.js' %}"></script>
 <script>
-	{% inlinecoffeescript %}
+	{% inlinecompile "coffeescript" %}
 		versions = [];
 		{% for id, version, text in versions %}
 		versions.push([{{ version.pk }}, "{{ text }}"])
@@ -77,5 +77,5 @@
 				viewType: 0
 
 		createDiff()
-	{% endinlinecoffeescript %}
+	{% endinlinecompile %}
 </script>
