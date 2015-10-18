@@ -173,6 +173,10 @@ TEMPLATE_DIRS = (
 	os.path.join(BASE_DIR, "templates"),
 )
 
+STATIC_PRECOMPILER_COMPILERS = (
+	'static_precompiler.compilers.CoffeeScript',
+	'static_precompiler.compilers.LESS',
+)
 
 # Create a localsettings.py to override settings per machine or user, e.g. for
 # development or different settings in deployments using multiple servers.

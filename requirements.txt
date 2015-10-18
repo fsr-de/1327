@@ -1,7 +1,5 @@
 Django >=1.8, <1.9
-django-static-precompiler >=0.7
-# Required by django-static-precompiler:
-six
+django-static-precompiler >=1.0, <1.1
 
 django-bootstrap3 >= 5.4.0
 django-admin-bootstrapped >= 2.5

@@ -5,7 +5,7 @@
 {# if you want to reuse this template you need to provide the following data: #}
 {# a tuple looking as follows: (number_of_version, version of the document, text_to_diff) #}
 
-<link rel="stylesheet" href="{% get_static_prefix %}{% compile 'less/diffview.less' %}" />
+<link rel="stylesheet" href="{% static 'less/diffview.less'|compile %}" />
 
 <h2>{% trans "Diff page versions" %}</h2>
 
