@@ -50,9 +50,15 @@
 					{% endfor %}
 					{% if CAN_CREATE_INFORMATIONPAGE %}
 						<li class="pull-right">
-							<a href="{% url 'information_pages:create' %}">
+							<div class="dropdown add-button-dropdown">
+								<a class="dropdown-toggle add-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-							</a>
+								</a>
+								<ul class="dropdown-menu dropdown-menu-right">
+									<li><a href="{% url 'information_pages:create' %}">{% trans "Information page" %}</a></li>
+									<li><a href="{% url 'minutes:create' %}">{% trans "Minutes" %}</a></li>
+								</ul>
+							</div>
 						</li>
 					{% endif %}
 				</ul>
@@ -92,16 +98,16 @@
 
 
 {% block scripts %}
-    {{ block.super }}
+	{{ block.super }}
 
-    <script type="text/javascript">
-        $(document).ready(function() {
-        	// resize headline bar to fit the text
-        	var l = $('.headline-text')[0].getComputedTextLength() + 50;
-        	var points = "-10,0 " + (l+18) + ",0 " + l + ",50 -10,50";
-        	$('.headline-bar')[0].setAttribute('points', points);
+	<script type="text/javascript">
+		$(document).ready(function() {
+			// resize headline bar to fit the text
+			var l = $('.headline-text')[0].getComputedTextLength() + 50;
+			var points = "-10,0 " + (l+18) + ",0 " + l + ",50 -10,50";
+			$('.headline-bar')[0].setAttribute('points', points);
 			$('.headline-bar-shadow')[0].setAttribute('points', points);
 			$('[data-toggle="tooltip"]').tooltip();
-        });
-    </script>
+		});
+	</script>
 {% endblock %}

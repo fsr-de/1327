@@ -64,9 +64,9 @@ def handle_edit(request, document):
 				'text': autosave.text,
 				'url_title': document.url_title,
 			}
-			form = DocumentForm(initial=form_data, instance=document)
+			form = document.Form(initial=form_data, instance=document)
 		else:
-			form = DocumentForm(instance=document)
+			form = document.Form(instance=document)
 		form.autosave = autosaved
 		if autosaved:
 			form.autosave_date = autosave.created

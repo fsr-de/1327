@@ -50,13 +50,6 @@ class MinutesDocument(Document):
 reversion.register(MinutesDocument, follow=["document_ptr"])
 
 
-class MinutesDocumentForm(DocumentForm):
-	class Meta(DocumentForm.Meta):
-		model = MinutesDocument
-
-MinutesDocument.Form = MinutesDocumentForm
-
-
 class MinutesLabel(models.Model):
 	title = models.CharField(max_length=255)
 	minutes = models.ManyToManyField(MinutesDocument, related_name="labels", blank=True)
