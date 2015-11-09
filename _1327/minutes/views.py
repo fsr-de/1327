@@ -1,16 +1,19 @@
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.http import HttpResponseRedirect, HttpResponse
+from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.forms.formsets import formset_factory
 from guardian.shortcuts import get_perms
 from guardian.models import Group
 import markdown
 from markdown.extensions.toc import TocExtension
+from datetime import datetime
 
-from _1327.documents.utils import handle_edit, prepare_versions, handle_autosave, handle_attachment
+from _1327.documents.utils import handle_edit, prepare_versions, handle_autosave, handle_attachment, delete_old_empty_pages
 from _1327.documents.models import Document
 from _1327.documents.forms import PermissionForm
 from _1327.user_management.shortcuts import get_object_or_error
@@ -33,6 +36,18 @@ def list(request):
 	return render(request, "minutes_list.html", {
 		'years': new_years,
 	})
+
+
+def create(request):
+	if request.user.has_perm("information_pages.add_informationdocument"):
+		delete_old_empty_pages()
+		title = _("New minutes document from {}").format(str(datetime.now()))
+		url_title = slugify(title)
+		MinutesDocument.objects.get_or_create(author=request.user, url_title=url_title, title=title, moderator=request.user)
+		new_autosaved_pages = None#get_new_autosaved_pages_for_user(request.user);
+		return edit(request, url_title)#, new_autosaved_pages)
+	else:
+		return HttpResponseForbidden()
 
 
 def edit(request, title):

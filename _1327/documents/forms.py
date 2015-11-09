@@ -1,3 +1,4 @@
+from django.conf import settings
 from django import forms
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
@@ -27,11 +28,10 @@ class DocumentForm(forms.ModelForm):
 		model = Document
 		fields = ['title', 'text', 'comment', 'url_title']
 
-	FORBIDDEN_URLS = ["admin", "login", "logout", "documents", "minutes", "polls"]
 	def clean_url_title(self):
 		super().clean()
 		url_title = self.cleaned_data['url_title']
-		if url_title in self.FORBIDDEN_URLS:
+		if url_title in settings.FORBIDDEN_URLS:
 			raise ValidationError(_('The URL used for this page is not allowed.'))
 		if Document.objects.filter(url_title=url_title).exclude(id=self.instance.id).exists():
 			raise ValidationError(_('The URL used for this page is already taken.'))

@@ -128,6 +128,17 @@ nav#top ul {
 ul.subnav li a {
 	font-size: 18px;
 }
+.navbar .add-button {
+	color: @white;
+	&:hover,
+	&:focus {
+		color: @navbar-default-link-hover-color;
+	}
+	background-color: transparent !important;
+}
+.navbar .add-button-dropdown {
+	padding-top: 7px;
+}
 
 // Overwrite Bootstrap nav
 .navbar-default .navbar-nav > .active > a {
