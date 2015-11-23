@@ -152,6 +152,8 @@ STATICFILES_FINDERS = (
 	'static_precompiler.finders.StaticPrecompilerFinder',
 )
 
+SUPPORTED_IMAGE_TYPES = ["jpg", "jpeg", "png", "gif", "tiff", "bmp"]
+
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
 	'django.template.loaders.filesystem.Loader',

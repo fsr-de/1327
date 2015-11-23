@@ -7,6 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 
 import reversion
 import os
+import json
 from reversion.models import RevertError
 from sendfile import sendfile
 from _1327 import settings
@@ -98,7 +99,9 @@ def download_attachment(request):
 		return HttpResponseForbidden()
 
 	filename = os.path.join(settings.MEDIA_ROOT, attachment.file.name)
-	return sendfile(request, filename, attachment=True, attachment_filename=attachment.displayname)
+	is_attachment = not request.GET.get('embed', None)
+
+	return sendfile(request, filename, attachment=is_attachment, attachment_filename=attachment.displayname)
 
 
 def update_attachment_order(request):
@@ -115,4 +118,39 @@ def update_attachment_order(request):
 
 		attachment.index = index
 		attachment.save()
+	return HttpResponse()
+
+
+def get_attachments(request, document_id):
+	if not request.is_ajax():
+		raise Http404
+
+	document = Document.objects.get(pk=document_id)
+	if not document.can_be_changed_by(request.user):
+		return HttpResponseForbidden()
+
+	attachments = document.attachments.all()
+	data = {}
+	for attachment in attachments:
+		file_type = attachment.displayname.lower().split('.')[-1]
+		if file_type not in settings.SUPPORTED_IMAGE_TYPES:
+			continue
+		data[attachment.id] = attachment.displayname
+
+	return HttpResponse(json.dumps(data))
+
+
+def change_attachment_no_direct_download(request):
+	if not request.POST or not request.is_ajax():
+		raise Http404
+
+	attachment_id = request.POST['id']
+	no_direct_download = json.loads(request.POST['no_direct_download'])
+
+	attachment = Attachment.objects.get(pk=attachment_id)
+	if not attachment.document.can_be_changed_by(request.user):
+		return HttpResponseForbidden()
+
+	attachment.no_direct_download = no_direct_download
+	attachment.save()
 	return HttpResponse()
