@@ -6,7 +6,7 @@ from django_webtest import WebTest
 from guardian.shortcuts import assign_perm
 from model_mommy import mommy
 
-from _1327.polls.models import Poll, Choice
+from _1327.polls.models import Choice, Poll
 from _1327.user_management.models import UserProfile
 
 

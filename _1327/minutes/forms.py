@@ -1,10 +1,11 @@
-from django.conf import settings
 from django import forms
+from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from _1327.documents.forms import StrippedCharField
+
 from .models import MinutesDocument
 
 

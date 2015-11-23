@@ -1,21 +1,29 @@
-from django.shortcuts import render
-from django.core.urlresolvers import reverse
-from django.contrib import messages
-from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
-from django.utils.translation import ugettext_lazy as _
-from django.utils.text import slugify
-from django.forms.formsets import formset_factory
-from guardian.shortcuts import get_perms
-from guardian.models import Group
-from guardian.utils import get_anonymous_user
 from datetime import datetime
-import markdown
-import reversion
-from markdown.extensions.toc import TocExtension
 
-from _1327.documents.utils import handle_edit, prepare_versions, handle_autosave, handle_attachment, get_new_autosaved_pages_for_user, delete_old_empty_pages
-from _1327.documents.models import Document
+from django.contrib import messages
+from django.core.urlresolvers import reverse
+from django.forms.formsets import formset_factory
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
+from django.shortcuts import render
+from django.utils.text import slugify
+from django.utils.translation import ugettext_lazy as _
+from guardian.models import Group
+from guardian.shortcuts import get_perms
+from guardian.utils import get_anonymous_user
+import markdown
+from markdown.extensions.toc import TocExtension
+import reversion
+
 from _1327.documents.forms import PermissionForm
+from _1327.documents.models import Document
+from _1327.documents.utils import (
+	delete_old_empty_pages,
+	get_new_autosaved_pages_for_user,
+	handle_attachment,
+	handle_autosave,
+	handle_edit,
+	prepare_versions,
+)
 from _1327.information_pages.models import InformationDocument
 from _1327.user_management.shortcuts import get_object_or_error
 

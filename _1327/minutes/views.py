@@ -1,21 +1,29 @@
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-from django.core.urlresolvers import reverse
-from django.contrib import messages
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
-from django.utils.text import slugify
-from django.utils.translation import ugettext_lazy as _
-from django.forms.formsets import formset_factory
-from guardian.shortcuts import get_perms
-from guardian.models import Group
-import markdown
-from markdown.extensions.toc import TocExtension
 from datetime import datetime
 
-from _1327.documents.utils import handle_edit, prepare_versions, handle_autosave, handle_attachment, delete_old_empty_pages
-from _1327.documents.models import Document
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
+from django.forms.formsets import formset_factory
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
+from django.shortcuts import render
+from django.utils.text import slugify
+from django.utils.translation import ugettext_lazy as _
+from guardian.models import Group
+from guardian.shortcuts import get_perms
+import markdown
+from markdown.extensions.toc import TocExtension
+
 from _1327.documents.forms import PermissionForm
+from _1327.documents.models import Document
+from _1327.documents.utils import (
+	delete_old_empty_pages,
+	handle_attachment,
+	handle_autosave,
+	handle_edit,
+	prepare_versions,
+)
 from _1327.user_management.shortcuts import get_object_or_error
+
 from .models import MinutesDocument
 
 

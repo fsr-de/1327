@@ -1,18 +1,18 @@
-from django.contrib import messages
-from django.shortcuts import get_object_or_404, Http404
-from django.http import HttpResponse, HttpResponseServerError, HttpResponseBadRequest, HttpResponseForbidden
-from django.db import transaction, models
-from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes.models import ContentType
-
-import reversion
-import os
 import json
+import os
+
+from django.contrib import messages
+from django.contrib.contenttypes.models import ContentType
+from django.db import models, transaction
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseServerError
+from django.shortcuts import get_object_or_404, Http404
+from django.utils.translation import ugettext_lazy as _
+import reversion
 from reversion.models import RevertError
 from sendfile import sendfile
-from _1327 import settings
 
-from _1327.documents.models import Document, Attachment
+from _1327 import settings
+from _1327.documents.models import Attachment, Document
 from _1327.user_management.shortcuts import get_object_or_error
 
 

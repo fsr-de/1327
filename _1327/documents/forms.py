@@ -1,9 +1,9 @@
-from django.conf import settings
 from django import forms
+from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
-from guardian.shortcuts import get_perms_for_model, assign_perm, remove_perm
+from guardian.shortcuts import assign_perm, get_perms_for_model, remove_perm
 
 from .models import Attachment, Document
 

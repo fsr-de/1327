@@ -1,13 +1,13 @@
 import json
 import re
 
-from django.db import transaction
 from django.conf import settings
+from django.db import transaction
 from django.utils import timezone
 import reversion
 
+from _1327.documents.forms import AttachmentForm, DocumentForm
 from _1327.documents.models import Document, TemporaryDocumentText
-from _1327.documents.forms import DocumentForm, AttachmentForm
 
 
 def get_new_autosaved_pages_for_user(user):

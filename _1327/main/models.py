@@ -1,7 +1,8 @@
-from _1327.documents.models import Document
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+
+from _1327.documents.models import Document
 
 
 class MenuItem(models.Model):

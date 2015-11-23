@@ -1,6 +1,6 @@
 from django.conf import settings
-from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib import messages
+from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.shortcuts import redirect, render
 from django.utils.translation import ugettext_lazy as _
 
