@@ -1,9 +1,8 @@
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
 from django.contrib import messages
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.forms.formsets import formset_factory
@@ -44,8 +43,7 @@ def create(request):
 		title = _("New minutes document from {}").format(str(datetime.now()))
 		url_title = slugify(title)
 		MinutesDocument.objects.get_or_create(author=request.user, url_title=url_title, title=title, moderator=request.user)
-		new_autosaved_pages = None#get_new_autosaved_pages_for_user(request.user);
-		return edit(request, url_title)#, new_autosaved_pages)
+		return edit(request, url_title)
 	else:
 		return HttpResponseForbidden()
 

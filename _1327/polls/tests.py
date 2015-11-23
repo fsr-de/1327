@@ -36,6 +36,7 @@ class PollModelTests(TestCase):
 		for choice in poll.choices.all():
 			self.assertAlmostEqual(choice.percentage(), expected_percentage, 2)
 
+
 class PollViewTests(WebTest):
 
 	def setUp(self):

@@ -3,10 +3,8 @@ from django import forms
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
-from guardian.shortcuts import get_perms_for_model, assign_perm, remove_perm
 
-from _1327.user_management.models import UserProfile
-from _1327.documents.forms import DocumentForm, StrippedCharField
+from _1327.documents.forms import StrippedCharField
 from .models import MinutesDocument
 
 

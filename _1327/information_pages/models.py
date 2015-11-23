@@ -29,4 +29,3 @@ class InformationDocument(Document):
 		return user.has_perm(permission_name, self) or user.has_perm(permission_name)
 
 reversion.register(InformationDocument, follow=["document_ptr"])
-

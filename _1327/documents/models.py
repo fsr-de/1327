@@ -53,6 +53,7 @@ class Document(PolymorphicModel):
 			authors.add(version.revision.user)
 		return authors
 
+
 class TemporaryDocumentText(models.Model):
 	text = models.TextField()
 	document = models.ForeignKey(Document, related_name='document')

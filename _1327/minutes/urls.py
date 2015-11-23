@@ -3,7 +3,7 @@ from django.contrib import admin
 
 admin.autodiscover()
 
-urlpatterns = patterns('_1327.minutes.views',
+urlpatterns = patterns('_1327.minutes.views',  # noqa
 	url(r"^$", 'list', name='list'),
 	url(r"create$", 'create', name='create'),
 	url(r"(?P<title>[\w-]+)/edit$", 'edit', name='edit'),
