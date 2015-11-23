@@ -1,0 +1,8 @@
+[run]
+branch = True
+omit =
+	*/tests.py
+	*/migrations/*
+	_1327/wsgi.py
+	_1327/main/management/commands/run.py
+source = _1327
