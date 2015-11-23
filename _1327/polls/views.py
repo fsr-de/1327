@@ -88,5 +88,3 @@ def vote(request, poll_id):
 			"widget": "checkbox" if poll.max_allowed_number_of_answers != 1 else "radio"
 		}
 	)
-
-

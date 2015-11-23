@@ -5,7 +5,6 @@ from datetime import datetime
 
 import reversion
 
-from _1327.documents.forms import DocumentForm
 from _1327.documents.models import Document
 from _1327.user_management.models import UserProfile
 
@@ -56,4 +55,3 @@ class MinutesLabel(models.Model):
 
 	def __str__(self):
 		return self.title
-

@@ -10,6 +10,7 @@ class MinutesDocumentAdmin(GuardedModelAdmin, PolymorphicChildModelAdmin):
 	base_model = Document
 	list_display = ('title', 'author', 'date')
 
+
 class MinutesLabelAdmin(admin.ModelAdmin):
 	base_model = MinutesLabel
 	list_display = ('title',)

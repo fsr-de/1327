@@ -128,13 +128,13 @@ class TestAutosave(WebTest):
 		# on the new page site should be a banner with a restore link
 		response = self.app.get(reverse('information_pages:create'), user=self.user)
 		self.assertEqual(response.status_code, 200)
-		self.assertIn((reverse('information_pages:edit', args=[url_title])+'?restore'), str(response.body))
+		self.assertIn((reverse('information_pages:edit', args=[url_title]) + '?restore'), str(response.body))
 
 		user2 = mommy.make(UserProfile, is_superuser=True)
 		# on the new page site should be a banner with a restore link but not for another user
 		response = self.app.get(reverse('information_pages:create'), user=user2)
 		self.assertEqual(response.status_code, 200)
-		self.assertNotIn((reverse('information_pages:edit', args=[url_title])+'?restore'), str(response.body))
+		self.assertNotIn((reverse('information_pages:edit', args=[url_title]) + '?restore'), str(response.body))
 
 		# create second document
 		response = self.app.get(reverse('information_pages:create'), user=self.user)
@@ -148,8 +148,8 @@ class TestAutosave(WebTest):
 
 		# on the new page site should be a banner with a restore link for both sites
 		response = self.app.get(reverse('information_pages:create'), user=self.user)
-		self.assertIn((reverse('information_pages:edit', args=[url_title])+'?restore'), str(response.body))
-		self.assertIn((reverse('information_pages:edit', args=[url_title2])+'?restore'), str(response.body))
+		self.assertIn((reverse('information_pages:edit', args=[url_title]) + '?restore'), str(response.body))
+		self.assertIn((reverse('information_pages:edit', args=[url_title2]) + '?restore'), str(response.body))
 
 		# if not loading autosave text should be still empty
 		response = self.app.get(reverse('information_pages:edit', args=[url_title]), user=self.user)

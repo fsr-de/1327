@@ -1,8 +1,7 @@
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
 from django.contrib import messages
-from django.contrib.auth import get_user_model
-from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse, Http404
+from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
 from django.forms.formsets import formset_factory
@@ -27,7 +26,7 @@ def create(request):
 		title = _("New Page from {}").format(str(datetime.now()))
 		url_title = slugify(title)
 		InformationDocument.objects.get_or_create(url_title=url_title, title=title)
-		new_autosaved_pages = get_new_autosaved_pages_for_user(request.user);
+		new_autosaved_pages = get_new_autosaved_pages_for_user(request.user)
 		return edit(request, url_title, new_autosaved_pages)
 	else:
 		return HttpResponseForbidden()
@@ -45,7 +44,7 @@ def edit(request, title, new_autosaved_pages=[]):
 			'form': form,
 			'active_page': 'edit',
 			'creation': (len(reversion.get_for_object(document)) == 0),
-			'new_autosaved_pages' : new_autosaved_pages,
+			'new_autosaved_pages': new_autosaved_pages,
 		})
 
 
@@ -88,7 +87,7 @@ def view_information(request, title):
 		'toc': md.toc,
 		'attachments': document.attachments.all().order_by('index'),
 		'active_page': 'view',
-		'permission_warning' : permission_warning,
+		'permission_warning': permission_warning,
 	})
 
 

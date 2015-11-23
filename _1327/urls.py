@@ -3,7 +3,7 @@ from django.contrib import admin
 
 admin.autodiscover()
 
-urlpatterns = patterns('_1327',
+urlpatterns = patterns('_1327',  # noqa
 	url(r"^$", 'main.views.index'),
 	url(r"^documents/", include('_1327.documents.urls', namespace='documents')),
 	url(r"^minutes/", include('_1327.minutes.urls', namespace='minutes')),

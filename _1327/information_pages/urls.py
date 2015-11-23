@@ -3,7 +3,7 @@ from django.contrib import admin
 
 admin.autodiscover()
 
-urlpatterns = patterns('_1327.information_pages.views',
+urlpatterns = patterns('_1327.information_pages.views',  # noqa
 	url(r"create$", 'create', name='create'),
 	url(r"(?P<title>[\w-]+)/edit$", 'edit', name='edit'),
 	url(r"(?P<title>[\w-]+)/autosave$", 'autosave', name='autosave'),
