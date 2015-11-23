@@ -1,17 +1,17 @@
 from django.contrib.auth.models import Group
-from django.test import TestCase
 from django.core.urlresolvers import reverse
-from django.utils.text import slugify
 from django.db import transaction
+from django.test import TestCase
+from django.utils.text import slugify
 from django_webtest import WebTest
 from guardian.shortcuts import assign_perm, get_perms_for_model, remove_perm
 from guardian.utils import get_anonymous_user
 from model_mommy import mommy
 import reversion
-from _1327.information_pages.models import InformationDocument
 
-from _1327.user_management.models import UserProfile
 from _1327.documents.models import Document
+from _1327.information_pages.models import InformationDocument
+from _1327.user_management.models import UserProfile
 
 
 class TestDocument(TestCase):

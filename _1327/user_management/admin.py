@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib import admin
 from django.contrib.admin.widgets import FilteredSelectMultiple
-from django.contrib.auth.admin import UserAdmin, GroupAdmin
+from django.contrib.auth.admin import GroupAdmin, UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _

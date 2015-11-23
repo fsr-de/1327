@@ -1,9 +1,10 @@
 from django.contrib.auth.models import Group
 from django.db.models import SlugField
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.utils.text import slugify
-from guardian.shortcuts import get_perms_for_model, assign_perm
+from guardian.shortcuts import assign_perm, get_perms_for_model
+
 from _1327.documents.models import Document
 
 

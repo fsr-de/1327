@@ -7,11 +7,10 @@ For more information on this file, see
 https://docs.djangoproject.com/en/1.6/howto/deployment/wsgi/
 """
 
+import os
 import sys
 
 sys.stderr = sys.stdout
-
-import os
 
 pwd = os.path.dirname(os.path.abspath(__file__))
 projectdir = os.path.join(pwd, "..")

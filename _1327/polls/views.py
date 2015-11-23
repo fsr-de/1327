@@ -2,9 +2,9 @@ import datetime
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, Http404
-from django.utils.translation import ugettext_lazy as _
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
+from django.utils.translation import ugettext_lazy as _
 
 from _1327.polls.models import Poll
 from _1327.user_management.shortcuts import get_object_or_error

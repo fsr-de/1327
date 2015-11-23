@@ -1,8 +1,8 @@
+from datetime import datetime
+
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _, ungettext_lazy
-from datetime import datetime
-
 import reversion
 
 from _1327.documents.models import Document

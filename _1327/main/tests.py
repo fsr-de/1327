@@ -1,4 +1,4 @@
-from django.test import TestCase, RequestFactory
+from django.test import RequestFactory, TestCase
 from model_mommy import mommy
 
 from .context_processors import mark_selected

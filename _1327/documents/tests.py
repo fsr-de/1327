@@ -1,19 +1,21 @@
 import json
-from django.utils.text import slugify
-import reversion
 import tempfile
+
 from django.contrib.auth.models import Group
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.test import TestCase
+from django.utils.text import slugify
 from django_webtest import WebTest
-from guardian.shortcuts import get_perms_for_model, assign_perm, get_perms, remove_perm
+from guardian.shortcuts import assign_perm, get_perms, get_perms_for_model, remove_perm
 from model_mommy import mommy
+import reversion
 
 from _1327.information_pages.models import InformationDocument
 from _1327.user_management.models import UserProfile
-from .models import Document, Attachment
+
+from .models import Attachment, Document
 
 
 class TestRevertion(WebTest):

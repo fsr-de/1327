@@ -8,7 +8,7 @@ from _1327.information_pages.models import InformationDocument
 from _1327.minutes.admin import MinutesDocumentAdmin
 from _1327.minutes.models import MinutesDocument
 
-from .models import Document, Attachment
+from .models import Attachment, Document
 
 
 class DocumentAdmin(GuardedModelAdmin, reversion.VersionAdmin, PolymorphicParentModelAdmin):
