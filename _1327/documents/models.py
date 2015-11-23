@@ -68,7 +68,7 @@ class Attachment(models.Model):
 	file = models.FileField(upload_to="documents/%y/%m/", verbose_name=_("File"))
 
 	index = models.IntegerField(verbose_name=_("ordering index"), default=0)
-	downloadable = models.BooleanField(default=True, verbose_name=_("Can be downloaded by users"))
+	no_direct_download = models.BooleanField(default=False, verbose_name=_("Do not show as attachment (for embedded images)"))
 
 	class Meta:
 		verbose_name = _("Attachment")

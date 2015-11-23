@@ -7,6 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 
 import reversion
 import os
+import json
 from reversion.models import RevertError
 from sendfile import sendfile
 from _1327 import settings
@@ -139,17 +140,17 @@ def get_attachments(request, document_id):
 	return HttpResponse(json.dumps(data))
 
 
-def change_attachment_downloadable(request):
+def change_attachment_no_direct_download(request):
 	if not request.POST or not request.is_ajax():
 		raise Http404
 
 	attachment_id = request.POST['id']
-	downloadable = json.loads(request.POST['downloadable'])
+	no_direct_download = json.loads(request.POST['no_direct_download'])
 
 	attachment = Attachment.objects.get(pk=attachment_id)
 	if not attachment.document.can_be_changed_by(request.user):
 		return HttpResponseForbidden()
 
-	attachment.downloadable = downloadable
+	attachment.no_direct_download = no_direct_download
 	attachment.save()
 	return HttpResponse()

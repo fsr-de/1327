@@ -25,8 +25,8 @@
 				<th>{% trans "Display name" %}</th>
 				<th>{% trans "Filename" %}</th>
 				<th>{% trans "Created" %}</th>
-				<th data-toggle="tooltip" data-placement="top" title="{% trans "Untick if attachment is only used as embedded image" %}">
-					{% trans "Downloadable" %} <span class="label label-info">?</span>
+				<th data-toggle="tooltip" data-placement="top" title="{% trans "Tick if attachment is only used as embedded image." %}">
+					{% trans "Do not show" %} <span class="label label-info">?</span>
 				</th>
 			</thead>
 			{% for attachment in attachments %}
@@ -41,7 +41,7 @@
 
 					<td class="text-center">
 						<div class="checkbox">
-							<input class="change-downloadable" type="checkbox" {% if attachment.downloadable %}checked{% endif %} name="downloadable">
+							<input class="change-downloadable" type="checkbox" {% if attachment.no_direct_download %}checked{% endif %} name="downloadable">
 						</div>
 					</td>
 					<td>
@@ -110,8 +110,8 @@
 			var attachmentId = tableRow.data('id');
 			var checked = this.checked;
 			$.post(
-				"{% url 'documents:change_attachment_downloadable' %}",
-				{id: attachmentId, downloadable: checked},
+				"{% url 'documents:change_attachment_no_direct_download' %}",
+				{id: attachmentId, no_direct_download: checked},
 				function () {
 					tableRow.effect("highlight", {color: "#69a700"}, 2000);
 				}

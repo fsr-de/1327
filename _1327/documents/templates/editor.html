@@ -28,7 +28,7 @@
 	<div class="divider"></div>
 	<div id="text-preview"></div>
 
-	<div class="modal fade" id="selectImageAttachment" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal fade ontop" id="selectImageAttachment" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -78,14 +78,13 @@
 						icon: "glyphicon glyphicon-picture",
 						callback: function (e) {
 							// get all attachments
-							$.get(
+							$.getJSON(
 								"{% url "documents:get_attachments" document.id %}",
 								{},
 								function (data, textStatus, jqXHR) {
 									// prepare the select in the modal
-									var newOptions = JSON.parse(data);
 									var select = $('#attachmentModalSelect');
-									if ($.isEmptyObject(newOptions)) {
+									if ($.isEmptyObject(data)) {
 										// if there are no pictures disable the select
 										select.attr('disabled', 'disabled');
 										return;
@@ -94,7 +93,7 @@
 									}
 									var options = select.prop('options');
 									$('option', select).remove();
-									$.each(newOptions, function (val, text) {
+									$.each(data, function (val, text) {
 										options[options.length] = new Option(text, val);
 									});
 									// trigger the change event in order to show the preview of the pre selected

@@ -505,51 +505,51 @@ class TestAttachments(WebTest):
 				msg="Old id and new id should not be the same",
 			)
 
-	def test_attachment_change_downloadable(self):
-		self.assertTrue(self.attachment.downloadable, "attachments are downloadable by default")
+	def test_attachment_change_no_direct_download(self):
+		self.assertFalse(self.attachment.no_direct_download, "attachments can be downloaded directly by default")
 		response = self.app.post(
-			reverse('documents:change_attachment_downloadable'),
-			{'id': self.attachment.id, 'downloadable': 'false'},
+			reverse('documents:change_attachment_no_direct_download'),
+			{'id': self.attachment.id, 'no_direct_download': 'false'},
 			user=self.user,
 			xhr=True,
 		)
 		self.assertEqual(response.status_code, 200, "it should be possible to change the downloadable state")
 		attachment = Attachment.objects.get(pk=self.attachment.id)
-		self.assertFalse(attachment.downloadable)
+		self.assertFalse(attachment.no_direct_download)
 
-	def test_attachment_change_downloadable_wrong_permissions(self):
-		self.assertTrue(self.attachment.downloadable)
+	def test_attachment_change_no_direct_download_wrong_permissions(self):
+		self.assertFalse(self.attachment.no_direct_download)
 		user = mommy.make(UserProfile)
 		response = self.app.post(
-			reverse('documents:change_attachment_downloadable'),
-			{'id': self.attachment.id, 'downloadable': 'false'},
+			reverse('documents:change_attachment_no_direct_download'),
+			{'id': self.attachment.id, 'no_direct_download': 'false'},
 			user=user,
 			xhr=True,
 			expect_errors=True
 		)
 		self.assertEqual(response.status_code, 403)
 
-	def test_attachment_change_downloadable_wrong_request_type(self):
+	def test_attachment_change_no_direct_download_wrong_request_type(self):
 		response = self.app.get(
-			reverse('documents:change_attachment_downloadable'),
-			{'id': self.attachment.id, 'downloadable': 'false'},
+			reverse('documents:change_attachment_no_direct_download'),
+			{'id': self.attachment.id, 'no_direct_download': 'false'},
 			user=self.user,
 			xhr=True,
 			expect_errors=True,
 		)
 		self.assertEqual(response.status_code, 404)
 
-	def test_attachment_change_downloadable_no_ajax(self):
+	def test_attachment_change_no_direct_download_no_ajax(self):
 		response = self.app.post(
-			reverse('documents:change_attachment_downloadable'),
-			{'id': self.attachment.id, 'downloadable': 'false'},
+			reverse('documents:change_attachment_no_direct_download'),
+			{'id': self.attachment.id, 'no_direct_download': 'false'},
 			user=self.user,
 			expect_errors=True,
 		)
 		self.assertEqual(response.status_code, 404)
 
-	def test_attachment_change_downloadable_view(self):
-		attachment = mommy.make(Attachment, document=self.document, displayname="pic.jpg", downloadable=False)
+	def test_attachment_change_no_direct_download_view(self):
+		attachment = mommy.make(Attachment, document=self.document, displayname="pic.jpg", no_direct_download=True)
 		response = self.app.get(
 			reverse('information_pages:view_information', args=[self.document.url_title]),
 			user=self.user,
