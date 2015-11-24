@@ -515,7 +515,7 @@ class TestAttachments(WebTest):
 			user=self.user,
 			xhr=True,
 		)
-		self.assertEqual(response.status_code, 200, "it should be possible to change the downloadable state")
+		self.assertEqual(response.status_code, 200, "it should be possible to change the direct download state")
 		attachment = Attachment.objects.get(pk=self.attachment.id)
 		self.assertFalse(attachment.no_direct_download)
 
