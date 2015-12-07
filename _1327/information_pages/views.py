@@ -12,7 +12,7 @@ from guardian.shortcuts import get_perms
 from guardian.utils import get_anonymous_user
 import markdown
 from markdown.extensions.toc import TocExtension
-import reversion
+from reversion import revisions
 
 from _1327.documents.forms import PermissionForm
 from _1327.documents.models import Document
@@ -51,7 +51,7 @@ def edit(request, title, new_autosaved_pages=[]):
 			'document': document,
 			'form': form,
 			'active_page': 'edit',
-			'creation': (len(reversion.get_for_object(document)) == 0),
+			'creation': (len(revisions.get_for_object(document)) == 0),
 			'new_autosaved_pages': new_autosaved_pages,
 		})
 

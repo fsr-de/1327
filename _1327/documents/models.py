@@ -3,7 +3,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from polymorphic import PolymorphicModel
 
-import reversion
+from reversion import revisions
 
 from _1327.user_management.models import UserProfile
 
@@ -11,7 +11,7 @@ from _1327.user_management.models import UserProfile
 DOCUMENT_VIEW_PERMISSION_NAME = 'view_document'
 
 
-@reversion.register
+@revisions.register
 class Document(PolymorphicModel):
 	created = models.DateTimeField(auto_now_add=True)
 	title = models.CharField(max_length=255)
@@ -48,7 +48,7 @@ class Document(PolymorphicModel):
 
 	def authors(self):
 		authors = set()
-		versions = reversion.get_for_object(self)
+		versions = revisions.get_for_object(self)
 		for version in versions:
 			authors.add(version.revision.user)
 		return authors
