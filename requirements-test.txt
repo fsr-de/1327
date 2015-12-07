@@ -1,0 +1,11 @@
+# Unit tests
+webtest >= 2.0.15
+django-webtest >= 1.7.7
+model_mommy >= 1.2.4
+
+# Coverage
+coveralls
+
+# Lint
+flake8
+flake8-import-order

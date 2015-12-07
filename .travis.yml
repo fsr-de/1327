@@ -5,11 +5,9 @@ python:
 install:
   - npm install -g less coffee-script
   - pip install -r requirements.txt
-  - pip install coveralls
-  - pip install flake8
-  - pip install flake8-import-order
+  - pip install -r requirements-test.txt
 script:
-  - flake8 --config .flake8 _1327
+  - python manage.py flake8
   - coverage run manage.py test
 after_success:
   - coveralls
