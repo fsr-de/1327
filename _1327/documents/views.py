@@ -7,7 +7,7 @@ from django.db import models, transaction
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseServerError
 from django.shortcuts import get_object_or_404, Http404
 from django.utils.translation import ugettext_lazy as _
-import reversion
+from reversion import revisions
 from reversion.models import RevertError
 from sendfile import sendfile
 
@@ -23,7 +23,7 @@ def revert(request):
 	version_id = request.POST['id']
 	document_url_title = request.POST['url_title']
 	document = get_object_or_error(Document, request.user, ['change_document'], url_title=document_url_title)
-	versions = reversion.get_for_object(document)
+	versions = revisions.get_for_object(document)
 
 	# find the we want to revert to
 	revert_version = None
@@ -60,14 +60,14 @@ def revert(request):
 			del new_fields[key]
 
 	reverted_document = document_class(**new_fields)
-	with transaction.atomic(), reversion.create_revision():
+	with transaction.atomic(), revisions.create_revision():
 		reverted_document.save()
 		# Restore ManyToManyFields
 		for key in many_to_many_fields.keys():
 			getattr(reverted_document, key).clear()
 			getattr(reverted_document, key).add(*many_to_many_fields[key])
-		reversion.set_user(request.user)
-		reversion.set_comment(
+		revisions.set_user(request.user)
+		revisions.set_comment(
 			_('reverted to revision \"{revision_comment}\"'.format(revision_comment=revert_version.revision.comment)))
 
 	return HttpResponse()

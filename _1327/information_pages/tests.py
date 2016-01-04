@@ -7,7 +7,7 @@ from django_webtest import WebTest
 from guardian.shortcuts import assign_perm, get_perms_for_model, remove_perm
 from guardian.utils import get_anonymous_user
 from model_mommy import mommy
-import reversion
+from reversion import revisions
 
 from _1327.documents.models import Document
 from _1327.information_pages.models import InformationDocument
@@ -129,10 +129,10 @@ class TestVersions(WebTest):
 		self.user = mommy.make(UserProfile, is_superuser=True)
 
 		self.document = mommy.prepare(InformationDocument)
-		with transaction.atomic(), reversion.create_revision():
+		with transaction.atomic(), revisions.create_revision():
 			self.document.save()
-			reversion.set_user(self.user)
-			reversion.set_comment('test version')
+			revisions.set_user(self.user)
+			revisions.set_comment('test version')
 
 	def test_get_version_page(self):
 		response = self.app.get(reverse('information_pages:versions', args=[self.document.url_title]), status=403)
@@ -144,7 +144,7 @@ class TestVersions(WebTest):
 	def test_save_version(self):
 		# first get all current versions of the document from the database
 		document = Document.objects.get()
-		versions = reversion.get_for_object(document)
+		versions = revisions.get_for_object(document)
 		self.assertEqual(len(versions), 1)
 
 		# get the editor page and add a new revision
@@ -160,7 +160,7 @@ class TestVersions(WebTest):
 		self.assertEqual(response.status_code, 200)
 
 		# check whether number of versions increased
-		versions = reversion.get_for_object(self.document)
+		versions = revisions.get_for_object(self.document)
 		self.assertEqual(len(versions), 2)
 
 		# check whether the comment of the version correct
@@ -311,7 +311,7 @@ class TestNewPage(WebTest):
 		document = InformationDocument.objects.get(title=text)
 
 		# check whether number of versions is correct
-		versions = reversion.get_for_object(document)
+		versions = revisions.get_for_object(document)
 		self.assertEqual(len(versions), 1)
 
 		# check whether the properties of the new document are correct

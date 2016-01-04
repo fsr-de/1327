@@ -3,7 +3,7 @@ from datetime import datetime
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _, ungettext_lazy
-import reversion
+from reversion import revisions
 
 from _1327.documents.models import Document
 from _1327.user_management.models import UserProfile
@@ -46,7 +46,7 @@ class MinutesDocument(Document):
 		permission_name = 'change_minutesdocument'
 		return user.has_perm(permission_name, self) or user.has_perm(permission_name)
 
-reversion.register(MinutesDocument, follow=["document_ptr"])
+revisions.register(MinutesDocument, follow=["document_ptr"])
 
 
 class MinutesLabel(models.Model):

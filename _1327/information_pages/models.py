@@ -1,6 +1,6 @@
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
-import reversion
+from reversion import revisions
 
 from _1327.documents.models import Document
 
@@ -28,4 +28,4 @@ class InformationDocument(Document):
 		permission_name = 'change_informationdocument'
 		return user.has_perm(permission_name, self) or user.has_perm(permission_name)
 
-reversion.register(InformationDocument, follow=["document_ptr"])
+revisions.register(InformationDocument, follow=["document_ptr"])

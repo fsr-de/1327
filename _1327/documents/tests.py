@@ -10,7 +10,7 @@ from django.utils.text import slugify
 from django_webtest import WebTest
 from guardian.shortcuts import assign_perm, get_perms, get_perms_for_model, remove_perm
 from model_mommy import mommy
-import reversion
+from reversion import revisions
 
 from _1327.information_pages.models import InformationDocument
 from _1327.user_management.models import UserProfile
@@ -25,21 +25,21 @@ class TestRevertion(WebTest):
 		self.user = mommy.make(UserProfile, is_superuser=True)
 
 		document = mommy.prepare(Document, text="text")
-		with transaction.atomic(), reversion.create_revision():
+		with transaction.atomic(), revisions.create_revision():
 				document.save()
-				reversion.set_user(self.user)
-				reversion.set_comment('test version')
+				revisions.set_user(self.user)
+				revisions.set_comment('test version')
 
 		# create a second version
 		document.text += '\nmore text'
-		with transaction.atomic(), reversion.create_revision():
+		with transaction.atomic(), revisions.create_revision():
 				document.save()
-				reversion.set_user(self.user)
-				reversion.set_comment('added more text')
+				revisions.set_user(self.user)
+				revisions.set_comment('added more text')
 
 	def test_only_admin_may_revert(self):
 		document = Document.objects.get()
-		versions = reversion.get_for_object(document)
+		versions = revisions.get_for_object(document)
 		self.assertEqual(len(versions), 2)
 
 		response = self.app.post(reverse('documents:revert'), {'id': versions[1].pk, 'url_title': document.url_title}, status=404)
@@ -56,14 +56,14 @@ class TestRevertion(WebTest):
 
 	def test_revert_document(self):
 		document = Document.objects.get()
-		versions = reversion.get_for_object(document)
+		versions = revisions.get_for_object(document)
 		self.assertEqual(len(versions), 2)
 
 		# second step try to revert to old version
 		response = self.app.post(reverse('documents:revert'), {'id': versions[1].pk, 'url_title': document.url_title}, user=self.user, xhr=True)
 		self.assertEqual(response.status_code, 200)
 
-		versions = reversion.get_for_object(document)
+		versions = revisions.get_for_object(document)
 		self.assertEqual(len(versions), 3)
 		self.assertEqual(versions[0].object.text, "text")
 		self.assertEqual(versions[0].revision.comment, 'reverted to revision "test version"')
@@ -76,10 +76,10 @@ class TestAutosave(WebTest):
 		self.user = mommy.make(UserProfile, is_superuser=True)
 
 		document = mommy.prepare(InformationDocument, text="text")
-		with transaction.atomic(), reversion.create_revision():
+		with transaction.atomic(), revisions.create_revision():
 				document.save()
-				reversion.set_user(self.user)
-				reversion.set_comment('test version')
+				revisions.set_user(self.user)
+				revisions.set_comment('test version')
 
 	def test_autosave(self):
 		# get document

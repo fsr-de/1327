@@ -4,7 +4,7 @@ import re
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
-import reversion
+from reversion import revisions
 
 from _1327.documents.forms import AttachmentForm, DocumentForm
 from _1327.documents.models import Document, TemporaryDocumentText
@@ -15,7 +15,7 @@ def get_new_autosaved_pages_for_user(user):
 	all_temp_documents = TemporaryDocumentText.objects.all()
 	for temp_document in all_temp_documents:
 		document = temp_document.document
-		if len(reversion.get_for_object(document)) == 0 and temp_document.author == user:
+		if len(revisions.get_for_object(document)) == 0 and temp_document.author == user:
 			autosaved_pages.append(document)
 	return autosaved_pages
 
@@ -23,7 +23,7 @@ def get_new_autosaved_pages_for_user(user):
 def delete_old_empty_pages():
 	all_documents = Document.objects.filter(created__lte=timezone.now() - settings.DELETE_EMPTY_PAGE_AFTER)
 	for document in all_documents:
-		if len(reversion.get_for_object(document)) == 0 and \
+		if len(revisions.get_for_object(document)) == 0 and \
 			not TemporaryDocumentText.objects.filter(document=document).exists():
 				document.delete()
 
@@ -37,10 +37,10 @@ def handle_edit(request, document):
 			document.url_title = cleaned_data['url_title']
 
 			# save the document and also save the user and the comment the user added
-			with transaction.atomic(), reversion.create_revision():
+			with transaction.atomic(), revisions.create_revision():
 				document.save()
-				reversion.set_user(request.user)
-				reversion.set_comment(cleaned_data['comment'])
+				revisions.set_user(request.user)
+				revisions.set_comment(cleaned_data['comment'])
 
 			# delete Autosave
 			try:
@@ -98,7 +98,7 @@ def handle_autosave(request, document):
 
 
 def prepare_versions(document):
-	versions = reversion.get_for_object(document).reverse()
+	versions = revisions.get_for_object(document).reverse()
 
 	# prepare data for the template
 	version_list = []
