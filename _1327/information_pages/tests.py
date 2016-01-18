@@ -63,7 +63,7 @@ class TestEditor(WebTest):
 		response = self.app.get(reverse('information_pages:edit', args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		form = response.form
+		form = response.forms[0]
 		self.assertEqual(form.get('title').value, self.document.title)
 		self.assertEqual(form.get('text').value, self.document.text)
 
@@ -81,7 +81,7 @@ class TestEditor(WebTest):
 
 			response = self.app.get(reverse('information_pages:edit', args=[self.document.url_title]), user=self.user)
 
-			form = response.form
+			form = response.forms[0]
 			form.set('title', string)
 			response = form.submit('submit')
 			self.assertEqual(response.status_code, 200)
@@ -151,7 +151,7 @@ class TestVersions(WebTest):
 		response = self.app.get(reverse('information_pages:edit', args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		form = response.form
+		form = response.forms[0]
 		new_string = self.document.text + "\nHallo Bibi Blocksberg!!"
 		form.set('text', new_string)
 		form.set('comment', 'hallo Bibi Blocksberg')
@@ -299,7 +299,7 @@ class TestNewPage(WebTest):
 		response = self.app.get(reverse('information_pages:create'), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		form = response.form
+		form = response.forms[0]
 		text = "Hallo Bibi Blocksberg!"
 		form.set('text', text)
 		form.set('title', text)

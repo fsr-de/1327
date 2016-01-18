@@ -88,7 +88,7 @@ class TestAutosave(WebTest):
 		# document text should be text
 		response = self.app.get(reverse('information_pages:edit', args=[document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
-		form = response.form
+		form = response.forms[0]
 		self.assertEqual(form.get('text').value, 'text')
 
 		# autosave AUTO
@@ -98,13 +98,13 @@ class TestAutosave(WebTest):
 		# if not loading autosave text should be still text
 		response = self.app.get(reverse('information_pages:edit', args=[document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
-		form = response.form
+		form = response.forms[0]
 		self.assertEqual(form.get('text').value, 'text')
 
 		# if loading autosave text should be AUTO
 		response = self.app.get(reverse('information_pages:edit', args=[document.url_title]), {'restore': ''}, user=self.user)
 		self.assertEqual(response.status_code, 200)
-		form = response.form
+		form = response.forms[0]
 		self.assertEqual(form.get('text').value, 'AUTO')
 
 		# second autosave AUTO2
@@ -114,14 +114,14 @@ class TestAutosave(WebTest):
 		# if loading autosave text should be AUTO2
 		response = self.app.get(reverse('information_pages:edit', args=[document.url_title]), {'restore': ''}, user=self.user)
 		self.assertEqual(response.status_code, 200)
-		form = response.form
+		form = response.forms[0]
 		self.assertEqual(form.get('text').value, 'AUTO2')
 
 	def test_autosave_newPage(self):
 		# create document
 		response = self.app.get(reverse('information_pages:create'), user=self.user)
 		self.assertEqual(response.status_code, 200)
-		form = response.form
+		form = response.forms[0]
 		url_title = slugify(form.get('title').value)
 
 		# autosave AUTO
@@ -142,7 +142,7 @@ class TestAutosave(WebTest):
 		# create second document
 		response = self.app.get(reverse('information_pages:create'), user=self.user)
 		self.assertEqual(response.status_code, 200)
-		form = response.form
+		form = response.forms[0]
 		url_title2 = slugify(form.get('title').value)
 
 		# autosave second document AUTO
@@ -157,13 +157,13 @@ class TestAutosave(WebTest):
 		# if not loading autosave text should be still empty
 		response = self.app.get(reverse('information_pages:edit', args=[url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
-		form = response.form
+		form = response.forms[0]
 		self.assertEqual(form.get('text').value, '')
 
 		# if loading autosave text should be AUTO
 		response = self.app.get(reverse('information_pages:edit', args=[url_title]), {'restore': ''}, user=self.user)
 		self.assertEqual(response.status_code, 200)
-		form = response.form
+		form = response.forms[0]
 		self.assertEqual(form.get('text').value, 'AUTO')
 
 

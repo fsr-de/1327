@@ -129,10 +129,10 @@ def handle_attachment(request, document):
 				instance.displayname = "{}.{}".format(instance.displayname, file_type)
 			instance.document = document
 			instance.save()
-			return True, form
+			return True, form, instance
 	else:
 		form = AttachmentForm()
-	return False, form
+	return False, form, None
 
 
 def permission_warning(user, document):
