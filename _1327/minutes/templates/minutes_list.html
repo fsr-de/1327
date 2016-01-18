@@ -17,8 +17,18 @@
 {% for year in years %}
 <h2 id="year{{ year.year }}">{{ year.year }}</h2>
 <ul>
-	{% for m in year.minutes %}
-	<li><a href="{{ m.get_view_url }}">{{ m.title}}</a></li>
+	{% for minute in year.minutes %}
+	<li>
+		<a href="{{ minute.get_view_url }}">{{ minute.title }}</a>
+		{% for label in minute.labels.all %}
+		<span class="label label-default">{{ label.title }}</span>
+		{% endfor %}
+		{% if minute.state == minute.UNPUBLISHED %}
+		<span class="label label-danger">{% trans "Unpublished" %}</span>
+		{% elif  minute.state == minute.INTERNAL %}
+		<span class="label label-warning">{% trans "Internal" %}</span>
+		{% endif %}
+	</li>
 	{% endfor %}
 </ul>
 {% endfor %}
