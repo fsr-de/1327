@@ -3,6 +3,7 @@ from datetime import datetime
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.forms import inlineformset_factory
 from django.forms.formsets import formset_factory
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import render
@@ -23,8 +24,8 @@ from _1327.documents.utils import (
 	prepare_versions,
 )
 from _1327.user_management.shortcuts import get_object_or_error
-
-from .models import MinutesDocument
+from .forms import GuestForm
+from .models import Guest, MinutesDocument
 
 
 @login_required
@@ -58,7 +59,12 @@ def create(request):
 
 def edit(request, title):
 	document = get_object_or_error(MinutesDocument, request.user, ['minutes.change_minutesdocument'], url_title=title)
-	success, form = handle_edit(request, document)
+
+	guestFormset = inlineformset_factory(MinutesDocument, Guest, form=GuestForm, can_delete=True, extra=1)
+	formset = guestFormset(request.POST or None, instance=document)
+
+	success, form = handle_edit(request, document, formset)
+
 	if success:
 		messages.success(request, _("Successfully saved changes"))
 		return HttpResponseRedirect(reverse('minutes:view', args=[document.url_title]))
@@ -68,6 +74,7 @@ def edit(request, title):
 			'edit_url': reverse('minutes:edit', args=[document.url_title]),
 			'form': form,
 			'active_page': 'edit',
+			'guest_formset': formset
 		})
 
 

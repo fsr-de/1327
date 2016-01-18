@@ -17,6 +17,12 @@
 		{% for participant in document.participants.all %}
 		<dd>{{ participant }}</dd>
 		{% endfor %}
+		<dt>{% trans "Guests" %}</dt>
+		{% for guest in document.guests.all %}
+		<dd>{{ guest.name }}</dd>
+		{% empty %}
+		<dd>{% trans "No Guests" %}</dd>
+		{% endfor %}
 		<dt>{% trans "Created" %}</dt>
 		<dd>{{ document.created|date:"d. M Y, H:i" }}</dd>
 	</dl>

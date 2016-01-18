@@ -1,0 +1,46 @@
+{% extends 'editor.html' %}
+
+{% load i18n %}
+{% load bootstrap3 %}
+
+{% block inlineformset %}
+	{{ guest_formset.management_form }}
+        <h3>Guests</h3>
+        <div id="guest-inline-form">
+            {% for form_element in guest_formset %}
+                <div class="form-group form-guests-row">
+                    <label class="col-md-2 control-label" for="{{ form_element.name.id_for_label }}">Name</label>
+                    <div class="col-md-9 input-group inlineformset">
+                        {% if form_element.instance.pk %}{{ form_element.DELETE }}{% endif %}
+                        {% for field in form_element.hidden_fields %}
+                            {{ field }}
+                        {% endfor %}
+                        <input type="text" class="form-control" id="{{ form_element.name.id_for_label }}" name="{{ form_element.name.html_name }}" placeholder="{{ form_element.name.label }}" {% if form_element.name.value %}value="{{ form_element.name.value }}"{% endif %}>
+                        <span class="input-group-btn"></span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-9 add-row-container"></div>
+        </div>
+{% endblock %}
+
+{% block additional_script %}
+    // enable formset functionality
+    $('.form-guests-row').formset({
+        prefix: '{{ guest_formset.prefix }}',
+        deleteCssClass: 'delete-button btn btn-default',
+        deleteText: '{% trans "Delete" %}',
+        added: function(row) {
+            row.find('.input-group-btn').append(row.find('.delete-button'));
+            $('#guest-inline-form').append(row);
+        }
+    });
+    $('.delete-button').each(function() {
+        $(this).prev(".input-group.inlineformset").children(".input-group-btn").append(this);
+    });
+    $('.add-row-container').append($('.add-row'));
+    $('.add-row').addClass('btn btn-default');
+    $('.add-row').text('{% trans "Add another guest" %}');
+{% endblock %}

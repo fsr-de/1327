@@ -5,8 +5,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from _1327.documents.forms import StrippedCharField
-
-from .models import MinutesDocument
+from .models import Guest, MinutesDocument
 
 
 class MinutesDocumentForm(forms.ModelForm):
@@ -30,3 +29,11 @@ class MinutesDocumentForm(forms.ModelForm):
 		return url_title
 
 MinutesDocument.Form = MinutesDocumentForm
+
+
+class GuestForm(forms.ModelForm):
+	class Meta:
+		model = Guest
+		fields = ['name']
+
+Guest.Form = GuestForm
