@@ -94,6 +94,81 @@ class PollViewTests(WebTest):
 		self.assertIn(b"There are no polls you can vote for.", response.body)
 		self.assertIn(b"There are no results you can see.", response.body)
 
+	def test_create_poll(self):
+		response = self.app.get(reverse('polls:create'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		form = response.form
+		form['choices-0-description'] = 'test description'
+		form['choices-0-index'] = 0
+		form['choices-0-text'] = 'test choice'
+		form['title'] = 'TestPoll'
+		form['max_allowed_number_of_answers'] = 1
+		form['start_date'] = '2016-01-01'
+		form['end_date'] = '2088-01-01'
+
+		response = form.submit()
+		self.assertEqual(response.status_code, 302)
+
+		poll = Poll.objects.get(title='TestPoll')
+		self.assertEqual(poll.choices.count(), 1)
+
+	def test_create_poll_user_has_no_permission(self):
+		user = mommy.make(UserProfile)
+
+		response = self.app.get(reverse('polls:create'), user=user, expect_errors=True)
+		self.assertEqual(response.status_code, 403)
+
+		response = self.app.post(reverse('polls:create'), user=user, expect_errors=True)
+		self.assertEqual(response.status_code, 403)
+
+	def test_edit_poll(self):
+		response = self.app.get(reverse('polls:edit', args=[self.poll.id]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		choice_text = 'test choice'
+		choice_description = 'test description'
+		poll_description = 'Description'
+
+		form = response.form
+		form['choices-3-description'] = choice_description
+		form['choices-3-index'] = 3
+		form['choices-3-text'] = choice_text
+		form['choices-0-text'] = choice_text
+		form['description'] = poll_description
+
+		response = form.submit()
+		self.assertEqual(response.status_code, 302)
+
+		poll = Poll.objects.get(id=self.poll.id)
+		self.assertEqual(poll.description, poll_description)
+		self.assertEqual(poll.choices.count(), 4)
+		self.assertEqual(poll.choices.first().text, choice_text)
+		self.assertEqual(poll.choices.last().text, choice_text)
+		self.assertEqual(poll.choices.last().description, choice_description)
+
+	def test_edit_poll_delete_choice(self):
+		response = self.app.get(reverse('polls:edit', args=[self.poll.id]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		form = response.form
+		form['choices-0-DELETE'] = True
+
+		response = form.submit()
+		self.assertEqual(response.status_code, 302)
+
+		poll = Poll.objects.get(id=self.poll.id)
+		self.assertEqual(poll.choices.count(), 2)
+
+	def test_edit_poll_user_has_no_permission(self):
+		user = mommy.make(UserProfile)
+
+		response = self.app.get(reverse('polls:edit', args=[self.poll.id]), user=user, expect_errors=True)
+		self.assertEqual(response.status_code, 403)
+
+		response = self.app.post(reverse('polls:edit', args=[self.poll.id]), user=user, expect_errors=True)
+		self.assertEqual(response.status_code, 403)
+
 
 class PollResultTests(WebTest):
 
