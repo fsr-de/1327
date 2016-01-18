@@ -55,3 +55,8 @@ class MinutesLabel(models.Model):
 
 	def __str__(self):
 		return self.title
+
+
+class Guest(models.Model):
+	name = models.CharField(max_length=255, verbose_name=_('Name'))
+	minute = models.ForeignKey(MinutesDocument, related_name='guests', verbose_name=_("Guests"))

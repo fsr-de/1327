@@ -28,10 +28,10 @@ def delete_old_empty_pages():
 				document.delete()
 
 
-def handle_edit(request, document):
+def handle_edit(request, document, formset=None):
 	if request.method == 'POST':
 		form = document.Form(request.POST, instance=document)
-		if form.is_valid():
+		if form.is_valid() and (formset is None or formset.is_valid()):
 			cleaned_data = form.cleaned_data
 
 			document.url_title = cleaned_data['url_title']
@@ -39,6 +39,13 @@ def handle_edit(request, document):
 			# save the document and also save the user and the comment the user added
 			with transaction.atomic(), revisions.create_revision():
 				document.save()
+				if formset:
+					guests = formset.save(commit=False)
+					for guest in formset.deleted_objects:
+						guest.delete()
+					for guest in guests:
+						guest.minute = document
+						guest.save()
 				revisions.set_user(request.user)
 				revisions.set_comment(cleaned_data['comment'])
 

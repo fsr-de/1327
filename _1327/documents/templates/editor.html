@@ -4,7 +4,7 @@
 
 	<h2>{% trans "Edit page" %}</h2>
 
-    {% if form.autosave %}
+	{% if form.autosave %}
 		<div class="alert alert-danger alert-margin-bottom" role="alert">{% blocktrans with date=form.autosave_date %}This document was autosaved on {{ date }}{% endblocktrans %}, {% trans "you can restore unsaved changes:" %} <a href="{{ document.get_edit_url }}?restore" class="btn-sm btn-default" role="button">{% trans "Click here" %}</a></div>
 	{% endif %}
 
@@ -15,6 +15,7 @@
 	<form action="{{ document.get_edit_url }}" method="post" class="form-horizontal" role="form" id="document-form">
 		{% bootstrap_form form layout='horizontal' %}
 		{% csrf_token %}
+		{% block inlineformset %}{% endblock %}
 		{% buttons %}
 		<div class="col-md-offset-2 col-md-9">
 			<button type="submit" class="btn btn-primary">
@@ -55,6 +56,7 @@
 	<!-- mandatory script include -->
 	<script type="text/javascript" src="{% static 'js/markdown.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/jquery.hotkeys.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/jquery.formset.js' %}"></script>
 	<script type="text/javascript" src="{% static 'bootstrap-markdown/js/bootstrap-markdown.js' %}"></script>
 	<script>
 		$("#id_text").removeClass('form-control').markdown({
@@ -153,4 +155,6 @@
 			setTimeout(function() { save(); }, 10000);
 		}
 		save();
+
+		{% block additional_script %}{% endblock %}
 	</script>
