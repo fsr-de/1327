@@ -54,7 +54,9 @@ node default {
 
     # apache environment
     class { 'apache':
-        default_vhost => false
+        default_vhost   => false,
+        user            => 'vagrant',
+        group           => 'vagrant',
     }
     class { 'apache::mod::wsgi':
         wsgi_python_path            => '/vagrant'
