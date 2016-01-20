@@ -23,7 +23,7 @@ class MinutesDocument(Document):
 		(PUBLISHED, _('Published')),
 		(INTERNAL, _('Internal')),
 	), default=UNPUBLISHED, verbose_name=_("State"))
-	moderator = models.ForeignKey(UserProfile, related_name='moderations', verbose_name=_("Moderator"))
+	moderator = models.ForeignKey(UserProfile, related_name='moderations', verbose_name=_("Moderator"), blank=True, null=True)
 	author = models.ForeignKey(UserProfile, related_name='documents')
 	participants = models.ManyToManyField(UserProfile, related_name='participations', verbose_name=_("Participants"))
 
