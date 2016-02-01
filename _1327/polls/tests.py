@@ -1,6 +1,7 @@
 import datetime
 
 from django.core.urlresolvers import reverse
+from django.template.defaultfilters import floatformat
 from django.test import TestCase
 from django_webtest import WebTest
 from guardian.shortcuts import assign_perm
@@ -202,7 +203,7 @@ class PollResultTests(WebTest):
 
 		for choice in self.poll.choices.all():
 			self.assertIn(choice.text.encode('utf-8'), response.body)
-			self.assertIn(str(choice.percentage()).encode('utf-8'), response.body)
+			self.assertIn(floatformat(choice.percentage()).encode('utf-8'), response.body)
 			self.assertIn(str(choice.votes).encode('utf-8'), response.body)
 
 	def test_view_with_description_of_poll(self):
