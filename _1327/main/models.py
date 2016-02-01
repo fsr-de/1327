@@ -32,7 +32,7 @@ class MenuItem(models.Model):
 		if user.is_superuser:
 			return True
 
-		if self.staff_only and not user.is_staff():
+		if self.staff_only and not user.is_staff:
 			return False
 
 		if self.document:
