@@ -1,5 +1,6 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from polymorphic.models import PolymorphicModel
 
@@ -13,7 +14,7 @@ DOCUMENT_VIEW_PERMISSION_NAME = 'view_document'
 
 @revisions.register
 class Document(PolymorphicModel):
-	created = models.DateTimeField(auto_now_add=True)
+	created = models.DateTimeField(default=timezone.now)
 	title = models.CharField(max_length=255)
 	url_title = models.SlugField()
 	text = models.TextField()
