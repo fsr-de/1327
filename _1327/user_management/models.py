@@ -60,5 +60,6 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
 	def __str__(self):
 		return self.get_full_name()
 
+	@property
 	def is_staff(self):
 		return self.is_superuser
