@@ -88,7 +88,7 @@ class TestAutosave(WebTest):
 		# document text should be text
 		response = self.app.get(reverse('information_pages:edit', args=[document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
-		form = response.forms[0]
+		form = response.forms['document-form']
 		self.assertEqual(form.get('text').value, 'text')
 
 		# autosave AUTO
@@ -98,13 +98,13 @@ class TestAutosave(WebTest):
 		# if not loading autosave text should be still text
 		response = self.app.get(reverse('information_pages:edit', args=[document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
-		form = response.forms[0]
+		form = response.forms['document-form']
 		self.assertEqual(form.get('text').value, 'text')
 
 		# if loading autosave text should be AUTO
 		response = self.app.get(reverse('information_pages:edit', args=[document.url_title]), {'restore': ''}, user=self.user)
 		self.assertEqual(response.status_code, 200)
-		form = response.forms[0]
+		form = response.forms['document-form']
 		self.assertEqual(form.get('text').value, 'AUTO')
 
 		# second autosave AUTO2
@@ -114,14 +114,14 @@ class TestAutosave(WebTest):
 		# if loading autosave text should be AUTO2
 		response = self.app.get(reverse('information_pages:edit', args=[document.url_title]), {'restore': ''}, user=self.user)
 		self.assertEqual(response.status_code, 200)
-		form = response.forms[0]
+		form = response.forms['document-form']
 		self.assertEqual(form.get('text').value, 'AUTO2')
 
 	def test_autosave_newPage(self):
 		# create document
 		response = self.app.get(reverse('information_pages:create'), user=self.user)
 		self.assertEqual(response.status_code, 200)
-		form = response.forms[0]
+		form = response.forms['document-form']
 		url_title = slugify(form.get('title').value)
 
 		# autosave AUTO
@@ -142,7 +142,7 @@ class TestAutosave(WebTest):
 		# create second document
 		response = self.app.get(reverse('information_pages:create'), user=self.user)
 		self.assertEqual(response.status_code, 200)
-		form = response.forms[0]
+		form = response.forms['document-form']
 		url_title2 = slugify(form.get('title').value)
 
 		# autosave second document AUTO
@@ -157,13 +157,13 @@ class TestAutosave(WebTest):
 		# if not loading autosave text should be still empty
 		response = self.app.get(reverse('information_pages:edit', args=[url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
-		form = response.forms[0]
+		form = response.forms['document-form']
 		self.assertEqual(form.get('text').value, '')
 
 		# if loading autosave text should be AUTO
 		response = self.app.get(reverse('information_pages:edit', args=[url_title]), {'restore': ''}, user=self.user)
 		self.assertEqual(response.status_code, 200)
-		form = response.forms[0]
+		form = response.forms['document-form']
 		self.assertEqual(form.get('text').value, 'AUTO')
 
 
@@ -607,3 +607,76 @@ class TestAttachments(WebTest):
 			expect_errors=True,
 		)
 		self.assertEqual(response.status_code, 404)
+
+	def test_create_attachment_from_editor_wrong_method(self):
+		response = self.app.get(
+			reverse('documents:create_attachment'),
+			user=self.user,
+			expect_errors=True,
+		)
+		self.assertEqual(response.status_code, 404)
+
+	def test_create_attachment_from_editor_no_permission(self):
+		params = {
+			'document': self.document.id,
+		}
+
+		normal_user = mommy.make(UserProfile)
+
+		response = self.app.post(
+			reverse('documents:create_attachment'),
+			params=params,
+			user=normal_user,
+			xhr=True,
+			expect_errors=True
+		)
+		self.assertEqual(response.status_code, 403)
+
+	def test_create_attachment_from_editor_invalid_form(self):
+		upload_files = [
+			('file', 'test.txt', bytes())
+		]
+
+		params = {
+			'no_direct_download': True,
+			'document': self.document.id,
+			'displayname': '',
+		}
+
+		response = self.app.post(
+			reverse('documents:create_attachment'),
+			content_type='multipart/form-data',
+			upload_files=upload_files,
+			params=params,
+			user=self.user,
+			xhr=True,
+			expect_errors=True
+		)
+		self.assertEqual(response.status_code, 400)
+
+	def test_create_attachment_from_editor(self):
+		upload_files = [
+			('file', 'test.txt', bytes("Test content of file", encoding='utf-8'))
+		]
+
+		params = {
+			'no_direct_download': True,
+			'document': self.document.id,
+			'displayname': '',
+		}
+
+		self.assertEqual(Attachment.objects.count(), 1)
+		self.assertEqual(self.document.attachments.count(), 1)
+
+		response = self.app.post(
+			reverse('documents:create_attachment'),
+			content_type='multipart/form-data',
+			upload_files=upload_files,
+			params=params,
+			user=self.user,
+			xhr=True,
+		)
+		self.assertEqual(response.status_code, 200)
+
+		self.assertEqual(Attachment.objects.count(), 2)
+		self.assertEqual(self.document.attachments.count(), 2)
