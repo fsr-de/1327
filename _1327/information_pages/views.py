@@ -9,7 +9,6 @@ from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from guardian.models import Group
 from guardian.shortcuts import get_perms
-from guardian.utils import get_anonymous_user
 import markdown
 from markdown.extensions.toc import TocExtension
 from reversion import revisions
@@ -22,6 +21,7 @@ from _1327.documents.utils import (
 	handle_attachment,
 	handle_autosave,
 	handle_edit,
+	permission_warning,
 	prepare_versions,
 )
 from _1327.information_pages.models import InformationDocument
@@ -53,6 +53,7 @@ def edit(request, title, new_autosaved_pages=[]):
 			'active_page': 'edit',
 			'creation': (len(revisions.get_for_object(document)) == 0),
 			'new_autosaved_pages': new_autosaved_pages,
+			'permission_warning': permission_warning(request.user, document),
 		})
 
 
@@ -76,6 +77,7 @@ def versions(request, title):
 		'active_page': 'versions',
 		'versions': document_versions,
 		'document': document,
+		'permission_warning': permission_warning(request.user, document),
 	})
 
 
@@ -85,17 +87,13 @@ def view_information(request, title):
 	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2)])
 	text = md.convert(document.text)
 
-	anonymous_rights = get_anonymous_user().has_perm(InformationDocument.VIEW_PERMISSION_NAME, document)
-	edit_rights = request.user.has_perm("change_informationdocument", document)
-	permission_warning = edit_rights and not anonymous_rights
-
 	return render(request, 'information_pages_base.html', {
 		'document': document,
 		'text': text,
 		'toc': md.toc,
 		'attachments': document.attachments.filter(no_direct_download=False).order_by('index'),
 		'active_page': 'view',
-		'permission_warning': permission_warning,
+		'permission_warning': permission_warning(request.user, document),
 	})
 
 
@@ -128,6 +126,7 @@ def permissions(request, title):
 		'document': document,
 		'formset': formset,
 		'active_page': 'permissions',
+		'permission_warning': permission_warning(request.user, document),
 	})
 
 
@@ -145,4 +144,5 @@ def attachments(request, title):
 			'form': form,
 			'attachments': document.attachments.all().order_by('index'),
 			'active_page': 'attachments',
+			'permission_warning': permission_warning(request.user, document),
 		})

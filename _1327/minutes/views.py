@@ -21,6 +21,7 @@ from _1327.documents.utils import (
 	handle_attachment,
 	handle_autosave,
 	handle_edit,
+	permission_warning,
 	prepare_versions,
 )
 from _1327.user_management.shortcuts import get_object_or_error
@@ -74,7 +75,8 @@ def edit(request, title):
 			'edit_url': reverse('minutes:edit', args=[document.url_title]),
 			'form': form,
 			'active_page': 'edit',
-			'guest_formset': formset
+			'guest_formset': formset,
+			'permission_warning': permission_warning(request.user, document),
 		})
 
 
@@ -98,6 +100,7 @@ def versions(request, title):
 		'active_page': 'versions',
 		'versions': document_versions,
 		'document': document,
+		'permission_warning': permission_warning(request.user, document),
 	})
 
 
@@ -113,6 +116,7 @@ def view(request, title):
 		'toc': md.toc,
 		'attachments': document.attachments.filter(no_direct_download=False).order_by('index'),
 		'active_page': 'view',
+		'permission_warning': permission_warning(request.user, document),
 	})
 
 
@@ -145,6 +149,7 @@ def permissions(request, title):
 		'document': document,
 		'formset': formset,
 		'active_page': 'permissions',
+		'permission_warning': permission_warning(request.user, document),
 	})
 
 
@@ -162,4 +167,5 @@ def attachments(request, title):
 			'form': form,
 			'attachments': document.attachments.all().order_by('index'),
 			'active_page': 'attachments',
+			'permission_warning': permission_warning(request.user, document),
 		})

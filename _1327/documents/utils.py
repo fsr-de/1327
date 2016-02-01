@@ -4,10 +4,12 @@ import re
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
+from guardian.utils import get_anonymous_user
 from reversion import revisions
 
 from _1327.documents.forms import AttachmentForm, DocumentForm
 from _1327.documents.models import Document, TemporaryDocumentText
+from _1327.information_pages.models import InformationDocument
 
 
 def get_new_autosaved_pages_for_user(user):
@@ -131,3 +133,9 @@ def handle_attachment(request, document):
 	else:
 		form = AttachmentForm()
 	return False, form
+
+
+def permission_warning(user, document):
+	anonymous_rights = get_anonymous_user().has_perm(InformationDocument.VIEW_PERMISSION_NAME, document)
+	edit_rights = user.has_perm("change_informationdocument", document)
+	return edit_rights and not anonymous_rights
