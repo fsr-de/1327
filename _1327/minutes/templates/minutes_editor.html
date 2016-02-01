@@ -11,11 +11,11 @@
                 <div class="form-group form-guests-row">
                     <label class="col-md-2 control-label" for="{{ form_element.name.id_for_label }}">Name</label>
                     <div class="col-md-9 input-group inlineformset">
+                        <input type="text" class="form-control" id="{{ form_element.name.id_for_label }}" name="{{ form_element.name.html_name }}" placeholder="{{ form_element.name.label }}" {% if form_element.name.value %}value="{{ form_element.name.value }}"{% endif %}>
                         {% if form_element.instance.pk %}{{ form_element.DELETE }}{% endif %}
                         {% for field in form_element.hidden_fields %}
                             {{ field }}
                         {% endfor %}
-                        <input type="text" class="form-control" id="{{ form_element.name.id_for_label }}" name="{{ form_element.name.html_name }}" placeholder="{{ form_element.name.label }}" {% if form_element.name.value %}value="{{ form_element.name.value }}"{% endif %}>
                         <span class="input-group-btn"></span>
                     </div>
                 </div>
