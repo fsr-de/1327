@@ -16,3 +16,6 @@
 [submodule "_1327/static/bootstrap-markdown"]
 	path = _1327/static/bootstrap-markdown
 	url = https://github.com/toopay/bootstrap-markdown.git
+[submodule "_1327/static/font-awesome"]
+	path = _1327/static/font-awesome
+	url = https://github.com/FortAwesome/Font-Awesome.git
