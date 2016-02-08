@@ -14,6 +14,7 @@ from guardian.shortcuts import get_perms
 import markdown
 from markdown.extensions.toc import TocExtension
 
+from _1327 import settings
 from _1327.documents.forms import PermissionForm
 from _1327.documents.models import Document
 from _1327.documents.utils import (
@@ -65,7 +66,7 @@ def edit(request, title):
 	formset = guestFormset(request.POST or None, instance=document)
 
 	success, form = handle_edit(request, document, formset)
-
+	__, attachment_form, __ = handle_attachment(request, document)
 	if success:
 		messages.success(request, _("Successfully saved changes"))
 		return HttpResponseRedirect(reverse('minutes:view', args=[document.url_title]))
@@ -74,9 +75,11 @@ def edit(request, title):
 			'document': document,
 			'edit_url': reverse('minutes:edit', args=[document.url_title]),
 			'form': form,
+			'attachment_form': attachment_form,
 			'active_page': 'edit',
 			'guest_formset': formset,
 			'permission_warning': permission_warning(request.user, document),
+			'supported_image_types': settings.SUPPORTED_IMAGE_TYPES,
 		})
 
 
@@ -156,7 +159,7 @@ def permissions(request, title):
 def attachments(request, title):
 	document = get_object_or_error(MinutesDocument, request.user, ['minutes.change_minutesdocument'], url_title=title)
 
-	success, form = handle_attachment(request, document)
+	success, form, __ = handle_attachment(request, document)
 	if success:
 		messages.success(request, _("File has been uploaded successfully!"))
 		return HttpResponseRedirect(reverse("minutes:attachments", args=[document.url_title]))

@@ -13,6 +13,7 @@ from sendfile import sendfile
 
 from _1327 import settings
 from _1327.documents.models import Attachment, Document
+from _1327.documents.utils import handle_attachment
 from _1327.user_management.shortcuts import get_object_or_error
 
 
@@ -71,6 +72,21 @@ def revert(request):
 			_('reverted to revision \"{revision_comment}\"'.format(revision_comment=revert_version.revision.comment)))
 
 	return HttpResponse()
+
+
+def create_attachment(request):
+	if not request.is_ajax() or not request.method == "POST":
+		raise Http404()
+
+	document = Document.objects.get(id=request.POST['document'])
+	if not document.can_be_changed_by(request.user):
+		return HttpResponseForbidden()
+
+	success, __, attachment = handle_attachment(request, document)
+	if success:
+		return HttpResponse(attachment.id)
+	else:
+		return HttpResponseBadRequest()
 
 
 def delete_attachment(request):

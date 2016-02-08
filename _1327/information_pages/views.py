@@ -13,6 +13,7 @@ import markdown
 from markdown.extensions.toc import TocExtension
 from reversion import revisions
 
+from _1327 import settings
 from _1327.documents.forms import PermissionForm
 from _1327.documents.models import Document
 from _1327.documents.utils import (
@@ -42,7 +43,10 @@ def create(request):
 
 def edit(request, title, new_autosaved_pages=[]):
 	document = get_object_or_error(InformationDocument, request.user, ['information_pages.change_informationdocument'], url_title=title)
+
 	success, form = handle_edit(request, document)
+	__, attachment_form, __ = handle_attachment(request, document)
+
 	if success:
 		messages.success(request, _("Successfully saved changes"))
 		return HttpResponseRedirect(reverse('information_pages:view_information', args=[document.url_title]))
@@ -50,10 +54,12 @@ def edit(request, title, new_autosaved_pages=[]):
 		return render(request, "information_pages_edit.html", {
 			'document': document,
 			'form': form,
+			'attachment_form': attachment_form,
 			'active_page': 'edit',
 			'creation': (len(revisions.get_for_object(document)) == 0),
 			'new_autosaved_pages': new_autosaved_pages,
 			'permission_warning': permission_warning(request.user, document),
+			'supported_image_types': settings.SUPPORTED_IMAGE_TYPES,
 		})
 
 
@@ -133,7 +139,7 @@ def permissions(request, title):
 def attachments(request, title):
 	document = get_object_or_error(InformationDocument, request.user, ['information_pages.change_informationdocument'], url_title=title)
 
-	success, form = handle_attachment(request, document)
+	success, form, __ = handle_attachment(request, document)
 	if success:
 		messages.success(request, _("File has been uploaded successfully!"))
 		return HttpResponseRedirect(reverse("information_pages:attachments", args=[document.url_title]))
