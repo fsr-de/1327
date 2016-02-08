@@ -6,37 +6,37 @@
 {% endblock %}
 
 {% block sidebar %}
-<ul>
-	{% for year in years %}
-	<li><a href="#year{{ year.year }}">{{ year.year }}</a></li>
-	{% endfor %}
-</ul>
+	<ul>
+		{% for year in years %}
+		<li><a href="#year{{ year.year }}">{{ year.year }}</a></li>
+		{% endfor %}
+	</ul>
 {% endblock %}
 
 {% block content %}
-{% for year in years %}
-<h2 id="year{{ year.year }}">{{ year.year }}</h2>
-<table class="table table-striped">
-	<tr>
-		<th class="col-xs-2">{% trans "Date" %}</th>
-		<th class="col-xs-10">{% trans "Title" %}</th>
-	</tr>
-	{% for minute in year.minutes %}
-	<tr>
-		<td>{{ minute.date | date:"d.m.Y" }}</td>
-		<td>
-			<a href="{{ minute.get_view_url }}">{{ minute.title }}</a>
-			{% for label in minute.labels.all %}
-			<span class="label label-default">{{ label.title }}</span>
+	{% for year in years %}
+		<h2 id="year{{ year.year }}">{{ year.year }}</h2>
+		<table class="table table-striped">
+			<tr>
+				<th class="col-xs-2">{% trans "Date" %}</th>
+				<th class="col-xs-10">{% trans "Title" %}</th>
+			</tr>
+			{% for minute in year.minutes %}
+				<tr>
+					<td>{{ minute.date | date:"d.m.Y" }}</td>
+					<td>
+						<a href="{{ minute.get_view_url }}">{{ minute.title }}</a>
+						{% for label in minute.labels.all %}
+							<span class="label {{ label.class_for_text_color }}" style="background-color: {{ label.color }};">{{ label.title }}</span>
+						{% endfor %}
+						{% if minute.state == minute.UNPUBLISHED %}
+							<span class="label label-danger">{% trans "Unpublished" %}</span>
+						{% elif  minute.state == minute.INTERNAL %}
+							<span class="label label-warning">{% trans "Internal" %}</span>
+						{% endif %}
+					</td>
+				</tr>
 			{% endfor %}
-			{% if minute.state == minute.UNPUBLISHED %}
-			<span class="label label-danger">{% trans "Unpublished" %}</span>
-			{% elif  minute.state == minute.INTERNAL %}
-			<span class="label label-warning">{% trans "Internal" %}</span>
-			{% endif %}
-		</td>
-	</tr>
+		</table>
 	{% endfor %}
-</table>
-{% endfor %}
 {% endblock %}
