@@ -41,7 +41,7 @@ def create(request):
 		return HttpResponseForbidden()
 
 
-def edit(request, title, new_autosaved_pages=[]):
+def edit(request, title, new_autosaved_pages=None):
 	document = get_object_or_error(InformationDocument, request.user, ['information_pages.change_informationdocument'], url_title=title)
 
 	success, form = handle_edit(request, document)
