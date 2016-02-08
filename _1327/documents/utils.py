@@ -97,7 +97,7 @@ def handle_autosave(request, document):
 			if document is None:
 				temporary_document_text = TemporaryDocumentText(author=request.user)
 			elif document.text != cleaned_data['text']:
-				temporary_document_text, created = TemporaryDocumentText.objects.get_or_create(document=document, author=request.user)
+				temporary_document_text, __ = TemporaryDocumentText.objects.get_or_create(document=document, author=request.user)
 				temporary_document_text.document = document
 			else:
 				return
