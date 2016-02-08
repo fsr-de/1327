@@ -185,6 +185,9 @@ STATIC_PRECOMPILER_COMPILERS = (
 	'static_precompiler.compilers.LESS',
 )
 
+# Set this to the ID of the document that shall be shown as Main Page
+MAIN_PAGE_ID = -1
+
 # Create a localsettings.py to override settings per machine or user, e.g. for
 # development or different settings in deployments using multiple servers.
 _LOCAL_SETTINGS_FILENAME = os.path.join(BASE_DIR, "localsettings.py")
