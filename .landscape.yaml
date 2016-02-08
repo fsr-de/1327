@@ -1,0 +1,4 @@
+uses:
+    - django
+python-targets:
+    - 3
