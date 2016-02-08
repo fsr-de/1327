@@ -24,133 +24,140 @@ html {
 }
 body {
 	height: 100%;
+	background-color: lighten(@hpi-yellow, 45%);
 }
 
 div#wrapper {
 	position: relative;
 	min-height: 100%;
 	padding: 0 0 @footer-height 0;
-	background-color: rgba(255, 255, 255, 0.8);
+	background-color: @white;
 }
 
-div.title {
-	background-color: @gray-dark;
-	color: @gray-lighter;
-
-	a.brand {
-		position: relative;
-		margin-top: 0;
-		margin-bottom: 0;
-		height: 70px;
-
-		line-height: 70px;
-		color: @gray-lighter;
-		font-size: 36px;
-
-		&:hover {
-			text-decoration: none;
-		}
-	}
-
-	div.fsr-logo {
-		margin: 10px -10px 10px 10px;
-		width: 80px;
-		height: 50px;
-		float: right;
-		background-image: url(../images/logo-fsr-white.svg);
-	}
-
-	div.myhpi-logo {
-		margin: 10px 0px 10px -10px;
-		width: 112px;
-		height: 50px;
-		background-image: url(../images/logo-myhpi.svg);
-	}
-
-	div.header {
-		.clearfix();
-		position: relative;
-
-		div.text {
-			position: absolute;
-			bottom: 6px;
-			right: 0;
-			margin-right: 120px;
-		}
-	}
-}
-
-.header-line {
-	height: 7px;
-}
-
-.gradient {
-	#gradient.horizontal-three-colors(@hpi-yellow, @hpi-orange, 50%, @hpi-red);
-	background-repeat: repeat-y;
-}
-
-@media (min-width: @grid-float-breakpoint) {
-	nav#top {
-		height: ((@navbar-height * 2) + 1px);
-	}
-	ul.navbar-nav > li {
-		position: static;
-		
-		ul.subnav {
-			position: absolute;
-			left: @navbar-padding-horizontal;
-		}
-	}
-}
-@media (max-width: @grid-float-breakpoint-max) {
-	nav#top div.navbar-collapse {
-		border: 1px solid @gray;
-		border-radius: @border-radius-base;
-
-		ul.subnav {
-			margin-left: 20px;
-		}
-	}
-}
-
-nav#top ul {
-	float: none;
-}
 .navbar-collapse {
-	background-color: @gray-dark;
+	padding-left: 0;
+	padding-right: 0;
+}
+.navbar-brand > img, .navbar-toggle-brand > img {
+	height: 50px;
+	width: 78px;
+	padding: 10px 15px 10px 15px;
+}
+.navbar-toggle-brand {
+	height: 50px;
+	width: 78px;
+	float: left;
+	border: 0;
+	padding: 0;
+}
+.navbar-toggle-brand.navbar-toggle:hover,
+.navbar-toggle-brand.navbar-toggle:focus {
+	background-color: @gray;
 }
 .navbar {
 	margin: 0px;
+	border: 0px;
+	font-size: 16px;
+}
+@media (min-width: 768px) {
+	ul.nav {
+		width: 750px;
+	}
+}
+@media (min-width: 992px) {
+	ul.nav {
+		width: 970px;
+	}
+}
+@media (min-width: 1200px) {
+	ul.nav {
+		width: 1170px;
+	}
+}
+.nav > li > a {
+	padding-top: 15px;
+	padding-bottom: 15px;
+}
+.navbar-nav > li > a.navbar-brand {
+	padding: 0;
+}
+.navbar-right {
+	margin-right: 0;
+}
+.brand > a {
+	height: 50px;
+}
+
+.header-line {
+	height: 5px;
+	background-color: @gray-dark;
+}
+.footer-line {
+	height: 3px;
+	background-color: @gray-dark;
+}
+.gradient {
+	#gradient.horizontal-three-colors(@hpi-red, @hpi-orange, 50%, @hpi-yellow);
+}
+.gradient.gradient-inv {
+	#gradient.horizontal-three-colors(@hpi-yellow, @hpi-orange, 50%, @hpi-red);
+}
+
+.navbar-collapse-menu {
+	display: none;
+}
+.navbar-collapse-menu li.active a {
+	color: @hpi-yellow;
+}
+.navbar-collapse-menu li.disabled a {
+	color: @gray;
+	text-decoration: none;
+}
+.navbar-collapse-menu a {
+	color: @gray-lighter;
+}
+.navbar-collapse-menu ul {
+	color: @gray-lighter;
+	margin: 0;
+}
+
+.navbar-default .navbar-nav > li {
+	&:hover,
+	&:focus {
+		background-color: @gray;
+	}
+}
+.dropdown-menu > li > a {
+	color: @navbar-default-link-color;
+	&:hover,
+	&:focus {
+		color: @navbar-default-link-color;
+		background-color: @gray-dark;
+	}
+}
+.dropdown-menu > li.active > a {
+	color: @navbar-default-link-active-color;
+	&:hover,
+	&:focus {
+		color: @navbar-default-link-active-color;
+		background-color: @gray-dark;
+	}
+}
+.dropdown-menu {
 	background-color: @gray;
 	border: 0px;
-	font-size: 20px;
+	min-width: auto;
+	border-radius: 0;
+	box-shadow: none;
+	-webkit-box-shadow: none;
 }
-ul.subnav li a {
-	font-size: 18px;
-}
-.navbar .add-button {
-	color: @white;
-	&:hover,
-	&:focus {
-		color: @navbar-default-link-hover-color;
-	}
-	background-color: transparent !important;
-}
-.navbar .add-button-dropdown {
-	padding-top: 7px;
+.dropdown:hover .dropdown-menu {
+	display: block;
 }
 
-// Overwrite Bootstrap nav
-.navbar-default .navbar-nav > .active > a {
-	&:hover,
-	&:focus {
-		color: @navbar-default-link-hover-color;
-	}
-}
 
-section#content {
-	margin-bottom: 50px;
-	padding-left: 15px;
+.container.content {
+	margin-bottom: 30px;
 }
 
 .headline {
@@ -194,9 +201,26 @@ footer {
 	left: 0;
 	right: 0;
 	bottom: 0;
-	height: @footer-height;
-	background-color: @gray;
+	height: @footer-height + 6px;
+	background-color: @gray-dark;
 	color: @gray-lighter;
+}
+
+footer ul {
+	padding-left: 0;
+}
+
+footer li {
+	display: inline-block;
+}
+footer li:before {
+	content: "\22c5\00a0";
+	padding: 0 5px;
+	color: @gray-light;
+}
+footer li:first-child:before {
+    content: "";
+    padding: 0;
 }
 
 footer span {
@@ -204,7 +228,7 @@ footer span {
 }
 
 footer a {
-	color: @brand-warning;
+	color: @hpi-yellow;
 }
 
 .divider {
@@ -307,7 +331,7 @@ table.vertically-aligned tr td {
 }
 
 .ontop {
-  	z-index: 99999;
+	z-index: 99999;
 }
 
 table.diff tbody th {
