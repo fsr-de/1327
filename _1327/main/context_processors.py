@@ -2,14 +2,23 @@ from . import models
 
 
 def menu(request):
-	menu_items = models.MenuItem.objects.filter(parent_id=None)
+	main_menu = models.MenuItem.objects.filter(title="Main Menu").first()
+	menu_items = models.MenuItem.objects.filter(parent_id=main_menu)
 	menu_items = [menu_item for menu_item in menu_items if menu_item.can_view(request.user)]
 
 	for item in menu_items:
 		mark_selected(request, item)
 
+	footer = models.MenuItem.objects.filter(title="Footer").first()
+	footer_items = models.MenuItem.objects.filter(parent_id=footer)
+	footer_items = [footer_item for footer_item in footer_items if footer_item.can_view(request.user)]
+
+	for item in footer_items:
+		mark_selected(request, item)
+
 	return {
 		'main_menu': menu_items,
+		'footer': footer_items,
 	}
 
 

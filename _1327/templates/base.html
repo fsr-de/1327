@@ -90,7 +90,12 @@
 
 	<footer>
 		<div class="container">
-			<p>Powered by <a href="https://github.com/fsr-itse/1327">1327</a>.</p>
+			<span class="pull-left">
+				{% for item in footer %}
+					<a href="{{ item.get_url }}">{{ item.title }}</a>
+				{% endfor %}
+			</span>
+			<span class="pull-right">Powered by <a href="https://github.com/fsr-itse/1327">1327</a>.</span>
 		</div>
 	</footer>
 </div>
