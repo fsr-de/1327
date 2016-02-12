@@ -3,7 +3,7 @@
 {% load bootstrap3 %}
 
 {% block information_page_content %}
-	<h2>{% trans "Add an attachment" %}</h2>
+	<h2>{% trans "Add attachment" %}</h2>
 
 	<form action="{{ edit_url }}" method="post" class="form-horizontal" role="form" enctype="multipart/form-data">
 		{% bootstrap_form form layout='horizontal' %}
@@ -17,7 +17,7 @@
 		{% endbuttons %}
 	</form>
 
-	<h2>{% trans "Already uploaded attachments" %}</h2>
+	<h2>{% trans "Uploaded attachments" %}</h2>
 	<div class="col-sm-12">
 		<table class="table table-striped">
 			<thead>
@@ -25,8 +25,8 @@
 				<th>{% trans "Display name" %}</th>
 				<th>{% trans "Filename" %}</th>
 				<th>{% trans "Created" %}</th>
-				<th data-toggle="tooltip" data-placement="top" title="{% trans "Tick if attachment is only used as embedded image." %}">
-					{% trans "Do not show" %} <span class="label label-info">?</span>
+				<th>
+					{% trans "Do not show" %} <span data-toggle="tooltip" data-placement="top" class="glyphicon glyphicon-info-sign" title="{% blocktrans %}Select if attachment is only used as embedded image.{% endblocktrans %}"></span>
 				</th>
 			</thead>
 			{% for attachment in attachments %}
