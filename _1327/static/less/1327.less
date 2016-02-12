@@ -284,6 +284,7 @@ table.table-narrow {
 		color: @gray;
 	}
 }
+
 .input-group[class*="inlineformset"] {
 	padding-left:  (@grid-gutter-width / 2);
 	padding-right: (@grid-gutter-width / 2);
@@ -302,3 +303,11 @@ table.table-narrow {
 .ontop {
   	z-index: 99999;
 }
+
+table.diff tbody th {
+	padding-left: 0 !important;
+}
+table.diff > thead th:nth-of-type(1) { width: 5%; }
+table.diff > thead th:nth-of-type(2) { width: 45%; }
+table.diff > thead th:nth-of-type(3) { width: 5%; }
+table.diff > thead th:nth-of-type(4) { width: 45%; }
