@@ -19,7 +19,7 @@
 
 	<h2>{% trans "Uploaded attachments" %}</h2>
 	<div class="col-sm-12">
-		<table class="table table-striped">
+		<table class="table table-striped vertically-aligned">
 			<thead>
 				<th></th>
 				<th>{% trans "Display name" %}</th>
@@ -28,6 +28,7 @@
 				<th>
 					{% trans "Do not show" %} <span data-toggle="tooltip" data-placement="top" class="glyphicon glyphicon-info-sign" title="{% blocktrans %}Select if attachment is only used as embedded image.{% endblocktrans %}"></span>
 				</th>
+				<th></th>
 			</thead>
 			{% for attachment in attachments %}
 				<tr data-index="{{ attachment.index }}" data-id="{{ attachment.id }}" class="sortable">
@@ -40,13 +41,11 @@
 					<td>{{ attachment.created }}</td>
 
 					<td class="text-center">
-						<div class="checkbox">
-							<input class="change-downloadable" type="checkbox" {% if attachment.no_direct_download %}checked{% endif %} name="downloadable">
-						</div>
+						<input class="change-downloadable" type="checkbox" {% if attachment.no_direct_download %}checked{% endif %} name="downloadable">
 					</td>
 					<td>
 						<button type="button" data-displayname="{{ attachment.displayname }}" data-toggle="modal"
-								data-target="#confirmAttachmentDeleteModal" class="delete-attachment btn btn-warning">
+								data-target="#confirmAttachmentDeleteModal" class="delete-attachment btn btn-sm btn-warning">
 							{% trans "Delete" %}
 						</button>
 					</td>

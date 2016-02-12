@@ -28,6 +28,11 @@
 	{% endblock %}
 	<p class="toc-heading">{% trans "Table of Contents" %}</p>
 	{{ toc|safe }}
+	{% if attachments %}
+		<div class="toc">
+			<ul><li><a href="#attachments" title="{% trans "Attachments" %}">{% trans "Attachments" %}</a></li></ul>
+		</div>
+	{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -35,7 +40,7 @@
 		<div>{{ text|safe }}</div>
 		{% if attachments %}
 			<div class="divider"></div>
-			<h2>{% trans "Attachments" %}</h2>
+			<h2 id="attachments">{% trans "Attachments" %}</h2>
 			{% for attachment in attachments %}
 				<div class="row">
 					<div class="col-sm-4">
