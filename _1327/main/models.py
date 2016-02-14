@@ -27,6 +27,8 @@ class MenuItem(models.Model):
 			return reverse(self.link)
 		elif self.document:
 			return self.document.get_view_url()
+		else:
+			return "#"
 
 	def can_view(self, user):
 		if user.is_superuser:
