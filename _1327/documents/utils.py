@@ -128,6 +128,7 @@ def handle_attachment(request, document):
 				file_type = re.search(r'\.(\w+)$', instance.file.name).group(1)
 				instance.displayname = "{}.{}".format(instance.displayname, file_type)
 			instance.document = document
+			instance.index = document.attachments.count() + 1
 			instance.save()
 			return True, form, instance
 	else:
