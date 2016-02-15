@@ -6,64 +6,118 @@
 {% block body %}
 <div class="container main-container" id="wrapper">
 	<header>
-		<div class="container title">
-			<div class="col-sm-2">
-				<a href="{% url 'index' %}"><div class="myhpi-logo"></div></a>
-			</div>
-			<div class="col-sm-10 header">
-				<div class="fsr-logo"></div>
-				<div class="text">
-					{% if user.is_authenticated %}
-						Angemeldet als {{user.username}}.
-					{% endif %}
-					{% if user.is_authenticated %}
-						<a href="{% url 'logout' %}">Logout</a>
-					{% else %}
-						<a href="{% url 'login' %}">Login</a>
-					{% endif %}
-				</div>
-			</div>
-		</div>
-		<div class="header-line gradient"></div>
-		<nav class="navbar navbar-default" id="top" role="navigation">
+		<nav class="navbar navbar-default" role="navigation">
+			
+			{# Toggle button #}
 			<div class="navbar-header">
-				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#top-navbar-collapse">
+				<a class="navbar-toggle-brand navbar-toggle collapsed" href="{% url 'index' %}"><img src="{% get_static_prefix %}/images/logo-fsr-color.svg"></a>
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
 					<span class="sr-only">Toggle navigation</span>
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
 			</div>
-			<div class="collapse navbar-collapse" id="top-navbar-collapse">
+
+			{# Main menu (for wider screens) #}
+			<div class="navbar-collapse collapse">
 				<ul class="nav navbar-nav">
+					<li class="brand">
+						<a class="navbar-brand" href="/"><img src="{% get_static_prefix %}/images/logo-fsr-color.svg"></a>
+					</li>
 					{% for item in main_menu %}
-					<li{% if item.selected %} class="active"{% endif %}>
-						<a href="{{ item.get_url }}">{{ item.title }}</a>
-						{% if item.selected and item.submenu %}
-							<ul class="nav navbar-nav subnav">
+						{% if item.submenu %}
+							<li class="dropdown{% if item.selected %} active{% endif %}">
+								<a href="{{ item.get_url }}">{{ item.title }} <span class="caret"></span></a>
+								<ul class="dropdown-menu">
+									{% for subitem in item.submenu %}
+										<li{% if subitem.selected %} class="active"{% endif %}><a href="{{ subitem.get_url }}">{{ subitem.title }}</a></li>
+									{% endfor %}
+								</ul>
+							</li>
+						{% else %}
+							<li{% if item.selected %} class="active"{% endif %}>
+								<a href="{{ item.get_url }}">{{ item.title }}</a>
+							</li>
+						{% endif %}
+					{% endfor %}
+					<li class="dropdown pull-right{% if user.is_authenticated %} active{% endif %}">
+						<a href="#"><span class="glyphicon glyphicon-user"></span></a>
+						<ul class="dropdown-menu">
+							{% if user.is_authenticated %}
+								<li class="disabled"><a href="#">{% trans "Logged in as" %} {{ user.username }}</a></li>
+								<li><a href="{% url 'logout' %}">Logout</a></li>
+							{% else %}
+								<li><a href="{% url 'login' %}">Login</a></li>
+							{% endif %}
+							{% if CAN_CREATE_INFORMATIONPAGE or CAN_CREATE_MINUTES or CAN_CREATE_POLL %}
+								<li role="separator" class="divider"></li>
+								<li class="disabled"><a href="#">{% trans "Create content" %}</a></li>
+								{% if CAN_CREATE_INFORMATIONPAGE %}
+									<li><a href="{% url 'information_pages:create' %}">{% trans "Information page" %}</a></li>
+								{% endif %}
+								{% if CAN_CREATE_MINUTES %}
+									<li><a href="{% url 'minutes:create' %}">{% trans "Minutes" %}</a></li>
+								{% endif %}
+								{% if CAN_CREATE_POLL %}
+									<li><a href="{% url 'polls:create' %}">{% trans "Poll" %}</a></li>
+								{% endif %}
+							{% endif %}
+							{% if user.is_staff or user.is_superuser %}
+								<li role="separator" class="divider"></li>
+								<li><a href="{% url 'admin:index' %}">{% trans "Admin" %}</a></li>
+							{% endif %}
+						</ul>
+					</li>
+				</ul>
+			</div>
+			
+			{# Toggle menu (for smaller screens) #}
+			<div class="navbar-collapse-menu" id="navbar-collapse" aria-expanded="false">
+				<ul class="">
+					{% if user.is_authenticated %}
+						<li class="disabled"><a href="#" disabled>{% trans "Logged in as" %} {{ user.username }}</a></li>
+						<ul><li><a href="{% url 'logout' %}">Logout</a></li></ul>
+					{% else %}
+						<li><a href="{% url 'login' %}">Login</a></li>
+					{% endif %}
+					{% if CAN_CREATE_INFORMATIONPAGE or CAN_CREATE_MINUTES or CAN_CREATE_POLL %}
+						<li class="disabled"><a href="#">{% trans "Create content" %}</a></li>
+						<ul>
+							{% if CAN_CREATE_INFORMATIONPAGE %}
+								<li><a href="{% url 'information_pages:create' %}">{% trans "Information page" %}</a></li>
+							{% endif %}
+							{% if CAN_CREATE_MINUTES %}
+								<li><a href="{% url 'minutes:create' %}">{% trans "Minutes" %}</a></li>
+							{% endif %}
+							{% if CAN_CREATE_POLL %}
+								<li><a href="{% url 'polls:create' %}">{% trans "Poll" %}</a></li>
+							{% endif %}
+						</ul>
+					{% endif %}
+					{% if user.is_staff or user.is_superuser %}
+						<li><a href="{% url 'admin:index' %}">{% trans "Admin" %}</a></li>
+					{% endif %}
+					<li><a href="/">{% trans "Main page" %}</a></li>
+					{% for item in main_menu %}
+						{% if item.submenu %}
+							<li class="{% if item.selected %}active{% endif %}"><a href="{{ item.get_url }}">{{ item.title }}</a></li>
+							<ul>
 								{% for subitem in item.submenu %}
 									<li{% if subitem.selected %} class="active"{% endif %}><a href="{{ subitem.get_url }}">{{ subitem.title }}</a></li>
 								{% endfor %}
 							</ul>
+						{% else %}
+							<li{% if item.selected %} class="active"{% endif %}>
+								<a href="{{ item.get_url }}">{{ item.title }}</a>
+							</li>
 						{% endif %}
-					</li>
 					{% endfor %}
-					{% if CAN_CREATE_INFORMATIONPAGE %}
-						<li class="pull-right">
-							<div class="dropdown add-button-dropdown">
-								<a class="dropdown-toggle add-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-								<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-								</a>
-								<ul class="dropdown-menu dropdown-menu-right">
-									<li><a href="{% url 'information_pages:create' %}">{% trans "Information page" %}</a></li>
-									<li><a href="{% url 'minutes:create' %}">{% trans "Minutes" %}</a></li>
-								</ul>
-							</div>
-						</li>
-					{% endif %}
 				</ul>
 			</div>
 		</nav>
+		<div class="header-line gradient"></div> {# Gradient line #}
+		<div class="header-line"></div> {# Bottom line for menu #}
 	</header>
 
 	{% if messages %}
@@ -84,16 +138,20 @@
 			<polygon class="headline-bar-shadow" filter="url(#shadow)"></polygon>
 			<polygon class="headline-bar"></polygon>
 			<text class="headline-text" dx="30" dy="25">{% block title %}{% endblock %}</text>
-		</svg>		
+		</svg>
 	</div>
 	{% endblock %}
 
 	<footer>
+		<div class="footer-line"></div> {# Top line for footer #}
+		<div class="footer-line gradient gradient-inv"></div> {# Gradient line #}
 		<div class="container">
 			<span class="pull-left">
-				{% for item in footer %}
-					<a href="{{ item.get_url }}">{{ item.title }}</a>
-				{% endfor %}
+				<ul>
+					{% for item in footer %}
+						<li><a href="{{ item.get_url }}">{{ item.title }}</a></li>
+					{% endfor %}
+				</ul>
 			</span>
 			<span class="pull-right">Powered by <a href="https://github.com/fsr-itse/1327">1327</a>.</span>
 		</div>

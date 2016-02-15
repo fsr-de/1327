@@ -49,3 +49,11 @@ def mark_selected(request, menu_item):
 
 def can_create_informationpage(request):
 	return {'CAN_CREATE_INFORMATIONPAGE': request.user.has_perm("information_pages.add_informationdocument")}
+
+
+def can_create_minutes(request):
+	return {'CAN_CREATE_MINUTES': request.user.has_perm("minutes.add_minutesdocument")}
+
+
+def can_create_poll(request):
+	return {'CAN_CREATE_POLL': request.user.has_perm("polls.add_poll")}
