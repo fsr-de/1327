@@ -6,6 +6,12 @@ from _1327.documents.models import Document
 
 
 class MenuItem(models.Model):
+	MAIN_MENU = 1
+	FOOTER = 2
+	MENU_TYPES = (
+		(MAIN_MENU, _("Main Menu")),
+		(FOOTER, _("Footer")),
+	)
 	title = models.CharField(max_length=255, unique=False, verbose_name=_("Title"))
 	order = models.IntegerField()
 
@@ -15,6 +21,7 @@ class MenuItem(models.Model):
 	parent = models.ForeignKey('self', blank=True, null=True, related_name='children')
 
 	staff_only = models.BooleanField(default=False, verbose_name=_("Display for staff only"))
+	menu_type = models.IntegerField(choices=MENU_TYPES, default=MAIN_MENU)
 
 	class Meta:
 		ordering = ['order']
