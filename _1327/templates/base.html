@@ -6,11 +6,11 @@
 {% block body %}
 <div class="container main-container" id="wrapper">
 	<header>
-		<nav class="navbar navbar-default" role="navigation">
+		<div class="navbar navbar-default">
 			
 			{# Toggle button #}
 			<div class="navbar-header">
-				<a class="navbar-toggle-brand navbar-toggle collapsed" href="{% url 'index' %}"><img src="{% get_static_prefix %}/images/logo-fsr-color.svg"></a>
+				<a class="navbar-toggle-brand navbar-toggle collapsed" href="{% url 'index' %}"><img src="{% get_static_prefix %}/images/logo-fsr-color.svg" alt="{% trans "FSR logo" %}"></a>
 				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
 					<span class="sr-only">Toggle navigation</span>
 					<span class="icon-bar"></span>
@@ -20,10 +20,10 @@
 			</div>
 
 			{# Main menu (for wider screens) #}
-			<div class="navbar-collapse collapse">
+			<nav class="navbar-collapse collapse">
 				<ul class="nav navbar-nav">
 					<li class="brand">
-						<a class="navbar-brand" href="/"><img src="{% get_static_prefix %}/images/logo-fsr-color.svg"></a>
+						<a class="navbar-brand" href="/"><img src="{% get_static_prefix %}/images/logo-fsr-color.svg" alt="{% trans "FSR logo" %}"></a>
 					</li>
 					{% for item in main_menu %}
 						{% if item.submenu %}
@@ -70,30 +70,32 @@
 						</ul>
 					</li>
 				</ul>
-			</div>
+			</nav>
 			
 			{# Toggle menu (for smaller screens) #}
-			<div class="navbar-collapse-menu" id="navbar-collapse" aria-expanded="false">
+			<nav class="navbar-collapse-menu" id="navbar-collapse" aria-expanded="false">
 				<ul class="">
 					{% if user.is_authenticated %}
-						<li class="disabled"><a href="#" disabled>{% trans "Logged in as" %} {{ user.username }}</a></li>
-						<ul><li><a href="{% url 'logout' %}">Logout</a></li></ul>
+						<li class="disabled"><a href="#">{% trans "Logged in as" %} {{ user.username }}</a></li>
+						<li><a href="{% url 'logout' %}">Logout</a></li>
 					{% else %}
 						<li><a href="{% url 'login' %}">Login</a></li>
 					{% endif %}
 					{% if CAN_CREATE_INFORMATIONPAGE or CAN_CREATE_MINUTES or CAN_CREATE_POLL %}
 						<li class="disabled"><a href="#">{% trans "Create content" %}</a></li>
-						<ul>
-							{% if CAN_CREATE_INFORMATIONPAGE %}
-								<li><a href="{% url 'information_pages:create' %}">{% trans "Information page" %}</a></li>
-							{% endif %}
-							{% if CAN_CREATE_MINUTES %}
-								<li><a href="{% url 'minutes:create' %}">{% trans "Minutes" %}</a></li>
-							{% endif %}
-							{% if CAN_CREATE_POLL %}
-								<li><a href="{% url 'polls:create' %}">{% trans "Poll" %}</a></li>
-							{% endif %}
-						</ul>
+						<li>
+							<ul>
+								{% if CAN_CREATE_INFORMATIONPAGE %}
+									<li><a href="{% url 'information_pages:create' %}">{% trans "Information page" %}</a></li>
+								{% endif %}
+								{% if CAN_CREATE_MINUTES %}
+									<li><a href="{% url 'minutes:create' %}">{% trans "Minutes" %}</a></li>
+								{% endif %}
+								{% if CAN_CREATE_POLL %}
+									<li><a href="{% url 'polls:create' %}">{% trans "Poll" %}</a></li>
+								{% endif %}
+							</ul>
+						</li>
 					{% endif %}
 					{% if user.is_staff or user.is_superuser %}
 						<li><a href="{% url 'admin:index' %}">{% trans "Admin" %}</a></li>
@@ -114,8 +116,8 @@
 						{% endif %}
 					{% endfor %}
 				</ul>
-			</div>
-		</nav>
+			</nav>
+		</div>
 		<div class="header-line gradient"></div> {# Gradient line #}
 		<div class="header-line"></div> {# Bottom line for menu #}
 	</header>
@@ -135,8 +137,8 @@
 					<feGaussianBlur result="blurOut" in="offOut" stdDeviation="3"></feGaussianBlur>
 				</filter>
 			</defs>
-			<polygon class="headline-bar-shadow" filter="url(#shadow)"></polygon>
-			<polygon class="headline-bar"></polygon>
+			<polygon class="headline-bar-shadow" filter="url(#shadow)" points=""></polygon>
+			<polygon class="headline-bar" points=""></polygon>
 			<text class="headline-text" dx="30" dy="25">{% block title %}{% endblock %}</text>
 		</svg>
 	</div>
@@ -146,13 +148,11 @@
 		<div class="footer-line"></div> {# Top line for footer #}
 		<div class="footer-line gradient gradient-inv"></div> {# Gradient line #}
 		<div class="container">
-			<span class="pull-left">
-				<ul>
-					{% for item in footer %}
-						<li><a href="{{ item.get_url }}">{{ item.title }}</a></li>
-					{% endfor %}
-				</ul>
-			</span>
+			<ul class="pull-left">
+				{% for item in footer %}
+					<li><a href="{{ item.get_url }}">{{ item.title }}</a></li>
+				{% endfor %}
+			</ul>
 			<span class="pull-right">Powered by <a href="https://github.com/fsr-itse/1327">1327</a>.</span>
 		</div>
 	</footer>

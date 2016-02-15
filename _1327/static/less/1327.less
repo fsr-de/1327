@@ -204,31 +204,25 @@ footer {
 	height: @footer-height + 6px;
 	background-color: @gray-dark;
 	color: @gray-lighter;
-}
-
-footer ul {
-	padding-left: 0;
-}
-
-footer li {
-	display: inline-block;
-}
-footer li:before {
-	content: "\22c5\00a0";
-	padding: 0 5px;
-	color: @gray-light;
-}
-footer li:first-child:before {
-    content: "";
-    padding: 0;
-}
-
-footer span {
-	margin: 10px 0 10px 0;
-}
-
-footer a {
-	color: @hpi-yellow;
+	ul, span {
+		margin: 10px 0 0px 0;
+		padding-left: 0;
+	}
+	li {
+		display: inline-block;
+		&:before {
+			content: "\22c5\00a0";
+			padding: 0 5px;
+			color: @gray-light;
+		}
+		&:first-child:before {
+			content: "";
+			padding: 0;
+		}
+	}
+	a {
+		color: @hpi-yellow;
+	}
 }
 
 .divider {
