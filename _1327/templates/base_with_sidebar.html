@@ -2,12 +2,12 @@
 
 {% block rawcontent %}
 	{{ block.super }}
-	<div class="col-sm-10 container content">
-		{% block content %}
+	<div class="col-md-2 col-md-push-10 container sidebar">
+		{% block sidebar %}
 		{% endblock %}
 	</div>
-	<div class="col-sm-2 container sidebar">
-		{% block sidebar %}
+	<div class="col-md-10 col-md-pull-2 container content">
+		{% block content %}
 		{% endblock %}
 	</div>
 {% endblock %}
