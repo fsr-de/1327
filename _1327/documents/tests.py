@@ -680,3 +680,4 @@ class TestAttachments(WebTest):
 
 		self.assertEqual(Attachment.objects.count(), 2)
 		self.assertEqual(self.document.attachments.count(), 2)
+		self.assertEqual(self.document.attachments.last().index, 2)
