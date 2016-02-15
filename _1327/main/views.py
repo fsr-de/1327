@@ -1,5 +1,30 @@
+from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
+
+import markdown
+from markdown.extensions.toc import TocExtension
+
+from _1327.documents.models import Document
+from _1327.documents.utils import permission_warning
 
 
 def index(request):
-	return render(request, "index.html")
+	try:
+		document = Document.objects.get(id=settings.MAIN_PAGE_ID)
+
+		md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2)])
+		text = md.convert(document.text)
+
+		template = 'information_pages_base.html' if document.polymorphic_ctype.model == 'informationdocument' else 'minutes_base.html'
+		return render(request, template, {
+			'document': document,
+			'text': text,
+			'toc': md.toc,
+			'attachments': document.attachments.filter(no_direct_download=False).order_by('index'),
+			'active_page': 'view',
+			'permission_warning': permission_warning(request.user, document),
+		})
+	except ObjectDoesNotExist:
+		# nobody created a mainpage yet -> show default main page
+		return render(request, 'index.html')
