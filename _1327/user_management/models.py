@@ -1,6 +1,8 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.utils import timezone
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -62,6 +64,6 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
 	def __str__(self):
 		return self.get_full_name()
 
-	@property
+	@cached_property
 	def is_staff(self):
-		return self.is_superuser
+		return self.is_superuser or self.groups.get(name=settings.STAFF_GROUP_NAME).exists()

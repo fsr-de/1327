@@ -171,6 +171,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 	"django.contrib.messages.context_processors.messages",
 	"_1327.main.context_processors.menu",
 	"_1327.main.context_processors.can_create_informationpage",
+	"_1327.main.context_processors.can_create_minutes",
+	"_1327.main.context_processors.can_create_poll",
 )
 
 TEMPLATE_DIRS = (
