@@ -2,6 +2,7 @@ language: python
 sudo: false
 python:
   - "3.4"
+cache: pip
 install:
   - npm install -g less coffee-script
   - pip install -r requirements.txt
