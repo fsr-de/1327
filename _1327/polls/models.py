@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from _1327.user_management.models import UserProfile
 
 
-QUESTION_VIEW_PERMISSION_NAME = 'view_poll'
+POLL_VIEW_PERMISSION_NAME = 'view_poll'
 
 
 class Poll(models.Model):
@@ -15,11 +15,11 @@ class Poll(models.Model):
 	max_allowed_number_of_answers = models.IntegerField(default=1)
 	participants = models.ManyToManyField(UserProfile, related_name="polls", blank=True)
 
-	VIEW_PERMISSION_NAME = QUESTION_VIEW_PERMISSION_NAME
+	VIEW_PERMISSION_NAME = POLL_VIEW_PERMISSION_NAME
 
 	class Meta:
 		permissions = (
-			(QUESTION_VIEW_PERMISSION_NAME, 'User/Group is allowed to view that question'),
+			(POLL_VIEW_PERMISSION_NAME, 'User/Group is allowed to view that poll'),
 		)
 
 
