@@ -15,13 +15,16 @@ from _1327.user_management.shortcuts import get_object_or_error
 def list(request):
 	running_polls = []
 	finished_polls = []
-	# do not show polls that start in the future and that a user is not allowed to see
-	for poll in Poll.objects.filter(start_date__lte=datetime.date.today()):
-		if request.user.has_perm(Poll.VIEW_PERMISSION_NAME):
+	upcoming_polls = []
+	# do not show polls that a user is not allowed to see
+	for poll in Poll.objects.all():
+		if request.user.has_perm(Poll.VIEW_PERMISSION_NAME) and poll.start_date <= datetime.date.today():
 			if datetime.date.today() <= poll.end_date and not poll.participants.filter(id=request.user.pk).exists():
 				running_polls.append(poll)
 			else:
 				finished_polls.append(poll)
+		elif request.user.has_perm("polls.change_poll", obj=poll) and poll.start_date > datetime.date.today():
+			upcoming_polls.append(poll)
 
 	return render(
 		request,
@@ -29,6 +32,7 @@ def list(request):
 		{
 			"running_polls": running_polls,
 			"finished_polls": finished_polls,
+			"upcoming_polls": upcoming_polls,
 		}
 	)
 
@@ -99,7 +103,7 @@ def vote(request, poll_id):
 		raise Http404
 
 	if poll.end_date < datetime.date.today() or poll.participants.filter(id=request.user.pk).exists():
-		messages.info(request, _("You can not vote for polls that are already finished, or that you have already voted for!"))
+		messages.warning(request, _("You can not vote for polls that are already finished, or that you have already voted for!"))
 		return HttpResponseRedirect(reverse('polls:results', args=[poll_id]))
 
 	if request.method == 'POST':

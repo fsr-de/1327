@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block title %}
-	{% trans "Vote for Poll" %} "{{ poll.title }}"
+	{{ poll.title }}
 {% endblock %}
 
 {% block content %}
@@ -14,7 +14,7 @@
 		</div>
 	{% endif %}
 	{%  if poll.max_allowed_number_of_answers > 1 %}
-		<div class="alert alert-info" role="alert">
+		<div class="alert alert-warning" role="alert">
 			{% blocktrans with max_allowed_number_of_answers=poll.max_allowed_number_of_answers %}You have up to {{ max_allowed_number_of_answers }} votes.{% endblocktrans %}
 		</div>
 	{%  endif %}
@@ -23,15 +23,17 @@
 		{% csrf_token %}
 		<table class="table table-striped">
 			<tr>
-				<th>{% trans "Choice" %}</th>
-				<th>{% trans "Your vote" %}</th>
+				<th class="col-xs-1"></th>
+				<th class="col-xs-5">{% trans "Choice" %}</th>
+				<th class="col-xs-6">{% trans "Description" %}</th>
 			</tr>
 			{% for choice in poll.choices.all %}
 				<tr>
-					<td>{{ choice.text }}</td>
 					<td>
 						<input type="{{ widget }}" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}"/>
 					</td>
+					<td>{{ choice.text }}</td>
+					<td>{{ choice.description }}</td>
 				</tr>
 			{% endfor %}
 		</table>
