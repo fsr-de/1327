@@ -94,8 +94,6 @@
 		});
 
 		// add datepicker to date inputs
-		$("input[name*='date']").datepicker({
-			dateFormat: "dd/mm/yy"
-		});
+		$("input[name*='date']:not([readonly='True'])").datepicker( $.datepicker.regional["{{ LANGUAGE_CODE }}"] );
 	</script>
 {% endblock %}
