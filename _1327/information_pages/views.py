@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.conf import settings
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.forms.formsets import formset_factory
@@ -13,7 +14,6 @@ import markdown
 from markdown.extensions.toc import TocExtension
 from reversion import revisions
 
-from _1327 import settings
 from _1327.documents.forms import PermissionForm
 from _1327.documents.models import Document
 from _1327.documents.utils import (

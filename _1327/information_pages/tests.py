@@ -83,7 +83,7 @@ class TestEditor(WebTest):
 
 			form = response.forms[0]
 			form.set('title', string)
-			response = form.submit('submit')
+			response = form.submit()
 			self.assertEqual(response.status_code, 200)
 			self.assertIn('has-error', str(response.body))
 
