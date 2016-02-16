@@ -103,6 +103,7 @@ DATABASES = {
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
 LANGUAGE_CODE = 'de-DE'
+ACTIVE_LANGUAGE = 'de'
 
 TIME_ZONE = 'UTC'
 
@@ -169,6 +170,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 	"django.core.context_processors.static",
 	"django.core.context_processors.request",
 	"django.contrib.messages.context_processors.messages",
+	"_1327.main.context_processors.set_language",
 	"_1327.main.context_processors.menu",
 	"_1327.main.context_processors.can_create_informationpage",
 	"_1327.main.context_processors.can_create_minutes",

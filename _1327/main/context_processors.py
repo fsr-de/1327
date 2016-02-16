@@ -1,4 +1,14 @@
+from django.conf import settings
+from django.utils import translation
+
 from . import models
+
+
+def set_language(request):
+	user_language = settings.ACTIVE_LANGUAGE  # always set to German
+	translation.activate(user_language)
+	request.session[translation.LANGUAGE_SESSION_KEY] = user_language
+	return {'LANGUAGE_CODE': user_language}
 
 
 def menu(request):
