@@ -31,7 +31,18 @@
 								<a href="{{ item.get_url }}">{{ item.title }} <span class="caret"></span></a>
 								<ul class="dropdown-menu">
 									{% for subitem in item.submenu %}
-										<li{% if subitem.selected %} class="active"{% endif %}><a href="{{ subitem.get_url }}">{{ subitem.title }}</a></li>
+										{% if subitem.submenu %}
+											<li class="dropdown{% if subitem.selected %} active{% endif %}">
+												<a href="{{ subitem.get_url }}">{{ subitem.title }} <span class="caret-right"></span></a>
+												<ul class="dropdown-menu sub-menu">
+													{% for subsubitem in subitem.submenu %}
+														<li{% if subsubitem.selected %} class="active"{% endif %}><a href="{{ subsubitem.get_url }}">{{ subsubitem.title }}</a></li>
+													{% endfor %}
+												</ul>
+											</li>
+										{% else %}
+											<li{% if subitem.selected %} class="active"{% endif %}><a href="{{ subitem.get_url }}">{{ subitem.title }}</a></li>
+										{% endif %}
 									{% endfor %}
 								</ul>
 							</li>
@@ -82,8 +93,8 @@
 						<li><a href="{% url 'login' %}">Login</a></li>
 					{% endif %}
 					{% if CAN_CREATE_INFORMATIONPAGE or CAN_CREATE_MINUTES or CAN_CREATE_POLL %}
-						<li class="disabled"><a href="#">{% trans "Create content" %}</a></li>
-						<li>
+						<li class="disabled">
+							<a href="#">{% trans "Create content" %}</a>
 							<ul>
 								{% if CAN_CREATE_INFORMATIONPAGE %}
 									<li><a href="{% url 'information_pages:create' %}">{% trans "Information page" %}</a></li>
@@ -103,12 +114,25 @@
 					<li><a href="/">{% trans "Main page" %}</a></li>
 					{% for item in main_menu %}
 						{% if item.submenu %}
-							<li class="{% if item.selected %}active{% endif %}"><a href="{{ item.get_url }}">{{ item.title }}</a></li>
-							<ul>
-								{% for subitem in item.submenu %}
-									<li{% if subitem.selected %} class="active"{% endif %}><a href="{{ subitem.get_url }}">{{ subitem.title }}</a></li>
-								{% endfor %}
-							</ul>
+							<li class="{% if item.selected %}active{% endif %}">
+								<a href="{{ item.get_url }}">{{ item.title }}</a>
+								<ul>
+									{% for subitem in item.submenu %}
+										{% if subitem.submenu %}
+											<li{% if subitem.selected %} class="active"{% endif %}>
+												<a href="{{ subitem.get_url }}">{{ subitem.title }}</a>
+												<ul>
+													{% for subsubitem in subitem.submenu %}
+														<li{% if subsubitem.selected %} class="active"{% endif %}><a href="{{ subsubitem.get_url }}">{{ subsubitem.title }}</a></li>
+													{% endfor %}
+												</ul>
+											</li>
+										{% else %}
+											<li{% if subitem.selected %} class="active"{% endif %}><a href="{{ subitem.get_url }}">{{ subitem.title }}</a></li>
+										{% endif %}
+									{% endfor %}
+								</ul>
+							</li>
 						{% else %}
 							<li{% if item.selected %} class="active"{% endif %}>
 								<a href="{{ item.get_url }}">{{ item.title }}</a>

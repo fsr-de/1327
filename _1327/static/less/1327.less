@@ -106,10 +106,10 @@ div#wrapper {
 .navbar-collapse-menu {
 	display: none;
 }
-.navbar-collapse-menu li.active a {
+.navbar-collapse-menu li.active > a {
 	color: @hpi-yellow;
 }
-.navbar-collapse-menu li.disabled a {
+.navbar-collapse-menu li.disabled > a {
 	color: @gray;
 	text-decoration: none;
 }
@@ -119,6 +119,7 @@ div#wrapper {
 .navbar-collapse-menu ul {
 	color: @gray-lighter;
 	margin: 0;
+	list-style-type: none;
 }
 
 .navbar-default .navbar-nav > li {
@@ -153,6 +154,27 @@ div#wrapper {
 }
 .dropdown:hover .dropdown-menu {
 	display: block;
+}
+
+.caret-right {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 2px;
+    vertical-align: middle;
+    border-left: 4px dashed;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+}
+.dropdown-menu .sub-menu {
+	left: 100%;
+	position: absolute;
+	top: 0;
+	visibility: hidden;
+	margin-top: -5px;
+}
+.dropdown-menu li:hover .sub-menu {
+	visibility: visible;
 }
 
 
@@ -259,7 +281,7 @@ table.table-narrow {
 	max-width: 400px;
 }
 table.vertically-aligned tr td {
-    vertical-align: middle;
+	vertical-align: middle;
 }
 
 .toc ul {
