@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.forms import inlineformset_factory
 from django.forms.formsets import formset_factory
@@ -16,7 +17,7 @@ import markdown
 from markdown.extensions.toc import TocExtension
 
 from _1327 import settings
-from _1327.documents.forms import PermissionForm
+from _1327.documents.forms import PermissionBaseForm, get_permission_form
 from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
 from _1327.documents.models import Document
 from _1327.documents.utils import (
@@ -128,21 +129,12 @@ def view(request, title):
 def permissions(request, title):
 	document = get_object_or_error(MinutesDocument, request.user, ['minutes.change_minutesdocument'], url_title=title)
 
-	permissionFS = formset_factory(form=PermissionForm, extra=0)
-	groups = Group.objects.all()
+	content_type = ContentType.objects.get_for_model(MinutesDocument)
+	PermissionForm = get_permission_form(content_type)
+	PermissionFormset = formset_factory(get_permission_form(content_type), extra=0)
 
-	initial_data = []
-	for group in groups:
-		group_permissions = get_perms(group, document)
-		data = {
-			"change_permission": "change_minutesdocument" in group_permissions,
-			"delete_permission": "delete_minutesdocument" in group_permissions,
-			"view_permission": MinutesDocument.VIEW_PERMISSION_NAME in group_permissions,
-			"group_name": group.name,
-		}
-		initial_data.append(data)
-
-	formset = permissionFS(request.POST or None, initial=initial_data)
+	initial_data = PermissionForm.prepare_initial_data(Group.objects.all(), content_type, document)
+	formset = PermissionFormset(request.POST or None, initial=initial_data)
 	if request.POST and formset.is_valid():
 		for form in formset:
 			form.save(document)
@@ -152,6 +144,7 @@ def permissions(request, title):
 
 	return render(request, 'minutes_permissions.html', {
 		'document': document,
+		'formset_header': PermissionForm.header(content_type),
 		'formset': formset,
 		'active_page': 'permissions',
 		'permission_warning': permission_warning(request.user, document),

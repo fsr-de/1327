@@ -9,22 +9,11 @@
 	<div class="form-group">
 		<table class="table table-striped vertically-aligned table-narrow" >
 			<thead>
-				<tr>
-					<th class="col-md-6">{% trans "Role" %}</th>
-					<th class="col-md-2 text-center">{% trans "View" %}</th>
-					<th class="col-md-2 text-center">{% trans "Edit" %}</th>
-					<th class="col-md-2 text-center">{% trans "Delete" %}</th>
-				</tr>
+				{{ formset_header }}
 			</thead>
 			<tbody>
 			{% for form in formset %}
-				<tr>
-					{{ form.group_name }}
-					<td>{{ form.group_name.value }}</td>
-					<td class="text-center">{{ form.view_permission }}</td>
-					<td class="text-center">{{ form.change_permission }}</td>
-					<td class="text-center">{{ form.delete_permission }}</td>
-				</tr>
+				{{ form.as_table }}
 			{% endfor %}
 			</tbody>
 		</table>

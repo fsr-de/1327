@@ -1,5 +1,6 @@
 from django import forms
 
+from _1327.documents.forms import PermissionBaseForm
 from .models import Choice, Poll
 
 

@@ -7,6 +7,7 @@ from _1327.user_management.models import UserProfile
 
 
 POLL_VIEW_PERMISSION_NAME = 'view_poll'
+POLL_VOTE_PERMISSION_NAME = 'vote_poll'
 
 
 class Poll(models.Model):
@@ -23,6 +24,7 @@ class Poll(models.Model):
 	class Meta:
 		permissions = (
 			(POLL_VIEW_PERMISSION_NAME, 'User/Group is allowed to view that poll'),
+			(POLL_VOTE_PERMISSION_NAME, 'User/Group is allowed to participate (vote) in that poll'),
 		)
 
 	class LinkPattern (InternalLinkPattern):
