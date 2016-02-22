@@ -17,6 +17,7 @@ from markdown.extensions.toc import TocExtension
 
 from _1327 import settings
 from _1327.documents.forms import PermissionForm
+from _1327.documents.markdown_internal_links import InternalLinksMarkdownExtension
 from _1327.documents.models import Document
 from _1327.documents.utils import (
 	delete_old_empty_pages,
@@ -121,7 +122,7 @@ def versions(request, title):
 def view(request, title):
 	document = get_object_or_error(MinutesDocument, request.user, [MinutesDocument.get_view_permission()], url_title=title)
 
-	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2)])
+	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension()])
 	text = md.convert(document.text)
 
 	return render(request, 'minutes_base.html', {
