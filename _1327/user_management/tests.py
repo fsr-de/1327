@@ -5,7 +5,7 @@ from .models import UserProfile
 
 
 class UsecaseTests(WebTest):
-	extra_environ = {'HTTP_ACCEPT_LANGUAGE': 'en'}
+	extra_environ = {'HTTP_ACCEPT_LANGUAGE': 'de'}
 
 	def setUp(self):
 		self.user = mommy.make(
@@ -23,7 +23,7 @@ class UsecaseTests(WebTest):
 		login_form = page.forms[0]
 		login_form['username'] = "user"
 		login_form['password'] = "wrong_password"
-		self.assertIn("Please enter a correct username and password", login_form.submit())
+		self.assertIn("Bitte gib einen korrekten Benutzernamen und Passwort ein.", login_form.submit())
 
 		login_form = page.forms[0]
 		login_form['username'] = "user"
