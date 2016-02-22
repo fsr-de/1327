@@ -1,61 +1,49 @@
 {% extends "base_without_sidebar.html" %}
 {% load i18n %}
+{% load morefilters %}
 
 {% block title %}
-	{% trans "Results for: " %}{{ poll.title }}
+	{{ poll.title }} – {% trans "Results" %}
 {% endblock %}
 
 {% block content %}
 
-    {% if poll.description != "" %}
-        <div class="panel panel-default">
-            <div class="panel-body">
-                {{ poll.description }}
-            </div>
-        </div>
-    {% endif %}
-	{%  if poll.max_allowed_number_of_answers > 1 %}
-		<div class="alert alert-info" role="alert">
-			{% blocktrans with max_allowed_number_of_answers=poll.max_allowed_number_of_answers %}Every participant had up to {{ max_allowed_number_of_answers }} votes.{% endblocktrans %}
+	{% if poll.description != "" %}
+		<div class="panel panel-default">
+			<div class="panel-body">
+				{{ poll.description }}
+				{% if poll.max_allowed_number_of_answers > 1 %}
+					<br /><br />
+					<span class="glyphicon glyphicon-th-list"></span>
+					{% blocktrans with max_allowed_number_of_answers=poll.max_allowed_number_of_answers %}Every participant had up to {{ max_allowed_number_of_answers }} votes.{% endblocktrans %}
+				{% endif %}
+			</div>
 		</div>
-	{%  endif %}
+	{% endif %}
 
-    <table class="table table-striped">
-        <tr>
-            <th>{% trans "Choice" %}</th>
-            <th>{% trans "Result" %}</th>
-            <th>{% trans "Percentage" %}</th>
-            <th>{% trans "Votes" %}</th>
-        </tr>
-        {% for choice in poll.choices.all %}
-            <tr class="choice-row">
-                <td>{{ choice.text }}</td>
-                <td>
-                    <div class="progress">
-                        <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="" aria-valuemin="0"
-                             aria-valuemax="100"  data-percentage="{{ choice.percentage }}">
-                            <span></span>
-                        </div>
-                    </div>
-                </td>
-                <td class="percentage-column"></td>
-                <td>{{ choice.votes }}</td>
-            </tr>
-        {% endfor %}
-    </table>
-
-{% endblock %}
-
-{% block scripts %}
-    {{ block.super }}
-    <script type="text/javascript">
-        var rows = $('.choice-row');
-        rows.each(function (index, row){
-            var progressBar = $(row).find(".progress-bar");
-            var percentage = parseFloat(progressBar.data("percentage"));
-            $(progressBar).attr("aria-valuenow", percentage);
-            $(progressBar).css("width", percentage.toFixed(2) + "%");
-            $(row).find(".percentage-column").html(percentage.toFixed(2) + "%");
-        });
-    </script>
+	<table class="table table-striped">
+		<tr>
+			<th class="col-sm-3">{% trans "Choice" %}</th>
+			<th class="col-sm-5">{% trans "Description" %}</th>
+			<th class="col-sm-1 text-right">{% trans "Votes" %}</th>
+			<th class="col-sm-1 text-right">{% trans "Percentage" %}</th>
+			<th class="col-sm-2"></th>
+		</tr>
+		{% for choice in poll.choices.all %}
+			<tr class="choice-row">
+				<td>{{ choice.text }}</td>
+				<td>{{ choice.description }}</td>
+				<td class="text-right">{{ choice.votes }}</td>
+				<td class="text-right">{{ choice.percentage|percentage }}</td>
+				<td>
+					<div class="progress">
+						<div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{{ choice.percentage }}" aria-valuemin="0"
+						aria-valuemax="100" data-percentage="{{ choice.percentage }}" style="width: {% widthratio choice.percentage 100 100 %}%;">
+							<span></span>
+						</div>
+					</div>
+				</td>
+			</tr>
+		{% endfor %}
+	</table>
 {% endblock %}
