@@ -33,10 +33,14 @@ def menu(request):
 def mark_selected(request, menu_item):
 	menu_item.submenu = menu_item.children.all()
 	menu_item.submenu = [submenu_item for submenu_item in menu_item.submenu if submenu_item.can_view(request.user)]
+	found_selected = False
 	for child in menu_item.submenu:
 		if mark_selected(request, child):
 			menu_item.selected = True
-			return True
+			found_selected = True
+
+	if found_selected:
+		return True
 
 	current_view = request.resolver_match
 	if current_view is not None:
