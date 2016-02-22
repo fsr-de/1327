@@ -9,7 +9,7 @@ from django.shortcuts import render
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from guardian.models import Group
-from guardian.shortcuts import get_perms
+from guardian.shortcuts import get_objects_for_user, get_perms
 import markdown
 from markdown.extensions.toc import TocExtension
 from reversion import revisions
@@ -26,6 +26,8 @@ from _1327.documents.utils import (
 	prepare_versions,
 )
 from _1327.information_pages.models import InformationDocument
+from _1327.minutes.models import MinutesDocument
+from _1327.polls.models import Poll
 from _1327.user_management.shortcuts import get_object_or_error
 
 
@@ -51,6 +53,11 @@ def edit(request, title, new_autosaved_pages=None):
 		messages.success(request, _("Successfully saved changes"))
 		return HttpResponseRedirect(reverse('information_pages:view_information', args=[document.url_title]))
 	else:
+
+		minutes = get_objects_for_user(request.user, MinutesDocument.VIEW_PERMISSION_NAME, klass=MinutesDocument)
+		information_documents = get_objects_for_user(request.user, InformationDocument.VIEW_PERMISSION_NAME, klass=InformationDocument)
+		polls = get_objects_for_user(request.user, Poll.VIEW_PERMISSION_NAME, klass=Poll)
+
 		return render(request, "information_pages_edit.html", {
 			'document': document,
 			'form': form,
@@ -60,6 +67,9 @@ def edit(request, title, new_autosaved_pages=None):
 			'new_autosaved_pages': new_autosaved_pages,
 			'permission_warning': permission_warning(request.user, document),
 			'supported_image_types': settings.SUPPORTED_IMAGE_TYPES,
+			'minutes': minutes,
+			'information_documents': information_documents,
+			'polls': polls,
 		})
 
 

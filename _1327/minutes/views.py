@@ -10,7 +10,8 @@ from django.shortcuts import render
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from guardian.models import Group
-from guardian.shortcuts import get_perms
+from guardian.shortcuts import get_objects_for_user, get_perms
+
 import markdown
 from markdown.extensions.toc import TocExtension
 
@@ -25,6 +26,8 @@ from _1327.documents.utils import (
 	permission_warning,
 	prepare_versions,
 )
+from _1327.information_pages.models import InformationDocument
+from _1327.polls.models import Poll
 from _1327.user_management.shortcuts import get_object_or_error
 from .forms import GuestForm
 from .models import Guest, MinutesDocument
@@ -71,6 +74,11 @@ def edit(request, title):
 		messages.success(request, _("Successfully saved changes"))
 		return HttpResponseRedirect(reverse('minutes:view', args=[document.url_title]))
 	else:
+
+		minutes = get_objects_for_user(request.user, MinutesDocument.VIEW_PERMISSION_NAME, klass=MinutesDocument)
+		information_documents = get_objects_for_user(request.user, InformationDocument.VIEW_PERMISSION_NAME, klass=InformationDocument)
+		polls = get_objects_for_user(request.user, Poll.VIEW_PERMISSION_NAME, klass=Poll)
+
 		return render(request, "minutes_edit.html", {
 			'document': document,
 			'edit_url': reverse('minutes:edit', args=[document.url_title]),
@@ -80,6 +88,9 @@ def edit(request, title):
 			'guest_formset': formset,
 			'permission_warning': permission_warning(request.user, document),
 			'supported_image_types': settings.SUPPORTED_IMAGE_TYPES,
+			'minutes': minutes,
+			'information_documents': information_documents,
+			'polls': polls,
 		})
 
 

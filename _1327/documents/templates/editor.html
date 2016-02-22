@@ -73,6 +73,41 @@
 		</div>
 	</div>
 
+	<div class="modal fade ontop" id="selectInternalLinkDestination" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<div class="modal-title">{% trans "Select link target:" %}</div>
+				</div>
+				<div class="modal-body">
+					<select class="form-control" id="selectInternalLinkModal">
+						<optgroup label="{% trans "Minutes" %}">
+							{% for minute in minutes %}
+								<option value="[{{ minute.title }}](minutes:{{ minute.id }})">{{ minute.title }}</option>
+							{% endfor %}
+						</optgroup>
+						<optgroup label="{% trans "Information Documents" %}">
+							{% for information_document in information_documents %}
+								<option value="[{{ information_document.title }}](information_document:{{ information_document.id }})">{{ information_document.title }}</option>
+							{% endfor %}
+						</optgroup>
+						<optgroup label="{% trans "Polls" %}">
+							{% for poll in polls %}
+								<option value="[{{ poll.title }}](poll:{{ poll.id }})">{{ poll.title }}</option>
+							{% endfor %}
+						</optgroup>
+					</select>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" id="setInternalLinkDestination">{% trans "OK" %}</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<!-- mandatory script include -->
 	<script type="text/javascript" src="{% static 'js/markdown.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/jquery.hotkeys.js' %}"></script>
@@ -193,6 +228,38 @@
 										$('#image-upload-error-display').removeClass('hidden');
 									}
 								});
+							});
+						}
+					}]
+				},
+
+				{
+					name: "InternalGroup",
+					data: [{
+						name: "cmdAddInternalLink",
+						toggle: false,
+						title: "Add internal link",
+						icon: "glyphicon glyphicon-circle-arrow-right",
+						callback: function (e) {
+
+							var modalItem = $('#selectInternalLinkDestination');
+							modalItem.modal();
+
+							// set the click handler on the ok button that adds the markdown to the text
+							// and closes the modal
+							var setButton = $('#setInternalLinkDestination');
+							setButton.off('click');
+							setButton.on("click", function (event) {
+								modalItem.modal('hide');
+								// find the right spot to insert the text and create the correct markdown
+								var markdown = $('#selectInternalLinkModal').val();
+								if (markdown !== null) {
+									linkText = markdown.match(/\[(.*?)\]/)[1]; // we want the text inside the [ ]
+									selected = e.getSelection();
+									e.replaceSelection(markdown);
+									cursor = selected.start;
+									e.setSelection(cursor + 1, cursor + linkText.length + 1) // +1 because we do not want to select the starting [
+								}
 							});
 						}
 					}]
