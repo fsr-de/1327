@@ -10,6 +10,8 @@ class HexColorModelField(models.CharField):
 
 	def to_python(self, value):
 		" Normalize hex color to 6 digits"
+		if value is None:
+			return None
 		if value[0] == '#' and len(value) == 4:
 			return '#' + value[1] * 2 + value[2] * 2 + value[3] * 2
 		return value
