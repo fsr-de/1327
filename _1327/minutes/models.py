@@ -34,13 +34,14 @@ class MinutesDocument(Document):
 	UNPUBLISHED = 0
 	PUBLISHED = 1
 	INTERNAL = 2
-
-	date = models.DateField(default=datetime.now, verbose_name=_("Date"))
-	state = models.IntegerField(choices=(
+	CHOICES = (
 		(UNPUBLISHED, _('Unpublished')),
 		(PUBLISHED, _('Published')),
 		(INTERNAL, _('Internal')),
-	), default=UNPUBLISHED, verbose_name=_("State"))
+	)
+
+	date = models.DateField(default=datetime.now, verbose_name=_("Date"))
+	state = models.IntegerField(choices=CHOICES, default=UNPUBLISHED, verbose_name=_("State"))
 	moderator = models.ForeignKey(UserProfile, related_name='moderations', verbose_name=_("Moderator"), blank=True, null=True)
 	author = models.ForeignKey(UserProfile, related_name='documents')
 	participants = models.ManyToManyField(UserProfile, related_name='participations', verbose_name=_("Participants"))
