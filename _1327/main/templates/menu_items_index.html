@@ -1,0 +1,28 @@
+{% extends 'base_without_sidebar.html' %}
+
+{% load i18n %}
+{% load guardian_tags %}
+
+{% block title %}
+	{% trans "Menu items" %}
+{% endblock %}
+
+{% block content %}
+	<table class="table table-striped vertically-aligned">
+		<thead>
+			<th>{% trans "Title" %}</th>
+			<th>{% trans "Link" %}</th>
+			<th>{% trans "Document" %}</th>
+		</thead>
+		{% for menu_item in menu_items %}
+			<tr>
+				<td>
+					<a href="{% url 'menu_item_edit' menu_item.pk %}">{{ menu_item.title }}</a>
+				</td>
+				<td>{% if menu_item.link %}{{ menu_item.link }}{% endif %}</td>
+				<td>{% if menu_item.document %}{{ menu_item.document }}{% endif %}</td>
+			</tr>
+		{% endfor %}
+	</table>
+	<a type="button" class="btn btn-primary" href="{% url 'menu_item_create' %}">{% trans 'Create new menu item' %}</a>
+{% endblock %}

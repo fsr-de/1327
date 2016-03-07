@@ -73,6 +73,8 @@
 								{% if CAN_CREATE_POLL %}
 									<li><a href="{% url 'polls:create' %}">{% trans "Poll" %}</a></li>
 								{% endif %}
+								<li role="separator" class="divider"></li>
+								<li><a href="{% url 'menu_items_index' %}">{% trans "Manage menu items" %}</a></li>
 							{% endif %}
 							{% if user.is_staff or user.is_superuser %}
 								<li role="separator" class="divider"></li>
