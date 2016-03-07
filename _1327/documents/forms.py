@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth.models import Group, Permission
 from django.core.exceptions import ValidationError
 from django.forms import BooleanField
+from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from guardian.shortcuts import assign_perm, get_perms, remove_perm
@@ -61,10 +62,11 @@ class PermissionBaseForm(forms.BaseForm):
 	def header(cls):
 		output = [
 			'<tr>',
-			'<th class="col-md-6"> {} </th>'.format(_("Role")),
+			'<th class="col-md-6">{}</th>'.format(_("Role")),
 		]
+		# add one table head entry for every permission in this form
 		for permission in sorted([name for name, field in filter(lambda x: type(x[1]) == BooleanField, cls.base_fields.items())]):
-			item = "<th class=\"col-md-2 text-center\"> {} </th>".format(_(permission.rsplit('_')[0]))
+			item = "<th class=\"col-md-2 text-center\">{}</th>".format(force_text(_(permission.rsplit('_')[0])))
 			output.append(item)
 		output.append('</tr>')
 		return mark_safe('\n'.join(output))
@@ -73,14 +75,14 @@ class PermissionBaseForm(forms.BaseForm):
 		"Returns this form rendered as HTML <tr>"
 		output = [
 			"<tr>",
-			"<td>{}</td>".format(self['group_name'].value())
+			"<td>{}</td>".format(force_text(self['group_name'].value()))
 		]
 
 		for name in sorted(self.fields.keys()):
 			if name == "group_name":
 				continue
-			output.append('<td class="text-center"> {} </td>'.format(self[name]))
-		output.append(str(self['group_name']))
+			output.append('<td class="text-center">{}</td>'.format(force_text(self[name])))
+		output.append(force_text(str(self['group_name'])))
 		output.append("</tr>")
 
 		return mark_safe('\n'.join(output))
