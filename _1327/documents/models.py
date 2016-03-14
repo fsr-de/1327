@@ -54,6 +54,13 @@ class Document(PolymorphicModel):
 			authors.add(version.revision.user)
 		return authors
 
+	@property
+	def last_change(self):
+		last_revision = revisions.get_for_object(self).order_by('revision__date_created').last()
+		if last_revision is None:
+			return None
+		return last_revision.revision.date_created
+
 
 class TemporaryDocumentText(models.Model):
 	text = models.TextField()
