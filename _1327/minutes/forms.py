@@ -14,7 +14,7 @@ class MinutesDocumentForm(forms.ModelForm):
 
 	class Meta:
 		model = MinutesDocument
-		fields = ['title', 'moderator', 'participants', 'labels', 'text', 'comment', 'url_title']
+		fields = ['title', 'date', 'moderator', 'participants', 'labels', 'text', 'comment', 'url_title']
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
