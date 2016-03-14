@@ -2,6 +2,7 @@ import json
 import re
 
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.utils import timezone
 from guardian.utils import get_anonymous_user
@@ -10,6 +11,7 @@ from reversion import revisions
 from _1327.documents.forms import AttachmentForm, DocumentForm
 from _1327.documents.models import Document, TemporaryDocumentText
 from _1327.information_pages.models import InformationDocument
+from _1327.minutes.models import MinutesDocument
 
 
 def get_new_autosaved_pages_for_user(user):
@@ -40,6 +42,14 @@ def handle_edit(request, document, formset=None):
 
 			# save the document and also save the user and the comment the user added
 			with transaction.atomic(), revisions.create_revision():
+				content_type = ContentType.objects.get_for_model(document)
+				if content_type == ContentType.objects.get_for_model(MinutesDocument):
+					document.participants.clear()
+					for participant in cleaned_data['participants']:
+						document.participants.add(participant)
+					document.labels.clear()
+					for label in cleaned_data['labels']:
+						document.labels.add(label)
 				document.save()
 				if formset:
 					guests = formset.save(commit=False)
