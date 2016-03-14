@@ -25,6 +25,8 @@
 		{% endfor %}
 		<dt>{% trans "Created" %}</dt>
 		<dd>{{ document.created|date:"d. M Y, H:i" }}</dd>
+		<dt>{% trans "Last change" %}</dt>
+		<dd>{{ document.last_change|date:"d. M Y, H:i" }}</dd>
 	</dl>
 	<div class="divider"></div>
 	{% block minutes_nav %}
