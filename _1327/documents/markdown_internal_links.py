@@ -1,13 +1,10 @@
+from django.core.urlresolvers import reverse
 import markdown
 from markdown.inlinepatterns import LinkPattern
 
 from _1327.information_pages.models import InformationDocument
 from _1327.minutes.models import MinutesDocument
 from _1327.polls.models import Poll
-
-MINUTES_RE = r'\[(?P<title>[^\[]+)\]\(minutes:(?P<id>\d+)\)'
-POLLS_RE = r'\[(?P<title>[^\[]+)\]\(poll:(?P<id>\d+)\)'
-INFORMATION_DOCUMENT_RE = r'\[(?P<title>[^\[]+)\]\(information_document:(?P<id>\d+)\)'
 
 
 class InternalLinkPattern (LinkPattern):
@@ -27,7 +24,7 @@ class InternalLinkMinutesPattern (InternalLinkPattern):
 	def url(self, id):
 		document = MinutesDocument.objects.get(id=id)
 		if document:
-			return '/minutes/' + document.url_title
+			return reverse('minutes:view', args=[document.url_title])
 		return ''
 
 
@@ -36,7 +33,7 @@ class InternalLinkPollsPattern (InternalLinkPattern):
 	def url(self, id):
 		poll = Poll.objects.get(id=id)
 		if poll:
-			return '/polls/' + str(poll.id) + '/results'
+			return reverse('polls:results', args=[poll.id])
 		return ''
 
 
@@ -45,13 +42,13 @@ class InternalLinkInformationDocumentPattern (InternalLinkPattern):
 	def url(self, id):
 		document = InformationDocument.objects.get(id=id)
 		if document:
-			return '/' + document.url_title
+			return reverse('information_pages:view_information', args=[document.url_title])
 		return ''
 
 
 class InternalLinksMarkdownExtension(markdown.extensions.Extension):
 
 	def extendMarkdown(self, md, md_globals):
-		md.inlinePatterns.add('InternalLinkMinutesPattern', InternalLinkMinutesPattern(MINUTES_RE, md), "_begin")
-		md.inlinePatterns.add('InternalLinkPollsPattern', InternalLinkPollsPattern(POLLS_RE, md), "_begin")
-		md.inlinePatterns.add('InternalLinkInformationDocumentPattern', InternalLinkInformationDocumentPattern(INFORMATION_DOCUMENT_RE, md), "_begin")
+		md.inlinePatterns.add('InternalLinkMinutesPattern', InternalLinkMinutesPattern(MinutesDocument.MINUTES_LINK_REGEX, md), "_begin")
+		md.inlinePatterns.add('InternalLinkPollsPattern', InternalLinkPollsPattern(Poll.POLLS_LINK_REGEX, md), "_begin")
+		md.inlinePatterns.add('InternalLinkInformationDocumentPattern', InternalLinkInformationDocumentPattern(InformationDocument.INFORMATIONDOCUMENT_LINK_REGEX, md), "_begin")

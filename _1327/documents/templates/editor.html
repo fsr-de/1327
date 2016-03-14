@@ -73,14 +73,14 @@
 		</div>
 	</div>
 
-	<div class="modal fade ontop" id="selectInternalLinkDestination" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal fade ontop" id="selectInternalLinkDestination" role="dialog" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
-					<div class="modal-title">{% trans "Select link target:" %}</div>
+					<div class="modal-title">{% trans "Select link target" %}</div>
 				</div>
 				<div class="modal-body">
 					<select class="form-control" id="selectInternalLinkModal">
@@ -259,6 +259,7 @@
 									e.replaceSelection(markdown);
 									cursor = selected.start;
 									e.setSelection(cursor + 1, cursor + linkText.length + 1) // +1 because we do not want to select the starting [
+									$("#id_text").focus()
 								}
 							});
 						}
@@ -294,6 +295,12 @@
 			setTimeout(function() { save(); }, 10000);
 		}
 		save();
+
+		$("#selectInternalLinkModal").select2({
+			language: "{{ LANGUAGE_CODE }}",
+			placeholder: "{% trans "Please select..." %}",
+			minimumResultsForSearch: 3
+		});
 
 		{% block additional_script %}{% endblock %}
 	</script>

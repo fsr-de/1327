@@ -47,6 +47,7 @@ class MinutesDocument(Document):
 	labels = models.ManyToManyField(MinutesLabel, related_name="minutes", blank=True)
 
 	VIEW_PERMISSION_NAME = MINUTES_VIEW_PERMISSION_NAME
+	MINUTES_LINK_REGEX = r'\[(?P<title>[^\[]+)\]\(minutes:(?P<id>\d+)\)'
 
 	class Meta(Document.Meta):
 		verbose_name = ungettext_lazy("Minutes", "Minutes", 1)

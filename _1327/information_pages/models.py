@@ -10,6 +10,7 @@ INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME = 'view_informationdocument'
 
 class InformationDocument(Document):
 	VIEW_PERMISSION_NAME = INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME
+	INFORMATIONDOCUMENT_LINK_REGEX = r'\[(?P<title>[^\[]+)\]\(information_document:(?P<id>\d+)\)'
 
 	class Meta(Document.Meta):
 		verbose_name = _("Information document")
