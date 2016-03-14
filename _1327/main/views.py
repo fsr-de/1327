@@ -1,12 +1,17 @@
 from django.conf import settings
+from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from django.utils.translation import ugettext_lazy as _
 
 import markdown
 from markdown.extensions.toc import TocExtension
 
 from _1327.documents.models import Document
 from _1327.documents.utils import permission_warning
+
+from .forms import MenuItemForm
+from .models import MenuItem
 
 
 def index(request):
@@ -28,3 +33,35 @@ def index(request):
 	except ObjectDoesNotExist:
 		# nobody created a mainpage yet -> show default main page
 		return render(request, 'index.html')
+
+
+def menu_items_index(request):
+	menu_items = MenuItem.objects.all()  # TODO (#268): get only items that can be edited by the current user
+	return render(request, 'menu_items_index.html', {'menu_items': menu_items})
+
+
+def menu_item_create(request):
+	form = MenuItemForm(request.POST or None, instance=MenuItem())
+	if form.is_valid():
+		form.save()
+		messages.success(request, _("Successfully created menu item."))
+		return redirect('menu_items_index')
+	else:
+		return render(request, 'menu_item_edit.html', {'form': form})
+
+
+def menu_item_edit(request, menu_item_pk):
+	menu_item = MenuItem.objects.get(pk=menu_item_pk)  # TODO (#268): check permission to edit
+	form = MenuItemForm(request.POST or None, instance=menu_item)
+	if form.is_valid():
+		form.save()
+		messages.success(request, _("Successfully edited menu item."))
+		return redirect('menu_items_index')
+	return render(request, 'menu_item_edit.html', {'form': form})
+
+
+def menu_item_delete(request, menu_item_pk):
+	menu_item = MenuItem.objects.get(pk=menu_item_pk)  # TODO (#268): check permission to delete
+	menu_item.delete()
+	messages.success(request, _("The menu item was deleted successfully."))
+	return redirect('menu_items_index')
