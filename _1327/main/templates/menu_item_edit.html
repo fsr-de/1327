@@ -48,3 +48,16 @@
 		</div>
 	{% endif %}
 {% endblock %}
+
+{% block scripts %}
+	{{ block.super }}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("#id_document,#id_parent,#id_menu_type").select2({
+				language: "{{ LANGUAGE_CODE }}",
+				placeholder: "{% trans "Please select..." %}",
+				minimumResultsForSearch: 3
+			});
+		});
+	</script>
+{% endblock %}
