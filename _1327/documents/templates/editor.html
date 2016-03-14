@@ -2,305 +2,305 @@
 {% load i18n %}
 {% load bootstrap3 %}
 
-	<h2>{% trans "Edit page" %}</h2>
+<h2>{% trans "Edit page" %}</h2>
 
-	{% if form.autosave %}
-		<div class="alert alert-danger alert-margin-bottom" role="alert">{% blocktrans with date=form.autosave_date %}This document was autosaved on {{ date }}{% endblocktrans %}, {% trans "you can restore unsaved changes:" %} <btn href="{{ document.get_edit_url }}?restore" class="btn-sm btn-default">{% trans "Restore" %}</a></div>
-	{% endif %}
+{% if form.autosave %}
+	<div class="alert alert-danger alert-margin-bottom" role="alert">{% blocktrans with date=form.autosave_date %}This document was autosaved on {{ date }}{% endblocktrans %}, {% trans "you can restore unsaved changes:" %} <btn href="{{ document.get_edit_url }}?restore" class="btn-sm btn-default">{% trans "Restore" %}</a></div>
+{% endif %}
 
-	{% for new_autosaved_page in new_autosaved_pages %}
-		<div class="alert alert-danger alert-margin-bottom" role="alert">{% blocktrans with date=new_autosaved_page.created %}There is a new document autosaved on {{ date }}{% endblocktrans %}, {% trans "you can restore this unsaved page:" %} <btn href="{{ new_autosaved_page.get_edit_url }}?restore" class="btn-sm btn-default">{% trans "Restore" %}</a></div>
-	{%  endfor %}
+{% for new_autosaved_page in new_autosaved_pages %}
+	<div class="alert alert-danger alert-margin-bottom" role="alert">{% blocktrans with date=new_autosaved_page.created %}There is a new document autosaved on {{ date }}{% endblocktrans %}, {% trans "you can restore this unsaved page:" %} <btn href="{{ new_autosaved_page.get_edit_url }}?restore" class="btn-sm btn-default">{% trans "Restore" %}</a></div>
+{%  endfor %}
 
-	<form action="{{ document.get_edit_url }}" method="post" class="form-horizontal" role="form" id="document-form">
-		{% bootstrap_form form layout='horizontal' %}
-		{% csrf_token %}
-		{% block inlineformset %}{% endblock %}
-		{% buttons %}
-		<div class="col-md-offset-2 col-md-9">
-			<button type="submit" class="btn btn-primary">
-				{% bootstrap_icon "floppy-disk" %} {% trans 'Save' %}
-			</button>
-		</div>
-		{% endbuttons %}
-	</form>
+<form action="{{ document.get_edit_url }}" method="post" class="form-horizontal" role="form" id="document-form">
+	{% bootstrap_form form layout='horizontal' %}
+	{% csrf_token %}
+	{% block inlineformset %}{% endblock %}
+	{% buttons %}
+	<div class="col-md-offset-2 col-md-9">
+		<button type="submit" class="btn btn-primary">
+			{% bootstrap_icon "floppy-disk" %} {% trans 'Save' %}
+		</button>
+	</div>
+	{% endbuttons %}
+</form>
 
-	<h2>{% trans "Preview" %}</h2>
-	<div class="divider"></div>
-	<div id="text-preview"></div>
+<h2>{% trans "Preview" %}</h2>
+<div class="divider"></div>
+<div id="text-preview"></div>
 
-	<div class="modal fade ontop" id="selectImageAttachment" tabindex="-1" role="dialog" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-					<div class="modal-title">{% trans "Select Image:" %}</div>
+<div class="modal fade ontop" id="selectImageAttachment" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<div class="modal-title">{% trans "Select Image:" %}</div>
+			</div>
+			<div class="modal-body">
+				<div class="alert alert-danger hidden" id="image-upload-error-display" role="alert">
+					{% trans "Error! Could not upload image." %}
 				</div>
-				<div class="modal-body">
-					<div class="alert alert-danger hidden" id="image-upload-error-display" role="alert">
-						{% trans "Error! Could not upload image." %}
-					</div>
-					<select class="form-control" id="attachmentModalSelect"></select>
+				<select class="form-control" id="attachmentModalSelect"></select>
+				<div class="divider"></div>
+				<h2>Preview</h2>
+				<div class="preview">
+					<img id="attachment-preview" style="width: 100%; height: 100%;" />
+				</div>
+				<div class="hidden" id="image-upload-area">
+					<h2>{% trans "Upload new image" %}</h2>
 					<div class="divider"></div>
-					<h2>Preview</h2>
-					<div class="preview">
-						<img id="attachment-preview" style="width: 100%; height: 100%;" />
-					</div>
-					<div class="hidden" id="image-upload-area">
-						<h2>{% trans "Upload new image" %}</h2>
-						<div class="divider"></div>
-						<form enctype="multipart/form-data" id="image-upload-form" method="post" class="form-horizontal" role="form" enctype="multipart/form-data">
-							{% bootstrap_form attachment_form layout='horizontal' %}
-							{% csrf_token %}
-							{% buttons %}
-								<div class="col-md-offset-2 col-md-9">
-									<button type="submit" class="btn btn-primary">
-										{% bootstrap_icon "floppy-disk" %} {% trans 'Add Image' %}
-									</button>
-								</div>
-							{% endbuttons %}
-						</form>
-					</div>
+					<form enctype="multipart/form-data" id="image-upload-form" method="post" class="form-horizontal" role="form" enctype="multipart/form-data">
+						{% bootstrap_form attachment_form layout='horizontal' %}
+						{% csrf_token %}
+						{% buttons %}
+							<div class="col-md-offset-2 col-md-9">
+								<button type="submit" class="btn btn-primary">
+									{% bootstrap_icon "floppy-disk" %} {% trans 'Add Image' %}
+								</button>
+							</div>
+						{% endbuttons %}
+					</form>
 				</div>
+			</div>
 
-				<div class="modal-footer">
-					<button type="button" class="btn btn-info" id="addImage">{% trans "Add new Image" %}</button>
-					<button type="button" class="btn btn-primary" id="setImage">{% trans "OK" %}</button>
-				</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-info" id="addImage">{% trans "Add new Image" %}</button>
+				<button type="button" class="btn btn-primary" id="setImage">{% trans "OK" %}</button>
 			</div>
 		</div>
 	</div>
+</div>
 
-	<div class="modal fade ontop" id="selectInternalLinkDestination" role="dialog" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-					<div class="modal-title">{% trans "Select link target" %}</div>
-				</div>
-				<div class="modal-body">
-					<select class="form-control" id="selectInternalLinkModal">
-						<optgroup label="{% trans "Minutes" %}">
-							{% for minute in minutes %}
-								<option value="[{{ minute.title }}](minutes:{{ minute.id }})">{{ minute.title }}</option>
-							{% endfor %}
-						</optgroup>
-						<optgroup label="{% trans "Information Documents" %}">
-							{% for information_document in information_documents %}
-								<option value="[{{ information_document.title }}](information_document:{{ information_document.id }})">{{ information_document.title }}</option>
-							{% endfor %}
-						</optgroup>
-						<optgroup label="{% trans "Polls" %}">
-							{% for poll in polls %}
-								<option value="[{{ poll.title }}](poll:{{ poll.id }})">{{ poll.title }}</option>
-							{% endfor %}
-						</optgroup>
-					</select>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-primary" id="setInternalLinkDestination">{% trans "OK" %}</button>
-				</div>
+<div class="modal fade ontop" id="selectInternalLinkDestination" role="dialog" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<div class="modal-title">{% trans "Select link target" %}</div>
+			</div>
+			<div class="modal-body">
+				<select class="form-control" id="selectInternalLinkModal">
+					<optgroup label="{% trans "Minutes" %}">
+						{% for minute in minutes %}
+							<option value="[{{ minute.title }}](minutes:{{ minute.id }})">{{ minute.title }}</option>
+						{% endfor %}
+					</optgroup>
+					<optgroup label="{% trans "Information Documents" %}">
+						{% for information_document in information_documents %}
+							<option value="[{{ information_document.title }}](information_document:{{ information_document.id }})">{{ information_document.title }}</option>
+						{% endfor %}
+					</optgroup>
+					<optgroup label="{% trans "Polls" %}">
+						{% for poll in polls %}
+							<option value="[{{ poll.title }}](poll:{{ poll.id }})">{{ poll.title }}</option>
+						{% endfor %}
+					</optgroup>
+				</select>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="setInternalLinkDestination">{% trans "OK" %}</button>
 			</div>
 		</div>
 	</div>
+</div>
 
-	<!-- mandatory script include -->
-	<script type="text/javascript" src="{% static 'js/markdown.js' %}"></script>
-	<script type="text/javascript" src="{% static 'js/jquery.hotkeys.js' %}"></script>
-	<script type="text/javascript" src="{% static 'js/jquery.formset.js' %}"></script>
-	<script type="text/javascript" src="{% static 'bootstrap-markdown/js/bootstrap-markdown.js' %}"></script>
-	<script>
-		function addImageToText(editor, attachmentId, modal) {
-			var chunk = "![Image Alt]({% url 'documents:download_attachment' %}?attachment_id=" + attachmentId + "&embed=True)";
-			editor.replaceSelection(chunk);
-			var cursor = editor.getSelection();
+<!-- mandatory script include -->
+<script type="text/javascript" src="{% static 'js/markdown.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jquery.hotkeys.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jquery.formset.js' %}"></script>
+<script type="text/javascript" src="{% static 'bootstrap-markdown/js/bootstrap-markdown.js' %}"></script>
+<script>
+	function addImageToText(editor, attachmentId, modal) {
+		var chunk = "![Image Alt]({% url 'documents:download_attachment' %}?attachment_id=" + attachmentId + "&embed=True)";
+		editor.replaceSelection(chunk);
+		var cursor = editor.getSelection();
 
-			editor.setSelection(cursor, cursor + chunk.length);
-			modal.modal('hide');
-			$('#id_text').trigger('change');
-		}
+		editor.setSelection(cursor, cursor + chunk.length);
+		modal.modal('hide');
+		$('#id_text').trigger('change');
+	}
 
-		$("#id_text").removeClass('form-control').markdown({
-			autofocus:true,
-			resize:"both",
-			hiddenButtons: ["cmdPreview", "cmdImage"],
-			onChange: function(e) {
-				$('#text-preview').html(markdown.toHTML($('#id_text').val()));
-			},
-			onShow: function(e) {
-				this.onChange(e);
-			},
-			additionalButtons: [
-				// exchange the old image button by a new button
-				[{
-					name: "ImageGroup",
-					data: [{
-						name: "cmdAddImage",
-						toggle: false,
-						title: "Add Image",
-						icon: "glyphicon glyphicon-picture",
-						callback: function (e) {
-							// get all attachments
-							$.getJSON(
-								"{% url "documents:get_attachments" document.id %}",
-								{},
-								function (data, textStatus, jqXHR) {
-									// prepare the select in the modal
-									var select = $('#attachmentModalSelect');
-									if ($.isEmptyObject(data)) {
-										// if there are no pictures disable the select
-										select.attr('disabled', 'disabled');
-										return;
-									} else {
-										select.attr('disabled', false);
-									}
-									var options = select.prop('options');
-									$('option', select).remove();
-									$.each(data, function (val, text) {
-										options[options.length] = new Option(text, val);
-									});
-									// trigger the change event in order to show the preview of the pre selected
-									// image
-									select.trigger('change');
-							});
-
-							var modalItem = $('#selectImageAttachment');
-							modalItem.modal();
-							modalItem.on('hide.bs.modal', function () {
-								$('#image-upload-area').addClass('hidden');
-								$('#image-upload-error-display').addClass('hidden');
-							});
-
-							// set the click handler on the ok button that adds the image to the text
-							// and closes the modal
-							var setButton = $('#setImage');
-							setButton.off('click');
-							setButton.on("click", function (event) {
+	$("#id_text").removeClass('form-control').markdown({
+		autofocus:true,
+		resize:"both",
+		hiddenButtons: ["cmdPreview", "cmdImage"],
+		onChange: function(e) {
+			$('#text-preview').html(markdown.toHTML($('#id_text').val()));
+		},
+		onShow: function(e) {
+			this.onChange(e);
+		},
+		additionalButtons: [
+			// exchange the old image button by a new button
+			[{
+				name: "ImageGroup",
+				data: [{
+					name: "cmdAddImage",
+					toggle: false,
+					title: "Add Image",
+					icon: "glyphicon glyphicon-picture",
+					callback: function (e) {
+						// get all attachments
+						$.getJSON(
+							"{% url "documents:get_attachments" document.id %}",
+							{},
+							function (data, textStatus, jqXHR) {
+								// prepare the select in the modal
 								var select = $('#attachmentModalSelect');
-								if (select.attr('disabled')) {
-									modalItem.modal('hide');
+								if ($.isEmptyObject(data)) {
+									// if there are no pictures disable the select
+									select.attr('disabled', 'disabled');
 									return;
+								} else {
+									select.attr('disabled', false);
 								}
-								// find the right spot to insert the text and create the correct markdown
-								var selectedAttachment = select.val();
-								addImageToText(e, selectedAttachment, modalItem)
-
-							});
-
-							// enable image uploading
-							var imageUploadForm = $('#image-upload-form');
-							imageUploadForm.off('submit');
-							imageUploadForm.on('submit', function (event) {
-								event.preventDefault();
-
-								var filename = $(this).find('input[name=file]').val();
-
-								// determine whether selected file might be an image
-								var file_type_is_ok = false;
-								{% for image_type in supported_image_types %}
-									if (filename.toLowerCase().endsWith('{{ image_type }}')) {
-										file_type_is_ok = true;
-									}
-								{% endfor %}
-
-								if (!file_type_is_ok) {
-									$('#image-upload-error-display').removeClass('hidden');
-									return;
-								}
-
-								var formData = new FormData(this);
-								formData.append("document", {{ document.id }});
-
-								$.ajax({
-									url: "{% url 'documents:create_attachment' %}",
-									data: formData,
-									processData: false,
-									contentType: false,
-									type: 'POST',
-									success: function (data) {
-										addImageToText(e, data, modalItem);
-									},
-									error: function () {
-										$('#image-upload-error-display').removeClass('hidden');
-									}
+								var options = select.prop('options');
+								$('option', select).remove();
+								$.each(data, function (val, text) {
+									options[options.length] = new Option(text, val);
 								});
-							});
-						}
-					}]
-				},
+								// trigger the change event in order to show the preview of the pre selected
+								// image
+								select.trigger('change');
+						});
 
-				{
-					name: "InternalGroup",
-					data: [{
-						name: "cmdAddInternalLink",
-						toggle: false,
-						title: "Add internal link",
-						icon: "glyphicon glyphicon-circle-arrow-right",
-						callback: function (e) {
+						var modalItem = $('#selectImageAttachment');
+						modalItem.modal();
+						modalItem.on('hide.bs.modal', function () {
+							$('#image-upload-area').addClass('hidden');
+							$('#image-upload-error-display').addClass('hidden');
+						});
 
-							var modalItem = $('#selectInternalLinkDestination');
-							modalItem.modal();
-
-							// set the click handler on the ok button that adds the markdown to the text
-							// and closes the modal
-							var setButton = $('#setInternalLinkDestination');
-							setButton.off('click');
-							setButton.on("click", function (event) {
+						// set the click handler on the ok button that adds the image to the text
+						// and closes the modal
+						var setButton = $('#setImage');
+						setButton.off('click');
+						setButton.on("click", function (event) {
+							var select = $('#attachmentModalSelect');
+							if (select.attr('disabled')) {
 								modalItem.modal('hide');
-								// find the right spot to insert the text and create the correct markdown
-								var markdown = $('#selectInternalLinkModal').val();
-								if (markdown !== null) {
-									linkText = markdown.match(/\[(.*?)\]/)[1]; // we want the text inside the [ ]
-									selected = e.getSelection();
-									e.replaceSelection(markdown);
-									cursor = selected.start;
-									e.setSelection(cursor + 1, cursor + linkText.length + 1) // +1 because we do not want to select the starting [
-									$("#id_text").focus()
+								return;
+							}
+							// find the right spot to insert the text and create the correct markdown
+							var selectedAttachment = select.val();
+							addImageToText(e, selectedAttachment, modalItem)
+
+						});
+
+						// enable image uploading
+						var imageUploadForm = $('#image-upload-form');
+						imageUploadForm.off('submit');
+						imageUploadForm.on('submit', function (event) {
+							event.preventDefault();
+
+							var filename = $(this).find('input[name=file]').val();
+
+							// determine whether selected file might be an image
+							var file_type_is_ok = false;
+							{% for image_type in supported_image_types %}
+								if (filename.toLowerCase().endsWith('{{ image_type }}')) {
+									file_type_is_ok = true;
+								}
+							{% endfor %}
+
+							if (!file_type_is_ok) {
+								$('#image-upload-error-display').removeClass('hidden');
+								return;
+							}
+
+							var formData = new FormData(this);
+							formData.append("document", {{ document.id }});
+
+							$.ajax({
+								url: "{% url 'documents:create_attachment' %}",
+								data: formData,
+								processData: false,
+								contentType: false,
+								type: 'POST',
+								success: function (data) {
+									addImageToText(e, data, modalItem);
+								},
+								error: function () {
+									$('#image-upload-error-display').removeClass('hidden');
 								}
 							});
-						}
-					}]
+						});
+					}
 				}]
-			]
-		});
+			},
 
-		// handler to update the preview in the modal
-		$('#attachmentModalSelect').on('change', function (event) {
-			var selectedAttachment = $(this).val();
-			$('#attachment-preview').attr('src', "{% url 'documents:download_attachment' %}?attachment_id=" + selectedAttachment + "&embed=True");
-		});
+			{
+				name: "InternalGroup",
+				data: [{
+					name: "cmdAddInternalLink",
+					toggle: false,
+					title: "Add internal link",
+					icon: "glyphicon glyphicon-circle-arrow-right",
+					callback: function (e) {
 
-		$('#addImage').on('click', function (event) {
-			$('#image-upload-area').removeClass('hidden');
-		});
+						var modalItem = $('#selectInternalLinkDestination');
+						modalItem.modal();
 
-		var text = $('#id_text').val();
-		function save() {
-			if(text != $('#id_text').val()) {
-				text = $('#id_text').val();
+						// set the click handler on the ok button that adds the markdown to the text
+						// and closes the modal
+						var setButton = $('#setInternalLinkDestination');
+						setButton.off('click');
+						setButton.on("click", function (event) {
+							modalItem.modal('hide');
+							// find the right spot to insert the text and create the correct markdown
+							var markdown = $('#selectInternalLinkModal').val();
+							if (markdown !== null) {
+								linkText = markdown.match(/\[(.*?)\]/)[1]; // we want the text inside the [ ]
+								selected = e.getSelection();
+								e.replaceSelection(markdown);
+								cursor = selected.start;
+								e.setSelection(cursor + 1, cursor + linkText.length + 1) // +1 because we do not want to select the starting [
+								$("#id_text").focus()
+							}
+						});
+					}
+				}]
+			}]
+		]
+	});
 
-				var form = $('#document-form');
-				var serializedData = form.serialize();
+	// handler to update the preview in the modal
+	$('#attachmentModalSelect').on('change', function (event) {
+		var selectedAttachment = $(this).val();
+		$('#attachment-preview').attr('src', "{% url 'documents:download_attachment' %}?attachment_id=" + selectedAttachment + "&embed=True");
+	});
 
-				$.ajax({
-					url: "{% url 'information_pages:autosave' document.url_title %}",
-					type: "post",
-					data: serializedData
-				});
-			}
-			setTimeout(function() { save(); }, 10000);
+	$('#addImage').on('click', function (event) {
+		$('#image-upload-area').removeClass('hidden');
+	});
+
+	var text = $('#id_text').val();
+	function save() {
+		if(text != $('#id_text').val()) {
+			text = $('#id_text').val();
+
+			var form = $('#document-form');
+			var serializedData = form.serialize();
+
+			$.ajax({
+				url: "{% url 'information_pages:autosave' document.url_title %}",
+				type: "post",
+				data: serializedData
+			});
 		}
-		save();
+		setTimeout(function() { save(); }, 10000);
+	}
+	save();
 
-		$("#selectInternalLinkModal").select2({
-			language: "{{ LANGUAGE_CODE }}",
-			placeholder: "{% trans "Please select..." %}",
-			minimumResultsForSearch: 3
-		});
+	$("#selectInternalLinkModal").select2({
+		language: "{{ LANGUAGE_CODE }}",
+		placeholder: "{% trans "Please select..." %}",
+		minimumResultsForSearch: 3
+	});
 
-		{% block additional_script %}{% endblock %}
-	</script>
+	{% block additional_script %}{% endblock %}
+</script>
