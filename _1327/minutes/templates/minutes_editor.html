@@ -43,4 +43,7 @@
     $('.add-row-container').append($('.add-row'));
     $('.add-row').addClass('btn btn-default');
     $('.add-row').text('{% trans "Add another guest" %}');
+    
+    // add datepicker to date inputs
+    $("input[name*='date']:not([readonly='True'])").datepicker( $.datepicker.regional["{{ LANGUAGE_CODE }}"] );
 {% endblock %}

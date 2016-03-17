@@ -9,6 +9,8 @@
 
 {% block sidebar %}
 	<dl class="meta-information">
+		<dt>{% trans "Date" %}</dt>
+		<dd>{{ document.date|date:"d. M Y" }}</dd>
 		<dt>{% trans "Moderator" %}</dt>
 		<dd>{{ document.moderator }}</dd>
 		<dt>{% trans "Minute taker" %}</dt>
@@ -23,8 +25,6 @@
 		{% empty %}
 		<dd>{% trans "No Guests" %}</dd>
 		{% endfor %}
-		<dt>{% trans "Created" %}</dt>
-		<dd>{{ document.created|date:"d. M Y, H:i" }}</dd>
 		<dt>{% trans "Last change" %}</dt>
 		<dd>{{ document.last_change|date:"d. M Y, H:i" }}</dd>
 	</dl>
