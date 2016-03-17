@@ -1,10 +1,12 @@
 import json
 import tempfile
 
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.db import transaction
+from django.forms import BooleanField
 from django.test import TestCase
 from django.utils.text import slugify
 from django_webtest import WebTest
@@ -12,6 +14,7 @@ from guardian.shortcuts import assign_perm, get_perms, get_perms_for_model, remo
 from model_mommy import mommy
 from reversion import revisions
 
+from _1327.documents.forms import get_permission_form
 from _1327.information_pages.models import InformationDocument
 from _1327.user_management.models import UserProfile
 
@@ -681,3 +684,30 @@ class TestAttachments(WebTest):
 		self.assertEqual(Attachment.objects.count(), 2)
 		self.assertEqual(self.document.attachments.count(), 2)
 		self.assertEqual(self.document.attachments.last().index, 2)
+
+
+class PermissionFormTests(WebTest):
+
+	def test_get_permission_form_method(self):
+		for subclass in Document.__subclasses__():
+			content_type = ContentType.objects.get_for_model(subclass)
+			PermissionForm = get_permission_form(content_type)
+			permission_codenames = sorted([permission.codename for permission in Permission.objects.filter(content_type=content_type)])
+			found_permissions = sorted([name for name, field in filter(lambda x: type(x[1]) == BooleanField, PermissionForm.base_fields.items())])
+			for expected_permission, found_permission in zip(permission_codenames, found_permissions):
+				self.assertEqual(expected_permission, found_permission)
+
+	def test_prepare_initial_data(self):
+		group = mommy.make(Group)
+		for permission in Permission.objects.all():
+			assign_perm("{}.{}".format(str(permission.content_type.app_label), permission.codename), group)
+
+		for content_type in ContentType.objects.get_for_models(*Document.__subclasses__()).values():
+			PermissionForm = get_permission_form(content_type)
+			initial_data = PermissionForm.prepare_initial_data([group], content_type)
+			self.assertEqual(len(initial_data), 1)
+
+			permission_data = initial_data.pop()
+			self.assertEqual(permission_data['group_name'], group.name)
+			for codename in [permission.codename for permission in Permission.objects.filter(content_type=content_type)]:
+				self.assertIn(codename, permission_data.keys())

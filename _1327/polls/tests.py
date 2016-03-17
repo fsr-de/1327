@@ -258,7 +258,7 @@ class PollVoteTests(WebTest):
 
 		user = mommy.make(UserProfile)
 		assign_perm(Poll.VIEW_PERMISSION_NAME, user, self.poll)
-		assign_perm('change_poll', user, self.poll)
+		assign_perm('vote_poll', user, self.poll)
 		user.save()
 		response = self.app.get(reverse('polls:vote', args=[self.poll.id]), user=user)
 		self.assertEqual(response.status_code, 200)

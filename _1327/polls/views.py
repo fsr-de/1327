@@ -1,12 +1,15 @@
 import datetime
 
 from django.contrib import messages
+from django.contrib.auth.models import Group
+from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
-from django.forms import inlineformset_factory
+from django.forms import formset_factory, inlineformset_factory
 from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
 
+from _1327.documents.forms import get_permission_form
 from _1327.polls.forms import ChoiceForm, PollForm
 from _1327.polls.models import Choice, Poll
 from _1327.user_management.shortcuts import get_object_or_error
@@ -18,7 +21,7 @@ def list(request):
 	upcoming_polls = []
 	# do not show polls that a user is not allowed to see
 	for poll in Poll.objects.all():
-		if request.user.has_perm(Poll.VIEW_PERMISSION_NAME) and poll.start_date <= datetime.date.today():
+		if request.user.has_perm(Poll.VIEW_PERMISSION_NAME, obj=poll) and poll.start_date <= datetime.date.today():
 			if datetime.date.today() <= poll.end_date and not poll.participants.filter(id=request.user.pk).exists():
 				running_polls.append(poll)
 			else:
@@ -43,18 +46,29 @@ def create(request, poll=None, url=None, success_message=_("Successfully created
 
 	InlineChoiceFormset = inlineformset_factory(Poll, Choice, form=ChoiceForm, extra=2 if poll is None else 1, can_delete=True)
 
-	form = PollForm(request.POST or None, instance=poll)
-	formset = InlineChoiceFormset(request.POST or None, instance=poll)
-	if form.is_valid() and formset.is_valid():
-		poll = form.save()
-		choices = formset.save(commit=False)
+	content_type = ContentType.objects.get_for_model(Poll)
+	PermissionForm = get_permission_form(content_type)
+	PermissionFormset = formset_factory(get_permission_form(content_type), extra=0)
+	groups = Group.objects.all()
 
-		for choice_to_delete in formset.deleted_objects:
+	initial_data = PermissionForm.prepare_initial_data(groups, content_type, poll)
+	permission_formset = PermissionFormset(request.POST or None, initial=initial_data)
+
+	form = PollForm(request.POST or None, instance=poll)
+	choice_formset = InlineChoiceFormset(request.POST or None, instance=poll)
+	if form.is_valid() and choice_formset.is_valid() and permission_formset.is_valid():
+		poll = form.save()
+		choices = choice_formset.save(commit=False)
+
+		for choice_to_delete in choice_formset.deleted_objects:
 			choice_to_delete.delete()
 
 		for choice in choices:
 			choice.poll = poll
 			choice.save()
+
+		for form in permission_formset:
+			form.save(poll)
 
 		messages.success(request, success_message)
 		return HttpResponseRedirect(reverse('polls:list'))
@@ -65,7 +79,9 @@ def create(request, poll=None, url=None, success_message=_("Successfully created
 		{
 			'url': url if url is not None else reverse('polls:create'),
 			'form': form,
-			'formset': formset,
+			'choice_formset': choice_formset,
+			'permission_header': PermissionForm.header(),
+			'permission_formset': permission_formset,
 		}
 	)
 
@@ -82,7 +98,7 @@ def results(request, poll_id):
 		# poll is not open
 		raise Http404
 
-	if not poll.participants.filter(id=request.user.pk).exists() and poll.end_date > datetime.date.today():
+	if request.user.has_perm('polls.vote_poll', poll) and not poll.participants.filter(id=request.user.pk).exists() and poll.end_date > datetime.date.today():
 		messages.info(request, _("You have to vote before you can see the results!"))
 		return HttpResponseRedirect(reverse('polls:vote', args=[poll.id]))
 
@@ -96,7 +112,7 @@ def results(request, poll_id):
 
 
 def vote(request, poll_id):
-	poll = get_object_or_error(Poll, request.user, ['polls.view_poll', 'polls.change_poll'], id=poll_id)
+	poll = get_object_or_error(Poll, request.user, ['polls.view_poll', 'polls.vote_poll'], id=poll_id)
 
 	if poll.start_date > datetime.date.today():
 		# poll is not open
