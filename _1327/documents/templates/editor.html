@@ -258,8 +258,12 @@
 								selected = e.getSelection();
 								e.replaceSelection(markdown);
 								cursor = selected.start;
-								e.setSelection(cursor + 1, cursor + linkText.length + 1) // +1 because we do not want to select the starting [
-								$("#id_text").focus()
+								e.setSelection(cursor + 1, cursor + linkText.length + 1); // +1 because we do not want to select the starting [
+								if(selected.length > 0) { // if there was selected text, we want to use this a link text
+									e.replaceSelection(selected.text);
+									e.setSelection(cursor + 1, cursor + selected.length + 1);
+								}
+								$("#id_text").focus();
 							}
 						});
 					}
