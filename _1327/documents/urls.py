@@ -5,6 +5,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('_1327.documents.views',  # noqa
 	url(r"revert$", 'revert', name='revert'),
+	url(r"search$", 'search', name='search'),
 	url(r"attachment/create$", 'create_attachment', name='create_attachment'),
 	url(r"attachment/delete$", 'delete_attachment', name='delete_attachment'),
 	url(r"attachment/download$", 'download_attachment', name='download_attachment'),

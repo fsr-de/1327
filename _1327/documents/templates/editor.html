@@ -83,23 +83,7 @@
 				<div class="modal-title">{% trans "Select link target" %}</div>
 			</div>
 			<div class="modal-body">
-				<select class="form-control" id="selectInternalLinkModal">
-					<optgroup label="{% trans "Minutes" %}">
-						{% for minute in minutes %}
-							<option value="[{{ minute.title }}](minutes:{{ minute.id }})">{{ minute.title }}</option>
-						{% endfor %}
-					</optgroup>
-					<optgroup label="{% trans "Information Documents" %}">
-						{% for information_document in information_documents %}
-							<option value="[{{ information_document.title }}](information_document:{{ information_document.id }})">{{ information_document.title }}</option>
-						{% endfor %}
-					</optgroup>
-					<optgroup label="{% trans "Polls" %}">
-						{% for poll in polls %}
-							<option value="[{{ poll.title }}](poll:{{ poll.id }})">{{ poll.title }}</option>
-						{% endfor %}
-					</optgroup>
-				</select>
+				<select class="form-control" id="selectInternalLinkModal"></select>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-primary" id="setInternalLinkDestination">{% trans "OK" %}</button>
@@ -303,7 +287,12 @@
 	$("#selectInternalLinkModal").select2({
 		language: "{{ LANGUAGE_CODE }}",
 		placeholder: "{% trans 'Please select...' %}",
-		minimumResultsForSearch: 3
+		ajax: {
+			url: '/documents/search',
+			delay: 250,
+			dataType: 'json'
+		},
+		minimumInputLength: 1
 	});
 
 	{% block additional_script %}{% endblock %}

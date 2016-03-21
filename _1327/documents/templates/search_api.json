@@ -1,0 +1,45 @@
+{% load static %}
+{% load i18n %}
+{
+	"results": [
+		{% if minutes %}
+			{
+				"text": "{% trans 'Minutes' %}",
+				"children": [
+					{% for minute in minutes %}
+						{
+							"id": "[{{ minute.title }}](minutes:{{ minute.id }})",
+							"text": "{{ minute.title }}"
+						}{% if not forloop.last %},{% endif %}
+					{% endfor %}
+				]
+			}{% if information_documents or polls %},{% endif %}
+		{% endif %}
+		{% if information_documents %}
+			{
+				"text": "{% trans 'Information Documents' %}",
+				"children": [
+					{% for information_document in information_documents %}
+						{
+							"id": "[{{ information_document.title }}](information_document:{{ information_document.id }})",
+							"text": "{{ information_document.title }}"
+						}{% if not forloop.last %},{% endif %}
+					{% endfor %}
+				]
+			}{% if polls %},{% endif %}
+		{% endif %}
+		{% if polls %}
+			{
+				"text": "{% trans 'Polls' %}",
+				"children": [
+					{% for poll in polls %}
+						{
+							"id": "[{{ poll.title }}](poll:{{ poll.id }})",
+							"text": "{{ poll.title }}"
+						}{% if not forloop.last %},{% endif %}
+					{% endfor %}
+				]
+			}
+		{% endif %}
+	]
+}
