@@ -5,8 +5,9 @@ from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.db import models, transaction
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseServerError
-from django.shortcuts import get_object_or_404, Http404
+from django.shortcuts import get_object_or_404, Http404, render
 from django.utils.translation import ugettext_lazy as _
+from guardian.shortcuts import get_objects_for_user
 from reversion import revisions
 from reversion.models import RevertError
 from sendfile import sendfile
@@ -14,7 +15,25 @@ from sendfile import sendfile
 from _1327 import settings
 from _1327.documents.models import Attachment, Document
 from _1327.documents.utils import handle_attachment
+from _1327.information_pages.models import InformationDocument
+from _1327.minutes.models import MinutesDocument
+from _1327.polls.models import Poll
 from _1327.user_management.shortcuts import get_object_or_error
+
+
+def search(request):
+	if not request.GET:
+		raise Http404
+
+	minutes = get_objects_for_user(request.user, MinutesDocument.VIEW_PERMISSION_NAME, klass=MinutesDocument.objects.filter(title__icontains=request.GET['q']))
+	information_documents = get_objects_for_user(request.user, InformationDocument.VIEW_PERMISSION_NAME, klass=InformationDocument.objects.filter(title__icontains=request.GET['q']))
+	polls = get_objects_for_user(request.user, Poll.VIEW_PERMISSION_NAME, klass=Poll.objects.filter(title__icontains=request.GET['q']))
+
+	return render(request, "search_api.json", {
+		'minutes': minutes,
+		'information_documents': information_documents,
+		'polls': polls,
+	})
 
 
 def revert(request):

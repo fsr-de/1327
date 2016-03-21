@@ -1,6 +1,8 @@
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from _1327.documents.markdown_internal_link_pattern import InternalLinkPattern
 from _1327.user_management.models import UserProfile
 
 
@@ -16,11 +18,20 @@ class Poll(models.Model):
 	participants = models.ManyToManyField(UserProfile, related_name="polls", blank=True)
 
 	VIEW_PERMISSION_NAME = POLL_VIEW_PERMISSION_NAME
+	POLLS_LINK_REGEX = r'\[(?P<title>[^\[]+)\]\(poll:(?P<id>\d+)\)'
 
 	class Meta:
 		permissions = (
 			(POLL_VIEW_PERMISSION_NAME, 'User/Group is allowed to view that poll'),
 		)
+
+	class LinkPattern (InternalLinkPattern):
+
+		def url(self, id):
+			poll = Poll.objects.get(id=id)
+			if poll:
+				return reverse('polls:results', args=[poll.id])
+			return ''
 
 
 class Choice(models.Model):
