@@ -5,6 +5,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _, ungettext_lazy
 from reversion import revisions
 
+from _1327.documents.markdown_internal_link_pattern import InternalLinkPattern
 from _1327.documents.models import Document
 from _1327.user_management.models import UserProfile
 from .fields import HexColorModelField
@@ -55,6 +56,14 @@ class MinutesDocument(Document):
 		permissions = (
 			(MINUTES_VIEW_PERMISSION_NAME, 'User/Group is allowed to view those minutes'),
 		)
+
+	class LinkPattern (InternalLinkPattern):
+
+		def url(self, id):
+			document = MinutesDocument.objects.get(id=id)
+			if document:
+				return reverse('minutes:view', args=[document.url_title])
+			return ''
 
 	def get_view_url(self):
 		return reverse('minutes:view', args=(self.url_title, ))

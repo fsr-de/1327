@@ -17,7 +17,7 @@ from markdown.extensions.toc import TocExtension
 
 from _1327 import settings
 from _1327.documents.forms import PermissionForm
-from _1327.documents.markdown_internal_links import InternalLinksMarkdownExtension
+from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
 from _1327.documents.models import Document
 from _1327.documents.utils import (
 	delete_old_empty_pages,
