@@ -65,10 +65,10 @@
 								<li role="separator" class="divider"></li>
 								<li class="disabled"><a href="#">{% trans "Create content" %}</a></li>
 								{% if CAN_CREATE_INFORMATIONPAGE %}
-									<li><a href="{% url 'information_pages:create' %}">{% trans "Information page" %}</a></li>
+									<li><a href="{% url 'documents:create' 'informationdocument'%}">{% trans "Information page" %}</a></li>
 								{% endif %}
 								{% if CAN_CREATE_MINUTES %}
-									<li><a href="{% url 'minutes:create' %}">{% trans "Minutes" %}</a></li>
+									<li><a href="{% url 'documents:create' 'minutesdocument' %}">{% trans "Minutes" %}</a></li>
 								{% endif %}
 								{% if CAN_CREATE_POLL %}
 									<li><a href="{% url 'polls:create' %}">{% trans "Poll" %}</a></li>
@@ -99,10 +99,10 @@
 							<a href="#">{% trans "Create content" %}</a>
 							<ul>
 								{% if CAN_CREATE_INFORMATIONPAGE %}
-									<li><a href="{% url 'information_pages:create' %}">{% trans "Information page" %}</a></li>
+									<li><a href="{% url 'documents:create' 'informationdocument' %}">{% trans "Information page" %}</a></li>
 								{% endif %}
 								{% if CAN_CREATE_MINUTES %}
-									<li><a href="{% url 'minutes:create' %}">{% trans "Minutes" %}</a></li>
+									<li><a href="{% url 'documents:create' 'myinutesdocument' %}">{% trans "Minutes" %}</a></li>
 								{% endif %}
 								{% if CAN_CREATE_POLL %}
 									<li><a href="{% url 'polls:create' %}">{% trans "Poll" %}</a></li>

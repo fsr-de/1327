@@ -1,8 +1,14 @@
+{% extends 'documents_base.html' %}
+
 {% load i18n %}
 {% load filename %}
 {% load bootstrap3 %}
 
-{% block information_page_content %}
+{% block title %}
+	{{ document.title }}
+{% endblock %}
+
+{% block document_content %}
 	<h2>{% trans "Add attachment" %}</h2>
 
 	<form action="{{ edit_url }}" method="post" class="form-horizontal" role="form" enctype="multipart/form-data">
@@ -122,7 +128,4 @@
 
 		$('[data-toggle="tooltip"]').tooltip();
 	</script>
-
-
 {% endblock %}
-

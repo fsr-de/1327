@@ -1,49 +1,40 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
-from django.conf import settings
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
             name='Choice',
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False, verbose_name='ID', auto_created=True)),
+                ('id', models.AutoField(auto_created=True, serialize=False, verbose_name='ID', primary_key=True)),
                 ('text', models.CharField(max_length=255)),
                 ('description', models.TextField(blank=True, default='')),
                 ('votes', models.IntegerField(default=0)),
+                ('index', models.IntegerField(verbose_name='ordering index', default=0)),
             ],
             options={
+                'ordering': ['index'],
             },
-            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Poll',
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False, verbose_name='ID', auto_created=True)),
+                ('id', models.AutoField(auto_created=True, serialize=False, verbose_name='ID', primary_key=True)),
                 ('title', models.CharField(max_length=255)),
                 ('description', models.TextField(blank=True, default='')),
                 ('start_date', models.DateField()),
                 ('end_date', models.DateField()),
-                ('is_multiple_choice_question', models.BooleanField(default=True)),
-                ('participants', models.ManyToManyField(related_name='polls', blank=True, to=settings.AUTH_USER_MODEL)),
+                ('max_allowed_number_of_answers', models.IntegerField(default=1)),
             ],
             options={
-                'permissions': (('view_poll', 'User/Group is allowed to view that question'),),
+                'permissions': (('view_poll', 'User/Group is allowed to view that poll'), ('vote_poll', 'User/Group is allowed to participate (vote) in that poll')),
             },
-            bases=(models.Model,),
-        ),
-        migrations.AddField(
-            model_name='choice',
-            name='poll',
-            field=models.ForeignKey(related_name='choices', to='polls.Poll'),
-            preserve_default=True,
         ),
     ]

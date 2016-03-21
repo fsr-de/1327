@@ -1,0 +1,41 @@
+{% extends 'documents_base.html' %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}
+	{{ document.title }}
+{% endblock %}
+
+{% block document_content %}
+    <h2>{% trans "Edit Permissions" %}</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        <div class="form-group">
+            {% for dict in formset.errors %}
+                <div class="alert alert-danger" role="alert">
+                {% for error in dict.values %}
+                    {{ error }}
+                {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            <table class="table table-striped vertically-aligned table-narrow" >
+                <thead>
+                    {{ formset_header }}
+                </thead>
+                <tbody>
+                {% for form in formset %}
+                    {{ form.as_table }}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
+        </div>
+    </form>
+{% endblock %}

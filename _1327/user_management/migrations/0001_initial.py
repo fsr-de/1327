@@ -1,36 +1,36 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
+from django.db import migrations, models
 import django.utils.timezone
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('auth', '0001_initial'),
+        ('auth', '0006_require_contenttypes_0002'),
     ]
 
     operations = [
         migrations.CreateModel(
             name='UserProfile',
             fields=[
-                ('id', models.AutoField(serialize=False, auto_created=True, verbose_name='ID', primary_key=True)),
+                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
                 ('password', models.CharField(max_length=128, verbose_name='password')),
-                ('last_login', models.DateTimeField(default=django.utils.timezone.now, verbose_name='last login')),
-                ('is_superuser', models.BooleanField(help_text='Designates that this user has all permissions without explicitly assigning them.', default=False, verbose_name='superuser status')),
-                ('username', models.CharField(max_length=255, verbose_name='username', unique=True)),
-                ('email', models.EmailField(max_length=255, null=True, blank=True, verbose_name='email address')),
-                ('first_name', models.CharField(max_length=255, null=True, blank=True, verbose_name='first name')),
-                ('last_name', models.CharField(max_length=255, null=True, blank=True, verbose_name='last name')),
+                ('last_login', models.DateTimeField(null=True, verbose_name='last login', blank=True)),
+                ('is_superuser', models.BooleanField(verbose_name='superuser status', help_text='Designates that this user has all permissions without explicitly assigning them.', default=False)),
+                ('username', models.CharField(unique=True, max_length=255, verbose_name='User name')),
+                ('email', models.EmailField(null=True, verbose_name='Email address', blank=True, max_length=255)),
+                ('first_name', models.CharField(null=True, verbose_name='First name', blank=True, max_length=255)),
+                ('last_name', models.CharField(null=True, verbose_name='Last name', blank=True, max_length=255)),
+                ('created', models.DateTimeField(default=django.utils.timezone.now)),
                 ('is_active', models.BooleanField(default=True)),
-                ('is_admin', models.BooleanField(default=False)),
-                ('groups', models.ManyToManyField(blank=True, verbose_name='groups', related_name='user_set', help_text='The groups this user belongs to. A user will get all permissions granted to each of his/her group.', to='auth.Group', related_query_name='user')),
-                ('user_permissions', models.ManyToManyField(blank=True, verbose_name='user permissions', related_name='user_set', help_text='Specific permissions for this user.', to='auth.Permission', related_query_name='user')),
+                ('groups', models.ManyToManyField(to='auth.Group', verbose_name='groups', related_name='user_set', help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_query_name='user', blank=True)),
+                ('user_permissions', models.ManyToManyField(to='auth.Permission', verbose_name='user permissions', related_name='user_set', help_text='Specific permissions for this user.', related_query_name='user', blank=True)),
             ],
             options={
-                'abstract': False,
+                'verbose_name_plural': 'User profiles',
+                'verbose_name': 'User profile',
             },
-            bases=(models.Model,),
         ),
     ]

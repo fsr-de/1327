@@ -17,5 +17,4 @@ urlpatterns = patterns('_1327',  # noqa
 	url(r"^menu_item/(\d+)/delete$", 'main.views.menu_item_delete', name="menu_item_delete"),
 
 	url(r'^admin/', include(admin.site.urls)),
-	url(r"^", include('_1327.information_pages.urls', namespace='information_pages')),
 )

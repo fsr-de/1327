@@ -39,16 +39,16 @@
 				{% endfor %}
 			</tbody>
 		</table>
-        <h3>{% trans "Permissions" %}</h3>
-        <div class="divider"></div>
-        {{ permission_formset.management_form }}
-        <table class="table table-striped vertically-aligned table-narrow" >
+		<h3>{% trans "Permissions" %}</h3>
+		<div class="divider"></div>
+		{{ permission_formset.management_form }}
+		<table class="table table-striped vertically-aligned table-narrow">
 			<thead>
 				{{ permission_header }}
 			</thead>
 			<tbody>
 			{% for form_element in permission_formset %}
-                {{ form_element.as_table }}
+				{{ form_element.as_table }}
 			{% endfor %}
 			</tbody>
 		</table>

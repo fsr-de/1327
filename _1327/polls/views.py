@@ -2,9 +2,9 @@ import datetime
 
 from django.contrib import messages
 from django.contrib.auth.models import Group
-from django.contrib.contenttypes.models import  ContentType
+from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
-from django.forms import inlineformset_factory, formset_factory
+from django.forms import formset_factory, inlineformset_factory
 from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
