@@ -9,13 +9,34 @@ from django.test import TestCase
 from django.utils.text import slugify
 from django_webtest import WebTest
 from guardian.shortcuts import assign_perm, get_perms, get_perms_for_model, remove_perm
+import markdown
 from model_mommy import mommy
 from reversion import revisions
 
+from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
 from _1327.information_pages.models import InformationDocument
 from _1327.user_management.models import UserProfile
 
 from .models import Attachment, Document
+
+
+class TestInternalLinkMarkDown(TestCase):
+
+	def setUp(self):
+		self.user = mommy.make(UserProfile, is_superuser=True)
+
+		document = mommy.prepare(InformationDocument, text="text")
+		with transaction.atomic(), revisions.create_revision():
+				document.save()
+				revisions.set_user(self.user)
+				revisions.set_comment('test version')
+
+	def test_information_documents(self):
+		document = InformationDocument.objects.get()
+		md = markdown.Markdown(safe_mode='escape', extensions=[InternalLinksMarkdownExtension()])
+		text = md.convert('[description](document:' + str(document.id) + ')')
+		link = reverse('documents:view', args=[document.url_title])
+		self.assertIn('<a href="' + link + '">description</a>', text)
 
 
 class TestRevertion(WebTest):
