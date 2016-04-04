@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.utils.translation import ugettext_lazy as _
 
@@ -17,6 +19,7 @@ from .models import MenuItem
 def index(request):
 	try:
 		document = Document.objects.get(id=settings.MAIN_PAGE_ID)
+		return HttpResponseRedirect(reverse('documents:view', args=[document.url_title]))
 
 		md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2)])
 		text = md.convert(document.text)

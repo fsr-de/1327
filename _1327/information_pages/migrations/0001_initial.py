@@ -1,29 +1,27 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
-from django.conf import settings
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('documents', '0001_initial'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Document',
+            name='InformationDocument',
             fields=[
-                ('id', models.AutoField(primary_key=True, verbose_name='ID', auto_created=True, serialize=False)),
-                ('title', models.CharField(max_length=255)),
-                ('text', models.TextField()),
-                ('author', models.ForeignKey(related_name='texts', to=settings.AUTH_USER_MODEL)),
-                ('url_title', models.SlugField(default='url_title')),
-                ('type', models.IntegerField(default=1)),
+                ('document_ptr', models.OneToOneField(primary_key=True, auto_created=True, to='documents.Document', serialize=False, parent_link=True)),
             ],
             options={
+                'verbose_name_plural': 'Information documents',
+                'verbose_name': 'Information document',
+                'abstract': False,
+                'permissions': (('view_informationdocument', 'User/Group is allowed to view that document'),),
             },
-            bases=(models.Model,),
+            bases=('documents.document',),
         ),
     ]

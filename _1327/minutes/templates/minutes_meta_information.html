@@ -1,0 +1,22 @@
+{% load i18n %}
+
+<dl class="meta-information">
+	<dt>{% trans "Date" %}</dt>
+	<dd>{{ document.date|date:"d. M Y" }}</dd>
+	<dt>{% trans "Moderator" %}</dt>
+	<dd>{{ document.moderator }}</dd>
+	<dt>{% trans "Minute taker" %}</dt>
+	<dd>{{ document.author }}</dd>
+	<dt>{% trans "Participants" %}</dt>
+	{% for participant in document.participants.all %}
+	<dd>{{ participant }}</dd>
+	{% endfor %}
+	<dt>{% trans "Guests" %}</dt>
+	{% for guest in document.guests.all %}
+	<dd>{{ guest.name }}</dd>
+	{% empty %}
+	<dd>{% trans "No Guests" %}</dd>
+	{% endfor %}
+	<dt>{% trans "Last change" %}</dt>
+	<dd>{{ document.last_change|date:"d. M Y, H:i" }}</dd>
+</dl>

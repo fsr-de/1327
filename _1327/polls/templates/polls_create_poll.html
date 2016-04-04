@@ -15,7 +15,7 @@
 
 		<h3>{% trans "Choices for Poll" %}</h3>
 		<div class="divider"></div>
-		{{ formset.management_form }}
+		{{ choice_formset.management_form }}
 		<table id="choice-formset" class="table table-striped">
 			<thead>
 				<tr>
@@ -26,7 +26,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{% for form_element in formset %}
+				{% for form_element in choice_formset %}
 					<tr class="sortable">
 						{% for field in form_element.hidden_fields %}
 							{{ field }}
@@ -37,6 +37,19 @@
 						<td>{% if form_element.instance.pk %}{{ form_element.DELETE }}{% endif %}</td>
 					</tr>
 				{% endfor %}
+			</tbody>
+		</table>
+		<h3>{% trans "Permissions" %}</h3>
+		<div class="divider"></div>
+		{{ permission_formset.management_form }}
+		<table class="table table-striped vertically-aligned table-narrow">
+			<thead>
+				{{ permission_header }}
+			</thead>
+			<tbody>
+			{% for form_element in permission_formset %}
+				{{ form_element.as_table }}
+			{% endfor %}
 			</tbody>
 		</table>
 		{% buttons %}

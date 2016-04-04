@@ -1,16 +1,19 @@
+{% extends 'documents_base.html' %}
+
 {% load static %}
 {% load i18n %}
 {% load bootstrap3 %}
 
-<h2>{% trans "Edit page" %}</h2>
+{% block document_content %}
+	<h2>{% trans "Edit page" %}</h2>
 
-{% if form.autosave %}
-	<div class="alert alert-danger alert-margin-bottom" role="alert">{% blocktrans with date=form.autosave_date %}This document was autosaved on {{ date }}{% endblocktrans %}, {% trans "you can restore unsaved changes:" %} <btn href="{{ document.get_edit_url }}?restore" class="btn-sm btn-default">{% trans "Restore" %}</a></div>
-{% endif %}
+	{% if form.autosave %}
+		<div class="alert alert-danger alert-margin-bottom" role="alert">{% blocktrans with date=form.autosave_date %}This document was autosaved on {{ date }}{% endblocktrans %}, {% trans "you can restore unsaved changes:" %} <btn href="{{ document.get_edit_url }}?restore" class="btn-sm btn-default">{% trans "Restore" %}</a></div>
+	{% endif %}
 
-{% for new_autosaved_page in new_autosaved_pages %}
-	<div class="alert alert-danger alert-margin-bottom" role="alert">{% blocktrans with date=new_autosaved_page.created %}There is a new document autosaved on {{ date }}{% endblocktrans %}, {% trans "you can restore this unsaved page:" %} <btn href="{{ new_autosaved_page.get_edit_url }}?restore" class="btn-sm btn-default">{% trans "Restore" %}</a></div>
-{%  endfor %}
+	{% for new_autosaved_page in new_autosaved_pages %}
+		<div class="alert alert-danger alert-margin-bottom" role="alert">{% blocktrans with date=new_autosaved_page.created %}There is a new document autosaved on {{ date }}{% endblocktrans %}, {% trans "you can restore this unsaved page:" %} <btn href="{{ new_autosaved_page.get_edit_url }}?restore" class="btn-sm btn-default">{% trans "Restore" %}</a></div>
+	{%  endfor %}
 
 <form action="{{ document.get_edit_url }}" method="post" class="form-horizontal" role="form" id="document-form">
 	{% bootstrap_form form layout='horizontal' %}
@@ -25,53 +28,53 @@
 	{% endbuttons %}
 </form>
 
-<h2>{% trans "Preview" %}</h2>
-<div class="divider"></div>
-<div id="text-preview"></div>
+	<h2>{% trans "Preview" %}</h2>
+	<div class="divider"></div>
+	<div id="text-preview"></div>
 
-<div class="modal fade ontop" id="selectImageAttachment" tabindex="-1" role="dialog" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-				<div class="modal-title">{% trans "Select Image:" %}</div>
-			</div>
-			<div class="modal-body">
-				<div class="alert alert-danger hidden" id="image-upload-error-display" role="alert">
-					{% trans "Error! Could not upload image." %}
+	<div class="modal fade ontop" id="selectImageAttachment" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<div class="modal-title">{% trans "Select Image:" %}</div>
 				</div>
-				<select class="form-control" id="attachmentModalSelect"></select>
-				<div class="divider"></div>
-				<h2>Preview</h2>
-				<div class="preview">
-					<img id="attachment-preview" style="width: 100%; height: 100%;" />
-				</div>
-				<div class="hidden" id="image-upload-area">
-					<h2>{% trans "Upload new image" %}</h2>
+				<div class="modal-body">
+					<div class="alert alert-danger hidden" id="image-upload-error-display" role="alert">
+						{% trans "Error! Could not upload image." %}
+					</div>
+					<select class="form-control" id="attachmentModalSelect"></select>
 					<div class="divider"></div>
-					<form enctype="multipart/form-data" id="image-upload-form" method="post" class="form-horizontal" role="form" enctype="multipart/form-data">
-						{% bootstrap_form attachment_form layout='horizontal' %}
-						{% csrf_token %}
-						{% buttons %}
-							<div class="col-md-offset-2 col-md-9">
-								<button type="submit" class="btn btn-primary">
-									{% bootstrap_icon "floppy-disk" %} {% trans 'Add Image' %}
-								</button>
-							</div>
-						{% endbuttons %}
-					</form>
+					<h2>Preview</h2>
+					<div class="preview">
+						<img id="attachment-preview" style="width: 100%; height: 100%;" />
+					</div>
+					<div class="hidden" id="image-upload-area">
+						<h2>{% trans "Upload new image" %}</h2>
+						<div class="divider"></div>
+						<form enctype="multipart/form-data" id="image-upload-form" method="post" class="form-horizontal" role="form" enctype="multipart/form-data">
+							{% bootstrap_form attachment_form layout='horizontal' %}
+							{% csrf_token %}
+							{% buttons %}
+								<div class="col-md-offset-2 col-md-9">
+									<button type="submit" class="btn btn-primary">
+										{% bootstrap_icon "floppy-disk" %} {% trans 'Add Image' %}
+									</button>
+								</div>
+							{% endbuttons %}
+						</form>
+					</div>
 				</div>
-			</div>
 
-			<div class="modal-footer">
-				<button type="button" class="btn btn-info" id="addImage">{% trans "Add new Image" %}</button>
-				<button type="button" class="btn btn-primary" id="setImage">{% trans "OK" %}</button>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-info" id="addImage">{% trans "Add new Image" %}</button>
+					<button type="button" class="btn btn-primary" id="setImage">{% trans "OK" %}</button>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
 
 <div class="modal fade ontop" id="selectInternalLinkDestination" role="dialog" aria-hidden="true">
 	<div class="modal-dialog">
@@ -275,7 +278,7 @@
 			var serializedData = form.serialize();
 
 			$.ajax({
-				url: "{% url 'information_pages:autosave' document.url_title %}",
+				url: "{% url 'documents:autosave' document.url_title %}",
 				type: "post",
 				data: serializedData
 			});
@@ -295,5 +298,6 @@
 		minimumInputLength: 1
 	});
 
-	{% block additional_script %}{% endblock %}
-</script>
+	{% block additional_scripts %}{% endblock %}
+	</script>
+{% endblock %}

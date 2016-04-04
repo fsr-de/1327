@@ -55,6 +55,10 @@ class Document(PolymorphicModel):
 		return authors
 
 	@property
+	def meta_information_html(self):
+		raise NotImplementedError('Please use a subclass of Document')
+
+	@property
 	def last_change(self):
 		last_revision = revisions.get_for_object(self).order_by('revision__date_created').last()
 		if last_revision is None:

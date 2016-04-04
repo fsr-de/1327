@@ -1,24 +1,183 @@
+from datetime import datetime
 import json
 import os
 
 from django.contrib import messages
+from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
 from django.db import models, transaction
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseServerError
+from django.forms import formset_factory
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseRedirect, \
+	HttpResponseServerError
+
 from django.shortcuts import get_object_or_404, Http404, render
+from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from guardian.shortcuts import get_objects_for_user
+
+import markdown
+from markdown.extensions.toc import TocExtension
 from reversion import revisions
 from reversion.models import RevertError
 from sendfile import sendfile
 
 from _1327 import settings
+from _1327.documents.forms import get_permission_form
+from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
 from _1327.documents.models import Attachment, Document
-from _1327.documents.utils import handle_attachment
+from _1327.documents.utils import delete_old_empty_pages, get_new_autosaved_pages_for_user, \
+	handle_attachment, handle_autosave, handle_edit, permission_warning, prepare_versions
 from _1327.information_pages.models import InformationDocument
 from _1327.minutes.models import MinutesDocument
 from _1327.polls.models import Poll
-from _1327.user_management.shortcuts import get_object_or_error
+from _1327.user_management.shortcuts import check_permissions, get_object_or_error
+
+
+def create(request, document_type):
+	content_type = ContentType.objects.get(model=document_type)
+	if request.user.has_perm("{app}.add_{model}".format(app=content_type.app_label, model=content_type.model)):
+		delete_old_empty_pages()
+		title = _("New Page from {}").format(str(datetime.now()))
+		url_title = slugify(title)
+		kwargs = {
+			'url_title': url_title,
+			'title': title,
+		}
+		if hasattr(content_type.model_class(), 'author'):
+			kwargs['author'] = request.user
+		if hasattr(content_type.model_class(), 'moderator'):
+			kwargs['moderator'] = request.user
+		content_type.model_class().objects.get_or_create(**kwargs)
+		new_autosaved_pages = get_new_autosaved_pages_for_user(request.user)
+		return edit(request, url_title, new_autosaved_pages)
+	else:
+		return HttpResponseForbidden()
+
+
+def edit(request, title, new_autosaved_pages=None):
+	document = Document.objects.get(url_title=title)
+	content_type = ContentType.objects.get_for_model(document)
+	check_permissions(document, request.user, ["{app}.change_{model}".format(app=content_type.app_label, model=content_type.model)])
+
+	# if the edit form has a formset we will initialize it here
+	formset_factory = document.Form.get_formset_factory()
+	formset = formset_factory(request.POST or None, instance=document) if formset_factory is not None else None
+
+	if formset is not None:
+		template_name = "{app}_edit.html".format(app=content_type.app_label)
+	else:
+		template_name = "documents_edit.html"
+
+	success, form = handle_edit(request, document, formset)
+	__, attachment_form, __ = handle_attachment(request, document)
+
+	if success:
+		messages.success(request, _("Successfully saved changes"))
+		return HttpResponseRedirect(reverse('documents:view', args=[document.url_title]))
+	else:
+		return render(request, template_name, {
+			'document': document,
+			'form': form,
+			'attachment_form': attachment_form,
+			'active_page': 'edit',
+			'creation': (len(revisions.get_for_object(document)) == 0),
+			'new_autosaved_pages': new_autosaved_pages,
+			'permission_warning': permission_warning(request.user, content_type, document),
+			'supported_image_types': settings.SUPPORTED_IMAGE_TYPES,
+			'formset': formset,
+		})
+
+
+def autosave(request, title):
+	document = None
+	try:
+		document = Document.objects.get(url_title=title)
+		content_type = ContentType.objects.get_for_model(document)
+		check_permissions(document, request.user, ["{app}.change_{model}".format(app=content_type.app_label, model=content_type.model)])
+	except Document.DoesNotExist:
+		pass
+
+	handle_autosave(request, document)
+	return HttpResponse()
+
+
+def versions(request, title):
+	document = Document.objects.get(url_title=title)
+	content_type = ContentType.objects.get_for_model(document)
+	check_permissions(document, request.user, ["{app}.change_{model}".format(app=content_type.app_label, model=content_type.model)])
+	document_versions = prepare_versions(document)
+
+	return render(request, 'documents_versions.html', {
+		'active_page': 'versions',
+		'versions': document_versions,
+		'document': document,
+		'permission_warning': permission_warning(request.user, content_type, document),
+	})
+
+
+def view(request, title):
+	document = Document.objects.get(url_title=title)
+	content_type = ContentType.objects.get_for_model(document)
+	check_permissions(document, request.user, [content_type.model_class().get_view_permission()])
+
+	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension()])
+	text = md.convert(document.text)
+
+	return render(request, 'documents_base.html', {
+		'document': document,
+		'text': text,
+		'toc': md.toc,
+		'attachments': document.attachments.filter(no_direct_download=False).order_by('index'),
+		'active_page': 'view',
+		'permission_warning': permission_warning(request.user, content_type, document),
+	})
+
+
+def permissions(request, title):
+	document = Document.objects.get(url_title=title)
+	content_type = ContentType.objects.get_for_model(document)
+	check_permissions(document, request.user, ["{app}.change_{model}".format(app=content_type.app_label, model=content_type.model)])
+
+	PermissionForm = get_permission_form(content_type)
+	PermissionFormset = formset_factory(get_permission_form(content_type), extra=0)
+
+	initial_data = PermissionForm.prepare_initial_data(Group.objects.all(), content_type, document)
+	formset = PermissionFormset(request.POST or None, initial=initial_data)
+	if request.POST and formset.is_valid():
+		for form in formset:
+			form.save(document)
+		messages.success(request, _("Permissions have been changed successfully."))
+
+		return HttpResponseRedirect(reverse('documents:permissions', args=[document.url_title]))
+
+	return render(request, 'documents_permissions.html', {
+		'document': document,
+		'formset_header': PermissionForm.header(content_type),
+		'formset': formset,
+		'active_page': 'permissions',
+		'permission_warning': permission_warning(request.user, content_type, document),
+	})
+
+
+def attachments(request, title):
+	document = Document.objects.get(url_title=title)
+	content_type = ContentType.objects.get_for_model(document)
+	check_permissions(document, request.user, ["{app}.change_{model}".format(app=content_type.app_label, model=content_type.model)])
+
+	success, form, __ = handle_attachment(request, document)
+	if success:
+		messages.success(request, _("File has been uploaded successfully!"))
+		return HttpResponseRedirect(reverse("documents:attachments", args=[document.url_title]))
+	else:
+		return render(request, "documents_attachments.html", {
+			'document': document,
+			'edit_url': reverse('documents:attachments', args=[document.url_title]),
+			'form': form,
+			'attachments': document.attachments.all().order_by('index'),
+			'active_page': 'attachments',
+			'permission_warning': permission_warning(request.user, content_type, document),
+		})
 
 
 def search(request):

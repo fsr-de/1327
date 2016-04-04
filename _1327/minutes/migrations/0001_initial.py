@@ -1,34 +1,46 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
+from django.db import migrations, models
 import datetime
-from django.conf import settings
+import _1327.minutes.fields
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('documents', '0009_auto_20150509_1711'),
+        ('documents', '0001_initial'),
     ]
 
     operations = [
         migrations.CreateModel(
+            name='Guest',
+            fields=[
+                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(max_length=255, verbose_name='Name')),
+            ],
+        ),
+        migrations.CreateModel(
             name='MinutesDocument',
             fields=[
-                ('document_ptr', models.OneToOneField(parent_link=True, to='documents.Document', serialize=False, auto_created=True, primary_key=True)),
+                ('document_ptr', models.OneToOneField(primary_key=True, auto_created=True, to='documents.Document', serialize=False, parent_link=True)),
                 ('date', models.DateField(verbose_name='Date', default=datetime.datetime.now)),
-                ('state', models.IntegerField(choices=[(0, 'Unpublished'), (1, 'Published'), (2, 'Internal')], verbose_name='State', default=0)),
-                ('moderator', models.ForeignKey(to=settings.AUTH_USER_MODEL, verbose_name='Moderator', related_name='moderations')),
-                ('participants', models.ManyToManyField(verbose_name='Participants', to=settings.AUTH_USER_MODEL, related_name='participations')),
+                ('state', models.IntegerField(verbose_name='State', default=0, choices=[(0, 'Unpublished'), (1, 'Published'), (2, 'Internal')])),
             ],
             options={
-                'verbose_name': 'Minutes',
                 'verbose_name_plural': 'Minutes',
-                'permissions': (('view_minutesdocument', 'User/Group is allowed to view those minutes'),),
+                'verbose_name': 'Minutes',
                 'abstract': False,
+                'permissions': (('view_minutesdocument', 'User/Group is allowed to view those minutes'),),
             },
             bases=('documents.document',),
+        ),
+        migrations.CreateModel(
+            name='MinutesLabel',
+            fields=[
+                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
+                ('title', models.CharField(max_length=255)),
+                ('color', _1327.minutes.fields.HexColorModelField(max_length=7)),
+            ],
         ),
     ]

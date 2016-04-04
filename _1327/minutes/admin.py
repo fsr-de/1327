@@ -5,7 +5,8 @@ from guardian.admin import GuardedModelAdmin
 from polymorphic.admin import PolymorphicChildModelAdmin
 
 from _1327.documents.models import Document
-from _1327.minutes.models import HexColorModelField, MinutesDocument, MinutesLabel
+from _1327.minutes.fields import HexColorModelField
+from _1327.minutes.models import MinutesDocument, MinutesLabel
 
 
 class MinutesDocumentAdmin(GuardedModelAdmin, PolymorphicChildModelAdmin):

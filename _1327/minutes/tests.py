@@ -21,10 +21,10 @@ class TestEditor(WebTest):
 		"""
 		Test if the edit page shows the correct content
 		"""
-		response = self.app.get(reverse('minutes:edit', args=[self.document.url_title]), expect_errors=True)
+		response = self.app.get(reverse('documents:edit', args=[self.document.url_title]), expect_errors=True)
 		self.assertEqual(response.status_code, 403)  # test anonymous user cannot access page
 
-		response = self.app.get(reverse('minutes:edit', args=[self.document.url_title]), user=self.user)
+		response = self.app.get(reverse('documents:edit', args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
 		form = response.forms[0]

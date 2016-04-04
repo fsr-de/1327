@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import migrations, models
+from django.db import migrations
 
 
 def initial_data(apps, schema_editor):
+	# We can't import the MenuItem model directly as it may be a newer
+	# version than this migration expects. We use the historical version.
 	# We can't import the MenuItem model directly as it may be a newer
 	# version than this migration expects. We use the historical version.
 	MenuItem = apps.get_model("main", "MenuItem")
@@ -36,14 +38,15 @@ def initial_data(apps, schema_editor):
 def delete_menu_data(apps, schema_editor):
 	MenuItem = apps.get_model("main", "MenuItem")
 
-	MenuItem.objects.all().delete()
+	for item in MenuItem.objects.all():
+		item.delete()
 
 
 class Migration(migrations.Migration):
-
 	dependencies = [
-		('main', '0007_menuitem_menu_type'),
+		('main', '0002_add_staff_group'),
 	]
+
 
 	operations = [
 		migrations.RunPython(initial_data, delete_menu_data),
