@@ -1,4 +1,5 @@
 from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
@@ -6,6 +7,7 @@ from polymorphic.models import PolymorphicModel
 
 from reversion import revisions
 
+from _1327.documents.markdown_internal_link_pattern import InternalLinkPattern
 from _1327.user_management.models import UserProfile
 
 
@@ -19,6 +21,7 @@ class Document(PolymorphicModel):
 	url_title = models.SlugField()
 	text = models.TextField()
 
+	DOCUMENT_LINK_REGEX = r'\[(?P<title>[^\[]+)\]\(document:(?P<id>\d+)\)'
 	VIEW_PERMISSION_NAME = DOCUMENT_VIEW_PERMISSION_NAME
 
 	class Meta:
@@ -27,6 +30,14 @@ class Document(PolymorphicModel):
 		permissions = (
 			(DOCUMENT_VIEW_PERMISSION_NAME, 'User/Group is allowed to view that document'),
 		)
+
+	class LinkPattern (InternalLinkPattern):
+
+		def url(self, id):
+			document = Document.objects.get(id=id)
+			if document:
+				return reverse('documents:view', args=[document.url_title])
+			return ''
 
 	def __str__(self):
 		return self.title
