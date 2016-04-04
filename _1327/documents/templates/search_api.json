@@ -8,7 +8,7 @@
 				"children": [
 					{% for minute in minutes %}
 						{
-							"id": "[{{ minute.title }}](minutes:{{ minute.id }})",
+							"id": "[{{ minute.title }}](document:{{ minute.id }})",
 							"text": "{{ minute.title }}"
 						}{% if not forloop.last %},{% endif %}
 					{% endfor %}
@@ -21,7 +21,7 @@
 				"children": [
 					{% for information_document in information_documents %}
 						{
-							"id": "[{{ information_document.title }}](information_document:{{ information_document.id }})",
+							"id": "[{{ information_document.title }}](document:{{ information_document.id }})",
 							"text": "{{ information_document.title }}"
 						}{% if not forloop.last %},{% endif %}
 					{% endfor %}

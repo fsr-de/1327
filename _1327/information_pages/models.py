@@ -3,7 +3,6 @@ from django.template import Context, loader
 from django.utils.translation import ugettext_lazy as _
 from reversion import revisions
 
-from _1327.documents.markdown_internal_link_pattern import InternalLinkPattern
 from _1327.documents.models import Document
 
 INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME = 'view_informationdocument'
@@ -11,7 +10,6 @@ INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME = 'view_informationdocument'
 
 class InformationDocument(Document):
 	VIEW_PERMISSION_NAME = INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME
-	INFORMATIONDOCUMENT_LINK_REGEX = r'\[(?P<title>[^\[]+)\]\(information_document:(?P<id>\d+)\)'
 
 	class Meta(Document.Meta):
 
@@ -20,14 +18,6 @@ class InformationDocument(Document):
 		permissions = (
 			(INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME, 'User/Group is allowed to view that document'),
 		)
-
-	class LinkPattern (InternalLinkPattern):
-
-		def url(self, id):
-			document = InformationDocument.objects.get(id=id)
-			if document:
-				return reverse('information_pages:view_information', args=[document.url_title])
-			return ''
 
 	def get_view_url(self):
 		return reverse('documents:view', args=(self.url_title, ))
