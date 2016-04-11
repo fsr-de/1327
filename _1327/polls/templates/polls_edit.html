@@ -1,0 +1,61 @@
+{% extends 'documents_edit.html' %}
+
+{% load i18n %}
+{% load bootstrap3 %}
+
+{% block inlineformset %}
+    {{ formset.management_form }}
+    <h3>Choices</h3>
+    <div id="choice-inline-form">
+        {% for form_element in formset %}
+            <div class="choice-row">
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="{{ form_element.text.id_for_label }}">Text</label>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" id="{{ form_element.text.id_for_label }}" name="{{ form_element.text.html_name }}" {% if form_element.text.value %}value="{{ form_element.text.value }}"{% endif %}>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 control-label" for="{{ form_element.description.id_for_label }}">Description</label>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" id="{{ form_element.description.id_for_label }}" name="{{ form_element.description.html_name }}" {% if form_element.description.value %}value="{{ form_element.description.value }}"{% endif %}>
+                    </div>
+                </div>
+                {% for field in form_element.hidden_fields %}
+                    {{ field }}
+                {% endfor %}
+                <div class="form-group inlineformset">
+                    <div class="col-md-offset-2 col-md-9">
+                        {% if form_element.instance.pk %}{{ form_element.DELETE }}{% endif %}
+                        <span class="input-group-btn"></span>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-9 add-row-container"></div>
+    </div>
+{% endblock %}
+
+{% block additional_scripts%}
+    // enable formset functionality
+    $('.choice-row').formset({
+        prefix: '{{ formset.prefix }}',
+        deleteCssClass: 'delete-button btn btn-default',
+        deleteText: '{% trans "Delete" %}',
+        added: function(row) {
+            row.find('.input-group-btn').append(row.find('.delete-button'));
+            $('#choice-inline-form').append(row);
+        }
+    });
+    $('.delete-button').each(function() {
+        $(this).prev(".form-group.inlineformset").find(".input-group-btn").append(this);
+    });
+    $('.add-row-container').append($('.add-row'));
+    $('.add-row').addClass('btn btn-default');
+    $('.add-row').text('{% trans "Add another choice" %}');
+
+    // add datepicker to date inputs
+    $("input[name*='date']:not([readonly='True'])").datepicker( $.datepicker.regional["{{ LANGUAGE_CODE }}"] );
+{% endblock %}

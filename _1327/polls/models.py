@@ -1,3 +1,9 @@
+from datetime import datetime
+
+from django.db.models import Sum
+from django.template import loader, Context
+
+from _1327.documents.models import Document
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -10,11 +16,14 @@ POLL_VIEW_PERMISSION_NAME = 'view_poll'
 POLL_VOTE_PERMISSION_NAME = 'vote_poll'
 
 
-class Poll(models.Model):
-	title = models.CharField(max_length=255)
-	description = models.TextField(default="", blank=True)
-	start_date = models.DateField()
-	end_date = models.DateField()
+class Poll(Document):
+
+	def can_be_changed_by(self, user):
+		permission_name = 'change_poll'
+		return user.has_perm(permission_name, self) or user.has_perm(permission_name)
+
+	start_date = models.DateField(default=datetime.now, verbose_name=_("Start Date"))
+	end_date = models.DateField(default=datetime.now, verbose_name=_("End Date"))
 	max_allowed_number_of_answers = models.IntegerField(default=1)
 	participants = models.ManyToManyField(UserProfile, related_name="polls", blank=True)
 
@@ -34,6 +43,29 @@ class Poll(models.Model):
 			if poll:
 				return reverse('polls:results', args=[poll.id])
 			return ''
+
+	def get_view_url(self):
+		return reverse('documents:view', args=(self.url_title,))
+
+	def get_edit_url(self):
+		return reverse('documents:edit', args=(self.url_title,))
+
+	def save_formset(self, formset):
+		choices = formset.save(commit=False)
+		for choice in formset.deleted_objects:
+			choice.delete()
+		for choice in choices:
+			choice.poll = self
+			choice.save()
+
+	@property
+	def votes(self):
+		return self.choices.all().aggregate(Sum('votes')).popitem()[1]
+
+	@property
+	def meta_information_html(self):
+		template = loader.get_template('polls_meta_information.html')
+		return template.render(Context({'document': self}))
 
 
 class Choice(models.Model):

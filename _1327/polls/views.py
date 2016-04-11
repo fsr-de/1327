@@ -91,8 +91,8 @@ def edit(request, poll_id):
 	return create(request, poll=poll, url=reverse('polls:edit', args=[poll_id]), success_message=_("Successfully updated Poll."))
 
 
-def results(request, poll_id):
-	poll = get_object_or_error(Poll, request.user, ['polls.view_poll'], id=poll_id)
+def results(request, url_title):
+	poll = get_object_or_error(Poll, request.user, ['polls.view_poll'], url_title=url_title)
 
 	if poll.start_date > datetime.date.today():
 		# poll is not open
@@ -100,19 +100,19 @@ def results(request, poll_id):
 
 	if not poll.participants.filter(id=request.user.pk).exists() and poll.end_date > datetime.date.today():
 		messages.info(request, _("You have to vote before you can see the results!"))
-		return HttpResponseRedirect(reverse('polls:vote', args=[poll.id]))
+		return vote(request, url_title)
 
 	return render(
 		request,
 		'polls_results.html',
 		{
-			"poll": poll,
+			"document": poll,
 		}
 	)
 
 
-def vote(request, poll_id):
-	poll = get_object_or_error(Poll, request.user, ['polls.view_poll', 'polls.vote_poll'], id=poll_id)
+def vote(request, url_title):
+	poll = get_object_or_error(Poll, request.user, ['polls.view_poll', 'polls.vote_poll'], url_title=url_title)
 
 	if poll.start_date > datetime.date.today():
 		# poll is not open
@@ -120,16 +120,16 @@ def vote(request, poll_id):
 
 	if poll.end_date < datetime.date.today() or poll.participants.filter(id=request.user.pk).exists():
 		messages.warning(request, _("You can not vote for polls that are already finished, or that you have already voted for!"))
-		return HttpResponseRedirect(reverse('polls:results', args=[poll_id]))
+		return results(request, url_title)
 
 	if request.method == 'POST':
 		choices = request.POST.getlist('choice')
 		if len(choices) == 0:
 			messages.error(request, _("You must select one Choice at least!"))
-			return HttpResponseRedirect(reverse('polls:vote', args=[poll_id]))
+			return HttpResponseRedirect(reverse('documents:view', args=[url_title]))
 		if len(choices) > poll.max_allowed_number_of_answers:
 			messages.error(request, _("You can only select up to {} options!").format(poll.max_allowed_number_of_answers))
-			return HttpResponseRedirect(reverse('polls:vote', args=[poll_id]))
+			return HttpResponseRedirect(reverse('documents:view', args=[url_title]))
 
 		for choice_id in choices:
 			choice = poll.choices.get(id=choice_id)
@@ -138,13 +138,21 @@ def vote(request, poll_id):
 
 		poll.participants.add(request.user)
 		messages.success(request, _("We've received your vote!"))
-		return HttpResponseRedirect(reverse('polls:results', args=[poll_id]))
+		return results(request, url_title)
 
 	return render(
 		request,
 		'polls_vote.html',
 		{
-			"poll": poll,
+			"document": poll,
 			"widget": "checkbox" if poll.max_allowed_number_of_answers != 1 else "radio"
 		}
 	)
+
+
+def view(request, title):
+	poll = Poll.objects.get(url_title=title)
+	if poll.end_date < datetime.date.today() or poll.participants.filter(id=request.user.pk).exists():
+		return results(request, title)
+	else:
+		return vote(request, title)

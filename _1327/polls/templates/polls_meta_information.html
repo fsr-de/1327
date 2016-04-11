@@ -1,0 +1,12 @@
+{% load i18n %}
+
+<dl class="meta-information">
+	<dt>{% trans "Start date" %}</dt>
+	<dd>{{ document.start_date|date:"d. M Y" }}</dd>
+	<dt>{% trans "End date" %}</dt>
+	<dd>{{ document.end_date|date:"d. M Y" }}</dd>
+	<dt>{% trans "Votes submitted" %}</dt>
+	<dd>{{ document.votes }}</dd>
+	<dt>{% trans "Last change" %}</dt>
+	<dd>{{ document.last_change|date:"d. M Y, H:i" }}</dd>
+</dl>

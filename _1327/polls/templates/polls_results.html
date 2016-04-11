@@ -1,21 +1,20 @@
-{% extends "base_without_sidebar.html" %}
+{% extends "documents_base.html" %}
 {% load i18n %}
 {% load morefilters %}
 
 {% block title %}
-	{{ poll.title }} – {% trans "Results" %}
+	{{ document.title }} – {% trans "Results" %}
 {% endblock %}
 
 {% block content %}
-
-	{% if poll.description != "" %}
+	{% if document.description != "" %}
 		<div class="panel panel-default">
 			<div class="panel-body">
-				{{ poll.description }}
-				{% if poll.max_allowed_number_of_answers > 1 %}
+				{{ document.description }}
+				{% if document.max_allowed_number_of_answers > 1 %}
 					<br /><br />
 					<span class="glyphicon glyphicon-th-list"></span>
-					{% blocktrans with max_allowed_number_of_answers=poll.max_allowed_number_of_answers %}Every participant had up to {{ max_allowed_number_of_answers }} votes.{% endblocktrans %}
+					{% blocktrans with max_allowed_number_of_answers=document.max_allowed_number_of_answers %}Every participant had up to {{ max_allowed_number_of_answers }} votes.{% endblocktrans %}
 				{% endif %}
 			</div>
 		</div>
@@ -29,7 +28,7 @@
 			<th class="col-sm-1 text-right">{% trans "Percentage" %}</th>
 			<th class="col-sm-2"></th>
 		</tr>
-		{% for choice in poll.choices.all %}
+		{% for choice in document.choices.all %}
 			<tr class="choice-row">
 				<td>{{ choice.text }}</td>
 				<td>{{ choice.description }}</td>
