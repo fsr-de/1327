@@ -1,9 +1,14 @@
 from datetime import datetime
 
+from django.conf import settings
+from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.template import Context, loader
 from django.utils.translation import ugettext_lazy as _, ungettext_lazy
+from guardian.shortcuts import assign_perm
 from reversion import revisions
 
 from _1327.documents.models import Document
@@ -34,10 +39,12 @@ class MinutesDocument(Document):
 	UNPUBLISHED = 0
 	PUBLISHED = 1
 	INTERNAL = 2
+	CUSTOM = 3
 	CHOICES = (
 		(UNPUBLISHED, _('Unpublished')),
 		(PUBLISHED, _('Published')),
 		(INTERNAL, _('Internal')),
+		(CUSTOM, _('Custom')),
 	)
 
 	date = models.DateField(default=datetime.now, verbose_name=_("Date"))
@@ -66,12 +73,33 @@ class MinutesDocument(Document):
 		permission_name = 'change_minutesdocument'
 		return user.has_perm(permission_name, self) or user.has_perm(permission_name)
 
+	def show_permissions_editor(self):
+		return self.state == MinutesDocument.CUSTOM
+
+	def show_publish_button(self):
+		return self.state == MinutesDocument.UNPUBLISHED
+
+	def publish(self):
+		self.state = MinutesDocument.PUBLISHED
+		self.save()
+
 	@property
 	def meta_information_html(self):
 		template = loader.get_template('minutes_meta_information.html')
 		return template.render(Context({'document': self}))
 
 revisions.register(MinutesDocument, follow=["document_ptr"])
+
+
+@receiver(post_save, sender=MinutesDocument, dispatch_uid="update_permissions")
+def update_permissions(sender, instance, **kwargs):
+	if instance.state == MinutesDocument.UNPUBLISHED or instance.state == MinutesDocument.INTERNAL:
+		instance.reset_permissions()
+		instance.set_all_permissions(Group.objects.get(name=settings.STAFF_GROUP_NAME))  # TODO: use group of document
+	elif instance.state == MinutesDocument.PUBLISHED:
+		instance.reset_permissions()
+		instance.set_all_permissions(Group.objects.get(name=settings.STAFF_GROUP_NAME))  # TODO: use group of document
+		assign_perm(instance.view_permission_name, Group.objects.get(name=settings.UNIVERSITY_GROUP_NAME), instance)
 
 
 class Guest(models.Model):

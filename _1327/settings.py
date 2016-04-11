@@ -34,6 +34,8 @@ DELETE_EMPTY_PAGE_AFTER = timedelta(hours=1)
 FORBIDDEN_URLS = ["admin", "login", "logout", "documents", "minutes", "polls"]
 
 STAFF_GROUP_NAME = "Staff"
+UNIVERSITY_GROUP_NAME = "University Network"
+
 
 # Application definition
 

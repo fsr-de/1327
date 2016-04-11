@@ -17,6 +17,7 @@ urlpatterns = patterns('_1327.documents.views',  # noqa
 	url(r"(?P<document_type>[\w-]+)/create$", 'create', name='create'),
 	url(r"(?P<title>[\w-]+)/edit$", 'edit', name='edit'),
 	url(r"(?P<title>[\w-]+)/autosave$", 'autosave', name='autosave'),
+	url(r"(?P<title>[\w-]+)/publish$", 'publish', name='publish'),
 	url(r"(?P<title>[\w-]+)/versions$", 'versions', name="versions"),
 	url(r"(?P<title>[\w-]+)/permissions$", 'permissions', name="permissions"),
 	url(r"(?P<title>[\w-]+)/attachments$", 'attachments', name="attachments"),

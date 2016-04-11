@@ -5,6 +5,7 @@ import os
 from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db import models, transaction
 from django.forms import formset_factory
@@ -58,7 +59,7 @@ def create(request, document_type):
 def edit(request, title, new_autosaved_pages=None):
 	document = Document.objects.get(url_title=title)
 	content_type = ContentType.objects.get_for_model(document)
-	check_permissions(document, request.user, ["{app}.change_{model}".format(app=content_type.app_label, model=content_type.model)])
+	check_permissions(document, request.user, [document.edit_permission_name])
 
 	# if the edit form has a formset we will initialize it here
 	formset_factory = document.Form.get_formset_factory()
@@ -93,8 +94,7 @@ def autosave(request, title):
 	document = None
 	try:
 		document = Document.objects.get(url_title=title)
-		content_type = ContentType.objects.get_for_model(document)
-		check_permissions(document, request.user, ["{app}.change_{model}".format(app=content_type.app_label, model=content_type.model)])
+		check_permissions(document, request.user, [document.edit_permission_name])
 	except Document.DoesNotExist:
 		pass
 
@@ -105,7 +105,7 @@ def autosave(request, title):
 def versions(request, title):
 	document = Document.objects.get(url_title=title)
 	content_type = ContentType.objects.get_for_model(document)
-	check_permissions(document, request.user, ["{app}.change_{model}".format(app=content_type.app_label, model=content_type.model)])
+	check_permissions(document, request.user, [document.edit_permission_name])
 	document_versions = prepare_versions(document)
 
 	return render(request, 'documents_versions.html', {
@@ -119,7 +119,7 @@ def versions(request, title):
 def view(request, title):
 	document = Document.objects.get(url_title=title)
 	content_type = ContentType.objects.get_for_model(document)
-	check_permissions(document, request.user, [content_type.model_class().get_view_permission()])
+	check_permissions(document, request.user, [document.view_permission_name])
 
 	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension()])
 	text = md.convert(document.text)
@@ -137,8 +137,9 @@ def view(request, title):
 def permissions(request, title):
 	document = Document.objects.get(url_title=title)
 	content_type = ContentType.objects.get_for_model(document)
-	check_permissions(document, request.user, ["{app}.change_{model}".format(app=content_type.app_label, model=content_type.model)])
-
+	check_permissions(document, request.user, [document.edit_permission_name])
+	if not document.show_permissions_editor():
+		raise PermissionDenied()
 	PermissionForm = get_permission_form(content_type)
 	PermissionFormset = formset_factory(get_permission_form(content_type), extra=0)
 
@@ -160,10 +161,22 @@ def permissions(request, title):
 	})
 
 
+def publish(request, title):
+	document = Document.objects.get(url_title=title)
+	check_permissions(document, request.user, [document.edit_permission_name])
+	if not document.show_publish_button():
+		raise PermissionDenied()
+
+	document.publish()
+	messages.success(request, _("Minutes document has been published."))
+
+	return HttpResponseRedirect(reverse("documents:view", args=[document.url_title]))
+
+
 def attachments(request, title):
 	document = Document.objects.get(url_title=title)
 	content_type = ContentType.objects.get_for_model(document)
-	check_permissions(document, request.user, ["{app}.change_{model}".format(app=content_type.app_label, model=content_type.model)])
+	check_permissions(document, request.user, [document.edit_permission_name])
 
 	success, form, __ = handle_attachment(request, document)
 	if success:
