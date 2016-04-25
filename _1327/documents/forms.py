@@ -29,6 +29,10 @@ class DocumentForm(forms.ModelForm):
 		model = Document
 		fields = ['title', 'text', 'comment', 'url_title']
 
+	def __init__(self, *args, **kwargs):
+		kwargs.pop('user', None)
+		super().__init__(*args, **kwargs)
+
 	def clean_url_title(self):
 		super().clean()
 		url_title = self.cleaned_data['url_title']

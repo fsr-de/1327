@@ -65,7 +65,9 @@ class TestEditor(WebTest):
 		"""
 		Test if the publish button works
 		"""
-		document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.UNPUBLISHED)
+		staff_group = Group.objects.get(name=settings.STAFF_GROUP_NAME)
+
+		document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.UNPUBLISHED, groups=[staff_group])
 		self.app.get(reverse('documents:publish', args=[document.url_title]), user=self.user)
 
 		document = MinutesDocument.objects.get(url_title=document.url_title)
@@ -77,8 +79,7 @@ class TestEditor(WebTest):
 		self.assertFalse(checker.has_perm(document.edit_permission_name, document))
 		self.assertFalse(checker.has_perm(document.delete_permission_name, document))
 
-		group = Group.objects.get(name=settings.STAFF_GROUP_NAME)
-		checker = ObjectPermissionChecker(group)
+		checker = ObjectPermissionChecker(staff_group)
 		self.assertTrue(checker.has_perm(document.view_permission_name, document))
 		self.assertTrue(checker.has_perm(document.edit_permission_name, document))
 		self.assertTrue(checker.has_perm(document.delete_permission_name, document))
@@ -87,9 +88,10 @@ class TestEditor(WebTest):
 		"""
 		Test if the permission are correctly updated when the state is updated
 		"""
-		document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.UNPUBLISHED)
-		university_group = Group.objects.get(name=settings.UNIVERSITY_GROUP_NAME)
 		staff_group = Group.objects.get(name=settings.STAFF_GROUP_NAME)
+		university_group = Group.objects.get(name=settings.UNIVERSITY_GROUP_NAME)
+
+		document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.UNPUBLISHED, groups=[staff_group])
 
 		assign_perm(document.view_permission_name, university_group, document)
 		remove_perm(document.view_permission_name, staff_group, document)
