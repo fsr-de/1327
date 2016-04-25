@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+from guardian.shortcuts import assign_perm, get_groups_with_perms, get_users_with_perms, remove_perm
 from polymorphic.models import PolymorphicModel
 
 from reversion import revisions
@@ -66,6 +67,44 @@ class Document(PolymorphicModel):
 		return authors
 
 	@property
+	def view_permission_name(self):
+		content_type = ContentType.objects.get_for_model(self)
+		return "{app}.view_{model}".format(app=content_type.app_label, model=content_type.model)
+
+	@property
+	def edit_permission_name(self):
+		content_type = ContentType.objects.get_for_model(self)
+		return "{app}.change_{model}".format(app=content_type.app_label, model=content_type.model)
+
+	@property
+	def add_permission_name(self):
+		content_type = ContentType.objects.get_for_model(self)
+		return "{app}.add_{model}".format(app=content_type.app_label, model=content_type.model)
+
+	@property
+	def delete_permission_name(self):
+		content_type = ContentType.objects.get_for_model(self)
+		return "{app}.delete_{model}".format(app=content_type.app_label, model=content_type.model)
+
+	def delete_all_permissions(self, user_or_group):
+		remove_perm(self.view_permission_name, user_or_group, self)
+		remove_perm(self.edit_permission_name, user_or_group, self)
+		remove_perm(self.delete_permission_name, user_or_group, self)
+
+	def set_all_permissions(self, user_or_group):
+		assign_perm(self.view_permission_name, user_or_group, self)
+		assign_perm(self.edit_permission_name, user_or_group, self)
+		assign_perm(self.delete_permission_name, user_or_group, self)
+
+	def reset_permissions(self):
+		users = get_users_with_perms(self)
+		for user in users:
+			self.delete_all_permissions(user)
+		groups = get_groups_with_perms(self)
+		for group in groups:
+			self.delete_all_permissions(group)
+
+	@property
 	def meta_information_html(self):
 		raise NotImplementedError('Please use a subclass of Document')
 
@@ -75,6 +114,12 @@ class Document(PolymorphicModel):
 		if last_revision is None:
 			return None
 		return last_revision.revision.date_created
+
+	def show_permissions_editor(self):
+		return True
+
+	def show_publish_button(self):
+		return False
 
 
 class TemporaryDocumentText(models.Model):

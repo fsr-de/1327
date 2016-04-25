@@ -11,10 +11,11 @@ class MinutesDocumentForm(DocumentForm):
 
 	class Meta:
 		model = MinutesDocument
-		fields = ['title', 'date', 'moderator', 'participants', 'labels', 'text', 'comment', 'url_title']
+		fields = ['title', 'date', 'moderator', 'participants', 'labels', 'state', 'text', 'comment', 'url_title']
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
+		self.fields["state"].widget = forms.RadioSelect(choices=MinutesDocument.CHOICES)
 		if not self.instance.participants.exists():
 			self.initial['participants'] = [user.id for user in Group.objects.get(name=settings.STAFF_GROUP_NAME).user_set.all()]
 
