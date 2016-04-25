@@ -9,14 +9,28 @@
 	<dd>{{ document.author }}</dd>
 	<dt>{% trans "Participants" %}</dt>
 	{% for participant in document.participants.all %}
-	<dd>{{ participant }}</dd>
+		<dd>{{ participant }}</dd>
 	{% endfor %}
 	<dt>{% trans "Guests" %}</dt>
 	{% for guest in document.guests.all %}
-	<dd>{{ guest.name }}</dd>
+		<dd>{{ guest.name }}</dd>
 	{% empty %}
-	<dd>{% trans "No Guests" %}</dd>
+		<dd>{% trans "No Guests" %}</dd>
 	{% endfor %}
+
+	<dt>{% trans "Labels" %}</dt>
+	<dd>
+		{% for label in document.labels.all %}
+			<span class="label {{ label.class_for_text_color }}" style="background-color: {{ label.color }};">{{ label.title }}</span>
+		{% endfor %}
+		{% if document.state == document.UNPUBLISHED %}
+			<span class="label label-danger">{% trans "Unpublished" %}</span>
+		{% elif  document.state == document.INTERNAL %}
+			<span class="label label-warning">{% trans "Internal" %}</span>
+		{% elif document.labels|length == 0 %}
+			{% trans "No Labels" %}
+		{% endif %}
+	</dd>
 	<dt>{% trans "Last change" %}</dt>
 	<dd>{{ document.last_change|date:"d. M Y, H:i" }}</dd>
 </dl>
