@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 
 from django.conf import settings
 from django.contrib.auth.models import Group
@@ -62,6 +62,19 @@ class MinutesDocument(Document):
 		permissions = (
 			(MINUTES_VIEW_PERMISSION_NAME, 'User/Group is allowed to view those minutes'),
 		)
+
+	@classmethod
+	def generate_new_title(cls):
+		return _("Staff Meeting")
+
+	@classmethod
+	def generate_default_slug(cls, title):
+		slug_final = slug = date.today().isoformat()
+		count = 2
+		while MinutesDocument.objects.filter(url_title=slug_final).exists():
+			slug_final = "{}_{}".format(slug, count)
+			count += 1
+		return slug_final
 
 	def get_view_url(self):
 		return reverse('documents:view', args=(self.url_title, ))

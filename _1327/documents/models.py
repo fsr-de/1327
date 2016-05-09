@@ -1,11 +1,13 @@
+from datetime import datetime
+
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
+from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from guardian.shortcuts import assign_perm, get_groups_with_perms, get_users_with_perms, remove_perm
 from polymorphic.models import PolymorphicModel
-
 from reversion import revisions
 
 from _1327.documents.markdown_internal_link_pattern import InternalLinkPattern
@@ -65,6 +67,14 @@ class Document(PolymorphicModel):
 		for version in versions:
 			authors.add(version.revision.user)
 		return authors
+
+	@classmethod
+	def generate_new_title(cls):
+		return _("New Page from {}").format(str(datetime.now()))
+
+	@classmethod
+	def generate_default_slug(cls, title):
+		return slugify(title)
 
 	@property
 	def view_permission_name(self):
