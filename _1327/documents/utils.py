@@ -39,9 +39,9 @@ def handle_edit(request, document, formset=None, initial=None):
 
 			document.url_title = cleaned_data['url_title']
 
+			content_type = ContentType.objects.get_for_model(document)
 			# save the document and also save the user and the comment the user added
 			with transaction.atomic(), revisions.create_revision():
-				content_type = ContentType.objects.get_for_model(document)
 				if content_type == ContentType.objects.get_for_model(MinutesDocument):
 					document.participants.clear()
 					for participant in cleaned_data['participants']:
@@ -53,13 +53,7 @@ def handle_edit(request, document, formset=None, initial=None):
 					for group in cleaned_data['groups']:
 						document.groups.add(group)
 				document.save()
-				if formset:
-					guests = formset.save(commit=False)
-					for guest in formset.deleted_objects:
-						guest.delete()
-					for guest in guests:
-						guest.minute = document
-						guest.save()
+				document.save_formset(formset)
 				revisions.set_user(request.user)
 				revisions.set_comment(cleaned_data['comment'])
 
@@ -155,3 +149,9 @@ def permission_warning(user, content_type, document):
 	anonymous_rights = get_anonymous_user().has_perm(content_type.model_class().VIEW_PERMISSION_NAME, document)
 	edit_rights = user.has_perm("change_informationdocument", document)
 	return edit_rights and not anonymous_rights
+
+
+def get_model_function(content_type, function_name):
+	# TODO add caching strategy?
+	module = __import__('_1327.{content_type}.views'.format(content_type=content_type.app_label), fromlist=[function_name])
+	return getattr(module, function_name)

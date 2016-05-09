@@ -106,6 +106,14 @@ class MinutesDocument(Document):
 		template = loader.get_template('minutes_meta_information.html')
 		return template.render(Context({'document': self}))
 
+	def save_formset(self, formset):
+		guests = formset.save(commit=False)
+		for guest in formset.deleted_objects:
+			guest.delete()
+		for guest in guests:
+			guest.minute = self
+			guest.save()
+
 revisions.register(MinutesDocument, follow=["document_ptr"])
 
 
