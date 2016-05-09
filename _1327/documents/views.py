@@ -1,4 +1,3 @@
-from datetime import datetime
 import json
 import os
 
@@ -13,7 +12,6 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbid
 	HttpResponseServerError
 
 from django.shortcuts import get_object_or_404, Http404, render
-from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from guardian.shortcuts import get_objects_for_user
 
@@ -38,18 +36,19 @@ from _1327.user_management.shortcuts import check_permissions, get_object_or_err
 def create(request, document_type):
 	content_type = ContentType.objects.get(model=document_type)
 	if request.user.has_perm("{app}.add_{model}".format(app=content_type.app_label, model=content_type.model)):
+		model_class = content_type.model_class()
 		delete_old_empty_pages()
-		title = _("New Page from {}").format(str(datetime.now()))
-		url_title = slugify(title)
+		title = model_class.generate_new_title()
+		url_title = model_class.generate_default_slug(title)
 		kwargs = {
 			'url_title': url_title,
 			'title': title,
 		}
-		if hasattr(content_type.model_class(), 'author'):
+		if hasattr(model_class, 'author'):
 			kwargs['author'] = request.user
-		if hasattr(content_type.model_class(), 'moderator'):
+		if hasattr(model_class, 'moderator'):
 			kwargs['moderator'] = request.user
-		content_type.model_class().objects.get_or_create(**kwargs)
+		model_class.objects.get_or_create(**kwargs)
 		new_autosaved_pages = get_new_autosaved_pages_for_user(request.user)
 		return edit(request, url_title, new_autosaved_pages)
 	else:
