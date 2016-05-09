@@ -33,7 +33,7 @@ def delete_old_empty_pages():
 
 def handle_edit(request, document, formset=None):
 	if request.method == 'POST':
-		form = document.Form(request.POST, instance=document)
+		form = document.Form(request.POST, instance=document, user=request.user)
 		if form.is_valid() and (formset is None or formset.is_valid()):
 			cleaned_data = form.cleaned_data
 
@@ -49,6 +49,9 @@ def handle_edit(request, document, formset=None):
 					document.labels.clear()
 					for label in cleaned_data['labels']:
 						document.labels.add(label)
+					document.groups.clear()
+					for group in cleaned_data['groups']:
+						document.groups.add(group)
 				document.save()
 				if formset:
 					guests = formset.save(commit=False)
@@ -85,9 +88,9 @@ def handle_edit(request, document, formset=None):
 				'text': autosave.text,
 				'url_title': document.url_title,
 			}
-			form = document.Form(initial=form_data, instance=document)
+			form = document.Form(initial=form_data, instance=document, user=request.user)
 		else:
-			form = document.Form(instance=document)
+			form = document.Form(instance=document, user=request.user)
 		form.autosave = autosaved
 		if autosaved:
 			form.autosave_date = autosave.created
