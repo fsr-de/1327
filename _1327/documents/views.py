@@ -50,12 +50,15 @@ def create(request, document_type):
 			kwargs['moderator'] = request.user
 		model_class.objects.get_or_create(**kwargs)
 		new_autosaved_pages = get_new_autosaved_pages_for_user(request.user)
-		return edit(request, url_title, new_autosaved_pages)
+		initial = {
+			'comment': _("Created document"),
+		}
+		return edit(request, url_title, new_autosaved_pages, initial)
 	else:
 		return HttpResponseForbidden()
 
 
-def edit(request, title, new_autosaved_pages=None):
+def edit(request, title, new_autosaved_pages=None, initial=None):
 	document = Document.objects.get(url_title=title)
 	content_type = ContentType.objects.get_for_model(document)
 	check_permissions(document, request.user, [document.edit_permission_name])
@@ -69,7 +72,7 @@ def edit(request, title, new_autosaved_pages=None):
 	else:
 		template_name = "documents_edit.html"
 
-	success, form = handle_edit(request, document, formset)
+	success, form = handle_edit(request, document, formset, initial)
 	__, attachment_form, __ = handle_attachment(request, document)
 
 	if success:
