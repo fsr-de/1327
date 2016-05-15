@@ -19,34 +19,9 @@
 		{% buttons %}
 			<div class="col-md-offset-2 col-md-9">
 				<button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
-				{% if form.instance.pk %}
-					<button type="button" data-toggle="modal" data-target="#confirmMenuItemDeleteModal" class="delete-attachment btn btn-danger">{% trans "Delete" %}</button>
-				{% endif %}
 			</div>
 		{% endbuttons %}
 	</form>
-
-	{% if form.instance.pk %}
-		<div class="modal fade" id="confirmMenuItemDeleteModal" tabindex="-1" role="dialog" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-						<h4 class="modal-title">{% trans "Delete menu item" %}</h4>
-					</div>
-					<div class="modal-body">
-						{% trans "Do you really want to delete this menu item?" %}
-					</div>
-					<div class="modal-footer">
-						<a type="button" class="btn btn-danger" href="{% url 'menu_item_delete' form.instance.pk %}">{% trans 'Delete' %}</a>
-						<button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	{% endif %}
 {% endblock %}
 
 {% block scripts %}

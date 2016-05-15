@@ -13,7 +13,7 @@ class MenuItem(models.Model):
 		(FOOTER, _("Footer")),
 	)
 	title = models.CharField(max_length=255, unique=False, verbose_name=_("Title"))
-	order = models.IntegerField()
+	order = models.IntegerField(default=999)
 
 	link = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Link"))
 	document = models.ForeignKey(Document, blank=True, null=True, verbose_name=_("Document"))

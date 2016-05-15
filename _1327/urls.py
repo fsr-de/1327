@@ -14,7 +14,8 @@ urlpatterns = patterns('_1327',  # noqa
 	url(r'^menu_items$', 'main.views.menu_items_index', name='menu_items_index'),
 	url(r"^menu_item/create$", 'main.views.menu_item_create', name="menu_item_create"),
 	url(r"^menu_item/(\d+)/edit$", 'main.views.menu_item_edit', name="menu_item_edit"),
-	url(r"^menu_item/(\d+)/delete$", 'main.views.menu_item_delete', name="menu_item_delete"),
+	url(r"^menu_item_delete$", 'main.views.menu_item_delete', name="menu_item_delete"),
+	url(r"^menu_item/update_order$", 'main.views.menu_items_update_order', name="menu_items_update_order"),
 
 	url(r'^admin/', include(admin.site.urls)),
 )
