@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.db.models import Sum
 from django.template import loader, Context
+from reversion import revisions
 
 from _1327.documents.models import Document
 from django.core.urlresolvers import reverse
@@ -67,6 +68,8 @@ class Poll(Document):
 	def meta_information_html(self):
 		template = loader.get_template('polls_meta_information.html')
 		return template.render(Context({'document': self}))
+
+revisions.register(Poll, follow=["document_ptr"])
 
 
 class Choice(models.Model):
