@@ -25,7 +25,9 @@ def list(request):
 	# do not show polls that a user is not allowed to see
 	for poll in Poll.objects.all():
 		if request.user.has_perm(Poll.VIEW_PERMISSION_NAME, obj=poll) and poll.start_date <= datetime.date.today():
-			if datetime.date.today() <= poll.end_date and not poll.participants.filter(id=request.user.pk).exists():
+			if datetime.date.today() <= poll.end_date \
+					and not poll.participants.filter(id=request.user.pk).exists() \
+					and request.user.has_perm(Poll.VOTE_PERMISSION_NAME, poll):
 				running_polls.append(poll)
 			else:
 				finished_polls.append(poll)
@@ -43,57 +45,6 @@ def list(request):
 	)
 
 
-def create(request, poll=None, url=None, success_message=_("Successfully created new Poll.")):
-	if not request.user.has_perm("polls.add_poll"):
-		return HttpResponseForbidden()
-
-	InlineChoiceFormset = inlineformset_factory(Poll, Choice, form=ChoiceForm, extra=2 if poll is None else 1, can_delete=True)
-
-	content_type = ContentType.objects.get_for_model(Poll)
-	PermissionForm = get_permission_form(content_type)
-	PermissionFormset = formset_factory(get_permission_form(content_type), extra=0)
-	groups = Group.objects.all()
-
-	initial_data = PermissionForm.prepare_initial_data(groups, content_type, poll)
-	permission_formset = PermissionFormset(request.POST or None, initial=initial_data)
-
-	form = PollForm(request.POST or None, instance=poll)
-	choice_formset = InlineChoiceFormset(request.POST or None, instance=poll)
-	if form.is_valid() and choice_formset.is_valid() and permission_formset.is_valid():
-		poll = form.save()
-		choices = choice_formset.save(commit=False)
-
-		for choice_to_delete in choice_formset.deleted_objects:
-			choice_to_delete.delete()
-
-		for choice in choices:
-			choice.poll = poll
-			choice.save()
-
-		for form in permission_formset:
-			form.save(poll)
-
-		messages.success(request, success_message)
-		return HttpResponseRedirect(reverse('polls:list'))
-
-	return render(
-		request,
-		"polls_create_poll.html",
-		{
-			'url': url if url is not None else reverse('polls:create'),
-			'form': form,
-			'choice_formset': choice_formset,
-			'permission_header': PermissionForm.header(content_type),
-			'permission_formset': permission_formset,
-		}
-	)
-
-
-def edit(request, poll_id):
-	poll = get_object_or_error(Poll, request.user, ['polls.change_poll'], id=poll_id)
-	return create(request, poll=poll, url=reverse('polls:edit', args=[poll_id]), success_message=_("Successfully updated Poll."))
-
-
 def results(request, url_title):
 	poll = get_object_or_error(Poll, request.user, ['polls.view_poll'], url_title=url_title)
 
@@ -101,7 +52,7 @@ def results(request, url_title):
 		# poll is not open
 		raise Http404
 
-	if not poll.participants.filter(id=request.user.pk).exists() and poll.end_date > datetime.date.today():
+	if request.user.has_perm(Poll.VOTE_PERMISSION_NAME, poll) and not poll.participants.filter(id=request.user.pk).exists() and poll.end_date > datetime.date.today():
 		messages.info(request, _("You have to vote before you can see the results!"))
 		return vote(request, url_title)
 

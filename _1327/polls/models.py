@@ -28,6 +28,7 @@ class Poll(Document):
 	participants = models.ManyToManyField(UserProfile, related_name="polls", blank=True)
 
 	VIEW_PERMISSION_NAME = POLL_VIEW_PERMISSION_NAME
+	VOTE_PERMISSION_NAME = POLL_VOTE_PERMISSION_NAME
 	POLLS_LINK_REGEX = r'\[(?P<title>[^\[]+)\]\(poll:(?P<id>\d+)\)'
 
 	class Meta:
