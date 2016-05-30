@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import os
 
@@ -12,6 +13,7 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbid
 	HttpResponseServerError
 
 from django.shortcuts import get_object_or_404, Http404, render
+from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from guardian.shortcuts import get_objects_for_user
 
@@ -96,6 +98,7 @@ def autosave(request, title):
 	document = None
 	try:
 		document = Document.objects.get(url_title=title)
+		content_type = ContentType.objects.get_for_model(document)
 		check_permissions(document, request.user, [document.edit_permission_name])
 	except Document.DoesNotExist:
 		pass
