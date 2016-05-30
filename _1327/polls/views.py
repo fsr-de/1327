@@ -1,20 +1,17 @@
 import datetime
 
-import markdown
+
 from django.contrib import messages
-from django.contrib.auth.models import Group
-from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
-from django.forms import formset_factory, inlineformset_factory
-from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
+
+import markdown
 from markdown.extensions.toc import TocExtension
 
-from _1327.documents.forms import get_permission_form
 from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
-from _1327.polls.forms import ChoiceForm, PollForm
-from _1327.polls.models import Choice, Poll
+from _1327.polls.models import Poll
 from _1327.user_management.shortcuts import get_object_or_error
 
 
@@ -26,8 +23,8 @@ def list(request):
 	for poll in Poll.objects.all():
 		if request.user.has_perm(Poll.VIEW_PERMISSION_NAME, obj=poll) and poll.start_date <= datetime.date.today():
 			if datetime.date.today() <= poll.end_date \
-					and not poll.participants.filter(id=request.user.pk).exists() \
-					and request.user.has_perm(Poll.VOTE_PERMISSION_NAME, poll):
+						and not poll.participants.filter(id=request.user.pk).exists() \
+						and request.user.has_perm(Poll.VOTE_PERMISSION_NAME, poll):
 				running_polls.append(poll)
 			else:
 				finished_polls.append(poll)
@@ -53,8 +50,8 @@ def results(request, url_title):
 		raise Http404
 
 	if request.user.has_perm(Poll.VOTE_PERMISSION_NAME, poll) \
-			and not poll.participants.filter(id=request.user.pk).exists() \
-			and poll.end_date > datetime.date.today():
+				and not poll.participants.filter(id=request.user.pk).exists() \
+				and poll.end_date > datetime.date.today():
 		messages.info(request, _("You have to vote before you can see the results!"))
 		return HttpResponseRedirect(reverse('polls:vote', args=[url_title]))
 

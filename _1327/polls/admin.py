@@ -1,9 +1,10 @@
 from django.contrib import admin
 
-from _1327.documents.models import Document
-from _1327.polls.models import Choice, Poll
 from guardian.admin import GuardedModelAdmin
 from polymorphic.admin import PolymorphicChildModelAdmin
+
+from _1327.documents.models import Document
+from _1327.polls.models import Choice, Poll
 
 
 class ChoiceInline(admin.TabularInline):

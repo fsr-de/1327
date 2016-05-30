@@ -1,15 +1,15 @@
 from datetime import datetime
 
-from django.db.models import Sum
-from django.template import loader, Context
-from reversion import revisions
-
-from _1327.documents.models import Document
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models import Sum
+from django.template import Context, loader
 from django.utils.translation import ugettext_lazy as _
 
+from reversion import revisions
+
 from _1327.documents.markdown_internal_link_pattern import InternalLinkPattern
+from _1327.documents.models import Document
 from _1327.user_management.models import UserProfile
 
 

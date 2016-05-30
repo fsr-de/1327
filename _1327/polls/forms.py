@@ -8,7 +8,7 @@ from .models import Choice, Poll
 class PollForm(DocumentForm):
 	class Meta:
 		model = Poll
-		fields = ['title', 'url_title', 'text', 'start_date', 'end_date', 'max_allowed_number_of_answers', 'comment',]
+		fields = ['title', 'url_title', 'text', 'start_date', 'end_date', 'max_allowed_number_of_answers', 'comment', ]
 
 	@classmethod
 	def get_formset_factory(cls):

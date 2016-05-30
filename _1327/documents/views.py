@@ -1,4 +1,3 @@
-from datetime import datetime
 import json
 import os
 
@@ -13,7 +12,6 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbid
 	HttpResponseServerError
 
 from django.shortcuts import get_object_or_404, Http404, render
-from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from guardian.shortcuts import get_objects_for_user
 
@@ -27,8 +25,8 @@ from _1327 import settings
 from _1327.documents.forms import get_permission_form
 from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
 from _1327.documents.models import Attachment, Document
-from _1327.documents.utils import delete_old_empty_pages, get_new_autosaved_pages_for_user, \
-	handle_attachment, handle_autosave, handle_edit, permission_warning, prepare_versions, get_model_function
+from _1327.documents.utils import delete_old_empty_pages, get_model_function, get_new_autosaved_pages_for_user, \
+	handle_attachment, handle_autosave, handle_edit, permission_warning, prepare_versions
 from _1327.information_pages.models import InformationDocument
 from _1327.minutes.models import MinutesDocument
 from _1327.polls.models import Poll
@@ -98,7 +96,6 @@ def autosave(request, title):
 	document = None
 	try:
 		document = Document.objects.get(url_title=title)
-		content_type = ContentType.objects.get_for_model(document)
 		check_permissions(document, request.user, [document.edit_permission_name])
 	except Document.DoesNotExist:
 		pass
