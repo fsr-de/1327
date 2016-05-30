@@ -7,10 +7,10 @@
 {% endblock %}
 
 {% block content %}
-	{% if document.description != "" %}
+	{% if description != "" %}
 		<div class="panel panel-default">
 			<div class="panel-body">
-				{{ document.description }}
+				{{ description|safe }}
 				{% if document.max_allowed_number_of_answers > 1 %}
 					<br /><br />
 					<span class="glyphicon glyphicon-th-list"></span>
@@ -45,4 +45,15 @@
 			</tr>
 		{% endfor %}
 	</table>
+    {% if attachments %}
+        <div class="divider"></div>
+        <h2 id="attachments">{% trans "Attachments" %}</h2>
+        {% for attachment in attachments %}
+            <div class="row">
+                <div class="col-sm-4">
+                    <a href="{% url 'documents:download_attachment' %}?attachment_id={{ attachment.id }}">{{ attachment.displayname }}</a>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
 {% endblock %}

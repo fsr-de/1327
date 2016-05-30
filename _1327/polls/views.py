@@ -1,5 +1,6 @@
 import datetime
 
+import markdown
 from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
@@ -8,8 +9,10 @@ from django.forms import formset_factory, inlineformset_factory
 from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
+from markdown.extensions.toc import TocExtension
 
 from _1327.documents.forms import get_permission_form
+from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
 from _1327.polls.forms import ChoiceForm, PollForm
 from _1327.polls.models import Choice, Poll
 from _1327.user_management.shortcuts import get_object_or_error
@@ -102,11 +105,16 @@ def results(request, url_title):
 		messages.info(request, _("You have to vote before you can see the results!"))
 		return vote(request, url_title)
 
+	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension()])
+	description = md.convert(poll.text)
+
 	return render(
 		request,
 		'polls_results.html',
 		{
 			"document": poll,
+			"description": description,
+			'attachments': poll.attachments.filter(no_direct_download=False).order_by('index'),
 		}
 	)
 
@@ -140,11 +148,15 @@ def vote(request, url_title):
 		messages.success(request, _("We've received your vote!"))
 		return results(request, url_title)
 
+	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension()])
+	description = md.convert(poll.text)
+
 	return render(
 		request,
 		'polls_vote.html',
 		{
 			"document": poll,
+			"description": description,
 			"widget": "checkbox" if poll.max_allowed_number_of_answers != 1 else "radio"
 		}
 	)

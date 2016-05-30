@@ -28,7 +28,7 @@
 						<td class="pull-right">
 							{% get_obj_perms request.user for poll as "poll_perms" %}
 							{% if "change_poll" in poll_perms %}
-								<a class="btn btn-warning btn-xs" href="{% url "polls:edit" poll.id %}">{% trans "Edit Poll" %}</a>
+								<a class="btn btn-warning btn-xs" href="{% url "documents:edit" poll.url_title %}">{% trans "Edit Poll" %}</a>
 							{% endif %}
 						</td>
 					</tr>
@@ -56,12 +56,12 @@
 				</tr>
 				{% for poll in running_polls %}
 					<tr>
-						<td><a href="{% url "polls:vote" poll.id %}">{{ poll.title }}</a></td>
+						<td><a href="{% url "polls:vote" poll.url_title %}">{{ poll.title }}</a></td>
 						<td>{{ poll.start_date }} - {{ poll.end_date }}</td>
 						<td class="pull-right">
 							{% get_obj_perms request.user for poll as "poll_perms" %}
 							{% if "change_poll" in poll_perms %}
-								<a class="btn btn-warning btn-xs" href="{% url "polls:edit" poll.id %}">{% trans "Edit Poll" %}</a>
+								<a class="btn btn-warning btn-xs" href="{% url "documents:edit" poll.url_title %}">{% trans "Edit Poll" %}</a>
 							{% endif %}
 						</td>
 					</tr>
@@ -89,12 +89,12 @@
 			</tr>
 			{% for poll in finished_polls %}
 				<tr>
-					<td><a href="{% url "polls:results" poll.id %}">{{ poll.title }}</a></td>
+					<td><a href="{% url "polls:results" poll.url_title %}">{{ poll.title }}</a></td>
 					<td>{{ poll.start_date }} - {{ poll.end_date }}</td>
 					<td class="pull-right">
 						{% get_obj_perms request.user for poll as "poll_perms" %}
 						{% if "change_poll" in poll_perms %}
-							<a class="btn btn-warning btn-xs" href="{% url "polls:edit" poll.id %}">{% trans "Edit Poll" %}</a>
+							<a class="btn btn-warning btn-xs" href="{% url "documents:edit" poll.url_title %}">{% trans "Edit Poll" %}</a>
 						{% endif %}
 					</td>
 				</tr>

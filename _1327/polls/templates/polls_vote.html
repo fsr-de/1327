@@ -2,10 +2,10 @@
 {% load i18n %}
 
 {% block content %}
-	{% if document.description != "" %}
+	{% if description != "" %}
 		<div class="panel panel-default">
 			<div class="panel-body">
-				{{ poll.description }}
+				{{ description|safe }}
 			</div>
 		</div>
 	{% endif %}
