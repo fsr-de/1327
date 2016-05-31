@@ -59,7 +59,10 @@ def menu_items_index(request):
 	for item in MenuItem.objects.filter(menu_type=MenuItem.FOOTER, parent=None).order_by('order'):  # TODO (#268): get only items that can be edited by the current user
 		footer_items.append(item)
 
-	return render(request, 'menu_items_index.html', {'main_menu_items': main_menu_items, 'footer_items': footer_items})
+	return render(request, 'menu_items_index.html', {
+		'main_menu_items': main_menu_items,
+		'footer_items': footer_items
+	})
 
 
 def menu_item_create(request):
@@ -96,6 +99,11 @@ def menu_items_update_order(request):
 	data = json.loads(body_unicode)
 	main_menu_items = data['main_menu_items']
 	footer_items = data['footer_items']
-	save_main_menu_item_order(main_menu_items)
-	save_footer_item_order(footer_items)
+	if len(main_menu_items) == 0:
+		messages.error(request, _("There must always be at least one item in the main menu."))
+	elif len(footer_items) == 0:
+		messages.error(request, _("There must always be at least one item in the footer menu."))
+	else:
+		save_main_menu_item_order(main_menu_items)
+		save_footer_item_order(footer_items)
 	return HttpResponse()

@@ -3,6 +3,7 @@
 {% load i18n %}
 {% load guardian_tags %}
 {% load main_templatetags %}
+{% load static %}
 
 {% block title %}
 	{% trans "Menu items" %}
@@ -45,6 +46,7 @@
 
 {% block scripts %}
 	{{ block.super }}
+	<script type="text/javascript" src="{% static 'js/jquery.nestable.js' %}"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
 			$('#main-menu-items').nestable({
