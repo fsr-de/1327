@@ -63,6 +63,7 @@ def results(request, url_title):
 		{
 			"document": poll,
 			"description": description,
+			'toc': md.toc,
 			'attachments': poll.attachments.filter(no_direct_download=False).order_by('index'),
 		}
 	)
@@ -105,7 +106,9 @@ def vote(request, url_title):
 		{
 			"document": poll,
 			"description": description,
-			"widget": "checkbox" if poll.max_allowed_number_of_answers != 1 else "radio"
+			'toc': md.toc,
+			"widget": "checkbox" if poll.max_allowed_number_of_answers != 1 else "radio",
+			'attachments': poll.attachments.filter(no_direct_download=False).order_by('index'),
 		}
 	)
 
