@@ -56,7 +56,7 @@
 				</tr>
 				{% for poll in running_polls %}
 					<tr>
-						<td><a href="{% url "polls:vote" poll.url_title %}">{{ poll.title }}</a></td>
+						<td><a href="{% url "documents:view" poll.url_title %}">{{ poll.title }}</a></td>
 						<td>{{ poll.start_date }} - {{ poll.end_date }}</td>
 						<td class="pull-right">
 							{% get_obj_perms request.user for poll as "poll_perms" %}
@@ -89,7 +89,7 @@
 			</tr>
 			{% for poll in finished_polls %}
 				<tr>
-					<td><a href="{% url "polls:results" poll.url_title %}">{{ poll.title }}</a></td>
+					<td><a href="{% url "documents:view" poll.url_title %}">{{ poll.title }}</a></td>
 					<td>{{ poll.start_date }} - {{ poll.end_date }}</td>
 					<td class="pull-right">
 						{% get_obj_perms request.user for poll as "poll_perms" %}

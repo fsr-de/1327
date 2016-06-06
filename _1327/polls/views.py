@@ -52,8 +52,7 @@ def results(request, url_title):
 	if request.user.has_perm(Poll.VOTE_PERMISSION_NAME, poll) \
 				and not poll.participants.filter(id=request.user.pk).exists() \
 				and poll.end_date > datetime.date.today():
-		messages.info(request, _("You have to vote before you can see the results!"))
-		return HttpResponseRedirect(reverse('polls:vote', args=[url_title]))
+		return vote(request, url_title)
 
 	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension()])
 	description = md.convert(poll.text)
@@ -77,8 +76,7 @@ def vote(request, url_title):
 		raise Http404
 
 	if poll.end_date < datetime.date.today() or poll.participants.filter(id=request.user.pk).exists():
-		messages.warning(request, _("You can not vote for polls that are already finished, or that you have already voted for!"))
-		return HttpResponseRedirect(reverse('polls:results', args=[url_title]))
+		return results(request, url_title)
 
 	if request.method == 'POST':
 		choices = request.POST.getlist('choice')
@@ -96,7 +94,7 @@ def vote(request, url_title):
 
 		poll.participants.add(request.user)
 		messages.success(request, _("We've received your vote!"))
-		return HttpResponseRedirect(reverse('polls:results', args=[url_title]))
+		return HttpResponseRedirect(reverse('documents:view', args=[url_title]))
 
 	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension()])
 	description = md.convert(poll.text)

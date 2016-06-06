@@ -15,7 +15,7 @@
 		</div>
 	{%  endif %}
 
-	<form action="{% url 'polls:vote' document.url_title %}" method="post" class="form-horizontal" role="form">
+	<form action="{% url 'documents:view' document.url_title %}" method="post" class="form-horizontal" role="form">
 		{% csrf_token %}
 		<table class="table table-striped">
 			<tr>

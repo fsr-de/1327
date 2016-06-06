@@ -43,7 +43,7 @@ class Poll(Document):
 		def url(self, id):
 			poll = Poll.objects.get(id=id)
 			if poll:
-				return reverse('polls:results', args=[poll.id])
+				return reverse('documents:view', args=[poll.id])
 			return ''
 
 	def get_view_url(self):
