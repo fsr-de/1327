@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 import json
 import re
 
@@ -151,6 +153,7 @@ def permission_warning(user, content_type, document):
 	return edit_rights and not anonymous_rights
 
 
+@lru_cache(maxsize=32)
 def get_model_function(content_type, function_name):
 	# TODO add caching strategy?
 	module = __import__('_1327.{content_type}.views'.format(content_type=content_type.app_label), fromlist=[function_name])
