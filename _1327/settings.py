@@ -33,6 +33,7 @@ DELETE_EMPTY_PAGE_AFTER = timedelta(hours=1)
 
 FORBIDDEN_URLS = ["admin", "login", "logout", "documents", "minutes", "polls"]
 
+ANONYMOUS_GROUP_NAME = "Anonymous"
 STAFF_GROUP_NAME = "Staff"
 UNIVERSITY_GROUP_NAME = "University Network"
 

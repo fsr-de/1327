@@ -1,6 +1,7 @@
 from django import forms
 from django.conf import settings
 from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -54,12 +55,16 @@ class PermissionBaseForm(forms.BaseForm):
 		Form that can be used to change permissions of a document object
 	"""
 
+	document = None
+
 	def save(self, model):
 		group = Group.objects.get(name=self.cleaned_data["group_name"])
 		for field_name, value in self.cleaned_data.items():
 			if field_name == 'group_name':
 				continue
 			if value:
+				if (group.name == settings.ANONYMOUS_GROUP_NAME or group.name == settings.UNIVERSITY_GROUP_NAME) and field_name != model.VIEW_PERMISSION_NAME:
+					continue
 				assign_perm(field_name, group, model)
 			else:
 				remove_perm(field_name, group, model)
@@ -85,6 +90,9 @@ class PermissionBaseForm(forms.BaseForm):
 
 		for name in sorted(self.fields.keys()):
 			if name == "group_name":
+				continue
+			if (self['group_name'].value() == settings.ANONYMOUS_GROUP_NAME or self['group_name'].value() == settings.UNIVERSITY_GROUP_NAME) and name != self.document.VIEW_PERMISSION_NAME:
+				output.append('<td class="text-center"><input type="checkbox" disabled="disabled" /></td>')
 				continue
 			output.append('<td class="text-center"> {} </td>'.format(self[name]))
 		output.append(str(self['group_name']))
@@ -122,12 +130,13 @@ class PermissionBaseForm(forms.BaseForm):
 		return initial_data
 
 
-def get_permission_form(content_type):
+def get_permission_form(document):
+	content_type = ContentType.objects.get_for_model(document)
 	fields = {
 		permission.codename: forms.BooleanField(required=False) for permission in filter(lambda x: 'add' not in x.codename, Permission.objects.filter(content_type=content_type))
 	}
 	fields['group_name'] = forms.CharField(required=False, widget=forms.HiddenInput())
-	return type('PermissionForm', (PermissionBaseForm,), {'base_fields': fields})
+	return type('PermissionForm', (PermissionBaseForm,), {'base_fields': fields, 'document': document})
 
 
 class AttachmentForm(forms.ModelForm):
