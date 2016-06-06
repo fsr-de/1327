@@ -23,5 +23,4 @@ class ChoiceForm(forms.ModelForm):
 		exclude = ["poll", "votes"]
 		widgets = {
 			"description": forms.TextInput(),
-			# "index": forms.HiddenInput()
 		}
