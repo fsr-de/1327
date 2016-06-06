@@ -148,8 +148,8 @@ def permissions(request, title):
 	check_permissions(document, request.user, [document.edit_permission_name])
 	if not document.show_permissions_editor():
 		raise PermissionDenied()
-	PermissionForm = get_permission_form(content_type)
-	PermissionFormset = formset_factory(get_permission_form(content_type), extra=0)
+	PermissionForm = get_permission_form(document)
+	PermissionFormset = formset_factory(get_permission_form(document), extra=0)
 
 	initial_data = PermissionForm.prepare_initial_data(Group.objects.all(), content_type, document)
 	formset = PermissionFormset(request.POST or None, initial=initial_data)
