@@ -58,6 +58,9 @@ class Document(PolymorphicModel):
 		permission = "{}.{}".format(app_label, klass.VIEW_PERMISSION_NAME)
 		return permission
 
+	def save_formset(self, formset):
+		pass
+
 	def can_be_changed_by(self, user):
 		raise NotImplementedError
 

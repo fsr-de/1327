@@ -96,17 +96,19 @@ class PollViewTests(WebTest):
 		self.assertIn(b"There are no results you can see.", response.body)
 
 	def test_create_poll(self):
-		response = self.app.get(reverse('polls:create'), user=self.user)
+		response = self.app.get(reverse('documents:create', args=['poll']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		form = response.form
+		form = response.forms['document-form']
 		form['choices-0-description'] = 'test description'
 		form['choices-0-index'] = 0
 		form['choices-0-text'] = 'test choice'
 		form['title'] = 'TestPoll'
+		form['text'] = 'Sample Text'
 		form['max_allowed_number_of_answers'] = 1
 		form['start_date'] = '2016-01-01'
 		form['end_date'] = '2088-01-01'
+		form['comment'] = 'sample comment'
 
 		response = form.submit()
 		self.assertEqual(response.status_code, 302)
@@ -117,43 +119,45 @@ class PollViewTests(WebTest):
 	def test_create_poll_user_has_no_permission(self):
 		user = mommy.make(UserProfile)
 
-		response = self.app.get(reverse('polls:create'), user=user, expect_errors=True)
+		response = self.app.get(reverse('documents:create', args=['poll']), user=user, expect_errors=True)
 		self.assertEqual(response.status_code, 403)
 
-		response = self.app.post(reverse('polls:create'), user=user, expect_errors=True)
+		response = self.app.post(reverse('documents:create', args=['poll']), user=user, expect_errors=True)
 		self.assertEqual(response.status_code, 403)
 
 	def test_edit_poll(self):
-		response = self.app.get(reverse('polls:edit', args=[self.poll.id]), user=self.user)
+		response = self.app.get(reverse('documents:edit', args=[self.poll.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
 		choice_text = 'test choice'
 		choice_description = 'test description'
 		poll_description = 'Description'
 
-		form = response.form
+		form = response.forms['document-form']
 		form['choices-3-description'] = choice_description
 		form['choices-3-index'] = 3
 		form['choices-3-text'] = choice_text
 		form['choices-0-text'] = choice_text
-		form['description'] = poll_description
+		form['text'] = poll_description
+		form['comment'] = 'sample comment'
 
 		response = form.submit()
 		self.assertEqual(response.status_code, 302)
 
 		poll = Poll.objects.get(id=self.poll.id)
-		self.assertEqual(poll.description, poll_description)
+		self.assertEqual(poll.text, poll_description)
 		self.assertEqual(poll.choices.count(), 4)
 		self.assertEqual(poll.choices.first().text, choice_text)
 		self.assertEqual(poll.choices.last().text, choice_text)
 		self.assertEqual(poll.choices.last().description, choice_description)
 
 	def test_edit_poll_delete_choice(self):
-		response = self.app.get(reverse('polls:edit', args=[self.poll.id]), user=self.user)
+		response = self.app.get(reverse('documents:edit', args=[self.poll.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		form = response.form
+		form = response.forms['document-form']
 		form['choices-0-DELETE'] = True
+		form['comment'] = 'sample comment'
 
 		response = form.submit()
 		self.assertEqual(response.status_code, 302)
@@ -164,10 +168,10 @@ class PollViewTests(WebTest):
 	def test_edit_poll_user_has_no_permission(self):
 		user = mommy.make(UserProfile)
 
-		response = self.app.get(reverse('polls:edit', args=[self.poll.id]), user=user, expect_errors=True)
+		response = self.app.get(reverse('documents:edit', args=[self.poll.url_title]), user=user, expect_errors=True)
 		self.assertEqual(response.status_code, 403)
 
-		response = self.app.post(reverse('polls:edit', args=[self.poll.id]), user=user, expect_errors=True)
+		response = self.app.post(reverse('documents:edit', args=[self.poll.url_title]), user=user, expect_errors=True)
 		self.assertEqual(response.status_code, 403)
 
 
@@ -187,18 +191,34 @@ class PollResultTests(WebTest):
 			_quantity=3,
 		)
 
+	def assign_vote_perm(self, user, obj):
+		assign_perm('polls.{vote}'.format(vote=Poll.VOTE_PERMISSION_NAME), user, obj)
+		user.save()
+
+	def assign_view_perm(self, user, obj):
+		assign_perm('polls.{view}'.format(view=Poll.VIEW_PERMISSION_NAME), user, obj)
+		user.save()
+
+	def assign_view_vote_perms(self, user, obj):
+		self.assign_view_perm(user, obj)
+		self.assign_vote_perm(user, obj)
+
 	def test_view_with_insufficient_permissions(self):
-		response = self.app.get(reverse('polls:results', args=[self.poll.id]), expect_errors=True)
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), expect_errors=True)
 		self.assertEqual(response.status_code, 403)
 
 	def test_view_result_without_vote(self):
-		response = self.app.get(reverse('polls:results', args=[self.poll.id]), user=self.user)
-		self.assertRedirects(response, reverse('polls:vote', args=[self.poll.id]))
+		user = mommy.make(UserProfile)
+		self.assign_view_vote_perms(user, self.poll)
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=user)
+		self.assertTemplateUsed(response, 'polls_vote.html')
 
 	def test_view_after_vote(self):
-		self.poll.participants.add(self.user)
+		user = mommy.make(UserProfile)
+		self.assign_view_vote_perms(user, self.poll)
+		self.poll.participants.add(user)
 
-		response = self.app.get(reverse('polls:results', args=[self.poll.id]), user=self.user)
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=user)
 		self.assertEqual(response.status_code, 200)
 
 		for choice in self.poll.choices.all():
@@ -207,20 +227,38 @@ class PollResultTests(WebTest):
 			self.assertIn(str(choice.votes).encode('utf-8'), response.body)
 
 	def test_view_with_description_of_poll(self):
-		self.poll.description = b"a nice description"
-		self.poll.participants.add(self.user)
+		user = mommy.make(UserProfile)
+		self.assign_view_vote_perms(user, self.poll)
+		self.poll.text = b"a nice description"
+		self.poll.participants.add(user)
 		self.poll.save()
 
-		response = self.app.get(reverse('polls:results', args=[self.poll.id]), user=self.user)
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=user)
 		self.assertEqual(response.status_code, 200)
-		self.assertIn(self.poll.description, response.body)
+		self.assertIn(self.poll.text, response.body)
 
 	def test_view_before_poll_has_started(self):
+		user = mommy.make(UserProfile)
+		self.assign_view_vote_perms(user, self.poll)
 		self.poll.start_date += datetime.timedelta(weeks=1)
 		self.poll.save()
 
-		response = self.app.get(reverse('polls:results', args=[self.poll.id]), user=self.user, expect_errors=True)
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=user, expect_errors=True)
 		self.assertEqual(response.status_code, 404)
+
+	def test_view_poll_without_vote_permission(self):
+		user = mommy.make(UserProfile)
+		self.assign_view_perm(user, self.poll)
+
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=user, expect_errors=True)
+		self.assertEqual(response.status_code, 403)
+
+	def test_vote_poll_without_vote_permission(self):
+		user = mommy.make(UserProfile)
+		self.assign_view_perm(user, self.poll)
+
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=user, expect_errors=True)
+		self.assertEqual(response.status_code, 403)
 
 
 class PollVoteTests(WebTest):
@@ -241,49 +279,49 @@ class PollVoteTests(WebTest):
 		)
 
 	def test_vote_with_insufficient_permissions(self):
-		response = self.app.get(reverse('polls:vote', args=[self.poll.id]), expect_errors=True)
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), expect_errors=True)
 		self.assertEqual(response.status_code, 403)
 
 		user = mommy.make(UserProfile)
 		assign_perm(Poll.VIEW_PERMISSION_NAME, user, self.poll)
 
-		response = self.app.get(reverse('polls:vote', args=[self.poll.id]), user=user, expect_errors=True)
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=user, expect_errors=True)
 		self.assertEqual(response.status_code, 403)
-		response = self.app.post(reverse('polls:vote', args=[self.poll.id]), user=user, expect_errors=True)
+		response = self.app.post(reverse('documents:view', args=[self.poll.url_title]), user=user, expect_errors=True)
 		self.assertEqual(response.status_code, 403)
 
 	def test_vote_with_sufficient_permissions(self):
-		response = self.app.get(reverse('polls:vote', args=[self.poll.id]), user=self.user)
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
 		user = mommy.make(UserProfile)
 		assign_perm(Poll.VIEW_PERMISSION_NAME, user, self.poll)
 		assign_perm('vote_poll', user, self.poll)
 		user.save()
-		response = self.app.get(reverse('polls:vote', args=[self.poll.id]), user=user)
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=user)
 		self.assertEqual(response.status_code, 200)
 
 	def test_vote_poll_finished(self):
 		self.poll.end_date = datetime.date.today() - datetime.timedelta(days=1)
 		self.poll.save()
 
-		response = self.app.get(reverse('polls:vote', args=[self.poll.id]), user=self.user)
-		self.assertRedirects(response, reverse('polls:results', args=[self.poll.id]))
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=self.user)
+		self.assertTemplateUsed(response, 'polls_results.html')
 
 	def test_vote_poll_already_voted(self):
 		self.poll.participants.add(self.user)
 		self.poll.save()
 
-		response = self.app.get(reverse('polls:vote', args=[self.poll.id]), user=self.user)
-		self.assertRedirects(response, reverse('polls:results', args=[self.poll.id]))
-		response = self.app.post(reverse('polls:vote', args=[self.poll.id]), user=self.user)
-		self.assertRedirects(response, reverse('polls:results', args=[self.poll.id]))
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=self.user)
+		self.assertTemplateUsed(response, 'polls_results.html')
+		response = self.app.post(reverse('documents:view', args=[self.poll.url_title]), user=self.user)
+		self.assertTemplateUsed(response, 'polls_results.html')
 
 	def test_start_vote_multiple_choice_poll(self):
 		self.poll.max_allowed_number_of_answers = 2
 		self.poll.save()
 
-		response = self.app.get(reverse('polls:vote', args=[self.poll.id]), user=self.user)
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		self.assertIn(b"checkbox", response.body)
 		self.assertNotIn(b"radio", response.body)
@@ -292,20 +330,20 @@ class PollVoteTests(WebTest):
 		self.poll.max_allowed_number_of_answers = 1
 		self.poll.save()
 
-		response = self.app.get(reverse('polls:vote', args=[self.poll.id]), user=self.user)
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		self.assertIn(b"radio", response.body)
 		self.assertNotIn(b"checkbox", response.body)
 
 	def test_choices_in_response(self):
-		response = self.app.get(reverse('polls:vote', args=[self.poll.id]), user=self.user)
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		for choice in self.poll.choices.all():
 			self.assertIn(choice.text.encode('utf-8'), response.body)
 
 	def test_vote_without_submitting_a_choice(self):
-		response = self.app.post(reverse('polls:vote', args=[self.poll.id]), user=self.user)
-		self.assertRedirects(response, reverse('polls:vote', args=[self.poll.id]))
+		response = self.app.post(reverse('documents:view', args=[self.poll.url_title]), user=self.user)
+		self.assertRedirects(response, reverse('documents:view', args=[self.poll.url_title]))
 
 	def test_vote_single_choice_submitting_more_than_one_choice(self):
 		self.poll.max_allowed_number_of_answers = 1
@@ -315,8 +353,8 @@ class PollVoteTests(WebTest):
 		for choice in self.poll.choices.all():
 			data.append(('choice', choice.id))
 
-		response = self.app.post(reverse('polls:vote', args=[self.poll.id]), params=data, user=self.user)
-		self.assertRedirects(response, reverse('polls:vote', args=[self.poll.id]))
+		response = self.app.post(reverse('documents:view', args=[self.poll.url_title]), params=data, user=self.user)
+		self.assertRedirects(response, reverse('documents:view', args=[self.poll.url_title]))
 
 	def test_vote_single_choice_correctly(self):
 		self.poll.max_allowed_number_of_answers = 1
@@ -325,12 +363,16 @@ class PollVoteTests(WebTest):
 		choice = self.poll.choices.first()
 		data = [('choice', choice.id)]
 		votes = choice.votes
-		response = self.app.post(reverse('polls:vote', args=[self.poll.id]), params=data, user=self.user)
+
+		response = self.app.post(reverse('documents:view', args=[self.poll.url_title]), params=data, user=self.user)
 		self.assertEqual(response.status_code, 302)
+
 		choice = self.poll.choices.first()
 		self.assertEqual(choice.votes, votes + 1)
 		self.assertEqual(self.poll.participants.count(), 1)
-		self.assertRedirects(response, reverse('polls:results', args=[self.poll.id]))
+
+		response = response.follow()
+		self.assertTemplateUsed(response, 'polls_results.html')
 
 	def test_vote_multiple_choice_correctly(self):
 		self.poll.max_allowed_number_of_answers = self.poll.choices.count()
@@ -341,17 +383,18 @@ class PollVoteTests(WebTest):
 			data.append(('choice', choice.id))
 			votes.append(choice.votes)
 
-		response = self.app.post(reverse('polls:vote', args=[self.poll.id]), params=data, user=self.user)
+		response = self.app.post(reverse('documents:view', args=[self.poll.url_title]), params=data, user=self.user)
 		self.assertEqual(response.status_code, 302)
 		for i, choice in enumerate(self.poll.choices.all()):
 			self.assertEqual(choice.votes, votes[i] + 1)
 
 		self.assertEqual(self.poll.participants.count(), 1)
-		self.assertRedirects(response, reverse('polls:results', args=[self.poll.id]))
+		response = response.follow()
+		self.assertTemplateUsed(response, 'polls_results.html')
 
 	def test_view_before_poll_has_started(self):
 		self.poll.start_date += datetime.timedelta(weeks=1)
 		self.poll.save()
 
-		response = self.app.get(reverse('polls:vote', args=[self.poll.id]), user=self.user, expect_errors=True)
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=self.user, expect_errors=True)
 		self.assertEqual(response.status_code, 404)

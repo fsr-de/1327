@@ -1,5 +1,9 @@
 from django.contrib import admin
 
+from guardian.admin import GuardedModelAdmin
+from polymorphic.admin import PolymorphicChildModelAdmin
+
+from _1327.documents.models import Document
 from _1327.polls.models import Choice, Poll
 
 
@@ -8,9 +12,9 @@ class ChoiceInline(admin.TabularInline):
 	extra = 3
 
 
-class QuestionAdmin(admin.ModelAdmin):
+class PollAdmin(GuardedModelAdmin, PolymorphicChildModelAdmin):
+	base_model = Document
 	list_display = ('title', 'end_date')
 	inlines = [ChoiceInline]
 
-
-admin.site.register(Poll, QuestionAdmin)
+admin.site.register(Poll, PollAdmin)

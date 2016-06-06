@@ -71,7 +71,7 @@
 									<li><a href="{% url 'documents:create' 'minutesdocument' %}">{% trans "Minutes" %}</a></li>
 								{% endif %}
 								{% if CAN_CREATE_POLL %}
-									<li><a href="{% url 'polls:create' %}">{% trans "Poll" %}</a></li>
+									<li><a href="{% url 'documents:create' 'poll' %}">{% trans "Polls" %}</a></li>
 								{% endif %}
 								<li role="separator" class="divider"></li>
 								<li><a href="{% url 'menu_items_index' %}">{% trans "Manage menu items" %}</a></li>
@@ -102,10 +102,10 @@
 									<li><a href="{% url 'documents:create' 'informationdocument' %}">{% trans "Information page" %}</a></li>
 								{% endif %}
 								{% if CAN_CREATE_MINUTES %}
-									<li><a href="{% url 'documents:create' 'myinutesdocument' %}">{% trans "Minutes" %}</a></li>
+									<li><a href="{% url 'documents:create' 'minutesdocument' %}">{% trans "Minutes" %}</a></li>
 								{% endif %}
 								{% if CAN_CREATE_POLL %}
-									<li><a href="{% url 'polls:create' %}">{% trans "Poll" %}</a></li>
+									<li><a href="{% url 'documents:create' 'poll' %}">{% trans "Polls" %}</a></li>
 								{% endif %}
 							</ul>
 						</li>

@@ -25,7 +25,7 @@ from _1327 import settings
 from _1327.documents.forms import get_permission_form
 from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
 from _1327.documents.models import Attachment, Document
-from _1327.documents.utils import delete_old_empty_pages, get_new_autosaved_pages_for_user, \
+from _1327.documents.utils import delete_old_empty_pages, get_model_function, get_new_autosaved_pages_for_user, \
 	handle_attachment, handle_autosave, handle_edit, permission_warning, prepare_versions
 from _1327.information_pages.models import InformationDocument
 from _1327.minutes.models import MinutesDocument
@@ -122,6 +122,12 @@ def view(request, title):
 	document = Document.objects.get(url_title=title)
 	content_type = ContentType.objects.get_for_model(document)
 	check_permissions(document, request.user, [document.view_permission_name])
+
+	try:
+		function = get_model_function(content_type, 'view')
+		return function(request, title)
+	except (ImportError, AttributeError):
+		pass
 
 	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension()])
 	text = md.convert(document.text)

@@ -1,25 +1,21 @@
-{% extends "base_without_sidebar.html" %}
+{% extends "documents_base.html" %}
 {% load i18n %}
 
-{% block title %}
-	{{ poll.title }}
-{% endblock %}
-
 {% block content %}
-	{% if poll.description != "" %}
+	{% if description != "" %}
 		<div class="panel panel-default">
 			<div class="panel-body">
-				{{ poll.description }}
+				{{ description|safe }}
 			</div>
 		</div>
 	{% endif %}
-	{%  if poll.max_allowed_number_of_answers > 1 %}
+	{%  if document.max_allowed_number_of_answers > 1 %}
 		<div class="alert alert-warning" role="alert">
-			{% blocktrans with max_allowed_number_of_answers=poll.max_allowed_number_of_answers %}You have up to {{ max_allowed_number_of_answers }} votes.{% endblocktrans %}
+			{% blocktrans with max_allowed_number_of_answers=document.max_allowed_number_of_answers %}You have up to {{ max_allowed_number_of_answers }} votes.{% endblocktrans %}
 		</div>
 	{%  endif %}
 
-	<form action="{% url 'polls:vote' poll.id %}" method="post" class="form-horizontal" role="form">
+	<form action="{% url 'documents:view' document.url_title %}" method="post" class="form-horizontal" role="form">
 		{% csrf_token %}
 		<table class="table table-striped">
 			<tr>
@@ -27,7 +23,7 @@
 				<th class="col-xs-5">{% trans "Choice" %}</th>
 				<th class="col-xs-6">{% trans "Description" %}</th>
 			</tr>
-			{% for choice in poll.choices.all %}
+			{% for choice in document.choices.all %}
 				<tr>
 					<td>
 						<input type="{{ widget }}" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}"/>
@@ -43,4 +39,15 @@
 			</button>
 		</div>
 	</form>
+    {% if attachments %}
+        <div class="divider"></div>
+        <h2 id="attachments">{% trans "Attachments" %}</h2>
+        {% for attachment in attachments %}
+            <div class="row">
+                <div class="col-sm-4">
+                    <a href="{% url 'documents:download_attachment' %}?attachment_id={{ attachment.id }}">{{ attachment.displayname }}</a>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
 {% endblock %}
