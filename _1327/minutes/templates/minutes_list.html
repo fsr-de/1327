@@ -6,37 +6,50 @@
 {% endblock %}
 
 {% block sidebar %}
-	<ul>
-		{% for year in years %}
-		<li><a href="#year{{ year.year }}">{{ year.year }}</a></li>
-		{% endfor %}
-	</ul>
+	<div class="toc">
+		<ul>
+			{% for group, year_dict in minutes.items %}
+				<li>
+					<a href="#group{{ group }}">{{ group }}</a>
+					<ul>
+						{% for year, minutes in year_dict.items %}
+							<li><a href="#group{{ group }}year{{ year }}">{{ year }}</a></li>
+						{% endfor %}
+					</ul>
+				</li>
+			{% endfor %}
+
+		</ul>
+	</div>
 {% endblock %}
 
 {% block content %}
-	{% for year in years %}
-		<h2 id="year{{ year.year }}">{{ year.year }}</h2>
-		<table class="table table-striped">
-			<tr>
-				<th class="col-xs-2">{% trans "Date" %}</th>
-				<th class="col-xs-10">{% trans "Title" %}</th>
-			</tr>
-			{% for minute in year.minutes %}
+	{% for group, year_dict in minutes.items %}
+		<h2 id="group{{ group }}">{{ group }}</h2>
+		{% for year, minutes in year_dict.items %}
+			<h3 id="group{{ group }}year{{ year }}">{{ year }}</h3>
+			<table class="table table-striped">
 				<tr>
-					<td>{{ minute.date | date:"d.m.Y" }}</td>
-					<td>
-						<a href="{{ minute.get_view_url }}">{{ minute.title }}</a>
-						{% for label in minute.labels.all %}
-							<span class="label {{ label.class_for_text_color }}" style="background-color: {{ label.color }};">{{ label.title }}</span>
-						{% endfor %}
-						{% if minute.state == minute.UNPUBLISHED %}
-							<span class="label label-danger">{% trans "Unpublished" %}</span>
-						{% elif  minute.state == minute.INTERNAL %}
-							<span class="label label-warning">{% trans "Internal" %}</span>
-						{% endif %}
-					</td>
+					<th class="col-xs-2">{% trans "Date" %}</th>
+					<th class="col-xs-10">{% trans "Title" %}</th>
 				</tr>
-			{% endfor %}
-		</table>
+				{% for minute in minutes %}
+					<tr>
+						<td>{{ minute.date | date:"d.m.Y" }}</td>
+						<td>
+							<a href="{{ minute.get_view_url }}">{{ minute.title }}</a>
+							{% for label in minute.labels.all %}
+								<span class="label {{ label.class_for_text_color }}" style="background-color: {{ label.color }};">{{ label.title }}</span>
+							{% endfor %}
+							{% if minute.state == minute.UNPUBLISHED %}
+								<span class="label label-danger">{% trans "Unpublished" %}</span>
+							{% elif minute.state == minute.INTERNAL %}
+								<span class="label label-warning">{% trans "Internal" %}</span>
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor %}
+			</table>
+		{% endfor %}
 	{% endfor %}
 {% endblock %}
