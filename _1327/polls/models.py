@@ -70,8 +70,8 @@ class Poll(Document):
 			choice.save()
 
 	@property
-	def votes(self):
-		return self.choices.all().aggregate(Sum('votes')).popitem()[1]
+	def num_votes(self):
+		return self.choices.aggregate(Sum('votes')).get('votes__sum')
 
 	@property
 	def meta_information_html(self):
