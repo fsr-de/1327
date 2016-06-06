@@ -2,27 +2,91 @@
 
 {% load i18n %}
 {% load guardian_tags %}
+{% load main_templatetags %}
+{% load static %}
 
 {% block title %}
 	{% trans "Menu items" %}
 {% endblock %}
 
 {% block content %}
-	<table class="table table-striped vertically-aligned">
-		<thead>
-			<th>{% trans "Title" %}</th>
-			<th>{% trans "Link" %}</th>
-			<th>{% trans "Document" %}</th>
-		</thead>
-		{% for menu_item in menu_items %}
-			<tr>
-				<td>
-					<a href="{% url 'menu_item_edit' menu_item.pk %}">{{ menu_item.title }}</a>
-				</td>
-				<td>{% if menu_item.link %}{{ menu_item.link }}{% endif %}</td>
-				<td>{% if menu_item.document %}{{ menu_item.document }}{% endif %}</td>
-			</tr>
-		{% endfor %}
-	</table>
+	<h3>{% trans "Main menu items" %}</h3>
+	<div class="dd" id="main-menu-items">
+		{% include_menu_items_list main_menu_items %}
+	</div>
+
+	<h3>{% trans "Footer items" %}</h3>
+	<div class="dd" id="footer-items">
+		{% include_menu_items_list footer_items %}
+	</div>
+
 	<a type="button" class="btn btn-primary" href="{% url 'menu_item_create' %}">{% trans 'Create new menu item' %}</a>
+
+
+	<div class="modal fade" id="confirmMenuItemDeleteModal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">{% trans "Delete menu item" %}</h4>
+				</div>
+				<div class="modal-body">
+					{% trans "Do you really want to delete this menu item? All subitems will also be deleted." %}
+				</div>
+				<div class="modal-footer">
+					<a type="button" id="btn-delete" class="btn btn-danger">{% trans "Delete" %}</a>
+					<button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block scripts %}
+	{{ block.super }}
+	<script type="text/javascript" src="{% static 'js/jquery.nestable.js' %}"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('#main-menu-items').nestable({
+				maxDepth: 3
+			});
+			$('#main-menu-items').on('change', function() {
+				changeMenuOrder();
+			});
+
+			$('#footer-items').nestable({
+				maxDepth: 1
+			});
+			$('#footer-items').on('change', function() {
+				changeMenuOrder();
+			});
+		});
+
+		var changeMenuOrder = function () {
+			var main_menu_items = $('#main-menu-items').nestable('serialize');
+			var footer_items = $('#footer-items').nestable('serialize');
+			var data = JSON.stringify({'main_menu_items': main_menu_items, 'footer_items': footer_items});
+			$.ajax({
+				type: "POST",
+				url: '{% url "menu_items_update_order" %}',
+				data: data,
+				success: function(){ location.reload(); }
+			});
+		};
+		
+		function show_delete_modal(item_id) {
+			$('#confirmMenuItemDeleteModal #btn-delete').unbind().click(function(){ delete_modal_action(item_id); });
+			$('#confirmMenuItemDeleteModal').modal();
+		}
+		function delete_modal_action(item_id) {
+			$.ajax({
+				type: "POST",
+				url: "{% url 'menu_item_delete' %}",
+				data: {"item_id": item_id},
+				success: function(){ location.reload(); }
+			});
+		};
+	</script>
 {% endblock %}
