@@ -26,7 +26,7 @@ class Poll(Document):
 
 	start_date = models.DateField(default=datetime.now, verbose_name=_("Start Date"))
 	end_date = models.DateField(default=datetime.now, verbose_name=_("End Date"))
-	max_allowed_number_of_answers = models.IntegerField(default=1)
+	max_allowed_number_of_answers = models.PositiveIntegerField(default=1)
 	participants = models.ManyToManyField(UserProfile, related_name="polls", blank=True)
 
 	VIEW_PERMISSION_NAME = POLL_VIEW_PERMISSION_NAME
