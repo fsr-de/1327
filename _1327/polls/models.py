@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Sum
 from django.template import Context, loader
+from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 
 from reversion import revisions
@@ -45,6 +46,14 @@ class Poll(Document):
 			if poll:
 				return reverse('documents:view', args=[poll.id])
 			return ''
+
+	@classmethod
+	def generate_new_title(cls):
+		return _("New Poll")
+
+	@classmethod
+	def generate_default_slug(cls, title):
+		return "polls_{}".format(slugify(title))
 
 	def get_view_url(self):
 		return reverse('documents:view', args=(self.url_title,))
