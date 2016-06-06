@@ -23,7 +23,7 @@ class MinutesDocumentForm(DocumentForm):
 		self.user_groups = user.groups.all()
 		self.fields['groups'].queryset = self.user_groups
 		self.fields['groups'].min_num = 1
-		if staff in self.user_groups:
+		if staff in self.user_groups and not self.initial['groups']:
 			self.initial['groups'] = [staff]
 
 		if not self.instance.participants.exists():
