@@ -1,5 +1,4 @@
-# Fix Django to 1.8
-Django >=1.8, <1.9
+Django >=1.9, <1.10
 
 # Unit tests
 webtest >= 2.0.15

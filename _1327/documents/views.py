@@ -28,8 +28,11 @@ from _1327.documents.models import Attachment, Document
 from _1327.documents.utils import delete_old_empty_pages, get_model_function, get_new_autosaved_pages_for_user, \
 	handle_attachment, handle_autosave, handle_edit, permission_warning, prepare_versions
 from _1327.information_pages.models import InformationDocument
+from _1327.information_pages.forms import InformationDocumentForm  # noqa
 from _1327.minutes.models import MinutesDocument
+from _1327.minutes.forms import MinutesDocumentForm  # noqa
 from _1327.polls.models import Poll
+from _1327.polls.forms import PollForm  # noqa
 from _1327.user_management.shortcuts import check_permissions, get_object_or_error
 
 
