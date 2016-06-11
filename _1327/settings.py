@@ -25,8 +25,6 @@ SECRET_KEY = 'usba$w)n_sr3u(u1os05!8t6)m(w0skpx&%n@wwpgi_bzdxt-e'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
-
 ALLOWED_HOSTS = []
 
 DELETE_EMPTY_PAGE_AFTER = timedelta(hours=1)
@@ -159,32 +157,31 @@ STATICFILES_FINDERS = [
 
 SUPPORTED_IMAGE_TYPES = ["jpg", "jpeg", "png", "gif", "tiff", "bmp"]
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = [
-	'django.template.loaders.filesystem.Loader',
-	'django.template.loaders.app_directories.Loader',
-]
-
-TEMPLATE_CONTEXT_PROCESSORS = [
-	"django.contrib.auth.context_processors.auth",
-	"django.core.context_processors.debug",
-	"django.core.context_processors.i18n",
-	"django.core.context_processors.media",
-	"django.core.context_processors.static",
-	"django.core.context_processors.request",
-	"django.contrib.messages.context_processors.messages",
-	"_1327.main.context_processors.set_language",
-	"_1327.main.context_processors.menu",
-	"_1327.main.context_processors.can_create_informationpage",
-	"_1327.main.context_processors.can_create_minutes",
-	"_1327.main.context_processors.can_create_poll",
-]
-
-TEMPLATE_DIRS = [
-	# Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-	# Always use forward slashes, even on Windows.
-	# Don't forget to use absolute paths, not relative paths.
-	os.path.join(BASE_DIR, "templates"),
+TEMPLATES = [
+	{
+		'BACKEND': 'django.template.backends.django.DjangoTemplates',
+		'DIRS': [
+			os.path.join(BASE_DIR, "templates"),
+		],
+		'APP_DIRS': True,
+		'OPTIONS': {
+			'context_processors': [
+				'django.contrib.auth.context_processors.auth',
+				'django.template.context_processors.debug',
+				'django.template.context_processors.i18n',
+				'django.template.context_processors.media',
+				'django.template.context_processors.request',
+				'django.template.context_processors.static',
+				'django.template.context_processors.tz',
+				'django.contrib.messages.context_processors.messages',
+				'_1327.main.context_processors.set_language',
+				'_1327.main.context_processors.menu',
+				'_1327.main.context_processors.can_create_informationpage',
+				'_1327.main.context_processors.can_create_minutes',
+				'_1327.main.context_processors.can_create_poll',
+			],
+		},
+	},
 ]
 
 STATIC_PRECOMPILER_COMPILERS = [
