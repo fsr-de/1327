@@ -1,5 +1,5 @@
 from django.core.urlresolvers import reverse
-from django.template import Context, loader
+from django.template import loader
 from django.utils.translation import ugettext_lazy as _
 from reversion import revisions
 
@@ -32,6 +32,6 @@ class InformationDocument(Document):
 	@property
 	def meta_information_html(self):
 		template = loader.get_template('information_pages_meta_information.html')
-		return template.render(Context({'document': self}))
+		return template.render({'document': self})
 
 revisions.register(InformationDocument, follow=["document_ptr"])

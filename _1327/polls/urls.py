@@ -1,6 +1,7 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
+from . import views
 
-urlpatterns = patterns('_1327.polls.views',  # noqa
-	url(r"^$", "list", name="list"),
-)
+urlpatterns = [
+	url(r"^$", views.list, name="list"),
+]

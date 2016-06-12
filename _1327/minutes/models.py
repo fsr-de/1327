@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.template import Context, loader
+from django.template import loader
 from django.utils.translation import ugettext_lazy as _, ungettext_lazy
 from guardian.shortcuts import assign_perm
 from reversion import revisions
@@ -104,7 +104,7 @@ class MinutesDocument(Document):
 	@property
 	def meta_information_html(self):
 		template = loader.get_template('minutes_meta_information.html')
-		return template.render(Context({'document': self}))
+		return template.render({'document': self})
 
 	def save_formset(self, formset):
 		guests = formset.save(commit=False)

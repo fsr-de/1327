@@ -25,7 +25,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for id, version in versions %}
+            {% for id, version, data in versions %}
             <tr>
                 <td>{{ id }}</td>
                 <td>{{ version.revision.date_created }}, {{ version.revision.comment }} by {{ version.revision.user }}</td>

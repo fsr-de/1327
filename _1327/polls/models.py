@@ -3,7 +3,7 @@ from datetime import datetime
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Sum
-from django.template import Context, loader
+from django.template import loader
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 
@@ -76,7 +76,7 @@ class Poll(Document):
 	@property
 	def meta_information_html(self):
 		template = loader.get_template('polls_meta_information.html')
-		return template.render(Context({'document': self}))
+		return template.render({'document': self})
 
 revisions.register(Poll, follow=["document_ptr"])
 
