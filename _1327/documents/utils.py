@@ -1,7 +1,6 @@
 from functools import lru_cache
 
 import json
-import re
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
@@ -135,9 +134,6 @@ def handle_attachment(request, document):
 			instance = form.save(commit=False)
 			if instance.displayname == '':
 				instance.displayname = instance.file.name
-			if not re.search(r'\.\w+$', instance.displayname):
-				file_type = re.search(r'\.(\w+)$', instance.file.name).group(1)
-				instance.displayname = "{}.{}".format(instance.displayname, file_type)
 			instance.document = document
 			instance.index = document.attachments.count() + 1
 			instance.save()
