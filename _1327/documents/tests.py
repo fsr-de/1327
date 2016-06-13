@@ -187,6 +187,26 @@ class TestAutosave(WebTest):
 		form = response.forms['document-form']
 		self.assertEqual(form.get('text').value, 'AUTO')
 
+	def test_autosave_with_different_document_types(self):
+		# create document
+		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		form = response.forms['document-form']
+		url_title = slugify(form.get('title').value)
+
+		# autosave AUTO
+		response = self.app.post(reverse('documents:autosave', args=[url_title]), {'text': 'AUTO', 'title': form.get('title').value, 'comment': ''}, xhr=True)
+		self.assertEqual(response.status_code, 200)
+
+		# there should be no restore link on creation page for different document type
+		response = self.app.get(reverse('documents:create', args=['poll']), user=self.user)
+		self.assertNotIn((reverse('documents:edit', args=[url_title]) + '?restore'), str(response.body))
+
+		# on the new page site should be a banner with a restore link
+		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn((reverse('documents:edit', args=[url_title]) + '?restore'), str(response.body))
+
 
 class TestSignals(TestCase):
 

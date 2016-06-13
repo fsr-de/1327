@@ -14,11 +14,14 @@ from _1327.documents.models import Document, TemporaryDocumentText
 from _1327.minutes.models import MinutesDocument
 
 
-def get_new_autosaved_pages_for_user(user):
+def get_new_autosaved_pages_for_user(user, content_type):
 	autosaved_pages = []
 	all_temp_documents = TemporaryDocumentText.objects.all()
 	for temp_document in all_temp_documents:
 		document = temp_document.document
+		# if contenttype of autosave does not match contenttype of current document we will not show this autosave
+		if ContentType.objects.get_for_model(document) != content_type:
+			continue
 		if len(revisions.get_for_object(document)) == 0 and temp_document.author == user:
 			autosaved_pages.append(document)
 	return autosaved_pages

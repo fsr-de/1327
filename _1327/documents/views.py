@@ -50,7 +50,7 @@ def create(request, document_type):
 		if hasattr(model_class, 'moderator'):
 			kwargs['moderator'] = request.user
 		model_class.objects.get_or_create(**kwargs)
-		new_autosaved_pages = get_new_autosaved_pages_for_user(request.user)
+		new_autosaved_pages = get_new_autosaved_pages_for_user(request.user, content_type)
 		initial = {
 			'comment': _("Created document"),
 		}
