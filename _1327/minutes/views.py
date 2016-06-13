@@ -3,8 +3,7 @@ from collections import OrderedDict
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponseBadRequest
+from django.core.exceptions import ObjectDoesNotExist, SuspiciousOperation
 from django.shortcuts import render
 
 from _1327.minutes.models import MinutesDocument
@@ -17,7 +16,7 @@ def list(request, groupid=None):
 		try:
 			Group.objects.get(id=groupid)
 		except ObjectDoesNotExist:
-			return HttpResponseBadRequest()
+			raise SuspiciousOperation
 	groups = {}
 	minutes = MinutesDocument.objects.order_by('-date')
 	for m in minutes:

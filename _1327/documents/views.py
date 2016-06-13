@@ -4,12 +4,11 @@ import os
 from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, SuspiciousOperation
 from django.core.urlresolvers import reverse
 from django.db import models, transaction
 from django.forms import formset_factory
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseRedirect, \
-	HttpResponseServerError
+from django.http import HttpResponse, HttpResponseRedirect
 
 from django.shortcuts import get_object_or_404, Http404, render
 from django.utils.translation import ugettext_lazy as _
@@ -18,7 +17,6 @@ from guardian.shortcuts import get_objects_for_user
 import markdown
 from markdown.extensions.toc import TocExtension
 from reversion import revisions
-from reversion.models import RevertError
 from sendfile import sendfile
 
 from _1327 import settings
@@ -58,7 +56,7 @@ def create(request, document_type):
 		}
 		return edit(request, url_title, new_autosaved_pages, initial)
 	else:
-		return HttpResponseForbidden()
+		raise PermissionDenied
 
 
 def edit(request, title, new_autosaved_pages=None, initial=None):
@@ -237,13 +235,9 @@ def revert(request):
 
 	if revert_version is None:
 		# user supplied version_id that does not exist
-		return HttpResponseBadRequest('Could not find document')
+		raise SuspiciousOperation('Could not find document')
 
-	try:
-		revert_version.revision.revert(delete=False)
-	except RevertError:
-		return HttpResponseServerError('Could not revert the version')
-
+	revert_version.revision.revert(delete=False)
 	fields = revert_version.field_dict
 	document_class = ContentType.objects.get_for_id(fields.pop('polymorphic_ctype')).model_class()
 
@@ -282,13 +276,13 @@ def create_attachment(request):
 
 	document = Document.objects.get(id=request.POST['document'])
 	if not document.can_be_changed_by(request.user):
-		return HttpResponseForbidden()
+		raise PermissionDenied
 
 	success, __, attachment = handle_attachment(request, document)
 	if success:
 		return HttpResponse(attachment.id)
 	else:
-		return HttpResponseBadRequest()
+		raise SuspiciousOperation
 
 
 def delete_attachment(request):
@@ -297,7 +291,7 @@ def delete_attachment(request):
 		# check whether user has permission to change the document the attachment belongs to
 		document = attachment.document
 		if not document.can_be_changed_by(request.user):
-			return HttpResponseForbidden()
+			raise PermissionDenied
 
 		attachment.file.delete()
 		attachment.delete()
@@ -308,13 +302,13 @@ def delete_attachment(request):
 
 def download_attachment(request):
 	if not request.method == "GET":
-		return HttpResponseBadRequest()
+		raise SuspiciousOperation
 
 	attachment = get_object_or_404(Attachment, pk=request.GET['attachment_id'])
 	# check whether user is allowed to see that document and thus download the attachment
 	document = attachment.document
 	if not request.user.has_perm(document.VIEW_PERMISSION_NAME, document):
-		return HttpResponseForbidden()
+		raise PermissionDenied
 
 	filename = os.path.join(settings.MEDIA_ROOT, attachment.file.name)
 	is_attachment = not request.GET.get('embed', None)
@@ -332,7 +326,7 @@ def update_attachment_order(request):
 		# check that user is allowed to make changes to attachment
 		document = attachment.document
 		if not document.can_be_changed_by(request.user):
-			return HttpResponseForbidden()
+			raise PermissionDenied
 
 		attachment.index = index
 		attachment.save()
@@ -345,7 +339,7 @@ def get_attachments(request, document_id):
 
 	document = Document.objects.get(pk=document_id)
 	if not document.can_be_changed_by(request.user):
-		return HttpResponseForbidden()
+		raise PermissionDenied
 
 	attachments = document.attachments.all()
 	data = {}
@@ -367,7 +361,7 @@ def change_attachment_no_direct_download(request):
 
 	attachment = Attachment.objects.get(pk=attachment_id)
 	if not attachment.document.can_be_changed_by(request.user):
-		return HttpResponseForbidden()
+		raise PermissionDenied
 
 	attachment.no_direct_download = no_direct_download
 	attachment.save()
