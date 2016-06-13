@@ -27,7 +27,7 @@ def list(request, groupid=None):
 			if groupid and groupid != group.id:
 				continue
 			if group.name not in groups:
-				groups[group.name] = {}
+				groups[group.name] = OrderedDict()
 			if m.date.year not in groups[group.name]:
 				groups[group.name][m.date.year] = []
 			groups[group.name][m.date.year].append(m)
