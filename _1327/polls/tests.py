@@ -95,6 +95,12 @@ class PollViewTests(WebTest):
 		self.assertIn(b"There are no polls you can vote for.", response.body)
 		self.assertIn(b"There are no results you can see.", response.body)
 
+		response = self.app.get(reverse('polls:list'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn(b"Upcoming polls", response.body)
+		self.assertIn(b"There are no polls you can vote for.", response.body)
+		self.assertIn(b"There are no results you can see.", response.body)
+
 	def test_create_poll(self):
 		response = self.app.get(reverse('documents:create', args=['poll']), user=self.user)
 		self.assertEqual(response.status_code, 200)
