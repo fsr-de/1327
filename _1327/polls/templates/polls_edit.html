@@ -71,7 +71,4 @@
 		items: '.sortable',
 		handle: '.sorthandle',
 	});
-
-	// add datepicker to date inputs
-	$("input[name*='date']:not([readonly='True'])").datepicker( $.datepicker.regional["{{ LANGUAGE_CODE }}"] );
 {% endblock %}

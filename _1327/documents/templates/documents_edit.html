@@ -299,5 +299,8 @@
 	});
 
 	{% block additional_scripts %}{% endblock %}
+
+	// add datepicker to date inputs
+	$("input[name*='date']:not([readonly='True'])").datepicker( $.datepicker.regional["{{ LANGUAGE_CODE }}"] );
 	</script>
 {% endblock %}
