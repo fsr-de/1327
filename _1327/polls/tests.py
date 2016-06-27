@@ -407,3 +407,36 @@ class PollVoteTests(WebTest):
 
 		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=self.user, expect_errors=True)
 		self.assertEqual(response.status_code, 404)
+
+
+class PollEditTests(WebTest):
+	def setUp(self):
+		self.user = mommy.make(UserProfile, is_superuser=True)
+		self.poll = mommy.make(
+			Poll,
+			start_date=datetime.date.today(),
+			end_date=datetime.date.today() + datetime.timedelta(days=3),
+		)
+		mommy.make(
+			Choice,
+			poll=self.poll,
+			votes=10,
+			_quantity=3,
+		)
+
+	def test_create_two_polls_without_changing_url_title(self):
+		response = self.app.get(reverse('documents:create', args=['poll']), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		form = response.forms['document-form']
+		form['title'] = 'new awesome title'
+		form['choices-0-text'] = 'test choice'
+		form['text'] = 'Description'
+		form['comment'] = 'sample comment'
+
+		response = form.submit().follow()
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(Poll.objects.count(), 2)
+
+		response = self.app.get(reverse('documents:create', args=['poll']), user=self.user)
+		self.assertEqual(response.status_code, 200)

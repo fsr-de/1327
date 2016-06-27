@@ -1,10 +1,9 @@
-from datetime import datetime
+from datetime import date, datetime
 
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Sum
 from django.template import loader
-from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 
 from reversion import revisions
@@ -53,7 +52,12 @@ class Poll(Document):
 
 	@classmethod
 	def generate_default_slug(cls, title):
-		return "polls_{}".format(slugify(title))
+		slug_final = slug = "new-poll-from-{}".format(date.today().isoformat())
+		count = 2
+		while Poll.objects.filter(url_title=slug_final).exists():
+			slug_final = "{}_{}".format(slug, count)
+			count += 1
+		return slug_final
 
 	def get_view_url(self):
 		return reverse('documents:view', args=(self.url_title,))
