@@ -42,9 +42,7 @@ def list(request):
 	)
 
 
-def results(request, url_title):
-	poll = get_object_or_error(Poll, request.user, ['polls.view_poll'], url_title=url_title)
-
+def results(request, poll, url_title):
 	if poll.start_date > datetime.date.today():
 		# poll is not open
 		raise Http404
@@ -52,7 +50,7 @@ def results(request, url_title):
 	if request.user.has_perm(Poll.VOTE_PERMISSION_NAME, poll) \
 				and not poll.participants.filter(id=request.user.pk).exists() \
 				and poll.end_date > datetime.date.today():
-		return vote(request, url_title)
+		return vote(request, poll, url_title)
 
 	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension()])
 	description = md.convert(poll.text)
@@ -69,15 +67,13 @@ def results(request, url_title):
 	)
 
 
-def vote(request, url_title):
-	poll = get_object_or_error(Poll, request.user, ['polls.view_poll', 'polls.vote_poll'], url_title=url_title)
-
+def vote(request, poll, url_title):
 	if poll.start_date > datetime.date.today():
 		# poll is not open
 		raise Http404
 
 	if poll.end_date < datetime.date.today() or poll.participants.filter(id=request.user.pk).exists():
-		return results(request, url_title)
+		return results(request, poll, url_title)
 
 	if request.method == 'POST':
 		choices = request.POST.getlist('choice')
@@ -114,8 +110,10 @@ def vote(request, url_title):
 
 
 def view(request, title):
-	poll = Poll.objects.get(url_title=title)
+	poll = get_object_or_error(Poll, request.user, ['polls.view_poll'], url_title=title)
 	if poll.end_date < datetime.date.today() or poll.participants.filter(id=request.user.pk).exists():
-		return results(request, title)
+		return results(request, poll, title)
 	else:
-		return vote(request, title)
+		if not request.user.has_perm('polls.vote_poll', poll):
+			return results(request, poll, title)
+		return vote(request, poll, title)
