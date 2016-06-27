@@ -3,6 +3,7 @@ import datetime
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse
+from django.db.models import F
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
@@ -85,9 +86,8 @@ def vote(request, poll, url_title):
 			return HttpResponseRedirect(reverse('documents:view', args=[url_title]))
 
 		for choice_id in choices:
-			choice = poll.choices.get(id=choice_id)
-			choice.votes += 1
-			choice.save()
+			choice = poll.choices.filter(id=choice_id)
+			choice.update(votes=F('votes') + 1)
 
 		poll.participants.add(request.user)
 		messages.success(request, _("We've received your vote!"))
