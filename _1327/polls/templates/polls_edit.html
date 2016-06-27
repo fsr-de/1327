@@ -4,74 +4,74 @@
 {% load bootstrap3 %}
 
 {% block inlineformset %}
-    {{ formset.management_form }}
-    <h3>Choices</h3>
-    {% bootstrap_formset_errors formset layout='inline' %}
-    <div id="choice-inline-form">
-        {% for form_element in formset %}
-            <div class="choice-row">
-                <input type="hidden" class='form-control ordering-index' name="{{ form_element.index.html_name }}" value="{% if form_element.index.value %}{{ form_element.index.value }}{% else %}0{% endif %}">
-                <div class="form-group">
-                    <label class="col-md-2 control-label" for="{{ form_element.text.id_for_label }}">Text</label>
-                    <div class="col-md-9">
-                        <input type="text" class="form-control choice-text" id="{{ form_element.text.id_for_label }}" name="{{ form_element.text.html_name }}" {% if form_element.text.value %}value="{{ form_element.text.value }}"{% endif %}>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-2 control-label" for="{{ form_element.description.id_for_label }}">Description</label>
-                    <div class="col-md-9">
-                        <input type="text" class="form-control choice-description" id="{{ form_element.description.id_for_label }}" name="{{ form_element.description.html_name }}" {% if form_element.description.value %}value="{{ form_element.description.value }}"{% endif %}>
-                    </div>
-                </div>
-                {% for field in form_element.hidden_fields %}
-                    {{ field }}
-                {% endfor %}
-                <div class="form-group inlineformset">
-                    <div class="col-md-offset-2 col-md-9">
-                        {% if form_element.instance.pk %}{{ form_element.DELETE }}{% endif %}
-                        <span class="input-group-btn"></span>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-9 add-row-container"></div>
-    </div>
+	<h3>Choices</h3>
+	{{ formset.management_form }}
+	{% bootstrap_formset_errors formset layout='inline' %}
+	<div id="choice-inline-form">
+		<table class="table table-striped choice-table">
+			<thead>
+				<tr>
+					<th></th>
+					<th>{% trans "Text" %}</th>
+					<th>{% trans "Description" %}</th>
+					<th>{% trans "Delete?" %}</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for form_element in formset %}
+					<tr class="sortable">
+						{% for field in form_element.hidden_fields %}
+							{{ field }}
+						{% endfor %}
+						<td class="sorthandle"><span class="glyphicon glyphicon-move"></span></td>
+						<td>{% bootstrap_field form_element.text layout='horizontal' show_label=False horizontal_label_class="" %}</td>
+						<td>{% bootstrap_field form_element.description layout='horizontal' show_label=False horizontal_label_class="" %}</td>
+						<td>{% if form_element.instance.pk %}{{ form_element.DELETE }}{% endif %}</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
 {% endblock %}
 
 {% block additional_scripts%}
-    // enable formset functionality
-    $('.choice-row').formset({
-        prefix: '{{ formset.prefix }}',
-        deleteCssClass: 'delete-button btn btn-default',
-        deleteText: '{% trans "Delete" %}',
-        added: function(row) {
-            row.find('.input-group-btn').append(row.find('.delete-button'));
-            var form = $('#choice-inline-form');
-            form.append(row);
-        }
-    });
-    $('.delete-button').each(function() {
-        $(this).prev(".form-group.inlineformset").find(".input-group-btn").append(this);
-    });
-    $('.add-row-container').append($('.add-row'));
-    $('.add-row').addClass('btn btn-default');
-    $('.add-row').text('{% trans "Add another choice" %}');
+	function setOrderIndex(row, index) {
+		var text = row.find("input[name*='text']");
+		var description = row.find("input[name*='description']");
+		var orderIndex = row.children("input[name*='index']");
+		if (text.val() === "" && description.val() === "") {
+			// if the row is empty (has no text in the input fields) set the order to 0 (default),
+			// so that the one extra row doesn't change its initial value
+			orderIndex.val(0);
+		} else {
+			orderIndex.val(index);
+		}
+	}
 
-    $('#document-form').on('submit', function(event) {
-        // go through all choices and set the ordering index according to the current position
-        $('#choice-inline-form').children().each(function (index, element) {
-            element = $(element);
-            if (element.find('.choice-text').attr('value') == undefined && element.find('.choice-description').attr('value') == undefined) {
-                // empty element that should not have any new data
-                element.find('.ordering-index').attr('value', 0);
-                return
-            }
-            $(element).attr('value', index);
-        });
-    });
+	$('#document-form').on('submit', function(event) {
+		// go through all choices and set the ordering index according to the current position
+		var rows = $('.sortable');
+		rows.each(function (index, row) {
+			setOrderIndex($(row), index)
+		});
+		return true;
+	});
 
-    // add datepicker to date inputs
-    $("input[name*='date']:not([readonly='True'])").datepicker( $.datepicker.regional["{{ LANGUAGE_CODE }}"] );
+	// enable formset functionality
+	$('#choice-inline-form table tbody tr').formset({
+		prefix: '{{ formset.prefix }}',
+		deleteCssClass: 'delete',
+		added: function(row) {
+			row.find("input[name*='index']").val(row.parent().children().length);
+		}
+	});
+
+	// make forms sortable
+	$('#choice-inline-form table tbody').sortable({
+		items: '.sortable',
+		handle: '.sorthandle',
+	});
+
+	// add datepicker to date inputs
+	$("input[name*='date']:not([readonly='True'])").datepicker( $.datepicker.regional["{{ LANGUAGE_CODE }}"] );
 {% endblock %}
