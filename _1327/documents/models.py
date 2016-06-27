@@ -21,7 +21,7 @@ DOCUMENT_VIEW_PERMISSION_NAME = 'view_document'
 class Document(PolymorphicModel):
 	created = models.DateTimeField(default=timezone.now)
 	title = models.CharField(max_length=255)
-	url_title = models.SlugField()
+	url_title = models.SlugField(unique=True)
 	text = models.TextField()
 
 	DOCUMENT_LINK_REGEX = r'\[(?P<title>[^\[]+)\]\(document:(?P<id>\d+)\)'
