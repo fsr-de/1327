@@ -11,7 +11,6 @@
 				<a href="{% url 'menu_item_edit' item.pk %}">{{ item.title }}</a>
 				{% if item.link %}(<i>{% trans "Link" %}:</i> {{ item.link }}){% endif %}
 				{% if item.document %}(<i>{% trans "Document" %}:</i> {{ item.document }}){% endif %}
-				{% if item.staff_only %}(<i>{% trans "Staff only" %}</i>){% endif %}
 				<button type="button" class="close" onclick="show_delete_modal({{ item.id }});"><span>&times;</span></button>
 			</div>
 			{% if item.subitems %}

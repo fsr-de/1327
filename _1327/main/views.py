@@ -2,8 +2,11 @@ import json
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.models import Group
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.forms import formset_factory
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.utils.translation import ugettext_lazy as _
@@ -14,6 +17,7 @@ from markdown.extensions.toc import TocExtension
 
 from _1327.documents.models import Document
 from _1327.documents.utils import permission_warning
+from _1327.main.forms import get_permission_form
 
 from .forms import MenuItemForm
 from .models import MenuItem
@@ -78,11 +82,25 @@ def menu_item_create(request):
 def menu_item_edit(request, menu_item_pk):
 	menu_item = MenuItem.objects.get(pk=menu_item_pk)  # TODO (#268): check permission to edit
 	form = MenuItemForm(request.POST or None, instance=menu_item)
-	if form.is_valid():
+
+	PermissionForm = get_permission_form(menu_item)
+	PermissionFormset = formset_factory(get_permission_form(menu_item), extra=0)
+
+	content_type = ContentType.objects.get_for_model(menu_item)
+	initial_data = PermissionForm.prepare_initial_data(Group.objects.all(), content_type, menu_item)
+	formset = PermissionFormset(request.POST or None, initial=initial_data)
+
+	if form.is_valid() and request.POST and formset.is_valid():
 		form.save()
+		for permission_form in formset:
+			permission_form.save(menu_item)
 		messages.success(request, _("Successfully edited menu item."))
 		return redirect('menu_items_index')
-	return render(request, 'menu_item_edit.html', {'form': form})
+	return render(request, 'menu_item_edit.html', {
+		'form': form,
+		'formset_header': PermissionForm.header(content_type),
+		'formset': formset,
+	})
 
 
 @require_POST
