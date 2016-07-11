@@ -94,13 +94,26 @@
 		</div>
 	</div>
 </div>
+{% endblock %}
 
+{% block scripts %}
+{{ block.super }}
 <!-- mandatory script include -->
-<script type="text/javascript" src="{% static 'js/markdown.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/jquery.hotkeys.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/jquery.formset.js' %}"></script>
 <script type="text/javascript" src="{% static 'bootstrap-markdown/js/bootstrap-markdown.js' %}"></script>
 <script>
+	var efficient_render = debounce(function render() {
+		$.ajax({
+			url: "{% url 'documents:render' document.url_title %}",
+			type: "post",
+			data: {'text': $('#id_text').val()},
+			success: function(data, status, jqxhr) {
+				$('#text-preview').html(data);
+			}
+		});
+	}, 1000);
+
 	function addImageToText(editor, attachmentId, modal) {
 		var chunk = "![Image Alt]({% url 'documents:download_attachment' %}?attachment_id=" + attachmentId + "&embed=True)";
 		editor.replaceSelection(chunk);
@@ -115,9 +128,7 @@
 		autofocus:true,
 		resize:"both",
 		hiddenButtons: ["cmdPreview", "cmdImage"],
-		onChange: function(e) {
-			$('#text-preview').html(markdown.toHTML($('#id_text').val()));
-		},
+		onChange: efficient_render,
 		onShow: function(e) {
 			this.onChange(e);
 		},

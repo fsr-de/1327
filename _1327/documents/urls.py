@@ -5,7 +5,6 @@ from . import views
 
 admin.autodiscover()
 
-
 urlpatterns = [
 	url(r"revert$", views.revert, name='revert'),
 	url(r"search$", views.search, name='search'),
@@ -23,5 +22,6 @@ urlpatterns = [
 	url(r"(?P<title>[\w-]+)/versions$", views.versions, name="versions"),
 	url(r"(?P<title>[\w-]+)/permissions$", views.permissions, name="permissions"),
 	url(r"(?P<title>[\w-]+)/attachments$", views.attachments, name="attachments"),
+	url(r"(?P<title>[\w-]+)/render$", views.render_text, name="render"),
 	url(r"(?P<title>[\w-]+)$", views.view, name='view'),
 ]

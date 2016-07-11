@@ -29,3 +29,22 @@ $.ajaxSetup({
 		}
 	}
 });
+
+
+// deBouncer by hnldesign.nl
+// more info: http://www.hnldesign.nl/work/code/debouncing-events-with-jquery/
+//
+// based on code by Paul Irish and the original debouncing function from John Hann
+// http://unscriptable.com/index.php/2009/03/20/debouncing-javascript-methods/
+var debounce = function (func, threshold) {
+	var timeout;
+	return function debounced () {
+		var obj = this, args = arguments;
+		if (timeout)
+			clearTimeout(timeout);
+		timeout = setTimeout(function(){
+			func.apply(obj, args);
+			timeout = null;
+		}, threshold);
+	};
+};
