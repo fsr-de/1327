@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 	'reversion',
 	'guardian',
 	'polymorphic',
+	'django_extensions',
 	'_1327.main',
 	'_1327.user_management',
 	'_1327.documents',

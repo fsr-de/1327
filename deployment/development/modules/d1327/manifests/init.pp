@@ -11,9 +11,9 @@ class d1327 ($db_connector) {
         provider    => shell,
         command     => 'python3 manage.py collectstatic --noinput',
         cwd         => '/vagrant'
-    } -> exec { 'evap-flush-db':
+    } -> exec { '1327-flush-db':
         provider    => shell,
-        command     => 'python3 manage.py flush --noinput --no-initial-data',
+        command     => 'python3 manage.py flush --noinput',
         cwd         => '/vagrant'
     }
 }
