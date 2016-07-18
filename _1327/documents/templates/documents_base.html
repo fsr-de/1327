@@ -9,11 +9,11 @@
 
 {% block sidebar %}
 	{{ document.meta_information_html }}
-	<div class="divider"></div>
+	<div class="divider hidden-print"></div>
 	{% block document_nav %}
 		{% get_obj_perms request.user for document as "document_perms" %}
 		{% if "change" in document_perms %}
-			<div role="tablist">
+			<div role="tablist" class="hidden-print">
 				<a class="btn btn-sm btn-sidebar {% if active_page == 'view' %}btn-warning{% else %}btn-default{% endif %}" href="{% url 'documents:view' document.url_title %}" role="tab">{% trans "View" %}</a>
 				<a class="btn btn-sm btn-sidebar {% if active_page == 'edit' %}btn-warning{% else %}btn-default{% endif %}" href="{% url 'documents:edit' document.url_title %}" role="tab">{% trans "Edit" %}</a>
 				<a class="btn btn-sm btn-sidebar {% if active_page == 'attachments' %}btn-warning{% else %}btn-default{% endif %}" href="{% url 'documents:attachments' document.url_title %}" role="tab">{% trans "Attachments" %}</a>
@@ -27,7 +27,7 @@
 	<p class="toc-heading">{% trans "Table of Contents" %}</p>
 	{{ toc|safe }}
 	{% if attachments %}
-		<div class="toc">
+		<div class="toc hidden-print">
 			<ul><li><a href="#attachments" title="{% trans "Attachments" %}">{% trans "Attachments" %}</a></li></ul>
 		</div>
 	{% endif %}
@@ -39,13 +39,13 @@
 		{% if attachments %}
 			<div class="divider"></div>
 			<h2 id="attachments">{% trans "Attachments" %}</h2>
-			{% for attachment in attachments %}
-				<div class="row">
-					<div class="col-sm-4">
+			<ul>
+				{% for attachment in attachments %}
+					<li>
 						<a href="{% url 'documents:download_attachment' %}?attachment_id={{ attachment.id }}">{{ attachment.displayname }}</a>
-					</div>
-				</div>
-			{% endfor %}
+					</li>
+				{% endfor %}
+			</ul>
 		{% endif %}
 	{% endblock %}
 {% endblock %}

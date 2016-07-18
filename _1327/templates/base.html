@@ -149,7 +149,7 @@
 	</header>
 
 	{% if messages %}
-	<div class="container messages">
+	<div class="container messages hidden-print">
 		{% bootstrap_messages %}
 	</div>
 	{% endif %}
@@ -163,14 +163,14 @@
 					<feGaussianBlur result="blurOut" in="offOut" stdDeviation="3"></feGaussianBlur>
 				</filter>
 			</defs>
-			<polygon class="headline-bar-shadow" filter="url(#shadow)" points=""></polygon>
-			<polygon class="headline-bar" points=""></polygon>
+			<polygon class="headline-bar-shadow hidden-print" filter="url(#shadow)" points=""></polygon>
+			<polygon class="headline-bar hidden-print" points=""></polygon>
 			<text class="headline-text" dx="30" dy="25">{% block title %}{% endblock %}</text>
 		</svg>
 	</div>
 	{% endblock %}
 
-	<footer>
+	<footer class="hidden-print">
 		<div class="footer-line"></div> {# Top line for footer #}
 		<div class="footer-line gradient gradient-inv"></div> {# Gradient line #}
 		<div class="container">
