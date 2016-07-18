@@ -157,3 +157,16 @@ def get_model_function(content_type, function_name):
 	# TODO add caching strategy?
 	module = __import__('_1327.{content_type}.views'.format(content_type=content_type.app_label), fromlist=[function_name])
 	return getattr(module, function_name)
+
+
+def delete_cascade_to_json(cascade):
+	items = []
+	for cascade_item in cascade:
+		if hasattr(cascade_item, '__iter__'):
+			items.append(delete_cascade_to_json(cascade_item))
+		else:
+			items.append({
+				"type": type(cascade_item).__name__,
+				"name": str(cascade_item),
+			})
+	return items

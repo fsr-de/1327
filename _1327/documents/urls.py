@@ -23,5 +23,7 @@ urlpatterns = [
 	url(r"(?P<title>[\w-]+)/permissions$", views.permissions, name="permissions"),
 	url(r"(?P<title>[\w-]+)/attachments$", views.attachments, name="attachments"),
 	url(r"(?P<title>[\w-]+)/render$", views.render_text, name="render"),
+	url(r"(?P<title>[\w-]+)/delete-cascade$", views.get_delete_cascade, name="get_delete_cascade"),
+	url(r"(?P<title>[\w-]+)/delete$", views.delete_document, name="delete_document"),
 	url(r"(?P<title>[\w-]+)$", views.view, name='view'),
 ]

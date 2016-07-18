@@ -744,3 +744,59 @@ class TestAttachments(WebTest):
 		self.assertEqual(Attachment.objects.count(), 2)
 		self.assertEqual(self.document.attachments.count(), 2)
 		self.assertEqual(self.document.attachments.last().index, 2)
+
+
+class TestDeletion(WebTest):
+	csrf_checks = False
+
+	def setUp(self):
+		self.user = mommy.make(UserProfile, is_superuser=True)
+		self.document = mommy.make(Document)
+
+	def test_delete_cascade(self):
+		response = self.app.get(reverse("documents:get_delete_cascade", args=[self.document.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		data = json.loads(response.body.decode('utf-8'))
+		self.assertEqual(type(self.document).__name__, data[0]["type"])
+
+	def test_delete_cascade_nested_objects(self):
+		mommy.make(Attachment, document=self.document)
+		response = self.app.get(reverse("documents:get_delete_cascade", args=[self.document.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		data = json.loads(response.body.decode('utf-8'))
+		self.assertEqual(len(data), 2)
+		self.assertEqual(Attachment.__name__, data[1][0]['type'])
+
+	def test_delete_cascade_no_permissions(self):
+		user = mommy.make(UserProfile)
+		response = self.app.get(reverse("documents:get_delete_cascade", args=[self.document.url_title]), user=user, expect_errors=True)
+		self.assertEqual(response.status_code, 403)
+
+	def test_delete_documents(self):
+		for document_class in Document.__subclasses__():
+			document = mommy.make(document_class)
+			self.assertEqual(Document.objects.count(), 2)
+			response = self.app.post(reverse("documents:delete_document", args=[document.url_title]), user=self.user)
+			self.assertEqual(response.status_code, 200)
+			self.assertEqual(Document.objects.count(), 1)
+
+	def test_delete_documents_with_attachment(self):
+		for document_class in Document.__subclasses__():
+			document = mommy.make(document_class)
+			self.assertEqual(Document.objects.count(), 2)
+			mommy.make(Attachment, document=document)
+			self.assertEqual(Attachment.objects.count(), 1)
+			response = self.app.post(reverse("documents:delete_document", args=[document.url_title]), user=self.user)
+			self.assertEqual(response.status_code, 200)
+			self.assertEqual(Attachment.objects.count(), 0)
+			self.assertEqual(Document.objects.count(), 1)
+
+	def test_delete_documents_insufficient_permissions(self):
+		user = mommy.make(UserProfile)
+		for document_class in Document.__subclasses__():
+			document = mommy.make(document_class)
+			self.assertEqual(Document.objects.count(), 2)
+			response = self.app.post(reverse("documents:delete_document", args=[document.url_title]), user=user, expect_errors=True)
+			self.assertEqual(response.status_code, 403)
+			self.assertEqual(Document.objects.count(), 2)
+			document.delete()

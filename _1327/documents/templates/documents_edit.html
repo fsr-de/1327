@@ -24,6 +24,9 @@
 		<button type="submit" class="btn btn-primary">
 			{% bootstrap_icon "floppy-disk" %} {% trans 'Save' %}
 		</button>
+		<button type="button" class="btn btn-danger" id="deleteDocumentButton">
+			{% bootstrap_icon "trash" %} {% trans 'Delete' %}
+		</button>
 	</div>
 	{% endbuttons %}
 </form>
@@ -71,6 +74,26 @@
 				<div class="modal-footer">
 					<button type="button" class="btn btn-info" id="addImage">{% trans "Add new Image" %}</button>
 					<button type="button" class="btn btn-primary" id="setImage">{% trans "OK" %}</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade ontop" id="deleteDocumentModal" tabindex="-1" role="dialog" aria-labelledby="deleteDocumentHeader">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times</span>
+					</button>
+					<h4 class="modal-title" id="deleteDocumentHeader">{% trans "Do you really want to Delete this document?" %}</h4>
+				</div>
+				<div class="modal-body">
+					<p>{% trans "If you delete this document you will also delete the following database items:" %}</p>
+					<div id="documentDeleteCascadeInfo"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" id="deleteDocumentConfirmationButton">{% trans "Delete" %}</button>
 				</div>
 			</div>
 		</div>
@@ -278,6 +301,57 @@
 
 	$('#addImage').on('click', function (event) {
 		$('#image-upload-area').removeClass('hidden');
+	});
+
+	function createCascadeList(cascade, domObject) {
+		for(var i = 0; i < cascade.length; i++) {
+			var cascadeItem = cascade[i];
+			if (cascadeItem.constructor === Array) {
+				var sublist = $('<ul>');
+				createCascadeList(cascadeItem, sublist);
+				domObject.append(sublist);
+			}
+			else {
+				domObject.append($('<li></li>').text(cascadeItem.type + ": " + cascadeItem.name));
+			}
+		}
+	}
+
+	var deleteDocumentModal = $('#deleteDocumentModal');
+	deleteDocumentModal.modal({
+		show: false
+	});
+
+	$('#deleteDocumentButton').on('click', function (event) {
+		$.getJSON(
+			"{% url "documents:get_delete_cascade" document.url_title %}",
+			{},
+			function (data, textStatus, jqXHR) {
+				deleteDocumentModal.modal('show');
+				// prepare the select in the modal
+				var cascadeInfo = $('#documentDeleteCascadeInfo');
+
+				// delete old content
+				cascadeInfo.children().each(function (index, element) {
+					element.remove();
+				});
+
+				// create new content by traversing provided data
+				var cascadeList = $('<ul>');
+				createCascadeList(data, cascadeList);
+				cascadeInfo.append(cascadeList);
+			});
+	});
+
+	$("#deleteDocumentConfirmationButton").on('click', function (event) {
+		$.post(
+			"{% url "documents:delete_document" document.url_title %}",
+			{},
+			function (data, textStatus, jqXHR) {
+				deleteDocumentModal.modal('hide');
+				window.location.replace("/");
+			}
+		);
 	});
 
 	var text = $('#id_text').val();
