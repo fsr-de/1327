@@ -208,6 +208,28 @@ class TestAutosave(WebTest):
 		self.assertIn((reverse('documents:edit', args=[url_title]) + '?restore'), str(response.body))
 
 
+class TestMarkdownRendering(WebTest):
+	csrf_checks = False
+
+	def setUp(self):
+		self.user = mommy.make(UserProfile, is_superuser=True)
+		self.document_text = 'test'
+		self.document = mommy.make(InformationDocument, text=self.document_text)
+
+	def test_render_text_no_permission(self):
+		response = self.app.post(reverse('documents:render', args=[self.document.url_title]), {'text': self.document_text}, xhr=True, expect_errors=True)
+		self.assertEqual(response.status_code, 403)
+
+	def test_render_text_wrong_method(self):
+		response = self.app.get(reverse('documents:render', args=[self.document.url_title]), {'text': self.document_text}, user=self.user, xhr=True, expect_errors=True)
+		self.assertEqual(response.status_code, 400)
+
+	def test_render_text(self):
+		response = self.app.post(reverse('documents:render', args=[self.document.url_title]), {'text': self.document_text}, user=self.user, xhr=True)
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual('<p>' + self.document_text + '</p>', response.body.decode('utf-8'))
+
+
 class TestSignals(TestCase):
 
 	def setUp(self):

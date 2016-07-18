@@ -202,6 +202,19 @@ def attachments(request, title):
 		})
 
 
+def render_text(request, title):
+	if request.method != 'POST':
+		raise SuspiciousOperation
+
+	document = Document.objects.get(url_title=title)
+	check_permissions(document, request.user, [document.view_permission_name, document.edit_permission_name])
+
+	text = request.POST['text']
+	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension()])
+	text = md.convert(text)
+	return HttpResponse(text, content_type='text/plain')
+
+
 def search(request):
 	if not request.GET:
 		raise Http404
