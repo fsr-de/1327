@@ -52,9 +52,6 @@ node default {
     } -> exec { '/vagrant/requirements-test.txt':
         provider       => shell,
         command        => 'pip3 --log-file /tmp/pip.log install -r /vagrant/requirements-test.txt'
-    } -> exec { '/vagrant/requirements-dev.txt':
-        provider       => shell,
-        command        => 'pip3 --log-file /tmp/pip.log install -r /vagrant/requirements-dev.txt'
     } -> class { 'd1327':
         db_connector   => 'postgresql_psycopg2'
     }
