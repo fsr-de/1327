@@ -41,6 +41,7 @@ node default {
         password_hash  => postgresql_password('1327', '1327'),
         createdb       => true
     } -> postgresql::server::db { '1327':
+        owner          => '1327',
         user           => '1327',
         password       => ''
     } -> package { 'libapache2-mod-wsgi-py3':
@@ -48,6 +49,9 @@ node default {
     } -> exec { '/vagrant/requirements.txt':
         provider       => shell,
         command        => 'pip3 --log-file /tmp/pip.log install -r /vagrant/requirements.txt'
+    } -> exec { '/vagrant/requirements-test.txt':
+        provider       => shell,
+        command        => 'pip3 --log-file /tmp/pip.log install -r /vagrant/requirements-test.txt'
     } -> class { 'd1327':
         db_connector   => 'postgresql_psycopg2'
     }
