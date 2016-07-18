@@ -106,7 +106,7 @@ DATABASES = {
 LANGUAGE_CODE = 'de-DE'
 ACTIVE_LANGUAGE = 'de'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Berlin'
 
 USE_I18N = True
 
