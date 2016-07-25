@@ -3,6 +3,7 @@
 {% load static %}
 {% load i18n %}
 {% load bootstrap3 %}
+{% load num_revisions %}
 
 {% block document_content %}
 	<h2>{% trans "Edit page" %}</h2>
@@ -24,9 +25,11 @@
 		<button type="submit" class="btn btn-primary">
 			{% bootstrap_icon "floppy-disk" %} {% trans 'Save' %}
 		</button>
-		<button type="button" class="btn btn-danger" id="deleteDocumentButton">
-			{% bootstrap_icon "trash" %} {% trans 'Delete' %}
-		</button>
+		{% if document|num_revisions > 0 %}
+			<button type="button" class="btn btn-danger" id="deleteDocumentButton">
+				{% bootstrap_icon "trash" %} {% trans 'Delete' %}
+			</button>
+		{% endif %}
 	</div>
 	{% endbuttons %}
 </form>
@@ -79,25 +82,27 @@
 		</div>
 	</div>
 
-	<div class="modal fade ontop" id="deleteDocumentModal" tabindex="-1" role="dialog" aria-labelledby="deleteDocumentHeader">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times</span>
-					</button>
-					<h4 class="modal-title" id="deleteDocumentHeader">{% trans "Do you really want to Delete this document?" %}</h4>
-				</div>
-				<div class="modal-body">
-					<p>{% trans "If you delete this document you will also delete the following database items:" %}</p>
-					<div id="documentDeleteCascadeInfo"></div>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-danger" id="deleteDocumentConfirmationButton">{% trans "Delete" %}</button>
+	{% if document|num_revisions > 0 %}
+		<div class="modal fade ontop" id="deleteDocumentModal" tabindex="-1" role="dialog" aria-labelledby="deleteDocumentHeader">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						<h4 class="modal-title" id="deleteDocumentHeader">{% trans "Do you really want to delete this document?" %}</h4>
+					</div>
+					<div class="modal-body">
+						<p>{% trans "If you delete this document you will also delete the following database items:" %}</p>
+						<div id="documentDeleteCascadeInfo"></div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-danger" id="deleteDocumentConfirmationButton">{% trans "Delete" %}</button>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
+	{% endif %}
 
 <div class="modal fade ontop" id="selectInternalLinkDestination" role="dialog" aria-hidden="true">
 	<div class="modal-dialog">
@@ -303,56 +308,58 @@
 		$('#image-upload-area').removeClass('hidden');
 	});
 
-	function createCascadeList(cascade, domObject) {
-		for(var i = 0; i < cascade.length; i++) {
-			var cascadeItem = cascade[i];
-			if (cascadeItem.constructor === Array) {
-				var sublist = $('<ul>');
-				createCascadeList(cascadeItem, sublist);
-				domObject.append(sublist);
-			}
-			else {
-				domObject.append($('<li></li>').text(cascadeItem.type + ": " + cascadeItem.name));
+	{% if document|num_revisions > 0 %}
+		function createCascadeList(cascade, domObject) {
+			for(var i = 0; i < cascade.length; i++) {
+				var cascadeItem = cascade[i];
+				if (cascadeItem.constructor === Array) {
+					var sublist = $('<ul>');
+					createCascadeList(cascadeItem, sublist);
+					domObject.append(sublist);
+				}
+				else {
+					domObject.append($('<li></li>').text(cascadeItem.type + ": " + cascadeItem.name));
+				}
 			}
 		}
-	}
 
-	var deleteDocumentModal = $('#deleteDocumentModal');
-	deleteDocumentModal.modal({
-		show: false
-	});
+		var deleteDocumentModal = $('#deleteDocumentModal');
+		deleteDocumentModal.modal({
+			show: false
+		});
 
-	$('#deleteDocumentButton').on('click', function (event) {
-		$.getJSON(
-			"{% url "documents:get_delete_cascade" document.url_title %}",
-			{},
-			function (data, textStatus, jqXHR) {
-				deleteDocumentModal.modal('show');
-				// prepare the select in the modal
-				var cascadeInfo = $('#documentDeleteCascadeInfo');
+		$('#deleteDocumentButton').on('click', function (event) {
+			$.getJSON(
+				"{% url "documents:get_delete_cascade" document.url_title %}",
+				{},
+				function (data, textStatus, jqXHR) {
+					deleteDocumentModal.modal('show');
+					// prepare the select in the modal
+					var cascadeInfo = $('#documentDeleteCascadeInfo');
 
-				// delete old content
-				cascadeInfo.children().each(function (index, element) {
-					element.remove();
+					// delete old content
+					cascadeInfo.children().each(function (index, element) {
+						element.remove();
+					});
+
+					// create new content by traversing provided data
+					var cascadeList = $('<ul>');
+					createCascadeList(data, cascadeList);
+					cascadeInfo.append(cascadeList);
 				});
+		});
 
-				// create new content by traversing provided data
-				var cascadeList = $('<ul>');
-				createCascadeList(data, cascadeList);
-				cascadeInfo.append(cascadeList);
-			});
-	});
-
-	$("#deleteDocumentConfirmationButton").on('click', function (event) {
-		$.post(
-			"{% url "documents:delete_document" document.url_title %}",
-			{},
-			function (data, textStatus, jqXHR) {
-				deleteDocumentModal.modal('hide');
-				window.location.replace("/");
-			}
-		);
-	});
+		$("#deleteDocumentConfirmationButton").on('click', function (event) {
+			$.post(
+				"{% url "documents:delete_document" document.url_title %}",
+				{},
+				function (data, textStatus, jqXHR) {
+					deleteDocumentModal.modal('hide');
+					window.location.replace("/");
+				}
+			);
+		});
+	{% endif %}
 
 	var text = $('#id_text').val();
 	function save() {

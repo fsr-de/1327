@@ -751,7 +751,7 @@ class TestDeletion(WebTest):
 
 	def setUp(self):
 		self.user = mommy.make(UserProfile, is_superuser=True)
-		self.document = mommy.make(Document)
+		self.document = mommy.make(InformationDocument)
 
 	def test_delete_cascade(self):
 		response = self.app.get(reverse("documents:get_delete_cascade", args=[self.document.url_title]), user=self.user)
@@ -800,3 +800,22 @@ class TestDeletion(WebTest):
 			self.assertEqual(response.status_code, 403)
 			self.assertEqual(Document.objects.count(), 2)
 			document.delete()
+
+	def test_delete_button_not_present_if_creating_document(self):
+		# test that the delete button is not visible if the document that gets edited has no revisions
+		response = self.app.get(reverse("documents:edit", args=[self.document.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertNotIn("deleteDocumentButton", response.body.decode('utf-8'))
+
+	def test_delete_button_present_if_editing_already_existing_document(self):
+		# test that the delete button is visible if the document has at least one revision
+		response = self.app.get(reverse("documents:edit", args=[self.document.url_title]), user=self.user)
+
+		form = response.forms['document-form']
+		form['comment'] = 'new revision'
+		response = form.submit().follow()
+		self.assertEqual(response.status_code, 200)
+
+		response = self.app.get(reverse("documents:edit", args=[self.document.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn("deleteDocumentButton", response.body.decode('utf-8'))
