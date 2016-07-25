@@ -11,6 +11,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_POST
+from guardian.shortcuts import get_objects_for_user
 
 import markdown
 from markdown.extensions.toc import TocExtension
@@ -19,7 +20,7 @@ from _1327.documents.models import Document
 from _1327.documents.utils import permission_warning
 from _1327.main.forms import get_permission_form
 
-from .forms import MenuItemForm
+from .forms import MenuItemAdminForm, MenuItemCreationAdminForm, MenuItemCreationForm, MenuItemForm
 from .models import MenuItem
 from .utils import save_footer_item_order, save_main_menu_item_order
 
@@ -47,6 +48,9 @@ def index(request):
 
 
 def menu_items_index(request):
+	if len(get_objects_for_user(request.user, MenuItem.CHANGE_CHILDREN_PERMISSION_NAME, klass=MenuItem)) == 0:
+		raise PermissionDenied
+
 	main_menu_items = []
 	footer_items = []
 
@@ -72,7 +76,11 @@ def menu_items_index(request):
 
 
 def menu_item_create(request):
-	form = MenuItemForm(request.POST or None, instance=MenuItem())
+	if request.user.is_superuser:
+		form = MenuItemCreationAdminForm(request.user, request.POST or None, instance=MenuItem())
+	else:
+		form = MenuItemCreationForm(request.user, request.POST or None, instance=MenuItem())
+
 	if form.is_valid():
 		form.save()
 		messages.success(request, _("Successfully created menu item."))
@@ -85,7 +93,10 @@ def menu_item_edit(request, menu_item_pk):
 	menu_item = MenuItem.objects.get(pk=menu_item_pk)
 	if not menu_item.can_edit(request.user):
 		raise PermissionDenied
-	form = MenuItemForm(request.POST or None, instance=menu_item)
+	if request.user.is_superuser:
+		form = MenuItemAdminForm(request.POST or None, instance=menu_item)
+	else:
+		form = MenuItemForm(request.POST or None, instance=menu_item)
 
 	PermissionForm = get_permission_form(menu_item)
 	PermissionFormset = formset_factory(get_permission_form(menu_item), extra=0)

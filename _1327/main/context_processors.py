@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.utils import translation
+from guardian.shortcuts import get_objects_for_user
 
+from _1327.main.models import MenuItem
 from . import models
 
 
@@ -69,3 +71,7 @@ def can_create_minutes(request):
 
 def can_create_poll(request):
 	return {'CAN_CREATE_POLL': request.user.has_perm("polls.add_poll")}
+
+
+def can_change_menu_items(request):
+	return {'CAN_CHANGE_MENU_ITEMS': len(get_objects_for_user(request.user, MenuItem.CHANGE_CHILDREN_PERMISSION_NAME, klass=MenuItem)) > 0}

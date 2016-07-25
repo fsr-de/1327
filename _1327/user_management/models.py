@@ -66,4 +66,4 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
 
 	@cached_property
 	def is_staff(self):
-		return self.is_superuser or self.groups.get(name=settings.STAFF_GROUP_NAME).exists()
+		return self.is_superuser or self.groups.filter(name=settings.STAFF_GROUP_NAME).exists()
