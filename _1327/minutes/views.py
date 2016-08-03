@@ -1,7 +1,6 @@
 from collections import OrderedDict
 
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist, SuspiciousOperation
 from django.shortcuts import render
@@ -9,7 +8,6 @@ from django.shortcuts import render
 from _1327.minutes.models import MinutesDocument
 
 
-@login_required
 def list(request, groupid=None):
 	if groupid:
 		groupid = int(groupid)
