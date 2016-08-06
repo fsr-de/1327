@@ -123,11 +123,14 @@ def menu_items_update_order(request):
 	data = json.loads(body_unicode)
 	main_menu_items = data['main_menu_items']
 	footer_items = data['footer_items']
-	if len(main_menu_items) == 0:
-		messages.error(request, _("There must always be at least one item in the main menu."))
-	elif len(footer_items) == 0:
-		messages.error(request, _("There must always be at least one item in the footer menu."))
+	if request.user.is_superuser:
+		if len(main_menu_items) == 0:
+			messages.error(request, _("There must always be at least one item in the main menu."))
+		elif len(footer_items) == 0:
+			messages.error(request, _("There must always be at least one item in the footer menu."))
+		else:
+			save_main_menu_item_order(main_menu_items, request.user)
+			save_footer_item_order(footer_items, request.user)
 	else:
-		save_main_menu_item_order(main_menu_items)
-		save_footer_item_order(footer_items)
+		save_main_menu_item_order(main_menu_items, request.user)
 	return HttpResponse()
