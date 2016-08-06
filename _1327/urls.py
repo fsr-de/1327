@@ -12,6 +12,7 @@ urlpatterns = [
 	url(r"^minutes/", include('_1327.minutes.urls', namespace='minutes')),
 	url(r"^login$", user_management_views.login, name='login'),
 	url(r"^logout$", user_management_views.logout, name='logout'),
+	url(r'^view_as$', user_management_views.view_as, name='view_as'),
 	url(r'^polls/', include('_1327.polls.urls', namespace='polls')),
 
 	url(r'^abbreviation_explanation/', main_views.abbreviation_explanation_edit, name="abbreviation_explanation"),
@@ -23,4 +24,5 @@ urlpatterns = [
 	url(r"^menu_item/update_order$", main_views.menu_items_update_order, name="menu_items_update_order"),
 
 	url(r'^admin/', include(admin.site.urls)),
+	url(r'^hijack/', include('hijack.urls')),
 ]

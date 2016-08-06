@@ -52,6 +52,8 @@ INSTALLED_APPS = [
 	'guardian',
 	'polymorphic',
 	'django_extensions',
+	'hijack',
+	'compat',
 	'_1327.main',
 	'_1327.user_management',
 	'_1327.documents',
@@ -78,6 +80,10 @@ AUTHENTICATION_BACKENDS = [
 # needed by django-guardian library
 ANONYMOUS_USER_ID = -1
 GUARDIAN_RAISE_403 = True
+
+# Hijack settings
+HIJACK_USE_BOOTSTRAP = True
+HIJACK_URL_ALLOWED_ATTRIBUTES = ('user_id', )
 
 BOOTSTRAP3 = {
 	'horizontal_label_class': 'col-md-2',

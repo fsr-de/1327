@@ -2,6 +2,8 @@ from django import forms
 from django.contrib.auth import authenticate
 from django.utils.translation import ugettext_lazy as _
 
+from _1327.user_management.models import UserProfile
+
 
 class LoginForm(forms.Form):
 	username = forms.CharField(label=_('User name'), max_length=100)
@@ -28,3 +30,7 @@ class LoginForm(forms.Form):
 
 	def get_user(self):
 		return self.user_cache
+
+
+class UserImpersonationForm(forms.Form):
+	username = forms.ModelChoiceField(queryset=UserProfile.objects.all(), empty_label=_("Select a user"), required=True)
