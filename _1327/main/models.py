@@ -49,4 +49,8 @@ class MenuItem(models.Model):
 
 	def can_edit(self, user):
 		permission_name = 'change_menuitem'
+		return user.has_perm(permission_name, self.parent) or user.has_perm(permission_name)
+
+	def can_delete(self, user):
+		permission_name = 'delete_menuitem'
 		return user.has_perm(permission_name, self) or user.has_perm(permission_name)

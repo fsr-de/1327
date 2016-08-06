@@ -1,20 +1,29 @@
 {% load i18n %}
 {% load main_templatetags %}
+{% load morefilters %}
 
 <ol class="dd-list sortable">
 	{% for item in items %}
 		<li class="dd-item" data-id="{{ item.pk }}">
-			<div class="dd-handle">
-				<span class="glyphicon glyphicon-move" aria-hidden="true"></span>
-			</div>
+			{% if item|can_edit_menu_item:user %}
+				<div class="dd-handle">
+					<span class="glyphicon glyphicon-move" aria-hidden="true"></span>
+				</div>
+			{% endif %}
 			<div class="dd-content menu-entry">
-				<a href="{% url 'menu_item_edit' item.pk %}">{{ item.title }}</a>
+				{% if item|can_edit_menu_item:user %}
+					<a href="{% url 'menu_item_edit' item.pk %}">{{ item.title }}</a>
+				{% else %}
+					{{ item.title }}
+				{% endif %}
 				{% if item.link %}(<i>{% trans "Link" %}:</i> {{ item.link }}){% endif %}
 				{% if item.document %}(<i>{% trans "Document" %}:</i> {{ item.document }}){% endif %}
-				<button type="button" class="close" onclick="show_delete_modal({{ item.id }});"><span>&times;</span></button>
+				{% if item|can_delete_menu_item:user %}
+					<button type="button" class="close" onclick="show_delete_modal({{ item.id }});"><span>&times;</span></button>
+				{% endif %}
 			</div>
 			{% if item.subitems %}
-				{% include_menu_items_list item.subitems %}
+				{% include_menu_items_list item.subitems user %}
 			{% endif %}
 		</li>
 	{% endfor %}

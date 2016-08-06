@@ -18,6 +18,7 @@ from markdown.extensions.toc import TocExtension
 from _1327.documents.models import Document
 from _1327.documents.utils import permission_warning
 from _1327.main.forms import get_permission_form
+from _1327.user_management.shortcuts import check_permissions
 
 from .forms import MenuItemForm
 from .models import MenuItem
@@ -80,7 +81,8 @@ def menu_item_create(request):
 
 
 def menu_item_edit(request, menu_item_pk):
-	menu_item = MenuItem.objects.get(pk=menu_item_pk)  # TODO (#268): check permission to edit
+	menu_item = MenuItem.objects.get(pk=menu_item_pk)
+	check_permissions(menu_item, request.user, ['change_menuitem'])
 	form = MenuItemForm(request.POST or None, instance=menu_item)
 
 	PermissionForm = get_permission_form(menu_item)
@@ -106,7 +108,8 @@ def menu_item_edit(request, menu_item_pk):
 @require_POST
 def menu_item_delete(request):
 	menu_item_id = request.POST.get("item_id")
-	menu_item = MenuItem.objects.get(pk=menu_item_id)  # TODO (#268): check permission to delete
+	menu_item = MenuItem.objects.get(pk=menu_item_id)
+	check_permissions(menu_item, request.user, ['delete_menuitem'])
 	menu_item.delete()
 	return HttpResponse()
 

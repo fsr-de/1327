@@ -12,12 +12,12 @@
 {% block content %}
 	<h3>{% trans "Main menu items" %}</h3>
 	<div class="dd" id="main-menu-items">
-		{% include_menu_items_list main_menu_items %}
+		{% include_menu_items_list main_menu_items user %}
 	</div>
 
 	<h3>{% trans "Footer items" %}</h3>
 	<div class="dd" id="footer-items">
-		{% include_menu_items_list footer_items %}
+		{% include_menu_items_list footer_items user %}
 	</div>
 
 	<a type="button" class="btn btn-primary" href="{% url 'menu_item_create' %}">{% trans 'Create new menu item' %}</a>

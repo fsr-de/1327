@@ -15,10 +15,6 @@ class MenuItemForm(forms.ModelForm):
 		model = MenuItem
 		fields = ("title", "link", "document")  # TODO (#268): show "link" only for admins
 
-	def __init__(self, *args, **kwargs):
-		super().__init__(*args, **kwargs)
-		self.fields['document'].queryset = Document.objects.all().order_by('title')  # TODO (#268): get only items for current user
-
 	def clean_link(self):
 		data = self.cleaned_data['link']
 		if data != "":

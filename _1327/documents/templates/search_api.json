@@ -8,7 +8,11 @@
 				"children": [
 					{% for minute in minutes %}
 						{
-							"id": "[{{ minute.title }}](document:{{ minute.id }})",
+							{% if id_only %}
+								"id": {{ minute.id }},
+							{% else %}
+								"id": "[{{ minute.title }}](document:{{ minute.id }})",
+							{% endif %}
 							"text": "{{ minute.title }}"
 						}{% if not forloop.last %},{% endif %}
 					{% endfor %}
@@ -21,7 +25,11 @@
 				"children": [
 					{% for information_document in information_documents %}
 						{
-							"id": "[{{ information_document.title }}](document:{{ information_document.id }})",
+							{% if id_only %}
+								"id": {{ information_document.id }},
+							{% else %}
+								"id": "[{{ information_document.title }}](document:{{ information_document.id }})",
+							{% endif %}
 							"text": "{{ information_document.title }}"
 						}{% if not forloop.last %},{% endif %}
 					{% endfor %}
@@ -34,7 +42,11 @@
 				"children": [
 					{% for poll in polls %}
 						{
-							"id": "[{{ poll.title }}](poll:{{ poll.id }})",
+							{% if id_only %}
+								"id": {{ poll.id }},
+							{% else %}
+								"id": "[{{ poll.title }}](poll:{{ poll.id }})",
+							{% endif %}
 							"text": "{{ poll.title }}"
 						}{% if not forloop.last %},{% endif %}
 					{% endfor %}
