@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import inlineformset_factory
 
-from _1327.documents.forms import DocumentForm
+from _1327.documents.forms import AtLeastNFormSet, DocumentForm
 from .models import Choice, Poll
 
 
@@ -12,7 +12,16 @@ class PollForm(DocumentForm):
 
 	@classmethod
 	def get_formset_factory(cls):
-		return inlineformset_factory(Poll, Choice, form=ChoiceForm, extra=1, can_delete=True)
+		return inlineformset_factory(
+			Poll,
+			Choice,
+			form=ChoiceForm,
+			extra=1,
+			can_delete=True,
+			min_num=2,
+			validate_min=True,
+			formset=AtLeastNFormSet,
+		)
 
 Poll.Form = PollForm
 
