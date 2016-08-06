@@ -10,5 +10,5 @@ model_mommy >= 1.2.4
 coveralls
 
 # Lint
-flake8
-flake8-import-order
+flake8 > 3.0.0
+flake8-import-order >= 0.9.2
