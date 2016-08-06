@@ -2,6 +2,8 @@
 
 {% load i18n %}
 {% load guardian_tags %}
+{% load bootstrap3 %}
+{% load poll_tags %}
 
 {% block title %}
 	{% trans "Polls" %}
@@ -89,7 +91,11 @@
 			</tr>
 			{% for poll in finished_polls %}
 				<tr>
-					<td><a href="{% url "documents:view" poll.url_title %}">{{ poll.title }}</a></td>
+					{% if poll|can_see_results %}
+                        <td><a href="{% url "documents:view" poll.url_title %}">{{ poll.title }}</a></td>
+                    {% else %}
+                        <td><span data-toggle="tooltip" data-placement="right" title="You can see the result of this Poll as from {{ poll.end_date|one_day_later }}.">{{ poll.title }} {% bootstrap_icon "info-sign" %}</span></td>
+                    {% endif %}
 					<td>{{ poll.start_date }} - {{ poll.end_date }}</td>
 					<td class="pull-right">
 						{% get_obj_perms request.user for poll as "poll_perms" %}
