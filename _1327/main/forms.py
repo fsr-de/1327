@@ -1,12 +1,11 @@
 from django import forms
-from django.contrib.auth.models import Permission
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import NoReverseMatch, reverse
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+from guardian.shortcuts import get_perms
 
 from _1327.documents.forms import PermissionBaseForm
-from _1327.documents.models import Document
 from .models import MenuItem
 
 
@@ -34,10 +33,40 @@ class MenuItemForm(forms.ModelForm):
 		return self.cleaned_data
 
 
+class MenuItemPermissionForm(PermissionBaseForm):
+	obj = None
+
+	@classmethod
+	def header(cls, content_type):
+		output = [
+			'<tr>',
+			'<th class="col-md-6"> {} </th>'.format(_("Role")),
+		]
+		for permission in sorted(MenuItem.used_permissions):
+			item = "<th class=\"col-md-2 text-center\"> {} </th>".format((permission[1]))
+			output.append(item)
+		output.append('</tr>')
+		return mark_safe('\n'.join(output))
+
+	@classmethod
+	def prepare_initial_data(cls, groups, content_type, obj=None):
+		initial_data = []
+		for group in groups:
+			if obj is not None:
+				group_permissions = get_perms(group, obj)
+			else:
+				group_permissions = [permission.codename for permission in group.permissions.filter(content_type=content_type)]
+			group_permissions = filter(lambda x: any(permission[0] in x for permission in MenuItem.used_permissions), group_permissions)
+
+			data = {permission: True for permission in group_permissions}
+			data["group_name"] = group.name
+			initial_data.append(data)
+		return initial_data
+
+
 def get_permission_form(menu_item):
-	content_type = ContentType.objects.get_for_model(menu_item)
 	fields = {
-		permission.codename: forms.BooleanField(required=False) for permission in filter(lambda x: 'add' not in x.codename, Permission.objects.filter(content_type=content_type))
+		permission[0]: forms.BooleanField(required=False) for permission in MenuItem.used_permissions
 	}
 	fields['group_name'] = forms.CharField(required=False, widget=forms.HiddenInput())
-	return type('PermissionForm', (PermissionBaseForm,), {'base_fields': fields, 'obj': menu_item})
+	return type('PermissionForm', (MenuItemPermissionForm,), {'base_fields': fields, 'obj': menu_item})

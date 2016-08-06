@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.urlresolvers import reverse
 from django.forms import formset_factory
 from django.http import HttpResponse, HttpResponseRedirect
@@ -18,7 +18,6 @@ from markdown.extensions.toc import TocExtension
 from _1327.documents.models import Document
 from _1327.documents.utils import permission_warning
 from _1327.main.forms import get_permission_form
-from _1327.user_management.shortcuts import check_permissions
 
 from .forms import MenuItemForm
 from .models import MenuItem
@@ -51,7 +50,8 @@ def menu_items_index(request):
 	main_menu_items = []
 	footer_items = []
 
-	for item in MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU, parent=None).order_by('order'):  # TODO (#268): get only items that can be edited by the current user
+	items = [item for item in MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU, parent=None).order_by('order') if item.can_view_in_list(request.user)]
+	for item in items:
 		subitems = MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU, parent=item).order_by('order')
 		if subitems:
 			for subitem in subitems:
@@ -61,8 +61,9 @@ def menu_items_index(request):
 			item.subitems = subitems
 		main_menu_items.append(item)
 
-	for item in MenuItem.objects.filter(menu_type=MenuItem.FOOTER, parent=None).order_by('order'):  # TODO (#268): get only items that can be edited by the current user
-		footer_items.append(item)
+	if request.user.is_superuser:  # only allow editing of footer items for superusers
+		for item in MenuItem.objects.filter(menu_type=MenuItem.FOOTER, parent=None).order_by('order'):
+			footer_items.append(item)
 
 	return render(request, 'menu_items_index.html', {
 		'main_menu_items': main_menu_items,
@@ -82,7 +83,8 @@ def menu_item_create(request):
 
 def menu_item_edit(request, menu_item_pk):
 	menu_item = MenuItem.objects.get(pk=menu_item_pk)
-	check_permissions(menu_item, request.user, ['change_menuitem'])
+	if not menu_item.can_edit(request.user):
+		raise PermissionDenied
 	form = MenuItemForm(request.POST or None, instance=menu_item)
 
 	PermissionForm = get_permission_form(menu_item)
@@ -109,7 +111,8 @@ def menu_item_edit(request, menu_item_pk):
 def menu_item_delete(request):
 	menu_item_id = request.POST.get("item_id")
 	menu_item = MenuItem.objects.get(pk=menu_item_id)
-	check_permissions(menu_item, request.user, ['delete_menuitem'])
+	if not menu_item.can_delete(request.user):
+		raise PermissionDenied
 	menu_item.delete()
 	return HttpResponse()
 
