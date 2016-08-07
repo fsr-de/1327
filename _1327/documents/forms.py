@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
+from django.forms import BaseInlineFormSet
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from guardian.shortcuts import assign_perm, get_perms, remove_perm
@@ -145,3 +146,19 @@ class AttachmentForm(forms.ModelForm):
 	class Meta:
 		model = Attachment
 		exclude = ('document', 'index')
+
+
+class AtLeastNFormSet(BaseInlineFormSet):
+	def clean(self):
+		super().clean()
+		if any(self.errors):
+			# There are already errors in the forms contained in this formset
+			return
+		# check that the minimum required number of forms is met
+		count = 0
+		for form in self.forms:
+			if form.cleaned_data and not form.cleaned_data.get('DELETE', False):
+				count += 1
+
+		if count < self.min_num:
+			raise forms.ValidationError(_('You must have at least {} of these.'.format(self.min_num)))

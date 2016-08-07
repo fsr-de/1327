@@ -109,6 +109,9 @@ class PollViewTests(WebTest):
 		form['choices-0-description'] = 'test description'
 		form['choices-0-index'] = 0
 		form['choices-0-text'] = 'test choice'
+		form['choices-1-description'] = 'test description 2'
+		form['choices-1-index'] = 1
+		form['choices-1-text'] = 'test choice 2'
 		form['title'] = 'TestPoll'
 		form['text'] = 'Sample Text'
 		form['max_allowed_number_of_answers'] = 1
@@ -120,7 +123,7 @@ class PollViewTests(WebTest):
 		self.assertEqual(response.status_code, 302)
 
 		poll = Poll.objects.get(title='TestPoll')
-		self.assertEqual(poll.choices.count(), 1)
+		self.assertEqual(poll.choices.count(), 2)
 
 	def test_create_poll_user_has_no_permission(self):
 		user = mommy.make(UserProfile)
@@ -431,6 +434,7 @@ class PollEditTests(WebTest):
 		form = response.forms['document-form']
 		form['title'] = 'new awesome title'
 		form['choices-0-text'] = 'test choice'
+		form['choices-1-text'] = 'test choice 2'
 		form['text'] = 'Description'
 		form['comment'] = 'sample comment'
 
@@ -440,3 +444,49 @@ class PollEditTests(WebTest):
 
 		response = self.app.get(reverse('documents:create', args=['poll']), user=self.user)
 		self.assertEqual(response.status_code, 200)
+
+	def test_submit_with_too_few_forms(self):
+		response = self.app.get(reverse('documents:edit', args=[self.poll.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		form = response.forms['document-form']
+		form['comment'] = 'sample comment'
+		form['choices-0-DELETE'] = True
+		form['choices-1-DELETE'] = True
+		form['choices-2-DELETE'] = True
+
+		response = form.submit()
+		self.assertTemplateUsed(response, 'polls_edit.html')
+		self.assertEqual(Choice.objects.filter(poll=self.poll).count(), 3)
+
+		form = response.forms['document-form']
+		form['comment'] = 'sample comment'
+		form['choices-0-DELETE'] = True
+		form['choices-1-DELETE'] = True
+		form['choices-2-DELETE'] = False
+
+		response = form.submit()
+		self.assertTemplateUsed(response, 'polls_edit.html')
+		self.assertEqual(Choice.objects.filter(poll=self.poll).count(), 3)
+
+	def test_submit_with_sufficient_forms(self):
+		response = self.app.get(reverse('documents:edit', args=[self.poll.url_title]), user=self.user)
+
+		form = response.forms['document-form']
+		form['comment'] = 'sample comment'
+		form['choices-0-DELETE'] = True
+		form['choices-1-DELETE'] = False
+		form['choices-2-DELETE'] = False
+
+		form.submit()
+		self.assertEqual(Choice.objects.filter(poll=self.poll).count(), 2)
+
+	def test_submit_more_forms(self):
+		response = self.app.get(reverse('documents:edit', args=[self.poll.url_title]), user=self.user)
+
+		form = response.forms['document-form']
+		form['comment'] = 'sample comment'
+		form['choices-3-text'] = 'choice 4'
+
+		form.submit()
+		self.assertEqual(Choice.objects.filter(poll=self.poll).count(), 4)
