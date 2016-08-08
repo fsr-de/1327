@@ -53,10 +53,10 @@ Document.Form = DocumentForm
 
 class PermissionBaseForm(forms.BaseForm):
 	"""
-		Form that can be used to change permissions of a document object
+		Form that can be used to change permissions
 	"""
 
-	document = None
+	obj = None
 
 	def save(self, model):
 		group = Group.objects.get(name=self.cleaned_data["group_name"])
@@ -92,7 +92,7 @@ class PermissionBaseForm(forms.BaseForm):
 		for name in sorted(self.fields.keys()):
 			if name == "group_name":
 				continue
-			if (self['group_name'].value() == settings.ANONYMOUS_GROUP_NAME or self['group_name'].value() == settings.UNIVERSITY_GROUP_NAME) and name != self.document.VIEW_PERMISSION_NAME:
+			if (self['group_name'].value() == settings.ANONYMOUS_GROUP_NAME or self['group_name'].value() == settings.UNIVERSITY_GROUP_NAME) and name != self.obj.VIEW_PERMISSION_NAME:
 				output.append('<td class="text-center"><input type="checkbox" disabled="disabled" /></td>')
 				continue
 			output.append('<td class="text-center"> {} </td>'.format(self[name]))
@@ -137,7 +137,7 @@ def get_permission_form(document):
 		permission.codename: forms.BooleanField(required=False) for permission in filter(lambda x: 'add' not in x.codename, Permission.objects.filter(content_type=content_type))
 	}
 	fields['group_name'] = forms.CharField(required=False, widget=forms.HiddenInput())
-	return type('PermissionForm', (PermissionBaseForm,), {'base_fields': fields, 'document': document})
+	return type('PermissionForm', (PermissionBaseForm,), {'base_fields': fields, 'obj': document})
 
 
 class AttachmentForm(forms.ModelForm):

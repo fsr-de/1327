@@ -16,6 +16,29 @@
 	<form method="post" class="form-horizontal" role="form" enctype="multipart/form-data">
 		{% bootstrap_form form layout='horizontal' %}
 		{% csrf_token %}
+		{{ formset.management_form }}
+		<div class="form-group">
+			<label class="col-md-2 control-label">{% trans "Permissions" %}</label>
+			<div class="col-md-9">
+				{% for dict in formset.errors %}
+					{% for error in dict.values %}
+						<div class="alert alert-danger" role="alert">
+							{{ error }}
+						</div>
+					{% endfor %}
+				{% endfor %}
+				<table class="table table-striped vertically-aligned table-narrow" >
+					<thead>
+						{{ formset_header }}
+					</thead>
+					<tbody>
+					{% for form in formset %}
+						{{ form.as_table }}
+					{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
 		{% buttons %}
 			<div class="col-md-offset-2 col-md-9">
 				<button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
@@ -28,10 +51,20 @@
 	{{ block.super }}
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$("#id_document,#id_parent,#id_menu_type").select2({
+			$("#id_parent,#id_menu_type").select2({
 				language: "{{ LANGUAGE_CODE }}",
-				placeholder: "{% trans "Please select..." %}",
+				placeholder: "{% trans 'Please select...' %}",
 				minimumResultsForSearch: 3
+			});
+			$("#id_document").select2({
+				language: "{{ LANGUAGE_CODE }}",
+				placeholder: "{% trans 'Please select...' %}",
+				ajax: {
+					url: '/documents/search?id_only=True',
+					delay: 250,
+					dataType: 'json'
+				},
+				minimumInputLength: 1
 			});
 		});
 	</script>
