@@ -21,11 +21,11 @@
 			<label class="col-md-2 control-label">{% trans "Permissions" %}</label>
 			<div class="col-md-9">
 				{% for dict in formset.errors %}
-					<div class="alert alert-danger" role="alert">
 					{% for error in dict.values %}
-						{{ error }}
+						<div class="alert alert-danger" role="alert">
+							{{ error }}
+						</div>
 					{% endfor %}
-					</div>
 				{% endfor %}
 				<table class="table table-striped vertically-aligned table-narrow" >
 					<thead>
