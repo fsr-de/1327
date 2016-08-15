@@ -27,7 +27,7 @@
 			<span class="label label-danger">{% trans "Unpublished" %}</span>
 		{% elif  document.state == document.INTERNAL %}
 			<span class="label label-warning">{% trans "Internal" %}</span>
-		{% elif document.labels|length == 0 %}
+		{% elif document.labels.all|length == 0 %}
 			{% trans "No Labels" %}
 		{% endif %}
 	</dd>
