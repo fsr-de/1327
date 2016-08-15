@@ -20,7 +20,7 @@ def list(request, groupid=None):
 	groups = {}
 	minutes = MinutesDocument.objects.order_by('-date')
 	for m in minutes:
-		if not request.user.has_perm(m, MinutesDocument.get_view_permission()):
+		if not request.user.has_perm(MinutesDocument.get_view_permission(), m):
 			continue
 
 		for group in m.groups.all():
