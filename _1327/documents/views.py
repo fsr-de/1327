@@ -28,6 +28,7 @@ from _1327.documents.utils import delete_cascade_to_json, delete_old_empty_pages
 	handle_attachment, handle_autosave, handle_edit, permission_warning, prepare_versions
 from _1327.information_pages.models import InformationDocument
 from _1327.information_pages.forms import InformationDocumentForm  # noqa
+from _1327.main.utils import abbreviation_explanation_markdown
 from _1327.minutes.models import MinutesDocument
 from _1327.minutes.forms import MinutesDocumentForm  # noqa
 from _1327.polls.models import Poll
@@ -131,8 +132,8 @@ def view(request, title):
 	except (ImportError, AttributeError):
 		pass
 
-	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension()])
-	text = md.convert(document.text)
+	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr'])
+	text = md.convert(document.text + abbreviation_explanation_markdown())
 
 	return render(request, 'documents_base.html', {
 		'document': document,
@@ -211,8 +212,8 @@ def render_text(request, title):
 	check_permissions(document, request.user, [document.view_permission_name, document.edit_permission_name])
 
 	text = request.POST['text']
-	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension()])
-	text = md.convert(text)
+	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr'])
+	text = md.convert(text + abbreviation_explanation_markdown())
 	return HttpResponse(text, content_type='text/plain')
 
 

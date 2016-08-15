@@ -67,3 +67,12 @@ class MenuItem(models.Model):
 
 	def can_delete(self, user):
 		return self.can_edit(user)
+
+
+class AbbreviationExplanation(models.Model):
+
+	abbreviation = models.CharField(max_length=255, unique=True, verbose_name=_("Abbreviation"))
+	explanation = models.CharField(max_length=255, blank=False, null=False, verbose_name=_("Explanation"))
+
+	def __str__(self):
+		return '*[' + self.abbreviation + ']: ' + self.explanation

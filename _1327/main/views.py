@@ -6,7 +6,7 @@ from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.urlresolvers import reverse
-from django.forms import formset_factory
+from django.forms import formset_factory, modelformset_factory
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.utils.translation import ugettext_lazy as _
@@ -18,7 +18,9 @@ from markdown.extensions.toc import TocExtension
 
 from _1327.documents.models import Document
 from _1327.documents.utils import permission_warning
-from _1327.main.forms import get_permission_form
+from _1327.main.forms import AbbreviationExplanationForm, get_permission_form
+from _1327.main.models import AbbreviationExplanation
+from _1327.main.utils import abbreviation_explanation_markdown
 
 from .forms import MenuItemAdminForm, MenuItemCreationAdminForm, MenuItemCreationForm, MenuItemForm
 from .models import MenuItem
@@ -30,8 +32,8 @@ def index(request):
 		document = Document.objects.get(id=settings.MAIN_PAGE_ID)
 		return HttpResponseRedirect(reverse('documents:view', args=[document.url_title]))
 
-		md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2)])
-		text = md.convert(document.text)
+		md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), 'markdown.extensions.abbr'])
+		text = md.convert(document.text + abbreviation_explanation_markdown())
 
 		template = 'information_pages_base.html' if document.polymorphic_ctype.model == 'informationdocument' else 'minutes_base.html'
 		return render(request, template, {
@@ -145,3 +147,20 @@ def menu_items_update_order(request):
 	else:
 		save_main_menu_item_order(main_menu_items, request.user)
 	return HttpResponse()
+
+
+def abbreviation_explanation_edit(request):
+	if not request.user.is_superuser:
+		raise PermissionDenied
+
+	abbrs = AbbreviationExplanation.objects.order_by('abbreviation')
+
+	AbbreviationExplanationFormset = modelformset_factory(AbbreviationExplanation, form=AbbreviationExplanationForm, can_delete=True, extra=1)
+	formset = AbbreviationExplanationFormset(request.POST or None, queryset=abbrs)
+
+	if formset.is_valid():
+		formset.save()
+		messages.success(request, _("Successfully updated the abbreviation explanations."))
+		return redirect('abbreviation_explanation')
+	else:
+		return render(request, "abbreviation_explanation.html", dict(formset=formset))

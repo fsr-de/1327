@@ -1,4 +1,4 @@
-from .models import MenuItem
+from .models import AbbreviationExplanation, MenuItem
 
 
 def save_main_menu_item_order(main_menu_items, user, parent_id=None):
@@ -35,3 +35,7 @@ def save_footer_item_order(footer_items, user, order_counter=0):
 		if 'children' in item:
 			order_counter = save_footer_item_order(item['children'], user, order_counter)
 	return order_counter
+
+
+def abbreviation_explanation_markdown():
+	return "\n" + ("\n".join([str(abbr) for abbr in AbbreviationExplanation.objects.all()]))
