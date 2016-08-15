@@ -1,9 +1,10 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import NoReverseMatch, reverse
+from django.db.models import Q
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from guardian.shortcuts import get_perms
+from guardian.shortcuts import get_objects_for_user, get_perms
 
 from _1327.documents.forms import PermissionBaseForm
 from .models import MenuItem
@@ -12,7 +13,20 @@ from .models import MenuItem
 class MenuItemForm(forms.ModelForm):
 	class Meta:
 		model = MenuItem
-		fields = ("title", "link", "document")  # TODO (#268): show "link" only for admins
+		fields = ("title", "document")
+
+	def clean(self):
+		if 'link' in self.cleaned_data and self.cleaned_data['link']:
+			raise ValidationError(_('You are only allowed to define a document'))
+		if 'document' not in self.cleaned_data or self.cleaned_data['document'] is None:
+			raise ValidationError(_('You must select a document'))
+		return self.cleaned_data
+
+
+class MenuItemAdminForm(MenuItemForm):
+	class Meta:
+		model = MenuItem
+		fields = ("title", "link", "document")
 
 	def clean_link(self):
 		data = self.cleaned_data['link']
@@ -26,11 +40,38 @@ class MenuItemForm(forms.ModelForm):
 	def clean(self):
 		if 'link' in self.cleaned_data and self.cleaned_data['link'] and\
 			'document' in self.cleaned_data and self.cleaned_data['document']:
-			raise ValidationError(_('You are only allowed to define one of Document and Link'))
+			raise ValidationError(_('You are only allowed to define one of document and link'))
 		if ('link' not in self.cleaned_data or self.cleaned_data['link'] == "") and\
 			('document' not in self.cleaned_data or self.cleaned_data['document'] is None):
 			raise ValidationError(_('You must select a document or link'))
 		return self.cleaned_data
+
+
+class MenuItemCreationForm(MenuItemForm):
+	class Meta:
+		model = MenuItem
+		fields = ("title", "document", "parent")
+
+	def __init__(self, user, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.fields['parent'].required = True
+		items_with_perms = get_objects_for_user(user, MenuItem.CHANGE_CHILDREN_PERMISSION_NAME, klass=MenuItem)
+		items = []
+		for item in items_with_perms:
+			items.append(item.pk)
+			items.extend([child.pk for child in item.children.all()])
+
+		self.fields['parent'].queryset = MenuItem.objects.filter(Q(pk__in=items) & Q(menu_type=MenuItem.MAIN_MENU) & (Q(parent=None) | Q(parent__parent=None))).order_by('menu_type', 'title')
+
+
+class MenuItemCreationAdminForm(MenuItemAdminForm):
+	class Meta:
+		model = MenuItem
+		fields = ("title", "link", "document", "parent")
+
+	def __init__(self, user, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.fields['parent'].queryset = MenuItem.objects.filter(Q(menu_type=MenuItem.MAIN_MENU) & (Q(parent=None) | Q(parent__parent=None))).order_by('menu_type', 'title')
 
 
 class MenuItemPermissionForm(PermissionBaseForm):

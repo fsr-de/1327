@@ -73,6 +73,8 @@
 								{% if CAN_CREATE_POLL %}
 									<li><a href="{% url 'documents:create' 'poll' %}">{% trans "Polls" %}</a></li>
 								{% endif %}
+							{% endif %}
+							{% if CAN_CHANGE_MENU_ITEMS %}
 								<li role="separator" class="divider"></li>
 								<li><a href="{% url 'menu_items_index' %}">{% trans "Manage menu items" %}</a></li>
 							{% endif %}

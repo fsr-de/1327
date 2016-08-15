@@ -16,29 +16,31 @@
 	<form method="post" class="form-horizontal" role="form" enctype="multipart/form-data">
 		{% bootstrap_form form layout='horizontal' %}
 		{% csrf_token %}
-		{{ formset.management_form }}
-		<div class="form-group">
-			<label class="col-md-2 control-label">{% trans "Permissions" %}</label>
-			<div class="col-md-9">
-				{% for dict in formset.errors %}
-					{% for error in dict.values %}
-						<div class="alert alert-danger" role="alert">
-							{{ error }}
-						</div>
+		{% if formset %}
+			{{ formset.management_form }}
+			<div class="form-group">
+				<label class="col-md-2 control-label">{% trans "Permissions" %}</label>
+				<div class="col-md-9">
+					{% for dict in formset.errors %}
+						{% for error in dict.values %}
+							<div class="alert alert-danger" role="alert">
+								{{ error }}
+							</div>
+						{% endfor %}
 					{% endfor %}
-				{% endfor %}
-				<table class="table table-striped vertically-aligned table-narrow" >
-					<thead>
-						{{ formset_header }}
-					</thead>
-					<tbody>
-					{% for form in formset %}
-						{{ form.as_table }}
-					{% endfor %}
-					</tbody>
-				</table>
+					<table class="table table-striped vertically-aligned table-narrow" >
+						<thead>
+							{{ formset_header }}
+						</thead>
+						<tbody>
+						{% for form in formset %}
+							{{ form.as_table }}
+						{% endfor %}
+						</tbody>
+					</table>
+				</div>
 			</div>
-		</div>
+		{% endif %}
 		{% buttons %}
 			<div class="col-md-offset-2 col-md-9">
 				<button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
