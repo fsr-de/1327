@@ -2,11 +2,12 @@ import json
 import os
 
 from django.contrib import messages
+from django.contrib.admin.utils import NestedObjects
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied, SuspiciousOperation
 from django.core.urlresolvers import reverse
-from django.db import models, transaction
+from django.db import DEFAULT_DB_ALIAS, models, transaction
 from django.forms import formset_factory
 from django.http import HttpResponse, HttpResponseRedirect
 
@@ -23,7 +24,7 @@ from _1327 import settings
 from _1327.documents.forms import get_permission_form
 from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
 from _1327.documents.models import Attachment, Document
-from _1327.documents.utils import delete_old_empty_pages, get_model_function, get_new_autosaved_pages_for_user, \
+from _1327.documents.utils import delete_cascade_to_json, delete_old_empty_pages, get_model_function, get_new_autosaved_pages_for_user, \
 	handle_attachment, handle_autosave, handle_edit, permission_warning, prepare_versions
 from _1327.information_pages.models import InformationDocument
 from _1327.information_pages.forms import InformationDocumentForm  # noqa
@@ -382,3 +383,28 @@ def change_attachment_no_direct_download(request):
 	attachment.no_direct_download = no_direct_download
 	attachment.save()
 	return HttpResponse()
+
+
+def delete_document(request, title):
+	document = get_object_or_error(Document, request.user, ['change_document'], url_title=title)
+	document.delete()
+
+	messages.success(request, _("Successfully deleted document: {}".format(document.title)))
+	return HttpResponse()
+
+
+def get_delete_cascade(request, title):
+	document = get_object_or_error(Document, request.user, ['change_document'], url_title=title)
+
+	collector = NestedObjects(using=DEFAULT_DB_ALIAS)
+	collector.collect([document])
+	delete_cascade = collector.nested()
+
+	# remove all subclasses of current document from the list because that does not add much helpful information
+	simplified_delete_cascade = []
+	for cascade_item in delete_cascade:
+		if issubclass(type(document), type(cascade_item)) and not type(document) == type(cascade_item):
+			continue
+		simplified_delete_cascade.append(cascade_item)
+
+	return HttpResponse(json.dumps(delete_cascade_to_json(simplified_delete_cascade)))
