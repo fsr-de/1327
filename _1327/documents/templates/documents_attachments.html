@@ -24,42 +24,41 @@
 	</form>
 
 	<h2>{% trans "Uploaded attachments" %}</h2>
-	<div class="col-sm-12">
-		<table class="table table-striped vertically-aligned">
-			<thead>
+	<table class="table table-striped vertically-aligned">
+		<thead>
+			<tr>
 				<th></th>
-				<th>{% trans "Display name" %}</th>
-				<th>{% trans "Filename" %}</th>
-				<th>{% trans "Created" %}</th>
-				<th>
+				<th class="col-xs-3">{% trans "Display name" %}</th>
+				<th class="col-xs-4">{% trans "Filename" %}</th>
+				<th class="col-xs-2">{% trans "Created" %}</th>
+				<th class="col-xs-2">
 					{% trans "Do not show" %} <span data-toggle="tooltip" data-placement="top" class="glyphicon glyphicon-info-sign" title="{% blocktrans %}Select if attachment is only used as embedded image.{% endblocktrans %}"></span>
 				</th>
-				<th></th>
-			</thead>
-			{% for attachment in attachments %}
-				<tr data-index="{{ attachment.index }}" data-id="{{ attachment.id }}" class="sortable">
-					<td class="sorthandle"><span class="glyphicon glyphicon-move"></span></td>
-					<td>
-						<input type="hidden" class="attachmentinput" name="file" value="{{ attachment.id }}">
-						<a href="{% url 'documents:download_attachment' %}?attachment_id={{ attachment.id }}">{{ attachment.displayname }}</a>
-					</td>
-					<td>{{ attachment.file.name|filename }}</td>
-					<td>{{ attachment.created }}</td>
+				<th class="col-xs-1"></th>
+			</tr>
+		</thead>
+		{% for attachment in attachments %}
+			<tr data-index="{{ attachment.index }}" data-id="{{ attachment.id }}" class="sortable">
+				<td class="sorthandle"><span class="glyphicon glyphicon-move"></span></td>
+				<td>
+					<input type="hidden" class="attachmentinput" name="file" value="{{ attachment.id }}">
+					<a href="{% url 'documents:download_attachment' %}?attachment_id={{ attachment.id }}">{{ attachment.displayname }}</a>
+				</td>
+				<td>{{ attachment.file.name|filename }}</td>
+				<td>{{ attachment.created }}</td>
 
-					<td class="text-center">
-						<input class="change-downloadable" type="checkbox" {% if attachment.no_direct_download %}checked{% endif %} name="downloadable">
-					</td>
-					<td>
-						<button type="button" data-displayname="{{ attachment.displayname }}" data-toggle="modal"
-								data-target="#confirmAttachmentDeleteModal" class="delete-attachment btn btn-sm btn-warning">
-							{% trans "Delete" %}
-						</button>
-					</td>
-				</tr>
-
-			{% endfor %}
-		</table>
-	</div>
+				<td class="text-center">
+					<input class="change-downloadable" type="checkbox" {% if attachment.no_direct_download %}checked{% endif %} name="downloadable">
+				</td>
+				<td>
+					<button type="button" data-displayname="{{ attachment.displayname }}" data-toggle="modal"
+							data-target="#confirmAttachmentDeleteModal" class="delete-attachment btn btn-sm btn-default">
+						{% trans "Delete" %}
+					</button>
+				</td>
+			</tr>
+		{% endfor %}
+	</table>
 
 	<div class="modal fade" id="confirmAttachmentDeleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		<div class="modal-dialog">

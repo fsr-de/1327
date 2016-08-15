@@ -29,7 +29,7 @@
 						{% if item.submenu %}
 							<li class="dropdown{% if item.selected %} active{% endif %}">
 								<a href="{{ item.get_url }}">{{ item.title }} <span class="caret"></span></a>
-								<ul class="dropdown-menu">
+								<ul class="dropdown-menu menu-level-2">
 									{% for subitem in item.submenu %}
 										{% if subitem.submenu %}
 											<li class="dropdown{% if subitem.selected %} active{% endif %}">

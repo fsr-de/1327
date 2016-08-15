@@ -18,23 +18,27 @@
 				</div>
 			</div>
 			<table class="table table-striped">
-				<tr>
-					<th class="col-xs-7">{% trans "Poll" %}</th>
-					<th class="col-xs-4">{% trans "Voting period" %}</th>
-					<th class="col-xs-1"></th>
-				</tr>
-				{% for poll in upcoming_polls %}
+				<thead>
 					<tr>
-						<td>{{ poll.title }}</td>
-						<td>{{ poll.start_date }} - {{ poll.end_date }}</td>
-						<td class="pull-right">
-							{% get_obj_perms request.user for poll as "poll_perms" %}
-							{% if "change_poll" in poll_perms %}
-								<a class="btn btn-warning btn-xs" href="{% url "documents:edit" poll.url_title %}">{% trans "Edit Poll" %}</a>
-							{% endif %}
-						</td>
+						<th class="col-xs-7">{% trans "Poll" %}</th>
+						<th class="col-xs-4">{% trans "Voting period" %}</th>
+						<th class="col-xs-1"></th>
 					</tr>
-				{% endfor %}
+				</thead>
+				<tbody>
+					{% for poll in upcoming_polls %}
+						<tr>
+							<td>{{ poll.title }}</td>
+							<td>{{ poll.start_date }} - {{ poll.end_date }}</td>
+							<td class="text-right">
+								{% get_obj_perms request.user for poll as "poll_perms" %}
+								{% if "change_poll" in poll_perms %}
+									<a class="btn btn-warning btn-xs" href="{% url "documents:edit" poll.url_title %}">{% trans "Edit Poll" %}</a>
+								{% endif %}
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
 			</table>
 		</div>
 	{% endif %}
@@ -51,23 +55,27 @@
 			</div>
 		{% else %}
 			<table class="table table-striped">
-				<tr>
-					<th class="col-xs-7">{% trans "Poll" %}</th>
-					<th class="col-xs-4">{% trans "Voting period" %}</th>
-					<th class="col-xs-1"></th>
-				</tr>
-				{% for poll in running_polls %}
+				<thead>
 					<tr>
-						<td><a href="{% url "documents:view" poll.url_title %}">{{ poll.title }}</a></td>
-						<td>{{ poll.start_date }} - {{ poll.end_date }}</td>
-						<td class="pull-right">
-							{% get_obj_perms request.user for poll as "poll_perms" %}
-							{% if "change_poll" in poll_perms %}
-								<a class="btn btn-warning btn-xs" href="{% url "documents:edit" poll.url_title %}">{% trans "Edit Poll" %}</a>
-							{% endif %}
-						</td>
+						<th class="col-xs-7">{% trans "Poll" %}</th>
+						<th class="col-xs-4">{% trans "Voting period" %}</th>
+						<th class="col-xs-1"></th>
 					</tr>
-				{% endfor %}
+				</thead>
+				<tbody>
+					{% for poll in running_polls %}
+						<tr>
+							<td><a href="{% url "documents:view" poll.url_title %}">{{ poll.title }}</a></td>
+							<td>{{ poll.start_date }} - {{ poll.end_date }}</td>
+							<td class="text-right">
+								{% get_obj_perms request.user for poll as "poll_perms" %}
+								{% if "change_poll" in poll_perms %}
+									<a class="btn btn-warning btn-xs" href="{% url "documents:edit" poll.url_title %}">{% trans "Edit Poll" %}</a>
+								{% endif %}
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
 			</table>
 		{% endif %}
 	</div>
@@ -84,27 +92,31 @@
 		</div>
 		{% else %}
 		<table class="table table-striped">
-			<tr>
-				<th class="col-xs-7">{% trans "Poll" %}</th>
-					<th class="col-xs-4">{% trans "Voting period" %}</th>
-				<th class="col-xs-1"></th>
-			</tr>
-			{% for poll in finished_polls %}
+			<thead>
 				<tr>
-					{% if poll|can_see_results %}
-                        <td><a href="{% url "documents:view" poll.url_title %}">{{ poll.title }}</a></td>
-                    {% else %}
-                        <td><span data-toggle="tooltip" data-placement="right" title="You can see the result of this Poll as from {{ poll.end_date|one_day_later }}.">{{ poll.title }} {% bootstrap_icon "info-sign" %}</span></td>
-                    {% endif %}
-					<td>{{ poll.start_date }} - {{ poll.end_date }}</td>
-					<td class="pull-right">
-						{% get_obj_perms request.user for poll as "poll_perms" %}
-						{% if "change_poll" in poll_perms %}
-							<a class="btn btn-warning btn-xs" href="{% url "documents:edit" poll.url_title %}">{% trans "Edit Poll" %}</a>
-						{% endif %}
-					</td>
+					<th class="col-xs-7">{% trans "Poll" %}</th>
+					<th class="col-xs-4">{% trans "Voting period" %}</th>
+					<th class="col-xs-1"></th>
 				</tr>
-			{% endfor %}
+			</thead>
+			<tbody>
+				{% for poll in finished_polls %}
+					<tr>
+						{% if poll|can_see_results %}
+							<td><a href="{% url "documents:view" poll.url_title %}">{{ poll.title }}</a></td>
+						{% else %}
+							<td><span data-toggle="tooltip" data-placement="right" title="You can see the result of this Poll as from {{ poll.end_date|one_day_later }}.">{{ poll.title }} {% bootstrap_icon "info-sign" %}</span></td>
+						{% endif %}
+						<td>{{ poll.start_date }} - {{ poll.end_date }}</td>
+						<td class="text-right">
+							{% get_obj_perms request.user for poll as "poll_perms" %}
+							{% if "change_poll" in poll_perms %}
+								<a class="btn btn-warning btn-xs" href="{% url "documents:edit" poll.url_title %}">{% trans "Edit Poll" %}</a>
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
 		</table>
 		{% endif %}
 	</div>
