@@ -2,6 +2,8 @@
 {% load i18n %}
 {% load static %}
 {% load bootstrap3 %}
+{% load hijack_tags %}
+
 
 {% block body %}
 <div class="container main-container" id="wrapper">
@@ -80,6 +82,7 @@
 							{% endif %}
 							{% if user.is_superuser %}
 								<li><a href="{% url 'abbreviation_explanation' %}">{% trans "Manage abbreviation explanations" %}</a></li>
+								<li><a href="{% url 'view_as' %}">{% trans "View page as different user" %}</a></li>
 							{% endif %}
 							{% if user.is_staff or user.is_superuser %}
 								<li role="separator" class="divider"></li>

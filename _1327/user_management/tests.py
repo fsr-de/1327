@@ -1,4 +1,6 @@
+from django.core.urlresolvers import reverse
 from django_webtest import WebTest
+from guardian.utils import get_anonymous_user
 from model_mommy import mommy
 
 from .models import UserProfile
@@ -47,3 +49,56 @@ class UsecaseTests(WebTest):
 		user = UserProfile.objects.get(username='admin')
 		self.assertEqual(user.get_full_name(), 'Admin User')
 		self.assertEqual(user.get_short_name(), 'Admin')
+
+
+class UserImpersonationTests(WebTest):
+	csrf_checks = False
+	extra_environ = {'HTTP_ACCEPT_LANGUAGE': 'en'}
+
+	def setUp(self):
+		self.user = mommy.make(UserProfile, is_superuser=True)
+		mommy.make(UserProfile, username='test')
+
+	def test_view_impersonation_page(self):
+		response = self.app.get(reverse('view_as'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		form = response.forms['user_impersonation_form']
+		options = [option[-1] for option in form['username'].options]
+		self.assertIn('AnonymousUser', options)
+		for user in UserProfile.objects.all():
+			self.assertIn(user.username, options)
+
+	def test_view_impersonation_list_no_superuser(self):
+		user = mommy.make(UserProfile)
+		response = self.app.get(reverse('view_as'), user=user, expect_errors=True)
+		self.assertEqual(response.status_code, 403)
+
+	def test_impersonate_any_user(self):
+		users = list(UserProfile.objects.all().exclude(username=self.user.username))
+		users.append(get_anonymous_user())
+
+		for user in users:
+			response = self.app.post('/hijack/{user_id}/'.format(user_id=user.id), user=self.user)
+			self.assertRedirects(response, reverse('index'))
+			response = response.follow()
+			self.assertEqual(response.status_code, 200)
+
+			self.assertIn("Logged in as {username}".format(username=user.username), response.body.decode('utf-8'))
+
+	def test_impersonate_as_user(self):
+		users = list(UserProfile.objects.all().exclude(username=self.user.username))
+		users.append(get_anonymous_user())
+
+		for user in users:
+			response = self.app.post('/hijack/{user_id}/'.format(user_id=user.id), user=user)
+			self.assertRedirects(response, reverse('admin:login') + '?next=/hijack/{user_id}/'.format(user_id=user.id))
+
+	def test_impersonate_wrong_url(self):
+		user = UserProfile.objects.get(username='test')
+
+		response = self.app.post('/hijack/{email}/'.format(email=user.email), user=self.user, expect_errors=True)
+		self.assertEqual(response.status_code, 400)
+
+		response = self.app.post('/hijack/{username}/'.format(username=user.username), user=self.user, expect_errors=True)
+		self.assertEqual(response.status_code, 400)
