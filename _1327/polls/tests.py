@@ -411,6 +411,35 @@ class PollVoteTests(WebTest):
 		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=self.user, expect_errors=True)
 		self.assertEqual(response.status_code, 404)
 
+	def test_view_poll_before_end(self):
+		self.poll.participants.add(self.user)
+		self.poll.show_results_immediately = True
+		self.poll.save()
+
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertTemplateUsed(response, 'polls_results.html')
+
+		self.poll.show_results_immediately = False
+		self.poll.save()
+
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=self.user)
+		self.assertRedirects(response, reverse('polls:list'))
+
+	def test_vote_poll_with_results_that_can_not_be_seen_immediately(self):
+		self.poll.show_results_immediately = False
+		self.poll.save()
+
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertTemplateUsed(response, 'polls_vote.html')
+
+		form = response.form
+		form['choice'] = 1
+
+		response = form.submit()
+		self.assertRedirects(response, reverse('polls:list'))
+
 
 class PollEditTests(WebTest):
 	def setUp(self):

@@ -27,6 +27,7 @@ class Poll(Document):
 	end_date = models.DateField(default=datetime.now, verbose_name=_("End Date"))
 	max_allowed_number_of_answers = models.PositiveIntegerField(default=1)
 	participants = models.ManyToManyField(UserProfile, related_name="polls", blank=True)
+	show_results_immediately = models.BooleanField(default=True, verbose_name=_("show results immediately after vote"))
 
 	VIEW_PERMISSION_NAME = POLL_VIEW_PERMISSION_NAME
 	VOTE_PERMISSION_NAME = POLL_VOTE_PERMISSION_NAME
