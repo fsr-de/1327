@@ -1,0 +1,71 @@
+{% extends 'base_without_sidebar.html' %}
+
+{% load i18n %}
+{% load main_templatetags %}
+{% load morefilters %}
+{% load static %}
+
+{% block title %}
+	{% trans "Edit abbreviation explanations" %}
+{% endblock %}
+
+{% block content %}
+	<form method="POST" enctype="multipart/form-data" class="form-horizontal">
+		{% csrf_token %}
+		{{ formset.management_form }}
+		<table class="table">
+			<thead>
+				<tr>
+					<th>{% trans "Abbreviation" %}</th>
+					<th>{% trans "Explanation" %}</th>
+					<th>{% trans "Actions" %}</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for form in formset %}
+					<tr class="abbreviation-explanation-row">
+						{% for hidden in form.hidden_fields %}
+							{{ hidden }}
+						{% endfor %}
+						<td>
+							{{ form.abbreviation }}
+						</td>
+						<td>
+							{{ form.explanation }}
+						</td>
+						<td>
+							{{ form.DELETE }}
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		<div>
+			<input type="submit" value="{% trans "Save abbreviation explanations" %}" class="btn btn-primary"/>
+		</div>
+	</form>
+{% endblock %}
+
+{% block scripts %}
+	{{ block.super }}
+	<!-- mandatory script include -->
+	<script type="text/javascript" src="{% static 'js/jquery.formset.js' %}"></script>
+	<script type="text/javascript">
+	    // enable formset functionality
+	    $('.abbreviation-explanation-row').formset({
+	        prefix: '{{ formset.prefix }}',
+	        deleteCssClass: 'delete-button btn btn-default',
+	        deleteText: '{% trans "Delete" %}',
+	        added: function(row) {
+	            row.find('.input-group-btn').append(row.find('.delete-button'));
+	            $('#guest-inline-form').append(row);
+	        }
+	    });
+	    $('.delete-button').each(function() {
+	        $(this).prev(".input-group.inlineformset").children(".input-group-btn").append(this);
+	    });
+	    $('.add-row-container').append($('.add-row'));
+	    $('.add-row').addClass('btn btn-default');
+	    $('.add-row').text('{% trans "Add another abbreviation explanation" %}');
+	</script>
+{% endblock %}

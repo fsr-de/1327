@@ -78,6 +78,9 @@
 								<li role="separator" class="divider"></li>
 								<li><a href="{% url 'menu_items_index' %}">{% trans "Manage menu items" %}</a></li>
 							{% endif %}
+							{% if user.is_superuser %}
+								<li><a href="{% url 'abbreviation_explanation' %}">{% trans "Manage abbreviation explanations" %}</a></li>
+							{% endif %}
 							{% if user.is_staff or user.is_superuser %}
 								<li role="separator" class="divider"></li>
 								<li><a href="{% url 'admin:index' %}">{% trans "Admin" %}</a></li>

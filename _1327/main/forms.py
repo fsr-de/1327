@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from guardian.shortcuts import get_objects_for_user, get_perms
 
 from _1327.documents.forms import PermissionBaseForm
+from _1327.main.models import AbbreviationExplanation
 from .models import MenuItem
 
 
@@ -103,6 +104,18 @@ class MenuItemPermissionForm(PermissionBaseForm):
 			data["group_name"] = group.name
 			initial_data.append(data)
 		return initial_data
+
+
+class AbbreviationExplanationForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+
+		self.fields["abbreviation"].widget = forms.TextInput(attrs={'class': 'form-control'})
+		self.fields["explanation"].widget = forms.TextInput(attrs={'class': 'form-control'})
+
+	class Meta:
+		model = AbbreviationExplanation
+		fields = "__all__"
 
 
 def get_permission_form(menu_item):

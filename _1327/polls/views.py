@@ -12,6 +12,7 @@ import markdown
 from markdown.extensions.toc import TocExtension
 
 from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
+from _1327.main.utils import abbreviation_explanation_markdown
 from _1327.polls.models import Poll
 from _1327.user_management.shortcuts import get_object_or_error
 
@@ -60,8 +61,8 @@ def results(request, poll, url_title):
 		)
 		return HttpResponseRedirect(reverse('polls:list'))
 
-	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension()])
-	description = md.convert(poll.text)
+	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr'])
+	description = md.convert(poll.text + abbreviation_explanation_markdown())
 
 	return render(
 		request,
@@ -104,8 +105,8 @@ def vote(request, poll, url_title):
 			return HttpResponseRedirect(reverse('polls:list'))
 		return HttpResponseRedirect(reverse('documents:view', args=[url_title]))
 
-	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension()])
-	description = md.convert(poll.text)
+	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr'])
+	description = md.convert(poll.text + abbreviation_explanation_markdown())
 
 	return render(
 		request,
