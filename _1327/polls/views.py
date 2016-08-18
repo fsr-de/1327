@@ -126,6 +126,9 @@ def view(request, title):
 	poll = get_object_or_error(Poll, request.user, ['polls.view_poll'], url_title=title)
 	if poll.end_date < datetime.date.today() or poll.participants.filter(id=request.user.pk).exists():
 		return results(request, poll, title)
+	elif poll.start_date > datetime.date.today():
+		messages.warning(request, _("This poll has not yet started."))
+		return index(request)
 	else:
 		if not request.user.has_perm('polls.vote_poll', poll):
 			return results(request, poll, title)

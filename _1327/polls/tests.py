@@ -253,8 +253,9 @@ class PollResultTests(WebTest):
 		self.poll.start_date += datetime.timedelta(weeks=1)
 		self.poll.save()
 
-		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=user, expect_errors=True)
-		self.assertEqual(response.status_code, 404)
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=user)
+		self.assertEqual(response.status_code, 200)
+		self.assertTemplateUsed(response, 'polls_index.html')
 
 	def test_view_poll_without_vote_permission(self):
 		user = mommy.make(UserProfile)
@@ -408,8 +409,9 @@ class PollVoteTests(WebTest):
 		self.poll.start_date += datetime.timedelta(weeks=1)
 		self.poll.save()
 
-		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=self.user, expect_errors=True)
-		self.assertEqual(response.status_code, 404)
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertTemplateUsed(response, 'polls_index.html')
 
 	def test_view_poll_before_end(self):
 		self.poll.participants.add(self.user)
