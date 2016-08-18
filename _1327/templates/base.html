@@ -84,7 +84,7 @@
 								<li><a href="{% url 'abbreviation_explanation' %}">{% trans "Manage abbreviation explanations" %}</a></li>
 								<li><a href="{% url 'view_as' %}">{% trans "View page as different user" %}</a></li>
 							{% endif %}
-							{% if user.is_staff or user.is_superuser %}
+							{% if user.is_superuser %}
 								<li role="separator" class="divider"></li>
 								<li><a href="{% url 'admin:index' %}">{% trans "Admin" %}</a></li>
 							{% endif %}
@@ -118,7 +118,7 @@
 							</ul>
 						</li>
 					{% endif %}
-					{% if user.is_staff or user.is_superuser %}
+					{% if user.is_superuser %}
 						<li><a href="{% url 'admin:index' %}">{% trans "Admin" %}</a></li>
 					{% endif %}
 					<li><a href="/">{% trans "Main page" %}</a></li>
