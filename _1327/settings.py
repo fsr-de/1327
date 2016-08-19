@@ -35,6 +35,12 @@ ANONYMOUS_GROUP_NAME = "Anonymous"
 STAFF_GROUP_NAME = "Staff"
 UNIVERSITY_GROUP_NAME = "University Network"
 
+# Anonymous users in one of the given IP ranges are automatically assumed to be in the associated group.
+# Only the first match will be used.
+ANONYMOUS_IP_RANGE_GROUPS = {
+	# Example: '127.0.0.0/8': UNIVERSITY_GROUP_NAME,
+}
+
 
 # Application definition
 
@@ -67,6 +73,7 @@ MIDDLEWARE_CLASSES = [
 	'django.middleware.common.CommonMiddleware',
 	'django.middleware.csrf.CsrfViewMiddleware',
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
+	'_1327.user_management.middleware.IPRangeUserMiddleware',
 	'django.contrib.messages.middleware.MessageMiddleware',
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
 	'django.middleware.locale.LocaleMiddleware',
@@ -75,6 +82,7 @@ MIDDLEWARE_CLASSES = [
 AUTHENTICATION_BACKENDS = [
 	'django.contrib.auth.backends.ModelBackend',
 	'guardian.backends.ObjectPermissionBackend',
+	'_1327.user_management.authentication.IPRangeAuthorizationBackend',
 ]
 
 # needed by django-guardian library
