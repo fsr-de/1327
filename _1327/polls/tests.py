@@ -54,13 +54,13 @@ class PollViewTests(WebTest):
 		)
 
 	def test_view_all_running_poll_with_insufficient_permissions(self):
-		response = self.app.get(reverse('polls:list'))
+		response = self.app.get(reverse('polls:index'))
 		self.assertEqual(response.status_code, 200)
 		self.assertIn(b"There are no polls you can vote for.", response.body)
 		self.assertIn(b"There are no results you can see.", response.body)
 
 	def test_view_all_running_poll_with_sufficient_permissions(self):
-		response = self.app.get(reverse('polls:list'), user=self.user)
+		response = self.app.get(reverse('polls:index'), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		self.assertIn(self.poll.title.encode('utf-8'), response.body)
 		self.assertIn(b"There are no results you can see.", response.body)
@@ -72,7 +72,7 @@ class PollViewTests(WebTest):
 			end_date=datetime.date.today() - datetime.timedelta(days=1),
 		)
 
-		response = self.app.get(reverse('polls:list'), user=self.user)
+		response = self.app.get(reverse('polls:index'), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		self.assertIn(self.poll.title.encode('utf-8'), response.body)
 		self.assertIn(finished_poll.title.encode('utf-8'), response.body)
@@ -81,7 +81,7 @@ class PollViewTests(WebTest):
 		self.poll.participants.add(self.user)
 		self.poll.save()
 
-		response = self.app.get(reverse('polls:list'), user=self.user)
+		response = self.app.get(reverse('polls:index'), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		self.assertIn(b"There are no polls you can vote for.", response.body)
 		self.assertIn(self.poll.title.encode('utf-8'), response.body)
@@ -90,12 +90,12 @@ class PollViewTests(WebTest):
 		self.poll.start_date += datetime.timedelta(days=1)
 		self.poll.save()
 
-		response = self.app.get(reverse('polls:list'))
+		response = self.app.get(reverse('polls:index'))
 		self.assertEqual(response.status_code, 200)
 		self.assertIn(b"There are no polls you can vote for.", response.body)
 		self.assertIn(b"There are no results you can see.", response.body)
 
-		response = self.app.get(reverse('polls:list'), user=self.user)
+		response = self.app.get(reverse('polls:index'), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		self.assertIn(b"Upcoming polls", response.body)
 		self.assertIn(b"There are no polls you can vote for.", response.body)
@@ -253,8 +253,9 @@ class PollResultTests(WebTest):
 		self.poll.start_date += datetime.timedelta(weeks=1)
 		self.poll.save()
 
-		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=user, expect_errors=True)
-		self.assertEqual(response.status_code, 404)
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=user)
+		self.assertEqual(response.status_code, 200)
+		self.assertTemplateUsed(response, 'polls_index.html')
 
 	def test_view_poll_without_vote_permission(self):
 		user = mommy.make(UserProfile)
@@ -408,8 +409,9 @@ class PollVoteTests(WebTest):
 		self.poll.start_date += datetime.timedelta(weeks=1)
 		self.poll.save()
 
-		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=self.user, expect_errors=True)
-		self.assertEqual(response.status_code, 404)
+		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertTemplateUsed(response, 'polls_index.html')
 
 	def test_view_poll_before_end(self):
 		self.poll.participants.add(self.user)
@@ -424,7 +426,7 @@ class PollVoteTests(WebTest):
 		self.poll.save()
 
 		response = self.app.get(reverse('documents:view', args=[self.poll.url_title]), user=self.user)
-		self.assertRedirects(response, reverse('polls:list'))
+		self.assertRedirects(response, reverse('polls:index'))
 
 	def test_vote_poll_with_results_that_can_not_be_seen_immediately(self):
 		self.poll.show_results_immediately = False
@@ -438,7 +440,7 @@ class PollVoteTests(WebTest):
 		form['choice'] = 1
 
 		response = form.submit()
-		self.assertRedirects(response, reverse('polls:list'))
+		self.assertRedirects(response, reverse('polls:index'))
 
 
 class PollEditTests(WebTest):

@@ -17,7 +17,7 @@ from _1327.polls.models import Poll
 from _1327.user_management.shortcuts import get_object_or_error
 
 
-def list(request):
+def index(request):
 	running_polls = []
 	finished_polls = []
 	upcoming_polls = []
@@ -59,7 +59,7 @@ def results(request, poll, url_title):
 			request,
 			_("You can not see the results of this poll right now. You have to wait until {} to see the results of this poll.".format(poll.end_date.strftime("%d. %B %Y")))
 		)
-		return HttpResponseRedirect(reverse('polls:list'))
+		return HttpResponseRedirect(reverse('polls:index'))
 
 	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr'])
 	description = md.convert(poll.text + abbreviation_explanation_markdown())
@@ -102,7 +102,7 @@ def vote(request, poll, url_title):
 		messages.success(request, _("We've received your vote!"))
 		if not poll.show_results_immediately:
 			messages.info(request, _("The results of this poll will be available as from {}".format((poll.end_date + datetime.timedelta(days=1)).strftime("%d. %B %Y"))))
-			return HttpResponseRedirect(reverse('polls:list'))
+			return HttpResponseRedirect(reverse('polls:index'))
 		return HttpResponseRedirect(reverse('documents:view', args=[url_title]))
 
 	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr'])
@@ -126,6 +126,9 @@ def view(request, title):
 	poll = get_object_or_error(Poll, request.user, ['polls.view_poll'], url_title=title)
 	if poll.end_date < datetime.date.today() or poll.participants.filter(id=request.user.pk).exists():
 		return results(request, poll, title)
+	elif poll.start_date > datetime.date.today():
+		messages.warning(request, _("This poll has not yet started."))
+		return index(request)
 	else:
 		if not request.user.has_perm('polls.vote_poll', poll):
 			return results(request, poll, title)

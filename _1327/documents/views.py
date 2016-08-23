@@ -161,7 +161,11 @@ def permissions(request, title):
 			form.save(document)
 		messages.success(request, _("Permissions have been changed successfully."))
 
-		return HttpResponseRedirect(reverse('documents:permissions', args=[document.url_title]))
+		if request.user.has_perm(document.edit_permission_name, document):
+			return HttpResponseRedirect(reverse('documents:permissions', args=[document.url_title]))
+		if request.user.has_perm(document.view_permission_name, document):
+			return HttpResponseRedirect(reverse('documents:view', args=[document.url_title]))
+		return HttpResponseRedirect(reverse('index'))
 
 	return render(request, 'documents_permissions.html', {
 		'document': document,
