@@ -43,6 +43,7 @@ class DocumentForm(forms.ModelForm):
 			self.fields['group'].initial = staff
 		elif len(self.user_groups) == 1:
 			self.fields['group'].initial = self.user_groups[0]
+			self.fields['group'].widget = forms.HiddenInput()
 		if not creation:
 			self.fields['group'].widget = forms.HiddenInput()
 			self.fields['group'].required = False
