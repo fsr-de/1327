@@ -56,15 +56,16 @@ def create(request, document_type):
 		initial = {
 			'comment': _("Created document"),
 		}
-		return edit(request, url_title, new_autosaved_pages, initial)
+		return edit(request, url_title, new_autosaved_pages, initial, True)
 	else:
 		raise PermissionDenied
 
 
-def edit(request, title, new_autosaved_pages=None, initial=None):
+def edit(request, title, new_autosaved_pages=None, initial=None, creation=False):
 	document = Document.objects.get(url_title=title)
 	content_type = ContentType.objects.get_for_model(document)
-	check_permissions(document, request.user, [document.edit_permission_name])
+	if not creation:
+		check_permissions(document, request.user, [document.edit_permission_name])
 
 	# if the edit form has a formset we will initialize it here
 	formset_factory = document.Form.get_formset_factory()
