@@ -37,7 +37,7 @@ def delete_old_empty_pages():
 
 def handle_edit(request, document, formset=None, initial=None):
 	if request.method == 'POST':
-		form = document.Form(request.POST, instance=document, initial=initial, user=request.user)
+		form = document.Form(request.POST, instance=document, initial=initial, user=request.user, creation=(not document.has_perms()))
 		if form.is_valid() and (formset is None or formset.is_valid()):
 			cleaned_data = form.cleaned_data
 
@@ -53,13 +53,13 @@ def handle_edit(request, document, formset=None, initial=None):
 					document.labels.clear()
 					for label in cleaned_data['labels']:
 						document.labels.add(label)
-					document.groups.clear()
-					for group in cleaned_data['groups']:
-						document.groups.add(group)
 				document.save()
 				document.save_formset(formset)
 				revisions.set_user(request.user)
 				revisions.set_comment(cleaned_data['comment'])
+
+			if not document.has_perms():
+				document.set_all_permissions(cleaned_data['group'])
 
 			# delete Autosave
 			try:
@@ -90,7 +90,7 @@ def handle_edit(request, document, formset=None, initial=None):
 				initial = {}
 			initial.update(form_data)
 
-		form = document.Form(initial=initial, instance=document, user=request.user)
+		form = document.Form(initial=initial, instance=document, user=request.user, creation=(not document.has_perms()))
 
 		form.autosave = autosaved
 		if autosaved:
@@ -101,7 +101,7 @@ def handle_edit(request, document, formset=None, initial=None):
 
 def handle_autosave(request, document):
 	if request.method == 'POST':
-		form = DocumentForm(request.POST)
+		form = DocumentForm(request.POST, user=request.user, creation=(not document.has_perms()))
 		form.is_valid()
 		text_strip = request.POST['text'].strip()
 		if text_strip != '':

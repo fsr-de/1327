@@ -1,5 +1,6 @@
 import datetime
 
+from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import floatformat
 from django.test import TestCase
@@ -52,6 +53,7 @@ class PollViewTests(WebTest):
 			poll=self.poll,
 			_quantity=3,
 		)
+		self.poll.set_all_permissions(mommy.make(Group))
 
 	def test_view_all_running_poll_with_insufficient_permissions(self):
 		response = self.app.get(reverse('polls:index'))
@@ -102,6 +104,8 @@ class PollViewTests(WebTest):
 		self.assertIn(b"There are no results you can see.", response.body)
 
 	def test_create_poll(self):
+		group = mommy.make(Group)
+		group.user_set.add(self.user)
 		response = self.app.get(reverse('documents:create', args=['poll']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
@@ -118,6 +122,7 @@ class PollViewTests(WebTest):
 		form['start_date'] = '2016-01-01'
 		form['end_date'] = '2088-01-01'
 		form['comment'] = 'sample comment'
+		form['group'] = group.pk
 
 		response = form.submit()
 		self.assertEqual(response.status_code, 302)
@@ -437,7 +442,7 @@ class PollVoteTests(WebTest):
 		self.assertTemplateUsed(response, 'polls_vote.html')
 
 		form = response.form
-		form['choice'] = 1
+		form['choice'] = self.poll.choices.first().pk
 
 		response = form.submit()
 		self.assertRedirects(response, reverse('polls:index'))
@@ -457,8 +462,11 @@ class PollEditTests(WebTest):
 			votes=10,
 			_quantity=3,
 		)
+		self.poll.set_all_permissions(mommy.make(Group))
 
 	def test_create_two_polls_without_changing_url_title(self):
+		group = mommy.make(Group)
+		group.user_set.add(self.user)
 		response = self.app.get(reverse('documents:create', args=['poll']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
@@ -468,7 +476,7 @@ class PollEditTests(WebTest):
 		form['choices-1-text'] = 'test choice 2'
 		form['text'] = 'Description'
 		form['comment'] = 'sample comment'
-
+		form['group'] = group.pk
 		response = form.submit().follow()
 		self.assertEqual(response.status_code, 200)
 		self.assertEqual(Poll.objects.count(), 2)

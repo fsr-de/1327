@@ -1,6 +1,3 @@
-from collections import OrderedDict
-
-from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist, SuspiciousOperation
 from django.shortcuts import render
@@ -17,7 +14,7 @@ def list(request, groupid):
 	except ObjectDoesNotExist:
 		raise SuspiciousOperation
 	result = {}
-	minutes = get_objects_for_group(group, "minutes.change_minutesdocument", MinutesDocument).order_by('-date')
+	minutes = get_objects_for_group(group, "minutes.change_minutes", MinutesDocument).order_by('-date')
 	for m in minutes:
 		if m.date.year not in result:
 			result[m.date.year] = []
