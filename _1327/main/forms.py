@@ -33,7 +33,13 @@ class MenuItemAdminForm(MenuItemForm):
 		data = self.cleaned_data['link']
 		if data != "":
 			try:
-				reverse(data)
+				split = data.split("?")
+				if len(split) == 1:
+					reverse(split[0])
+				elif len(split) == 2:
+					reverse(split[0], args=split[1])
+				else:
+					raise ValidationError(_('This link is not valid.'), code='nonexistent')
 			except NoReverseMatch:
 				raise ValidationError(_('This link is not valid.'), code='nonexistent')
 		return data

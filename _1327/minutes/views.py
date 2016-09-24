@@ -5,37 +5,23 @@ from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist, SuspiciousOperation
 from django.shortcuts import render
 
+from guardian.shortcuts import get_objects_for_group
+
 from _1327.minutes.models import MinutesDocument
 
 
-def list(request, groupid=None):
-	if groupid:
-		groupid = int(groupid)
-		try:
-			Group.objects.get(id=groupid)
-		except ObjectDoesNotExist:
-			raise SuspiciousOperation
-	groups = {}
-	minutes = MinutesDocument.objects.order_by('-date')
+def list(request, groupid):
+	groupid = int(groupid)
+	try:
+		group = Group.objects.get(id=groupid)
+	except ObjectDoesNotExist:
+		raise SuspiciousOperation
+	result = {}
+	minutes = get_objects_for_group(group, "minutes.change_minutesdocument", MinutesDocument).order_by('-date')
 	for m in minutes:
-		if not request.user.has_perm(MinutesDocument.get_view_permission(), m):
-			continue
-
-		for group in m.groups.all():
-			if groupid and groupid != group.id:
-				continue
-			if group.name not in groups:
-				groups[group.name] = OrderedDict()
-			if m.date.year not in groups[group.name]:
-				groups[group.name][m.date.year] = []
-			groups[group.name][m.date.year].append(m)
-	result = OrderedDict()
-	if settings.STAFF_GROUP_NAME in groups:
-		result[settings.STAFF_GROUP_NAME] = groups[settings.STAFF_GROUP_NAME]
-		del groups[settings.STAFF_GROUP_NAME]
-	sorted_groups = sorted(groups, key=lambda s: s.lower())
-	for groupname in sorted_groups:
-		result[groupname] = groups[groupname]
+		if m.date.year not in result:
+			result[m.date.year] = []
+		result[m.date.year].append(m)
 	return render(request, "minutes_list.html", {
 		'minutes': result,
 	})

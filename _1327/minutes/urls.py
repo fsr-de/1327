@@ -6,6 +6,5 @@ from . import views
 admin.autodiscover()
 
 urlpatterns = [
-	url(r"^$", views.list, name='list'),
 	url(r"(?P<groupid>[\d]+)$", views.list, name='list'),
 ]
