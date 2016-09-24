@@ -26,7 +26,7 @@ class StrippedCharField(forms.CharField):
 class DocumentForm(forms.ModelForm):
 	url_title = StrippedCharField(label=_('URL'), max_length=255, required=True)
 	comment = StrippedCharField(label=_('Comment'), max_length=255, required=True)
-	group = forms.ModelChoiceField(Group.objects.all(), disabled=False, required=True)
+	group = forms.ModelChoiceField(Group.objects.all(), label=_('Edit permissions'), disabled=False, required=True)
 
 	class Meta:
 		model = Document
