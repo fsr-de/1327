@@ -14,8 +14,12 @@ def list(request, groupid):
 	except ObjectDoesNotExist:
 		raise SuspiciousOperation
 	result = {}
-	minutes = get_objects_for_group(group, "minutes.change_minutes", MinutesDocument).order_by('-date')
+	# we show all documents for which the requested group has edit permissions
+	# e.g. if you request FSR minutes, all minutes for which the FSR group has edit rights will be shown
+	minutes = get_objects_for_group(group, "minutes.change_minutesdocument", MinutesDocument).order_by('-date')
 	for m in minutes:
+		if not request.user.has_perm(MinutesDocument.get_view_permission(), m):
+			continue
 		if m.date.year not in result:
 			result[m.date.year] = []
 		result[m.date.year].append(m)

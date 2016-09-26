@@ -60,7 +60,7 @@ class DocumentForm(forms.ModelForm):
 	def clean_group(self):
 		value = self.cleaned_data['group']
 		if value and value not in self.user_groups:
-			raise ValidationError(_("You are not a member in this group!"))
+			raise ValidationError(_("You are not a member of this group!"))
 		return value
 
 	@classmethod
