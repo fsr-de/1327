@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -55,15 +56,25 @@ class MenuItem(models.Model):
 		else:
 			return "#"
 
+	@property
+	def view_permission_name(self):
+		content_type = ContentType.objects.get_for_model(self)
+		return "{app}.view_{model}".format(app=content_type.app_label, model=content_type.model)
+
+	@property
+	def change_children_permission_name(self):
+		content_type = ContentType.objects.get_for_model(self)
+		return "{app}.changechildren_{model}".format(app=content_type.app_label, model=content_type.model)
+
 	def can_view(self, user):
-		permission_name = MENUITEM_VIEW_PERMISSION_NAME
+		permission_name = self.view_permission_name
 		return user.has_perm(permission_name, self) or user.has_perm(permission_name)
 
 	def can_view_in_list(self, user):
-		return self.can_edit(user) or user.has_perm(MENUITEM_CHANGE_CHILDREN_PERMISSION_NAME, self)
+		return self.can_edit(user) or user.has_perm(self.change_children_permission_name, self)
 
 	def can_edit(self, user):
-		permission_name = MENUITEM_CHANGE_CHILDREN_PERMISSION_NAME
+		permission_name = self.change_children_permission_name
 		if user.has_perm(permission_name, self.parent) or user.has_perm(permission_name):
 			return True
 		if self.parent and self.parent.parent:

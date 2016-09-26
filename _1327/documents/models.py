@@ -138,9 +138,7 @@ class Document(PolymorphicModel):
 		group_perms = get_groups_with_perms(self, attach_perms=True)
 		for perms in group_perms.values():
 			for perm in perms:
-				# Valid permission names are <app label>.<permission name>. Currently, not all permissions adhere to that format.
-				# TODO: Remove split once permissions have been fixed (see issue #374).
-				if perm != self.add_permission_name.split(".")[1]:
+				if perm != self.add_permission_name:
 					return True
 		return False
 

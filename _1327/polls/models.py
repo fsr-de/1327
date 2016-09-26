@@ -22,7 +22,7 @@ POLL_VOTE_PERMISSION_NAME = 'vote_poll'
 class Poll(Document):
 
 	def can_be_changed_by(self, user):
-		permission_name = 'change_poll'
+		permission_name = self.edit_permission_name
 		return user.has_perm(permission_name, self) or user.has_perm(permission_name)
 
 	start_date = models.DateField(default=datetime.now, verbose_name=_("Start Date"))
