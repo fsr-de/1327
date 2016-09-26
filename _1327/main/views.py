@@ -8,7 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.urlresolvers import reverse
 from django.forms import formset_factory, modelformset_factory
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_POST
 from guardian.shortcuts import get_objects_for_user
@@ -92,7 +92,7 @@ def menu_item_create(request):
 
 
 def menu_item_edit(request, menu_item_pk):
-	menu_item = MenuItem.objects.get(pk=menu_item_pk)
+	menu_item = get_object_or_404(MenuItem, pk=menu_item_pk)
 	if not menu_item.can_edit(request.user):
 		raise PermissionDenied
 	if request.user.is_superuser:
@@ -123,7 +123,7 @@ def menu_item_edit(request, menu_item_pk):
 @require_POST
 def menu_item_delete(request):
 	menu_item_id = request.POST.get("item_id")
-	menu_item = MenuItem.objects.get(pk=menu_item_id)
+	menu_item = get_object_or_404(MenuItem, pk=menu_item_id)
 	if not menu_item.can_delete(request.user):
 		raise PermissionDenied
 	menu_item.delete()

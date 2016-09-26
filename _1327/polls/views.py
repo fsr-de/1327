@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.db.models import F
 from django.http import Http404, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.utils.translation import ugettext_lazy as _
 
 import markdown
@@ -127,7 +127,7 @@ def vote(request, poll, url_title):
 
 
 def view(request, title):
-	poll = Document.objects.get(url_title=title)
+	poll = get_object_or_404(Document, url_title=title)
 	check_permissions(poll, request.user, [poll.view_permission_name])
 	if poll.end_date < datetime.date.today() or poll.participants.filter(id=request.user.pk).exists():
 		return results(request, poll, title)
