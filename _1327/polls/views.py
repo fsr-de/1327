@@ -13,6 +13,7 @@ from markdown.extensions.toc import TocExtension
 
 from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
 from _1327.documents.models import Document
+from _1327.documents.utils import permission_warning
 from _1327.main.utils import abbreviation_explanation_markdown
 from _1327.polls.models import Poll
 from _1327.user_management.shortcuts import check_permissions
@@ -74,6 +75,7 @@ def results(request, poll, url_title):
 			'toc': md.toc,
 			'active_page': 'view',
 			'attachments': poll.attachments.filter(no_direct_download=False).order_by('index'),
+			'permission_warning': permission_warning(request.user, poll),
 		}
 	)
 
@@ -119,6 +121,7 @@ def vote(request, poll, url_title):
 			'active_page': 'view',
 			"widget": "checkbox" if poll.max_allowed_number_of_answers != 1 else "radio",
 			'attachments': poll.attachments.filter(no_direct_download=False).order_by('index'),
+			'permission_warning': permission_warning(request.user, poll),
 		}
 	)
 
