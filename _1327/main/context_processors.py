@@ -74,4 +74,4 @@ def can_create_poll(request):
 
 
 def can_change_menu_items(request):
-	return {'CAN_CHANGE_MENU_ITEMS': len(get_objects_for_user(request.user, MenuItem.CHANGE_CHILDREN_PERMISSION_NAME, klass=MenuItem)) > 0}
+	return {'CAN_CHANGE_MENU_ITEMS': request.user.is_superuser or len(get_objects_for_user(request.user, MenuItem.CHANGE_CHILDREN_PERMISSION_NAME, klass=MenuItem)) > 0}
