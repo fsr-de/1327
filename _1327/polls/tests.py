@@ -188,6 +188,17 @@ class PollViewTests(WebTest):
 		response = self.app.post(reverse('documents:edit', args=[self.poll.url_title]), user=user, expect_errors=True)
 		self.assertEqual(response.status_code, 403)
 
+	def test_deletion_no_superuser(self):
+		user = mommy.make(UserProfile)
+		assign_perm(self.poll.edit_permission_name, user, self.poll)
+
+		response = self.app.get(reverse('documents:get_delete_cascade', args=[self.poll.url_title]), user=user)
+		self.assertIn(self.poll.title, response.body.decode('utf-8'))
+
+		response = self.app.get(reverse('documents:delete_document', args=[self.poll.url_title]), user=user)
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(Poll.objects.count(), 0)
+
 
 class PollResultTests(WebTest):
 
