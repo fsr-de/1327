@@ -19,6 +19,7 @@ urlpatterns = [
 	url(r"(?P<title>[\w-]+)/edit$", views.edit, name='edit'),
 	url(r"(?P<title>[\w-]+)/autosave$", views.autosave, name='autosave'),
 	url(r"(?P<title>[\w-]+)/publish$", views.publish, name='publish'),
+	url(r"(?P<title>[\w-]+)/publish_student$", views.publish_student, name='publish_student'),
 	url(r"(?P<title>[\w-]+)/versions$", views.versions, name="versions"),
 	url(r"(?P<title>[\w-]+)/permissions$", views.permissions, name="permissions"),
 	url(r"(?P<title>[\w-]+)/attachments$", views.attachments, name="attachments"),

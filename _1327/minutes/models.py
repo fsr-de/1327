@@ -40,11 +40,13 @@ class MinutesDocument(Document):
 	PUBLISHED = 1
 	INTERNAL = 2
 	CUSTOM = 3
+	PUBLISHED_STUDENT = 4
 	CHOICES = (
 		(UNPUBLISHED, _('Unpublished')),
-		(PUBLISHED, _('Published')),
+		(PUBLISHED, _('Published for Students and University Network')),
 		(INTERNAL, _('Internal')),
 		(CUSTOM, _('Custom')),
+		(PUBLISHED_STUDENT, _('Published for Student only')),
 	)
 
 	date = models.DateField(default=datetime.now, verbose_name=_("Date"))
@@ -96,6 +98,10 @@ class MinutesDocument(Document):
 		self.state = MinutesDocument.PUBLISHED
 		self.save()
 
+	def publish_student(self):
+		self.state = MinutesDocument.PUBLISHED_STUDENT
+		self.save()
+
 	@property
 	def meta_information_html(self):
 		template = loader.get_template('minutes_meta_information.html')
@@ -123,12 +129,16 @@ revisions.register(MinutesDocument, follow=["document_ptr"])
 
 @receiver(post_save, sender=MinutesDocument, dispatch_uid="update_permissions")
 def update_permissions(sender, instance, **kwargs):
-	groups = [Group.objects.get(name=settings.UNIVERSITY_GROUP_NAME), Group.objects.get(name=settings.STUDENT_GROUP_NAME)]
-	for group in groups:
-		if instance.state == MinutesDocument.UNPUBLISHED or instance.state == MinutesDocument.INTERNAL:
-			instance.delete_all_permissions(group)
-		if instance.state == MinutesDocument.PUBLISHED:
-			assign_perm(instance.view_permission_name, group, instance)
+	student_group = Group.objects.get(name=settings.STUDENT_GROUP_NAME)
+	university_network_group = Group.objects.get(name=settings.UNIVERSITY_GROUP_NAME)
+	if instance.state == MinutesDocument.UNPUBLISHED or instance.state == MinutesDocument.INTERNAL:
+		instance.delete_all_permissions(student_group)
+		instance.delete_all_permissions(university_network_group)
+	if instance.state == MinutesDocument.PUBLISHED:
+		assign_perm(instance.view_permission_name, student_group, instance)
+		assign_perm(instance.view_permission_name, university_network_group, instance)
+	if instance.state == MinutesDocument.PUBLISHED_STUDENT:
+		assign_perm(instance.view_permission_name, student_group, instance)
 
 
 class Guest(models.Model):
