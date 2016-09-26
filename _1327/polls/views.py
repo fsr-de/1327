@@ -12,9 +12,10 @@ import markdown
 from markdown.extensions.toc import TocExtension
 
 from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
+from _1327.documents.models import Document
 from _1327.main.utils import abbreviation_explanation_markdown
 from _1327.polls.models import Poll
-from _1327.user_management.shortcuts import get_object_or_error
+from _1327.user_management.shortcuts import check_permissions
 
 
 def index(request):
@@ -123,7 +124,8 @@ def vote(request, poll, url_title):
 
 
 def view(request, title):
-	poll = get_object_or_error(Poll, request.user, ['polls.view_poll'], url_title=title)
+	poll = Document.objects.get(url_title=title)
+	check_permissions(poll, request.user, [poll.view_permission_name])
 	if poll.end_date < datetime.date.today() or poll.participants.filter(id=request.user.pk).exists():
 		return results(request, poll, title)
 	elif poll.start_date > datetime.date.today():

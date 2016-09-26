@@ -33,7 +33,7 @@ from _1327.minutes.models import MinutesDocument
 from _1327.minutes.forms import MinutesDocumentForm  # noqa
 from _1327.polls.models import Poll
 from _1327.polls.forms import PollForm  # noqa
-from _1327.user_management.shortcuts import check_permissions, get_object_or_error
+from _1327.user_management.shortcuts import check_permissions
 
 
 def create(request, document_type):
@@ -248,7 +248,8 @@ def revert(request):
 
 	version_id = request.POST['id']
 	document_url_title = request.POST['url_title']
-	document = get_object_or_error(Document, request.user, ['change_document'], url_title=document_url_title)
+	document = Document.objects.get(url_title=document_url_title)
+	check_permissions(document, request.user, [document.edit_permission_name])
 	versions = revisions.get_for_object(document)
 
 	# find the we want to revert to
@@ -394,7 +395,8 @@ def change_attachment_no_direct_download(request):
 
 
 def delete_document(request, title):
-	document = get_object_or_error(Document, request.user, ['change_document'], url_title=title)
+	document = Document.objects.get(url_title=title)
+	check_permissions(document, request.user, [document.edit_permission_name])
 	document.delete()
 
 	messages.success(request, _("Successfully deleted document: {}".format(document.title)))
@@ -402,7 +404,8 @@ def delete_document(request, title):
 
 
 def get_delete_cascade(request, title):
-	document = get_object_or_error(Document, request.user, ['change_document'], url_title=title)
+	document = Document.objects.get(url_title=title)
+	check_permissions(document, request.user, [document.edit_permission_name])
 
 	collector = NestedObjects(using=DEFAULT_DB_ALIAS)
 	collector.collect([document])
