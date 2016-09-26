@@ -40,6 +40,7 @@ class PollModelTests(TestCase):
 
 
 class PollViewTests(WebTest):
+	csrf_checks = False
 
 	def setUp(self):
 		self.user = mommy.make(UserProfile, is_superuser=True)
@@ -201,6 +202,7 @@ class PollViewTests(WebTest):
 
 
 class PollResultTests(WebTest):
+	csrf_checks = False
 
 	def setUp(self):
 		self.user = mommy.make(UserProfile, is_superuser=True)
@@ -460,6 +462,8 @@ class PollVoteTests(WebTest):
 
 
 class PollEditTests(WebTest):
+	csrf_checks = False
+
 	def setUp(self):
 		self.user = mommy.make(UserProfile, is_superuser=True)
 		self.poll = mommy.make(
