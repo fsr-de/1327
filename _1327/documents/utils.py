@@ -146,9 +146,9 @@ def handle_attachment(request, document):
 	return False, form, None
 
 
-def permission_warning(user, content_type, document):
-	anonymous_rights = get_anonymous_user().has_perm(content_type.model_class().VIEW_PERMISSION_NAME, document)
-	edit_rights = user.has_perm("change_informationdocument", document)
+def permission_warning(user, document):
+	anonymous_rights = get_anonymous_user().has_perm(document.view_permission_name, document)
+	edit_rights = user.has_perm(document.edit_permission_name, document)
 	return edit_rights and not anonymous_rights
 
 

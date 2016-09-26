@@ -90,7 +90,7 @@ def edit(request, title, new_autosaved_pages=None, initial=None):
 			'active_page': 'edit',
 			'creation': (len(revisions.get_for_object(document)) == 0),
 			'new_autosaved_pages': new_autosaved_pages,
-			'permission_warning': permission_warning(request.user, content_type, document),
+			'permission_warning': permission_warning(request.user, document),
 			'supported_image_types': settings.SUPPORTED_IMAGE_TYPES,
 			'formset': formset,
 		})
@@ -111,7 +111,6 @@ def autosave(request, title):
 
 def versions(request, title):
 	document = Document.objects.get(url_title=title)
-	content_type = ContentType.objects.get_for_model(document)
 	check_permissions(document, request.user, [document.edit_permission_name])
 	document_versions = prepare_versions(document)
 
@@ -119,7 +118,7 @@ def versions(request, title):
 		'active_page': 'versions',
 		'versions': document_versions,
 		'document': document,
-		'permission_warning': permission_warning(request.user, content_type, document),
+		'permission_warning': permission_warning(request.user, document),
 	})
 
 
@@ -143,7 +142,7 @@ def view(request, title):
 		'toc': md.toc,
 		'attachments': document.attachments.filter(no_direct_download=False).order_by('index'),
 		'active_page': 'view',
-		'permission_warning': permission_warning(request.user, content_type, document),
+		'permission_warning': permission_warning(request.user, document),
 	})
 
 
@@ -174,7 +173,7 @@ def permissions(request, title):
 		'formset_header': PermissionForm.header(content_type),
 		'formset': formset,
 		'active_page': 'permissions',
-		'permission_warning': permission_warning(request.user, content_type, document),
+		'permission_warning': permission_warning(request.user, document),
 	})
 
 
@@ -192,7 +191,6 @@ def publish(request, title):
 
 def attachments(request, title):
 	document = Document.objects.get(url_title=title)
-	content_type = ContentType.objects.get_for_model(document)
 	check_permissions(document, request.user, [document.edit_permission_name])
 
 	success, form, __ = handle_attachment(request, document)
@@ -206,7 +204,7 @@ def attachments(request, title):
 			'form': form,
 			'attachments': document.attachments.all().order_by('index'),
 			'active_page': 'attachments',
-			'permission_warning': permission_warning(request.user, content_type, document),
+			'permission_warning': permission_warning(request.user, document),
 		})
 
 
