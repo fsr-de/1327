@@ -55,6 +55,7 @@ class TestEditor(WebTest):
 	def setUp(self):
 		self.user = mommy.make(UserProfile, is_superuser=True)
 		self.document = mommy.make(InformationDocument)
+		self.document.set_all_permissions(mommy.make(Group))
 
 	def test_get_editor(self):
 		response = self.app.get(reverse('documents:edit', args=[self.document.url_title]), status=403)
@@ -133,6 +134,7 @@ class TestVersions(WebTest):
 			self.document.save()
 			revisions.set_user(self.user)
 			revisions.set_comment('test version')
+		self.document.set_all_permissions(mommy.make(Group))
 
 	def test_get_version_page(self):
 		response = self.app.get(reverse('documents:versions', args=[self.document.url_title]), status=403)
@@ -143,8 +145,7 @@ class TestVersions(WebTest):
 
 	def test_save_version(self):
 		# first get all current versions of the document from the database
-		document = Document.objects.get()
-		versions = revisions.get_for_object(document)
+		versions = revisions.get_for_object(self.document)
 		self.assertEqual(len(versions), 1)
 
 		# get the editor page and add a new revision
@@ -296,6 +297,8 @@ class TestNewPage(WebTest):
 
 	def test_save_new_page(self):
 		# get the editor page and save the site
+		group = mommy.make(Group)
+		group.user_set.add(self.user)
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
@@ -305,6 +308,7 @@ class TestNewPage(WebTest):
 		form.set('title', text)
 		form.set('comment', text)
 		form.set('url_title', slugify(text))
+		form.set('group', group.pk)
 		response = form.submit().follow()
 		self.assertEqual(response.status_code, 200)
 

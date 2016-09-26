@@ -7,6 +7,7 @@ from .models import Choice, Poll
 
 
 class PollForm(DocumentForm):
+
 	class Meta:
 		model = Poll
 		fields = ['title', 'url_title', 'text', 'start_date', 'end_date', 'max_allowed_number_of_answers', 'show_results_immediately', 'comment', ]

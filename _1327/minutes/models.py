@@ -53,7 +53,6 @@ class MinutesDocument(Document):
 	author = models.ForeignKey(UserProfile, related_name='documents')
 	participants = models.ManyToManyField(UserProfile, related_name='participations', verbose_name=_("Participants"))
 	labels = models.ManyToManyField(MinutesLabel, related_name="minutes", blank=True)
-	groups = models.ManyToManyField(Group, related_name="minutes", blank=True)
 
 	VIEW_PERMISSION_NAME = MINUTES_VIEW_PERMISSION_NAME
 
@@ -97,10 +96,6 @@ class MinutesDocument(Document):
 		self.state = MinutesDocument.PUBLISHED
 		self.save()
 
-	def set_all_permissions_for_groups(self):
-		for group in self.groups.all():
-			self.set_all_permissions(group)
-
 	@property
 	def meta_information_html(self):
 		template = loader.get_template('minutes_meta_information.html')
@@ -119,11 +114,11 @@ revisions.register(MinutesDocument, follow=["document_ptr"])
 
 @receiver(post_save, sender=MinutesDocument, dispatch_uid="update_permissions")
 def update_permissions(sender, instance, **kwargs):
-	if instance.state == MinutesDocument.UNPUBLISHED or instance.state == MinutesDocument.INTERNAL or instance.state == MinutesDocument.PUBLISHED:
-		instance.reset_permissions()
-	instance.set_all_permissions_for_groups()
+	group = Group.objects.get(name=settings.UNIVERSITY_GROUP_NAME)
+	if instance.state == MinutesDocument.UNPUBLISHED or instance.state == MinutesDocument.INTERNAL:
+		instance.delete_all_permissions(group)
 	if instance.state == MinutesDocument.PUBLISHED:
-		assign_perm(instance.view_permission_name, Group.objects.get(name=settings.UNIVERSITY_GROUP_NAME), instance)
+		assign_perm(instance.view_permission_name, group, instance)
 
 
 class Guest(models.Model):

@@ -3,7 +3,7 @@ from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 from django_webtest import WebTest
 from guardian.core import ObjectPermissionChecker
-from guardian.shortcuts import assign_perm, remove_perm
+from guardian.shortcuts import assign_perm
 from model_mommy import mommy
 
 from _1327.minutes.models import MinutesDocument
@@ -20,6 +20,7 @@ class TestEditor(WebTest):
 		self.moderator = mommy.make(UserProfile)
 		self.participants = mommy.make(UserProfile, _quantity=num_participants)
 		self.document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator)
+		self.document.set_all_permissions(mommy.make(Group))
 
 	def test_get_editor(self):
 		"""
@@ -35,7 +36,7 @@ class TestEditor(WebTest):
 		self.assertEqual(form.get('title').value, self.document.title)
 		self.assertEqual(form.get('text').value, self.document.text)
 		self.assertEqual(int(form.get('moderator').value), self.document.moderator.id)
-		self.assertEqual([int(id) for id in form.get('participants').value], [participant.id for participant in self.document.participants.all()])
+		self.assertEqual(sorted([int(id) for id in form.get('participants').value]), sorted([participant.id for participant in self.document.participants.all()]))
 
 	def test_publish_permission_button_displayed(self):
 		"""
@@ -67,7 +68,9 @@ class TestEditor(WebTest):
 		"""
 		staff_group = Group.objects.get(name=settings.STAFF_GROUP_NAME)
 
-		document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.UNPUBLISHED, groups=[staff_group])
+		document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.UNPUBLISHED)
+		document.set_all_permissions(staff_group)
+
 		self.app.get(reverse('documents:publish', args=[document.url_title]), user=self.user)
 
 		document = MinutesDocument.objects.get(url_title=document.url_title)
@@ -91,10 +94,10 @@ class TestEditor(WebTest):
 		staff_group = Group.objects.get(name=settings.STAFF_GROUP_NAME)
 		university_group = Group.objects.get(name=settings.UNIVERSITY_GROUP_NAME)
 
-		document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.UNPUBLISHED, groups=[staff_group])
+		document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.UNPUBLISHED)
+		document.set_all_permissions(staff_group)
 
 		assign_perm(document.view_permission_name, university_group, document)
-		remove_perm(document.view_permission_name, staff_group, document)
 
 		document.state = MinutesDocument.INTERNAL
 		document.save()

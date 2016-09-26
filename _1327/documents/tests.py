@@ -195,7 +195,7 @@ class TestAutosave(WebTest):
 		url_title = slugify(form.get('title').value)
 
 		# autosave AUTO
-		response = self.app.post(reverse('documents:autosave', args=[url_title]), {'text': 'AUTO', 'title': form.get('title').value, 'comment': ''}, xhr=True)
+		response = self.app.post(reverse('documents:autosave', args=[url_title]), {'text': 'AUTO', 'title': form.get('title').value, 'comment': '', 'group': mommy.make(Group)}, xhr=True)
 		self.assertEqual(response.status_code, 200)
 
 		# there should be no restore link on creation page for different document type
@@ -215,6 +215,7 @@ class TestMarkdownRendering(WebTest):
 		self.user = mommy.make(UserProfile, is_superuser=True)
 		self.document_text = 'test'
 		self.document = mommy.make(InformationDocument, text=self.document_text)
+		self.document.set_all_permissions(mommy.make(Group))
 
 	def test_render_text_no_permission(self):
 		response = self.app.post(reverse('documents:render', args=[self.document.url_title]), {'text': self.document_text}, xhr=True, expect_errors=True)
@@ -752,6 +753,7 @@ class TestDeletion(WebTest):
 	def setUp(self):
 		self.user = mommy.make(UserProfile, is_superuser=True)
 		self.document = mommy.make(InformationDocument)
+		self.document.set_all_permissions(mommy.make(Group))
 
 	def test_delete_cascade(self):
 		response = self.app.get(reverse("documents:get_delete_cascade", args=[self.document.url_title]), user=self.user)

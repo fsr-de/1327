@@ -45,7 +45,11 @@ class MenuItem(models.Model):
 
 	def get_url(self):
 		if self.link:
-			return reverse(self.link)
+			split = self.link.split("?")
+			if len(split) == 1:
+				return reverse(split[0])
+			else:
+				return reverse(split[0], args=split[1])
 		elif self.document:
 			return self.document.get_view_url()
 		else:

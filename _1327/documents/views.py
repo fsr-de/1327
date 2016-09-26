@@ -64,7 +64,8 @@ def create(request, document_type):
 def edit(request, title, new_autosaved_pages=None, initial=None):
 	document = Document.objects.get(url_title=title)
 	content_type = ContentType.objects.get_for_model(document)
-	check_permissions(document, request.user, [document.edit_permission_name])
+	if document.has_perms():
+		check_permissions(document, request.user, [document.edit_permission_name])
 
 	# if the edit form has a formset we will initialize it here
 	formset_factory = document.Form.get_formset_factory()
@@ -99,7 +100,8 @@ def autosave(request, title):
 	document = None
 	try:
 		document = Document.objects.get(url_title=title)
-		check_permissions(document, request.user, [document.edit_permission_name])
+		if document.has_perms():
+			check_permissions(document, request.user, [document.edit_permission_name])
 	except Document.DoesNotExist:
 		pass
 
@@ -213,7 +215,8 @@ def render_text(request, title):
 		raise SuspiciousOperation
 
 	document = Document.objects.get(url_title=title)
-	check_permissions(document, request.user, [document.view_permission_name, document.edit_permission_name])
+	if document.has_perms():
+		check_permissions(document, request.user, [document.view_permission_name, document.edit_permission_name])
 
 	text = request.POST['text']
 	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr'])

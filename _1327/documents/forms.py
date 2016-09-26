@@ -26,14 +26,27 @@ class StrippedCharField(forms.CharField):
 class DocumentForm(forms.ModelForm):
 	url_title = StrippedCharField(label=_('URL'), max_length=255, required=True)
 	comment = StrippedCharField(label=_('Comment'), max_length=255, required=True)
+	group = forms.ModelChoiceField(Group.objects.all(), label=_('Edit permissions'), disabled=False, required=True)
 
 	class Meta:
 		model = Document
 		fields = ['title', 'text', 'comment', 'url_title']
 
 	def __init__(self, *args, **kwargs):
-		kwargs.pop('user', None)
+		user = kwargs.pop('user', None)
+		creation = kwargs.pop('creation', None)
 		super().__init__(*args, **kwargs)
+		staff = Group.objects.get(name=settings.STAFF_GROUP_NAME)
+		self.user_groups = user.groups.all()
+		self.fields['group'].queryset = self.user_groups
+		if staff in self.user_groups and not self.fields['group'].initial:
+			self.fields['group'].initial = staff
+		elif len(self.user_groups) == 1:
+			self.fields['group'].initial = self.user_groups[0]
+			self.fields['group'].widget = forms.HiddenInput()
+		if not creation:
+			self.fields['group'].widget = forms.HiddenInput()
+			self.fields['group'].required = False
 
 	def clean_url_title(self):
 		super().clean()
@@ -43,6 +56,12 @@ class DocumentForm(forms.ModelForm):
 		if Document.objects.filter(url_title=url_title).exclude(id=self.instance.id).exists():
 			raise ValidationError(_('The URL used for this page is already taken.'))
 		return url_title
+
+	def clean_group(self):
+		value = self.cleaned_data['group']
+		if value and value not in self.user_groups:
+			raise ValidationError(_("You are not a member of this group!"))
+		return value
 
 	@classmethod
 	def get_formset_factory(cls):

@@ -134,6 +134,16 @@ class Document(PolymorphicModel):
 	def show_publish_button(self):
 		return False
 
+	def has_perms(self):
+		group_perms = get_groups_with_perms(self, attach_perms=True)
+		for perms in group_perms.values():
+			for perm in perms:
+				# Valid permission names are <app label>.<permission name>. Currently, not all permissions adhere to that format.
+				# TODO: Remove split once permissions have been fixed (see issue #374).
+				if perm != self.add_permission_name.split(".")[1]:
+					return True
+		return False
+
 
 class TemporaryDocumentText(models.Model):
 	text = models.TextField()
