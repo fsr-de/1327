@@ -1,10 +1,12 @@
 from datetime import date, datetime
 
+from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Sum
 from django.template import loader
 from django.utils.translation import ugettext_lazy as _
+from guardian.shortcuts import assign_perm
 
 from reversion import revisions
 
@@ -82,6 +84,13 @@ class Poll(Document):
 	def meta_information_html(self):
 		template = loader.get_template('polls_meta_information.html')
 		return template.render({'document': self})
+
+	def handle_edit(self, cleaned_data):
+		content_type = ContentType.objects.get_for_model(self)
+		groups = cleaned_data['vote_groups']
+		for group in groups:
+			assign_perm("{app}.view_{model}".format(app=content_type.app_label, model=content_type.model), group, self)
+			assign_perm("{app}.vote_{model}".format(app=content_type.app_label, model=content_type.model), group, self)
 
 revisions.register(Poll, follow=["document_ptr"])
 

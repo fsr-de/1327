@@ -144,6 +144,9 @@ class Document(PolymorphicModel):
 					return True
 		return False
 
+	def handle_edit(self, cleaned_data):
+		pass
+
 
 class TemporaryDocumentText(models.Model):
 	text = models.TextField()

@@ -109,6 +109,15 @@ class MinutesDocument(Document):
 			guest.minute = self
 			guest.save()
 
+	def handle_edit(self, cleaned_data):
+		self.participants.clear()
+		for participant in cleaned_data['participants']:
+			self.participants.add(participant)
+		self.labels.clear()
+		for label in cleaned_data['labels']:
+			self.labels.add(label)
+
+
 revisions.register(MinutesDocument, follow=["document_ptr"])
 
 
