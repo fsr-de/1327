@@ -114,11 +114,12 @@ revisions.register(MinutesDocument, follow=["document_ptr"])
 
 @receiver(post_save, sender=MinutesDocument, dispatch_uid="update_permissions")
 def update_permissions(sender, instance, **kwargs):
-	group = Group.objects.get(name=settings.UNIVERSITY_GROUP_NAME)
-	if instance.state == MinutesDocument.UNPUBLISHED or instance.state == MinutesDocument.INTERNAL:
-		instance.delete_all_permissions(group)
-	if instance.state == MinutesDocument.PUBLISHED:
-		assign_perm(instance.view_permission_name, group, instance)
+	groups = [Group.objects.get(name=settings.UNIVERSITY_GROUP_NAME), Group.objects.get(name=settings.STUDENT_GROUP_NAME)]
+	for group in groups:
+		if instance.state == MinutesDocument.UNPUBLISHED or instance.state == MinutesDocument.INTERNAL:
+			instance.delete_all_permissions(group)
+		if instance.state == MinutesDocument.PUBLISHED:
+			assign_perm(instance.view_permission_name, group, instance)
 
 
 class Guest(models.Model):
