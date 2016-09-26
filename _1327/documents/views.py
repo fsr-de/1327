@@ -62,7 +62,7 @@ def create(request, document_type):
 
 
 def edit(request, title, new_autosaved_pages=None, initial=None):
-	document = Document.objects.get(url_title=title)
+	document = get_object_or_404(Document, url_title=title)
 	content_type = ContentType.objects.get_for_model(document)
 	if document.has_perms():
 		check_permissions(document, request.user, [document.edit_permission_name])
@@ -99,7 +99,7 @@ def edit(request, title, new_autosaved_pages=None, initial=None):
 def autosave(request, title):
 	document = None
 	try:
-		document = Document.objects.get(url_title=title)
+		document = get_object_or_404(Document, url_title=title)
 		if document.has_perms():
 			check_permissions(document, request.user, [document.edit_permission_name])
 	except Document.DoesNotExist:
@@ -110,7 +110,7 @@ def autosave(request, title):
 
 
 def versions(request, title):
-	document = Document.objects.get(url_title=title)
+	document = get_object_or_404(Document, url_title=title)
 	check_permissions(document, request.user, [document.edit_permission_name])
 	document_versions = prepare_versions(document)
 
@@ -123,7 +123,7 @@ def versions(request, title):
 
 
 def view(request, title):
-	document = Document.objects.get(url_title=title)
+	document = get_object_or_404(Document, url_title=title)
 	content_type = ContentType.objects.get_for_model(document)
 	check_permissions(document, request.user, [document.view_permission_name])
 
@@ -147,7 +147,7 @@ def view(request, title):
 
 
 def permissions(request, title):
-	document = Document.objects.get(url_title=title)
+	document = get_object_or_404(Document, url_title=title)
 	content_type = ContentType.objects.get_for_model(document)
 	check_permissions(document, request.user, [document.edit_permission_name])
 	if not document.show_permissions_editor():
@@ -178,7 +178,7 @@ def permissions(request, title):
 
 
 def publish(request, title):
-	document = Document.objects.get(url_title=title)
+	document = get_object_or_404(Document, url_title=title)
 	check_permissions(document, request.user, [document.edit_permission_name])
 	if not document.show_publish_button():
 		raise PermissionDenied()
@@ -190,7 +190,7 @@ def publish(request, title):
 
 
 def attachments(request, title):
-	document = Document.objects.get(url_title=title)
+	document = get_object_or_404(Document, url_title=title)
 	check_permissions(document, request.user, [document.edit_permission_name])
 
 	success, form, __ = handle_attachment(request, document)
@@ -212,7 +212,7 @@ def render_text(request, title):
 	if request.method != 'POST':
 		raise SuspiciousOperation
 
-	document = Document.objects.get(url_title=title)
+	document = get_object_or_404(Document, url_title=title)
 	if document.has_perms():
 		check_permissions(document, request.user, [document.view_permission_name, document.edit_permission_name])
 
@@ -246,7 +246,7 @@ def revert(request):
 
 	version_id = request.POST['id']
 	document_url_title = request.POST['url_title']
-	document = Document.objects.get(url_title=document_url_title)
+	document = get_object_or_404(Document, url_title=document_url_title)
 	check_permissions(document, request.user, [document.edit_permission_name])
 	versions = revisions.get_for_object(document)
 
@@ -298,7 +298,7 @@ def create_attachment(request):
 	if not request.is_ajax() or not request.method == "POST":
 		raise Http404()
 
-	document = Document.objects.get(id=request.POST['document'])
+	document = get_object_or_404(Document, id=request.POST['document'])
 	if not document.can_be_changed_by(request.user):
 		raise PermissionDenied
 
@@ -361,7 +361,7 @@ def get_attachments(request, document_id):
 	if not request.is_ajax():
 		raise Http404
 
-	document = Document.objects.get(pk=document_id)
+	document = get_object_or_404(Document, pk=document_id)
 	if not document.can_be_changed_by(request.user):
 		raise PermissionDenied
 
@@ -393,7 +393,7 @@ def change_attachment_no_direct_download(request):
 
 
 def delete_document(request, title):
-	document = Document.objects.get(url_title=title)
+	document = get_object_or_404(Document, url_title=title)
 	check_permissions(document, request.user, [document.edit_permission_name])
 	document.delete()
 
@@ -402,7 +402,7 @@ def delete_document(request, title):
 
 
 def get_delete_cascade(request, title):
-	document = Document.objects.get(url_title=title)
+	document = get_object_or_404(Document, url_title=title)
 	check_permissions(document, request.user, [document.edit_permission_name])
 
 	collector = NestedObjects(using=DEFAULT_DB_ALIAS)
