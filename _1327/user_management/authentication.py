@@ -14,10 +14,6 @@ class IPRangeAuthorizationBackend:
 		if user_obj.is_anonymous():
 			group_name = user_obj._ip_range_group_name if hasattr(user_obj, '_ip_range_group_name') else None
 			if group_name:
-				# Valid permission names are <app label>.<permission name>. Currently, not all permissions adhere to that format.
-				# TODO: Remove this check once permissions have been fixed (see issue #374).
-				if "." not in perm:
-					return False
 				perm = perm.split(".")
 				app = perm[0]
 				perm = perm[1]

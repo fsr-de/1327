@@ -83,7 +83,7 @@ class PermissionBaseForm(forms.BaseForm):
 			if field_name == 'group_name':
 				continue
 			if value:
-				if (group.name == settings.ANONYMOUS_GROUP_NAME or group.name == settings.UNIVERSITY_GROUP_NAME) and field_name != model.VIEW_PERMISSION_NAME:
+				if (group.name == settings.ANONYMOUS_GROUP_NAME or group.name == settings.UNIVERSITY_GROUP_NAME) and field_name != model.view_permission_name:
 					continue
 				assign_perm(field_name, group, model)
 			else:
@@ -111,7 +111,7 @@ class PermissionBaseForm(forms.BaseForm):
 		for name in sorted(self.fields.keys()):
 			if name == "group_name":
 				continue
-			if (self['group_name'].value() == settings.ANONYMOUS_GROUP_NAME or self['group_name'].value() == settings.UNIVERSITY_GROUP_NAME) and name != self.obj.VIEW_PERMISSION_NAME:
+			if (self['group_name'].value() == settings.ANONYMOUS_GROUP_NAME or self['group_name'].value() == settings.UNIVERSITY_GROUP_NAME) and name != self.obj.view_permission_name:
 				output.append('<td class="text-center"><input type="checkbox" disabled="disabled" /></td>')
 				continue
 			output.append('<td class="text-center"> {} </td>'.format(self[name]))
@@ -143,6 +143,8 @@ class PermissionBaseForm(forms.BaseForm):
 			else:
 				group_permissions = [permission.codename for permission in group.permissions.filter(content_type=content_type)]
 			group_permissions = filter(lambda x: 'add' not in x, group_permissions)
+			content_type = ContentType.objects.get_for_model(obj)
+			group_permissions = ["{app}.{codename}".format(app=content_type.app_label, codename=codename) for codename in group_permissions]
 
 			data = {permission: True for permission in group_permissions}
 			data["group_name"] = group.name
@@ -153,7 +155,9 @@ class PermissionBaseForm(forms.BaseForm):
 def get_permission_form(document):
 	content_type = ContentType.objects.get_for_model(document)
 	fields = {
-		permission.codename: forms.BooleanField(required=False) for permission in filter(lambda x: 'add' not in x.codename, Permission.objects.filter(content_type=content_type))
+		"{app}.{codename}".format(app=content_type.app_label, codename=permission.codename): forms.BooleanField(required=False)
+		for permission in
+		filter(lambda x: 'add' not in x.codename, Permission.objects.filter(content_type=content_type))
 	}
 	fields['group_name'] = forms.CharField(required=False, widget=forms.HiddenInput())
 	return type('PermissionForm', (PermissionBaseForm,), {'base_fields': fields, 'obj': document})

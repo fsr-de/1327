@@ -83,7 +83,7 @@ class MinutesDocument(Document):
 		return reverse('documents:edit', args=(self.url_title, ))
 
 	def can_be_changed_by(self, user):
-		permission_name = 'change_minutesdocument'
+		permission_name = self.edit_permission_name
 		return user.has_perm(permission_name, self) or user.has_perm(permission_name)
 
 	def show_permissions_editor(self):

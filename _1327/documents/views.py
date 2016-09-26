@@ -331,7 +331,7 @@ def download_attachment(request):
 	attachment = get_object_or_404(Attachment, pk=request.GET['attachment_id'])
 	# check whether user is allowed to see that document and thus download the attachment
 	document = attachment.document
-	if not request.user.has_perm(document.VIEW_PERMISSION_NAME, document):
+	if not request.user.has_perm(document.view_permission_name, document):
 		raise PermissionDenied
 
 	filename = os.path.join(settings.MEDIA_ROOT, attachment.file.name)
