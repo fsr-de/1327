@@ -1,4 +1,7 @@
 from django import forms
+from django.conf import settings
+from django.contrib.auth.models import Group
+from django.core.exceptions import ValidationError
 from django.forms import inlineformset_factory
 from django.utils.translation import ugettext_lazy as _
 
@@ -7,10 +10,11 @@ from .models import Choice, Poll
 
 
 class PollForm(DocumentForm):
+	vote_groups = forms.ModelMultipleChoiceField(Group.objects.exclude(name=settings.ANONYMOUS_GROUP_NAME).exclude(name=settings.UNIVERSITY_GROUP_NAME), label=_('Vote permissions'), disabled=False, required=False)
 
 	class Meta:
 		model = Poll
-		fields = ['title', 'url_title', 'text', 'start_date', 'end_date', 'max_allowed_number_of_answers', 'show_results_immediately', 'comment', ]
+		fields = ['title', 'url_title', 'text', 'start_date', 'end_date', 'max_allowed_number_of_answers', 'show_results_immediately', 'comment', 'group', 'vote_groups']
 
 	def clean(self):
 		super().clean()
@@ -32,6 +36,13 @@ class PollForm(DocumentForm):
 			validate_min=True,
 			formset=AtLeastNFormSet,
 		)
+
+	def clean_vote_groups(self):
+		groups = self.cleaned_data['vote_groups']
+		for group in groups:
+			if group.name == settings.ANONYMOUS_GROUP_NAME or group.name == settings.UNIVERSITY_GROUP_NAME:
+				raise ValidationError(_("Anonymous and university network groups are not allowed to vote!"))
+		return groups
 
 Poll.Form = PollForm
 

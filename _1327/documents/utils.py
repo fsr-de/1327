@@ -11,7 +11,6 @@ from reversion import revisions
 
 from _1327.documents.forms import AttachmentForm, DocumentForm
 from _1327.documents.models import Document, TemporaryDocumentText
-from _1327.minutes.models import MinutesDocument
 
 
 def get_new_autosaved_pages_for_user(user, content_type):
@@ -43,16 +42,9 @@ def handle_edit(request, document, formset=None, initial=None):
 
 			document.url_title = cleaned_data['url_title']
 
-			content_type = ContentType.objects.get_for_model(document)
 			# save the document and also save the user and the comment the user added
 			with transaction.atomic(), revisions.create_revision():
-				if content_type == ContentType.objects.get_for_model(MinutesDocument):
-					document.participants.clear()
-					for participant in cleaned_data['participants']:
-						document.participants.add(participant)
-					document.labels.clear()
-					for label in cleaned_data['labels']:
-						document.labels.add(label)
+				document.handle_edit(cleaned_data)
 				document.save()
 				document.save_formset(formset)
 				revisions.set_user(request.user)
