@@ -50,7 +50,7 @@ def index(request):
 
 
 def menu_items_index(request):
-	if len(get_objects_for_user(request.user, MenuItem.CHANGE_CHILDREN_PERMISSION_NAME, klass=MenuItem)) == 0:
+	if not request.user.is_superuser and len(get_objects_for_user(request.user, MenuItem.CHANGE_CHILDREN_PERMISSION_NAME, klass=MenuItem)) == 0:
 		raise PermissionDenied
 
 	main_menu_items = []
