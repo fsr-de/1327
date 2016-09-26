@@ -33,6 +33,7 @@ FORBIDDEN_URLS = ["admin", "login", "logout", "documents", "minutes", "polls"]
 
 ANONYMOUS_GROUP_NAME = "Anonymous"
 STAFF_GROUP_NAME = "Staff"
+STUDENT_GROUP_NAME = "Student"
 UNIVERSITY_GROUP_NAME = "University Network"
 
 # Anonymous users in one of the given IP ranges are automatically assumed to be in the associated group.
