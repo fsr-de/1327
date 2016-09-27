@@ -84,7 +84,8 @@ def menu_item_create(request):
 		form = MenuItemCreationForm(request.user, request.POST or None, instance=MenuItem())
 
 	if form.is_valid():
-		form.save()
+		menu_item = form.save()
+		menu_item.set_all_permissions(form.cleaned_data['group'])
 		messages.success(request, _("Successfully created menu item."))
 		return redirect('menu_items_index')
 	else:
