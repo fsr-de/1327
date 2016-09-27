@@ -136,8 +136,10 @@ class Document(PolymorphicModel):
 
 	def has_perms(self):
 		group_perms = get_groups_with_perms(self, attach_perms=True)
+		content_type = ContentType.objects.get_for_model(self)
 		for perms in group_perms.values():
 			for perm in perms:
+				perm = "{app}.{perm}".format(app=content_type.app_label, perm=perm)
 				if perm != self.add_permission_name:
 					return True
 		return False
