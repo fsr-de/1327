@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import NoReverseMatch, reverse
 from django.db.models import Q
@@ -90,7 +91,7 @@ class MenuItemPermissionForm(PermissionBaseForm):
 			'<tr>',
 			'<th class="col-md-6"> {} </th>'.format(_("Role")),
 		]
-		for permission in sorted(MenuItem.used_permissions):
+		for permission in sorted(MenuItem.used_permissions()):
 			item = "<th class=\"col-md-2 text-center\"> {} </th>".format((permission[1]))
 			output.append(item)
 		output.append('</tr>')
@@ -104,7 +105,9 @@ class MenuItemPermissionForm(PermissionBaseForm):
 				group_permissions = get_perms(group, obj)
 			else:
 				group_permissions = [permission.codename for permission in group.permissions.filter(content_type=content_type)]
-			group_permissions = filter(lambda x: any(permission[0] in x for permission in MenuItem.used_permissions), group_permissions)
+			content_type = ContentType.objects.get_for_model(obj)
+			group_permissions = ["{app}.{codename}".format(app=content_type.app_label, codename=codename) for codename in group_permissions]
+			group_permissions = filter(lambda x: any(permission[0] in x for permission in MenuItem.used_permissions()), group_permissions)
 
 			data = {permission: True for permission in group_permissions}
 			data["group_name"] = group.name
@@ -126,7 +129,7 @@ class AbbreviationExplanationForm(forms.ModelForm):
 
 def get_permission_form(menu_item):
 	fields = {
-		permission[0]: forms.BooleanField(required=False) for permission in MenuItem.used_permissions
+		permission[0]: forms.BooleanField(required=False) for permission in MenuItem.used_permissions()
 	}
 	fields['group_name'] = forms.CharField(required=False, widget=forms.HiddenInput())
 	return type('PermissionForm', (MenuItemPermissionForm,), {'base_fields': fields, 'obj': menu_item})

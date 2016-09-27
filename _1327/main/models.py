@@ -29,11 +29,6 @@ class MenuItem(models.Model):
 	VIEW_PERMISSION_NAME = MENUITEM_VIEW_PERMISSION_NAME
 	CHANGE_CHILDREN_PERMISSION_NAME = MENUITEM_CHANGE_CHILDREN_PERMISSION_NAME
 
-	used_permissions = (
-		(VIEW_PERMISSION_NAME, _('view')),
-		(CHANGE_CHILDREN_PERMISSION_NAME, _('change children')),
-	)
-
 	class Meta:
 		ordering = ['order']
 		permissions = (
@@ -82,6 +77,14 @@ class MenuItem(models.Model):
 
 	def can_delete(self, user):
 		return self.can_edit(user)
+
+	@classmethod
+	def used_permissions(cls):
+		app_label = ContentType.objects.get_for_model(cls).app_label
+		return (
+			("{app}.{codename}".format(app=app_label, codename=cls.VIEW_PERMISSION_NAME), _('view')),
+			("{app}.{codename}".format(app=app_label, codename=cls.CHANGE_CHILDREN_PERMISSION_NAME), _('change children')),
+		)
 
 
 class AbbreviationExplanation(models.Model):
