@@ -71,12 +71,51 @@ class TestEditor(WebTest):
 		document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.UNPUBLISHED)
 		document.set_all_permissions(staff_group)
 
-		self.app.get(reverse('documents:publish', args=[document.url_title]), user=self.user)
+		# The 1 sets the state to published
+		self.app.get(reverse('documents:publish', args=[document.url_title, 1]), user=self.user)
 
 		document = MinutesDocument.objects.get(url_title=document.url_title)
 		self.assertEqual(document.state, MinutesDocument.PUBLISHED)
 
 		group = Group.objects.get(name=settings.UNIVERSITY_GROUP_NAME)
+		checker = ObjectPermissionChecker(group)
+		self.assertTrue(checker.has_perm(document.view_permission_name, document))
+		self.assertFalse(checker.has_perm(document.edit_permission_name, document))
+		self.assertFalse(checker.has_perm(document.delete_permission_name, document))
+
+		group = Group.objects.get(name=settings.STUDENT_GROUP_NAME)
+		checker = ObjectPermissionChecker(group)
+		self.assertTrue(checker.has_perm(document.view_permission_name, document))
+		self.assertFalse(checker.has_perm(document.edit_permission_name, document))
+		self.assertFalse(checker.has_perm(document.delete_permission_name, document))
+
+		checker = ObjectPermissionChecker(staff_group)
+		self.assertTrue(checker.has_perm(document.view_permission_name, document))
+		self.assertTrue(checker.has_perm(document.edit_permission_name, document))
+		self.assertTrue(checker.has_perm(document.delete_permission_name, document))
+
+	def test_publish_student_button(self):
+		"""
+		Test if the publish for students only button works
+		"""
+		staff_group = Group.objects.get(name=settings.STAFF_GROUP_NAME)
+
+		document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.UNPUBLISHED)
+		document.set_all_permissions(staff_group)
+
+		# The 4 sets the state to published_student
+		self.app.get(reverse('documents:publish', args=[document.url_title, 4]), user=self.user)
+
+		document = MinutesDocument.objects.get(url_title=document.url_title)
+		self.assertEqual(document.state, MinutesDocument.PUBLISHED_STUDENT)
+
+		group = Group.objects.get(name=settings.UNIVERSITY_GROUP_NAME)
+		checker = ObjectPermissionChecker(group)
+		self.assertFalse(checker.has_perm(document.view_permission_name, document))
+		self.assertFalse(checker.has_perm(document.edit_permission_name, document))
+		self.assertFalse(checker.has_perm(document.delete_permission_name, document))
+
+		group = Group.objects.get(name=settings.STUDENT_GROUP_NAME)
 		checker = ObjectPermissionChecker(group)
 		self.assertTrue(checker.has_perm(document.view_permission_name, document))
 		self.assertFalse(checker.has_perm(document.edit_permission_name, document))
