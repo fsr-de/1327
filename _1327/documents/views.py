@@ -177,26 +177,14 @@ def permissions(request, title):
 	})
 
 
-def publish(request, title):
+def publish(request, title, state_id):
 	document = get_object_or_404(Document, url_title=title)
 	check_permissions(document, request.user, [document.edit_permission_name])
 	if not document.show_publish_button():
 		raise PermissionDenied()
 
-	document.publish()
-	messages.success(request, _("Minutes document has been published for Students and University Network."))
-
-	return HttpResponseRedirect(reverse("documents:view", args=[document.url_title]))
-
-
-def publish_student(request, title):
-	document = get_object_or_404(Document, url_title=title)
-	check_permissions(document, request.user, [document.edit_permission_name])
-	if not document.show_publish_button():
-		raise PermissionDenied()
-
-	document.publish_student()
-	messages.success(request, _("Minutes document has been published for Students only."))
+	document.publish(state_id)
+	messages.success(request, _("Minutes document has been published."))
 
 	return HttpResponseRedirect(reverse("documents:view", args=[document.url_title]))
 
