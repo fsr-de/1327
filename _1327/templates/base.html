@@ -156,6 +156,8 @@
 		<div class="header-line"></div> {# Bottom line for menu #}
 	</header>
 
+	{% hijack_notification %}
+
 	{% if messages %}
 	<div class="container messages hidden-print">
 		{% bootstrap_messages %}
