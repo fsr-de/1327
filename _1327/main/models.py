@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -7,6 +9,8 @@ from _1327.documents.models import Document
 
 MENUITEM_VIEW_PERMISSION_NAME = 'view_menuitem'
 MENUITEM_CHANGE_CHILDREN_PERMISSION_NAME = 'changechildren_menuitem'
+
+NamedPermission = namedtuple('NamedPermission', ['name', 'description'])
 
 
 class MenuItem(models.Model):
@@ -28,11 +32,6 @@ class MenuItem(models.Model):
 
 	VIEW_PERMISSION_NAME = MENUITEM_VIEW_PERMISSION_NAME
 	CHANGE_CHILDREN_PERMISSION_NAME = MENUITEM_CHANGE_CHILDREN_PERMISSION_NAME
-
-	used_permissions = (
-		(VIEW_PERMISSION_NAME, _('view')),
-		(CHANGE_CHILDREN_PERMISSION_NAME, _('change children')),
-	)
 
 	class Meta:
 		ordering = ['order']
@@ -82,6 +81,14 @@ class MenuItem(models.Model):
 
 	def can_delete(self, user):
 		return self.can_edit(user)
+
+	@classmethod
+	def used_permissions(cls):
+		app_label = ContentType.objects.get_for_model(cls).app_label
+		return (
+			NamedPermission(name="{app}.{codename}".format(app=app_label, codename=cls.VIEW_PERMISSION_NAME), description=_('view')),
+			NamedPermission(name="{app}.{codename}".format(app=app_label, codename=cls.CHANGE_CHILDREN_PERMISSION_NAME), description=_('change children')),
+		)
 
 
 class AbbreviationExplanation(models.Model):
