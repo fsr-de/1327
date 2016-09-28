@@ -40,6 +40,7 @@ Another way of executing this django application is the use of a virtual python 
 virtualenv -p /usr/bin/python3 env
 source env/bin/activate
 pip install -r requirements.txt
+pip install -r requirements-test.txt
 python manage.py migrate
 python manage.py createsuperuser --username=root
 python manage.py runserver 0.0.0.0:8000
