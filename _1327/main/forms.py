@@ -1,4 +1,6 @@
 from django import forms
+from django.conf import settings
+from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import NoReverseMatch, reverse
@@ -56,30 +58,62 @@ class MenuItemAdminForm(MenuItemForm):
 
 
 class MenuItemCreationForm(MenuItemForm):
+	group = forms.ModelChoiceField(Group.objects.all(), label=_('Edit permissions'), disabled=False, required=True)
+
 	class Meta:
 		model = MenuItem
-		fields = ("title", "document", "parent")
+		fields = ("title", "document", "parent", "group")
 
 	def __init__(self, user, *args, **kwargs):
 		super().__init__(*args, **kwargs)
+		self.user_groups = user.groups.all()
 		self.fields['parent'].required = True
 		items_with_perms = get_objects_for_user(user, MenuItem.CHANGE_CHILDREN_PERMISSION_NAME, klass=MenuItem)
 		items = []
 		for item in items_with_perms:
 			items.append(item.pk)
 			items.extend([child.pk for child in item.children.all()])
+		staff = Group.objects.get(name=settings.STAFF_GROUP_NAME)
+		self.fields['group'].queryset = self.user_groups
+		if staff in self.user_groups and not self.fields['group'].initial:
+			self.fields['group'].initial = staff
+		elif len(self.user_groups) == 1:
+			self.fields['group'].initial = self.user_groups[0]
+			self.fields['group'].widget = forms.HiddenInput()
 
 		self.fields['parent'].queryset = MenuItem.objects.filter(Q(pk__in=items) & Q(menu_type=MenuItem.MAIN_MENU) & (Q(parent=None) | Q(parent__parent=None))).order_by('menu_type', 'title')
 
+	def clean_group(self):
+		value = self.cleaned_data['group']
+		if value and value not in self.user_groups:
+			raise ValidationError(_("You are not a member of this group!"))
+		return value
+
 
 class MenuItemCreationAdminForm(MenuItemAdminForm):
+	group = forms.ModelChoiceField(Group.objects.all(), label=_('Edit permissions'), disabled=False, required=True)
+
 	class Meta:
 		model = MenuItem
-		fields = ("title", "link", "document", "parent")
+		fields = ("title", "link", "document", "parent", "group")
 
 	def __init__(self, user, *args, **kwargs):
 		super().__init__(*args, **kwargs)
+		self.user_groups = user.groups.all()
 		self.fields['parent'].queryset = MenuItem.objects.filter(Q(menu_type=MenuItem.MAIN_MENU) & (Q(parent=None) | Q(parent__parent=None))).order_by('menu_type', 'title')
+		staff = Group.objects.get(name=settings.STAFF_GROUP_NAME)
+		self.fields['group'].queryset = self.user_groups
+		if staff in self.user_groups and not self.fields['group'].initial:
+			self.fields['group'].initial = staff
+		elif len(self.user_groups) == 1:
+			self.fields['group'].initial = self.user_groups[0]
+			self.fields['group'].widget = forms.HiddenInput()
+
+	def clean_group(self):
+		value = self.cleaned_data['group']
+		if value and value not in self.user_groups:
+			raise ValidationError(_("You are not a member of this group!"))
+		return value
 
 
 class MenuItemPermissionForm(PermissionBaseForm):

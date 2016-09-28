@@ -5,6 +5,8 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from guardian.shortcuts import assign_perm
+
 from _1327.documents.models import Document
 
 MENUITEM_VIEW_PERMISSION_NAME = 'view_menuitem'
@@ -81,6 +83,10 @@ class MenuItem(models.Model):
 
 	def can_delete(self, user):
 		return self.can_edit(user)
+
+	def set_all_permissions(self, user_or_group):
+		assign_perm(self.view_permission_name, user_or_group, self)
+		assign_perm(self.change_children_permission_name, user_or_group, self)
 
 	@classmethod
 	def used_permissions(cls):
