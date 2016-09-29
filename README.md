@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.org/fsr-itse/1327.svg?branch=master)](https://travis-ci.org/fsr-itse/1327)
 [![Code Health](https://landscape.io/github/fsr-itse/1327/master/landscape.svg?style=flat)](https://landscape.io/github/fsr-itse/1327/master)
 
-A student representatives website.
+A student representatives website. This is currently **work in progress** - please wait for basic functionality until the [launch](https://github.com/fsr-itse/1327/milestone/1) happened.
 
 ## Development
 
