@@ -24,5 +24,5 @@ def list(request, groupid):
 			result[m.date.year] = []
 		result[m.date.year].append(m)
 	return render(request, "minutes_list.html", {
-		'minutes': result,
+		'minutes_list': sorted(result.items(), reverse=True),
 	})
