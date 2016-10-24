@@ -3,78 +3,43 @@
 # This file is distributed under the same license as the 1327 package.
 # Sebastian Brückner <sebbrueckner@gmail.com>, 2015.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-18 20:30+0200\n"
-"PO-Revision-Date: 2015-05-18 20:30+0200\n"
-"Last-Translator: Sebastian Brückner <sebbrueckner@gmail.com>\n"
+"POT-Creation-Date: 2016-10-24 20:16+0200\n"
+"PO-Revision-Date: 2016-10-25 20:37+0200\n"
+"Last-Translator: Johannes Wolf <janno42@gmail.com>\n"
 "Language-Team: \n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.8.11\n"
 
-#: models.py:15
+#: _1327/information_pages/models.py:16
 msgid "Information document"
 msgstr "Informationsseite"
 
-#: models.py:16
+#: _1327/information_pages/models.py:17
 msgid "Information documents"
 msgstr "Informationsseiten"
 
-#: templates/information_pages/admin_app_name.html:2
+#: _1327/information_pages/templates/information_pages/admin_app_name.html:2
 msgid "Information pages"
 msgstr "Informationsseiten"
 
-#: templates/information_pages_base.html:14
+#: _1327/information_pages/templates/information_pages_meta_information.html:4
 msgid "Author"
-msgstr "Autor"
+msgid_plural "Authors"
+msgstr[0] "Autor"
+msgstr[1] "Autoren"
 
-#: templates/information_pages_base.html:16
+#: _1327/information_pages/templates/information_pages_meta_information.html:6
 msgid "Created"
 msgstr "Erstellt"
 
-#: templates/information_pages_base.html:23
-msgid "View"
-msgstr "Anzeigen"
-
-#: templates/information_pages_base.html:24
-msgid "Edit"
-msgstr "Bearbeiten"
-
-#: templates/information_pages_base.html:25
-#: templates/information_pages_base.html:40
-msgid "Attachments"
-msgstr "Anhänge"
-
-#: templates/information_pages_base.html:26
-msgid "Permissions"
-msgstr "Berechtigungen"
-
-#: templates/information_pages_base.html:27
-msgid "Versions"
-msgstr "Versionen"
-
-#: templates/information_pages_base.html:31
-msgid "Table of Contents"
-msgstr "Inhaltsverzeichnis"
-
-#: views.py:23
-msgid "New Page from {}"
-msgstr "Neue Seite vom {}"
-
-#: views.py:35
-msgid "Successfully saved changes"
-msgstr "Änderungen erfolgreich gespeichert"
-
-#: views.py:106
-msgid "Permissions have been changed successfully."
-msgstr "Berechtigungen erfolgreich gespeichert"
-
-#: views.py:122
-msgid "File has been uploaded successfully!"
-msgstr "Datei erfolgreich hochgeladen"
+#: _1327/information_pages/templates/information_pages_meta_information.html:8
+msgid "Last change"
+msgstr "Letzte Änderung"

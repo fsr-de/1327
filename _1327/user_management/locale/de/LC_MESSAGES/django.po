@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-18 20:30+0200\n"
+"POT-Creation-Date: 2016-10-24 20:16+0200\n"
 "PO-Revision-Date: 2015-05-18 20:30+0200\n"
 "Last-Translator: Sebastian Brückner <sebbrueckner@gmail.com>\n"
 "Language-Team: \n"
@@ -18,70 +18,75 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: admin.py:14 forms.py:8
+#: _1327/user_management/admin.py:14 _1327/user_management/forms.py:10
 msgid "Password"
 msgstr "Passwort"
 
-#: admin.py:15
+#: _1327/user_management/admin.py:15
 msgid "Password confirmation"
 msgstr "Passwortbestätigung"
 
-#: admin.py:26
+#: _1327/user_management/admin.py:26
 msgid "Passwords don't match"
 msgstr "Passwörter stimmen nicht überein"
 
-#: admin.py:94
+#: _1327/user_management/admin.py:94
 msgid "Users"
 msgstr "Benutzer"
 
-#: forms.py:7 models.py:35
+#: _1327/user_management/forms.py:9 _1327/user_management/models.py:38
 msgid "User name"
 msgstr "Benutzername"
 
-#: forms.py:24
+#: _1327/user_management/forms.py:26
 msgid "Please enter a correct username and password."
 msgstr "Bitte gib einen korrekten Benutzernamen und Passwort ein."
 
-#: forms.py:26
+#: _1327/user_management/forms.py:28
 msgid "This account is inactive."
 msgstr "Dieser Account ist deaktiviert."
 
-#: models.py:9
+#: _1327/user_management/forms.py:36
+msgid "Select a user"
+msgstr ""
+
+#: _1327/user_management/models.py:12
 msgid "Users must have a username"
 msgstr "Benutzer brauchen einen Benutzernamen"
 
-#: models.py:36
+#: _1327/user_management/models.py:39
 msgid "Email address"
 msgstr "E-Mail-Adresse"
 
-#: models.py:37
+#: _1327/user_management/models.py:40
 msgid "First name"
 msgstr "Vorname"
 
-#: models.py:38
+#: _1327/user_management/models.py:41
 msgid "Last name"
 msgstr "Nachname"
 
-#: models.py:47
+#: _1327/user_management/models.py:51
 msgid "User profile"
 msgstr "Benutzerprofil"
 
-#: models.py:48
+#: _1327/user_management/models.py:52
 msgid "User profiles"
 msgstr "Benutzerprofile"
 
-#: templates/login.html:5 templates/login.html.py:14
+#: _1327/user_management/templates/login.html:5
+#: _1327/user_management/templates/login.html:14
 msgid "Login"
 msgstr "Login"
 
-#: templates/user_management/admin_app_name.html:2
+#: _1327/user_management/templates/user_impersonation.html:5
+msgid "View page as a different user"
+msgstr ""
+
+#: _1327/user_management/templates/user_impersonation.html:14
+msgid "View page as selected user"
+msgstr ""
+
+#: _1327/user_management/templates/user_management/admin_app_name.html:2
 msgid "User management"
 msgstr "Benutzerverwaltung"
-
-#: views.py:15
-msgid "You have been successfully logged in."
-msgstr "Du hast dich erfolgreich eingeloggt."
-
-#: views.py:27
-msgid "You have been successfully logged out."
-msgstr "Du hast dich erfolgreich ausgeloggt."

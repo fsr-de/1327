@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-17 17:48+0100\n"
+"POT-Creation-Date: 2016-10-24 20:16+0200\n"
 "PO-Revision-Date: 2015-03-17 16:52+0100\n"
 "Last-Translator: Sebastian Brückner <sebbrueckner@gmail.com>\n"
 "Language-Team: \n"
@@ -18,18 +18,164 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: admin.py:19
+#: _1327/main/forms.py:24
+msgid "You are only allowed to define a document"
+msgstr ""
+
+#: _1327/main/forms.py:26
+msgid "You must select a document"
+msgstr ""
+
+#: _1327/main/forms.py:45 _1327/main/forms.py:47
 msgid "This link is not valid."
 msgstr "Dieser Link ist ungültig."
 
-#: models.py:7
+#: _1327/main/forms.py:53
+msgid "You are only allowed to define one of document and link"
+msgstr ""
+
+#: _1327/main/forms.py:56
+msgid "You must select a document or link"
+msgstr ""
+
+#: _1327/main/forms.py:61 _1327/main/forms.py:94
+msgid "Edit permissions"
+msgstr ""
+
+#: _1327/main/forms.py:89 _1327/main/forms.py:115
+msgid "You are not a member of this group!"
+msgstr ""
+
+#: _1327/main/forms.py:126
+msgid "Role"
+msgstr ""
+
+#: _1327/main/models.py:22
+msgid "Main Menu"
+msgstr ""
+
+#: _1327/main/models.py:23
+msgid "Footer"
+msgstr ""
+
+#: _1327/main/models.py:25
 msgid "Title"
 msgstr "Titel"
 
-#: models.py:10
+#: _1327/main/models.py:28 _1327/main/templates/menu_items_list.html:19
 msgid "Link"
 msgstr "Link"
 
-#: models.py:11
+#: _1327/main/models.py:29 _1327/main/templates/menu_items_list.html:20
 msgid "Document"
 msgstr "Dokument"
+
+#: _1327/main/models.py:95
+msgid "view"
+msgstr ""
+
+#: _1327/main/models.py:96
+msgid "change children"
+msgstr ""
+
+#: _1327/main/models.py:102
+#: _1327/main/templates/abbreviation_explanation.html:19
+msgid "Abbreviation"
+msgstr ""
+
+#: _1327/main/models.py:103
+#: _1327/main/templates/abbreviation_explanation.html:20
+msgid "Explanation"
+msgstr ""
+
+#: _1327/main/templates/abbreviation_explanation.html:9
+msgid "Edit abbreviation explanations"
+msgstr ""
+
+#: _1327/main/templates/abbreviation_explanation.html:21
+msgid "Actions"
+msgstr ""
+
+#: _1327/main/templates/abbreviation_explanation.html:44
+msgid "Save abbreviation explanations"
+msgstr ""
+
+#: _1327/main/templates/abbreviation_explanation.html:58
+#: _1327/main/templates/menu_items_index.html:41
+msgid "Delete"
+msgstr ""
+
+#: _1327/main/templates/abbreviation_explanation.html:69
+msgid "Add another abbreviation explanation"
+msgstr ""
+
+#: _1327/main/templates/menu_item_edit.html:9
+msgid "Edit menu item"
+msgstr ""
+
+#: _1327/main/templates/menu_item_edit.html:11
+msgid "Create menu item"
+msgstr ""
+
+#: _1327/main/templates/menu_item_edit.html:22
+msgid "Permissions"
+msgstr ""
+
+#: _1327/main/templates/menu_item_edit.html:46
+msgid "Save"
+msgstr ""
+
+#: _1327/main/templates/menu_item_edit.html:58
+#: _1327/main/templates/menu_item_edit.html:64
+msgid "Please select..."
+msgstr ""
+
+#: _1327/main/templates/menu_items_index.html:9
+msgid "Menu items"
+msgstr ""
+
+#: _1327/main/templates/menu_items_index.html:13
+msgid "Main menu items"
+msgstr ""
+
+#: _1327/main/templates/menu_items_index.html:19
+msgid "Footer items"
+msgstr ""
+
+#: _1327/main/templates/menu_items_index.html:25
+msgid "Create new menu item"
+msgstr ""
+
+#: _1327/main/templates/menu_items_index.html:35
+msgid "Delete menu item"
+msgstr ""
+
+#: _1327/main/templates/menu_items_index.html:38
+msgid ""
+"Do you really want to delete this menu item? All subitems will also be "
+"deleted."
+msgstr ""
+
+#: _1327/main/templates/menu_items_index.html:42
+msgid "Cancel"
+msgstr ""
+
+#: _1327/main/views.py:89
+msgid "Successfully created menu item."
+msgstr ""
+
+#: _1327/main/views.py:115
+msgid "Successfully edited menu item."
+msgstr ""
+
+#: _1327/main/views.py:142
+msgid "There must always be at least one item in the main menu."
+msgstr ""
+
+#: _1327/main/views.py:144
+msgid "There must always be at least one item in the footer menu."
+msgstr ""
+
+#: _1327/main/views.py:164
+msgid "Successfully updated the abbreviation explanations."
+msgstr ""
