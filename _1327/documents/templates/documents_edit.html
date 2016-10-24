@@ -390,6 +390,11 @@
 		minimumInputLength: 1
 	});
 
+	$(".user-selection").select2({
+		language: "{{ LANGUAGE_CODE }}",
+		placeholder: "{% trans 'Please select...' %}"
+	});
+
 	{% block additional_scripts %}{% endblock %}
 
 	// add datepicker to date inputs
