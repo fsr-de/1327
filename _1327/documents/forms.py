@@ -30,7 +30,7 @@ class DocumentForm(forms.ModelForm):
 
 	class Meta:
 		model = Document
-		fields = ['title', 'text', 'comment', 'url_title', 'group']
+		fields = ['title', 'text', 'url_title', 'group', 'comment']
 
 	def __init__(self, *args, **kwargs):
 		user = kwargs.pop('user', None)
