@@ -9,6 +9,7 @@ admin.autodiscover()
 urlpatterns = [
 	url(r"^$", main_views.index, name='index'),
 	url(r"^documents/", include('_1327.documents.urls', namespace='documents')),
+	url(r"^information_pages/", include('_1327.information_pages.urls', namespace='information_pages')),
 	url(r"^minutes/", include('_1327.minutes.urls', namespace='minutes')),
 	url(r"^login$", user_management_views.login, name='login'),
 	url(r"^logout$", user_management_views.logout, name='logout'),

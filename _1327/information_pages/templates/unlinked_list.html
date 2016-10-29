@@ -1,0 +1,14 @@
+{% extends 'base_without_sidebar.html' %}
+{% load i18n %}
+
+{% block title %}
+	{% trans "Unlinked information pages" %}
+{% endblock %}
+
+{% block content %}
+	<ul>
+		{% for information_page in information_pages %}
+			<li><a href="{{ information_page.get_view_url }}">{{ information_page.title }}</a></li>
+		{% endfor %}
+	</ul>
+{% endblock %}

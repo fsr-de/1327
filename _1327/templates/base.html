@@ -76,13 +76,18 @@
 									<li><a href="{% url 'documents:create' 'poll' %}">{% trans "Polls" %}</a></li>
 								{% endif %}
 							{% endif %}
-							{% if CAN_CHANGE_MENU_ITEMS %}
+							{% if CAN_CHANGE_MENU_ITEMS or CAN_CREATE_INFORMATIONPAGE or user.is_superuser%}
 								<li role="separator" class="divider"></li>
-								<li><a href="{% url 'menu_items_index' %}">{% trans "Manage menu items" %}</a></li>
-							{% endif %}
-							{% if user.is_superuser %}
-								<li><a href="{% url 'abbreviation_explanation' %}">{% trans "Manage abbreviation explanations" %}</a></li>
-								<li><a href="{% url 'view_as' %}">{% trans "View page as different user" %}</a></li>
+								{% if CAN_CHANGE_MENU_ITEMS %}
+									<li><a href="{% url 'menu_items_index' %}">{% trans "Manage menu items" %}</a></li>
+								{% endif %}
+								{% if CAN_CREATE_INFORMATIONPAGE %}
+									<li><a href="{% url 'information_pages:unlinked_list' %}">{% trans "Find unlinked information pages" %}</a></li>
+								{% endif %}
+								{% if user.is_superuser %}
+									<li><a href="{% url 'abbreviation_explanation' %}">{% trans "Manage abbreviation explanations" %}</a></li>
+									<li><a href="{% url 'view_as' %}">{% trans "View page as different user" %}</a></li>
+								{% endif %}
 							{% endif %}
 							{% if user.is_superuser %}
 								<li role="separator" class="divider"></li>
