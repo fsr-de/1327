@@ -8,7 +8,7 @@
 {% block sidebar %}
 	<div class="toc hidden-print">
 		<ul>
-			{% for year, minutes in minutes.items %}
+			{% for year, minutes in minutes_list %}
 				<li><a href="#year{{ year }}">{{ year }}</a></li>
 			{% endfor %}
 		</ul>
@@ -16,7 +16,7 @@
 {% endblock %}
 
 {% block content %}
-	{% for year, minutes in minutes.items %}
+	{% for year, minutes in minutes_list %}
 		<h3 id="year{{ year }}">{{ year }}</h3>
 		<table class="table table-striped">
 			<tr>

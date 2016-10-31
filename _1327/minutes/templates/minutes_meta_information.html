@@ -5,7 +5,7 @@
 	<dd>{{ document.date|date:"d. M Y" }}</dd>
 	<dt>{% trans "Moderator" %}</dt>
 	<dd>{{ document.moderator }}</dd>
-	<dt>{% trans "Minute taker" %}</dt>
+	<dt>{% trans "Minutes taker" %}</dt>
 	<dd>{{ document.author }}</dd>
 	<dt>{% trans "Participants" %}</dt>
 	{% for participant in document.participants.all %}
