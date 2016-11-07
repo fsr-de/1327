@@ -93,7 +93,7 @@ class MinutesDocument(Document):
 		return self.state == MinutesDocument.CUSTOM
 
 	def show_publish_button(self):
-		return self.state == MinutesDocument.UNPUBLISHED
+		return not self.is_in_creation and self.state == MinutesDocument.UNPUBLISHED
 
 	def publish(self, state_id):
 		if state_id not in (MinutesDocument.PUBLISHED, MinutesDocument.PUBLISHED_STUDENT):

@@ -88,7 +88,7 @@ def edit(request, title, new_autosaved_pages=None, initial=None):
 			'form': form,
 			'attachment_form': attachment_form,
 			'active_page': 'edit',
-			'creation': (len(revisions.get_for_object(document)) == 0),
+			'creation': document.is_in_creation,
 			'new_autosaved_pages': new_autosaved_pages,
 			'permission_warning': permission_warning(request.user, document),
 			'supported_image_types': settings.SUPPORTED_IMAGE_TYPES,

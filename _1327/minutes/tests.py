@@ -43,21 +43,25 @@ class TestEditor(WebTest):
 		Test if the publish and permission buttons are displayed on the correct minutes states
 		"""
 		unpublished_document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.UNPUBLISHED)
+		unpublished_document.set_all_permissions(Group.objects.get(name="Staff"))
 		response = self.app.get(reverse('documents:view', args=[unpublished_document.url_title]), user=self.user)
 		self.assertIn("Publish", response)
 		self.assertNotIn("Berechtigungen", response)  # this is localized on the build server
 
 		published_document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.PUBLISHED)
+		published_document.set_all_permissions(Group.objects.get(name="Staff"))
 		response = self.app.get(reverse('documents:view', args=[published_document.url_title]), user=self.user)
 		self.assertNotIn("Publish", response)
 		self.assertNotIn("Berechtigungen", response)  # this is localized on the build server
 
 		internal_document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.INTERNAL)
+		internal_document.set_all_permissions(Group.objects.get(name="Staff"))
 		response = self.app.get(reverse('documents:view', args=[internal_document.url_title]), user=self.user)
 		self.assertNotIn("Publish", response)
 		self.assertNotIn("Berechtigungen", response)  # this is localized on the build server
 
 		custom_document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.CUSTOM)
+		custom_document.set_all_permissions(Group.objects.get(name="Staff"))
 		response = self.app.get(reverse('documents:view', args=[custom_document.url_title]), user=self.user)
 		self.assertNotIn("Publish", response)
 		self.assertIn("Berechtigungen", response)  # this is localized on the build server

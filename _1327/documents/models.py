@@ -128,6 +128,10 @@ class Document(PolymorphicModel):
 			return None
 		return last_revision.revision.date_created
 
+	@property
+	def is_in_creation(self):
+		return not self.has_perms()
+
 	def show_permissions_editor(self):
 		return True
 
