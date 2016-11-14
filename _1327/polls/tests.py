@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import floatformat
 from django.test import TestCase
 from django_webtest import WebTest
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import assign_perm, get_perms
 from model_mommy import mommy
 
 from _1327.polls.models import Choice, Poll
@@ -130,6 +130,40 @@ class PollViewTests(WebTest):
 
 		poll = Poll.objects.get(title='TestPoll')
 		self.assertEqual(poll.choices.count(), 2)
+
+	def test_create_poll_with_permissions(self):
+		group = mommy.make(Group)
+		group.user_set.add(self.user)
+		response = self.app.get(reverse('documents:create', args=['poll']), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		form = response.forms['document-form']
+		form['choices-0-description'] = 'test description'
+		form['choices-0-index'] = 0
+		form['choices-0-text'] = 'test choice'
+		form['choices-1-description'] = 'test description 2'
+		form['choices-1-index'] = 1
+		form['choices-1-text'] = 'test choice 2'
+		form['title'] = 'TestPoll'
+		form['text'] = 'Sample Text'
+		form['max_allowed_number_of_answers'] = 1
+		form['start_date'] = '2016-01-01'
+		form['end_date'] = '2088-01-01'
+		form['comment'] = 'sample comment'
+		form['group'] = group.pk
+		form['vote_groups'] = [group.pk]
+
+		response = form.submit()
+		self.assertEqual(response.status_code, 302)
+
+		poll = Poll.objects.get(title='TestPoll')
+		self.assertEqual(poll.choices.count(), 2)
+		group_permissions = ["polls.{}".format(name) for name in get_perms(group, poll)]
+		self.assertEqual(len(group_permissions), 4)
+		self.assertIn(poll.edit_permission_name, group_permissions)
+		self.assertIn(poll.vote_permission_name, group_permissions)
+		self.assertIn(poll.view_permission_name, group_permissions)
+		self.assertIn(poll.delete_permission_name, group_permissions)
 
 	def test_create_poll_user_has_no_permission(self):
 		user = mommy.make(UserProfile)

@@ -62,6 +62,11 @@ class Poll(Document):
 			count += 1
 		return slug_final
 
+	@property
+	def vote_permission_name(self):
+		content_type = ContentType.objects.get_for_model(self)
+		return "{app}.{permission_name}".format(app=content_type.app_label, permission_name=POLL_VOTE_PERMISSION_NAME)
+
 	def get_view_url(self):
 		return reverse('documents:view', args=(self.url_title,))
 
