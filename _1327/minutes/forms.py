@@ -25,6 +25,7 @@ class MinutesDocumentForm(DocumentForm):
 	def get_formset_factory(cls):
 		return inlineformset_factory(MinutesDocument, Guest, form=GuestForm, can_delete=True, extra=1)
 
+
 MinutesDocument.Form = MinutesDocumentForm
 
 
@@ -32,5 +33,6 @@ class GuestForm(forms.ModelForm):
 	class Meta:
 		model = Guest
 		fields = ['name']
+
 
 Guest.Form = GuestForm

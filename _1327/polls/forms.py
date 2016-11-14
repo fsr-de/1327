@@ -44,6 +44,7 @@ class PollForm(DocumentForm):
 				raise ValidationError(_("Anonymous and university network groups are not allowed to vote!"))
 		return groups
 
+
 Poll.Form = PollForm
 
 

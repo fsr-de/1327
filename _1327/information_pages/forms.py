@@ -6,4 +6,5 @@ class InformationDocumentForm(DocumentForm):
 	class Meta(DocumentForm.Meta):
 		model = InformationDocument
 
+
 InformationDocument.Form = InformationDocumentForm

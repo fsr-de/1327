@@ -20,10 +20,12 @@ class DocumentAdmin(GuardedModelAdmin, VersionAdmin, PolymorphicParentModelAdmin
 
 	list_display = ('title', 'url_title')
 
+
 admin.site.register(Document, DocumentAdmin)
 
 
 class AttachmentAdmin(admin.ModelAdmin):
 	pass
+
 
 admin.site.register(Attachment, AttachmentAdmin)

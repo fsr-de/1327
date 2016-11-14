@@ -67,6 +67,7 @@ class DocumentForm(forms.ModelForm):
 	def get_formset_factory(cls):
 		return None
 
+
 Document.Form = DocumentForm
 
 

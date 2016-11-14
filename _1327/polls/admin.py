@@ -17,4 +17,5 @@ class PollAdmin(GuardedModelAdmin, PolymorphicChildModelAdmin):
 	list_display = ('title', 'end_date')
 	inlines = [ChoiceInline]
 
+
 admin.site.register(Poll, PollAdmin)

@@ -36,7 +36,8 @@ def delete_old_empty_pages():
 
 def handle_edit(request, document, formset=None, initial=None):
 	if request.method == 'POST':
-		form = document.Form(request.POST, instance=document, initial=initial, user=request.user, creation=document.is_in_creation)
+		creation = document.is_in_creation
+		form = document.Form(request.POST, instance=document, initial=initial, user=request.user, creation=creation)
 		if form.is_valid() and (formset is None or formset.is_valid()):
 			cleaned_data = form.cleaned_data
 
@@ -50,7 +51,7 @@ def handle_edit(request, document, formset=None, initial=None):
 				revisions.set_user(request.user)
 				revisions.set_comment(cleaned_data['comment'])
 
-			if not document.has_perms():
+			if not document.has_perms() or creation:
 				document.set_all_permissions(cleaned_data['group'])
 
 			# delete Autosave
