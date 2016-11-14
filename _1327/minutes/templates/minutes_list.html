@@ -21,13 +21,16 @@
 		<table class="table table-striped">
 			<tr>
 				<th class="col-xs-2">{% trans "Date" %}</th>
-				<th class="col-xs-10">{% trans "Title" %}</th>
+				<th class="col-xs-4">{% trans "Title" %}</th>
+				<th class="col-xs-6"></th>
 			</tr>
 			{% for minute in minutes %}
 				<tr>
 					<td>{{ minute.date | date:"d.m.Y" }}</td>
 					<td>
 						<a href="{{ minute.get_view_url }}">{{ minute.title }}</a>
+					</td>
+					<td>
 						{% for label in minute.labels.all %}
 							<span class="label {{ label.class_for_text_color }}" style="background-color: {{ label.color }};">{{ label.title }}</span>
 						{% endfor %}

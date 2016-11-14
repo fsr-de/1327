@@ -19,8 +19,8 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th colspan="2">Revision</th>
-                <th colspan="2">Compare</th>
+                <th colspan="2">{% trans "Revision" %}</th>
+                <th colspan="2">{% trans "Compare" %}</th>
                 <th></th>
             </tr>
         </thead>
@@ -28,12 +28,12 @@
             {% for id, version, data in versions %}
             <tr>
                 <td>{{ id }}</td>
-                <td>{{ version.revision.date_created }}, {{ version.revision.comment }} by {{ version.revision.user }}</td>
+                <td>{{ version.revision.date_created|date:'d.m.Y' }}, {{ version.revision.comment }} {% trans 'by' %} {{ version.revision.user }}</td>
                 <td><input type="radio" class="version-control" name="compare-a" value="{{ id }}"></td>
                 <td><input type="radio" class="version-control" name="compare-b" value="{{ id }}"></td>
                 <td>
                     {% if not forloop.last %}
-                        <button type="button" class="btn btn-default version-revert-button" data-toggle="modal" data-target="#confirmation-modal" data-revision-id="{{ version.pk }}" data-revision-name="{{ version.revision.date_created }}, {{ version.revision.comment }} by {{ version.revision.user }}">{% trans "Revert to this version" %}</button>
+                        <button type="button" class="btn btn-default version-revert-button" data-toggle="modal" data-target="#confirmation-modal" data-revision-id="{{ version.pk }}" data-revision-name="{{ version.revision.date_created|date:'d.m.Y' }}, {{ version.revision.comment }} {% trans 'by' %} {{ version.revision.user }}">{% trans "Revert to this version" %}</button>
                     {% endif %}
                 </td>
             </tr>

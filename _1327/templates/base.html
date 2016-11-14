@@ -54,26 +54,23 @@
 							</li>
 						{% endif %}
 					{% endfor %}
-					<li class="dropdown pull-right{% if user.is_authenticated %} active{% endif %}">
-						<a href="#"><span class="glyphicon glyphicon-user"></span></a>
+					<li class="dropdown pull-right{% if user.is_authenticated %} active{% endif %} login-button">
+						<a href="{% if user.is_authenticated %}{% url 'logout' %}{% else %}{% url 'login' %}{% endif %}" class="login-link"><span class="glyphicon glyphicon-user"></span></a>
 						<ul class="dropdown-menu">
 							{% if user.is_authenticated %}
 								<li class="disabled"><a href="#">{% trans "Logged in as" %} {{ user.username }}</a></li>
-								<li><a href="{% url 'logout' %}">Logout</a></li>
-							{% else %}
-								<li><a href="{% url 'login' %}">Login</a></li>
 							{% endif %}
 							{% if CAN_CREATE_INFORMATIONPAGE or CAN_CREATE_MINUTES or CAN_CREATE_POLL %}
 								<li role="separator" class="divider"></li>
 								<li class="disabled"><a href="#">{% trans "Create content" %}</a></li>
 								{% if CAN_CREATE_INFORMATIONPAGE %}
-									<li><a href="{% url 'documents:create' 'informationdocument'%}">{% trans "Information page" %}</a></li>
+									<li class="indented"><a href="{% url 'documents:create' 'informationdocument'%}">{% trans "Information page" %}</a></li>
 								{% endif %}
 								{% if CAN_CREATE_MINUTES %}
-									<li><a href="{% url 'documents:create' 'minutesdocument' %}">{% trans "Minutes" %}</a></li>
+									<li class="indented"><a href="{% url 'documents:create' 'minutesdocument' %}">{% trans "Minutes" %}</a></li>
 								{% endif %}
 								{% if CAN_CREATE_POLL %}
-									<li><a href="{% url 'documents:create' 'poll' %}">{% trans "Polls" %}</a></li>
+									<li class="indented"><a href="{% url 'documents:create' 'poll' %}">{% trans "Polls" %}</a></li>
 								{% endif %}
 							{% endif %}
 							{% if CAN_CHANGE_MENU_ITEMS or CAN_CREATE_INFORMATIONPAGE or user.is_superuser%}
@@ -180,7 +177,7 @@
 			</defs>
 			<polygon class="headline-bar-shadow hidden-print" filter="url(#shadow)" points=""></polygon>
 			<polygon class="headline-bar hidden-print" points=""></polygon>
-			<text class="headline-text" dx="30" dy="25">{% block title %}{% endblock %}</text>
+			<text class="headline-text" dx="20" dy="25">{% block title %}{% endblock %}</text>
 		</svg>
 	</div>
 	{% endblock %}
@@ -188,16 +185,17 @@
 	<footer class="hidden-print">
 		<div class="footer-line"></div> {# Top line for footer #}
 		<div class="footer-line gradient gradient-inv"></div> {# Gradient line #}
-		<div class="container">
+		<div class="container footer-container">
 			<ul class="pull-left">
 				{% for item in footer %}
 					<li><a href="{{ item.get_url }}">{{ item.title }}</a></li>
 				{% endfor %}
 			</ul>
-			<span class="pull-right">Powered by <a href="https://github.com/fsr-itse/1327">1327</a>.</span>
+			<span class="pull-right">Powered by <a class="brand-link" href="https://github.com/fsr-itse/1327">1327</a>.</span>
 		</div>
 	</footer>
 </div>
+<a id="back-to-top" href="#" class="btn btn-primary back-to-top" role="button" title="{% trans 'Return to the top of the page' %}" data-toggle="tooltip" data-placement="left"><span class="glyphicon glyphicon-chevron-up"></span></a>
 {% endblock %}
 
 
@@ -207,11 +205,29 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 			// resize headline bar to fit the text
-			var l = $('.headline-text')[0].getComputedTextLength() + 50;
+			var l = $('.headline-text')[0].getComputedTextLength() + 28;
 			var points = "-10,0 " + (l+18) + ",0 " + l + ",50 -10,50";
 			$('.headline-bar')[0].setAttribute('points', points);
 			$('.headline-bar-shadow')[0].setAttribute('points', points);
 			$('[data-toggle="tooltip"]').tooltip();
+
+			// add scroll to top button
+			$(window).scroll(function () {
+				if ($(this).scrollTop() > 50) {
+					$('#back-to-top').fadeIn();
+				} else {
+					$('#back-to-top').fadeOut();
+				}
+			});
+			// scroll body to 0px on click
+			$('#back-to-top').click(function () {
+				$('#back-to-top').tooltip('hide');
+				$('body,html').animate({
+					scrollTop: 0
+				}, 800);
+				return false;
+			});
+			$('#back-to-top').tooltip('show');
 		});
 	</script>
 {% endblock %}

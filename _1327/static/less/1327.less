@@ -43,6 +43,10 @@ h6 {
 	font-size: 15px;
 }
 
+::selection {
+	background: @hpi-blue;
+}
+
 div#wrapper {
 	position: relative;
 	min-height: 100%;
@@ -102,6 +106,15 @@ div#wrapper {
 }
 .brand > a {
 	height: 50px;
+}
+.login-button:hover a.login-link span {
+	display: none;
+}
+.login-button:hover a.login-link:after {
+	content: 'Login';
+}
+.login-button.active:hover a.login-link:after {
+	content: 'Logout';
 }
 
 .header-line {
@@ -198,14 +211,18 @@ div#wrapper {
 .dropdown-menu li:hover .sub-menu {
 	visibility: visible;
 }
+.dropdown-menu li.indented {
+	padding-left: 10px;
+}
 
 
 .container.content {
+	padding-left: 20px;
 	margin-bottom: 30px;
 }
 
 .headline {
-	margin: 10px 0;
+	margin: 10px 0 0 0;
 }
 .headline-text {
 	font-size: 26px;
@@ -240,6 +257,13 @@ div#wrapper {
 	color: @gray-darker;
 }
 
+.back-to-top {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    display:none;
+}
+
 footer {
 	position: absolute;
 	left: 0;
@@ -265,15 +289,23 @@ footer {
 		}
 	}
 	a {
+		color: @gray-lighter;
+	}
+	a.brand-link {
 		color: @hpi-yellow;
 	}
 }
 
-.divider {
+.footer-container {
+	padding-left: 20px;
+	padding-right: 20px;
+}
+
+.dropdown-menu .divider {
 	height: 1px;
 	margin: 9px 0;
 	overflow: hidden;
-	background-color: @gray-light;
+	background-color: @gray-darker;
 }
 
 .content img {
@@ -378,7 +410,7 @@ div.radio {
 }
 
 .sidebar dt:not(:first-child) {
-  margin-top: 8px;
+  margin-top: 12px;
 }
 
 .toc-heading {
@@ -411,6 +443,10 @@ div.radio {
 	&:hover {
 		color: @gray;
 	}
+}
+
+.md-editor.md-fullscreen-mode {
+	z-index: 999999;
 }
 
 .input-group[class*="inlineformset"] {

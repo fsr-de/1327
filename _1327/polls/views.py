@@ -74,6 +74,7 @@ def results(request, poll, url_title):
 			"description": description,
 			'toc': md.toc,
 			'active_page': 'view',
+			'view_page': True,
 			'attachments': poll.attachments.filter(no_direct_download=False).order_by('index'),
 			'permission_warning': permission_warning(request.user, poll),
 		}
@@ -119,6 +120,7 @@ def vote(request, poll, url_title):
 			"description": description,
 			'toc': md.toc,
 			'active_page': 'view',
+			'view_page': True,
 			"widget": "checkbox" if poll.max_allowed_number_of_answers != 1 else "radio",
 			'attachments': poll.attachments.filter(no_direct_download=False).order_by('index'),
 			'permission_warning': permission_warning(request.user, poll),

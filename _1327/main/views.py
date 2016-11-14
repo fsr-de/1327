@@ -42,6 +42,7 @@ def index(request):
 			'toc': md.toc,
 			'attachments': document.attachments.filter(no_direct_download=False).order_by('index'),
 			'active_page': 'view',
+			'view_page': True,
 			'permission_warning': permission_warning(request.user, document),
 		})
 	except ObjectDoesNotExist:
