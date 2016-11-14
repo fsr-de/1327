@@ -54,6 +54,13 @@ class Poll(Document):
 		return _("New Poll")
 
 	@classmethod
+	def get_vote_permission(klass):
+		content_type = ContentType.objects.get_for_model(klass)
+		app_label = content_type.app_label
+		permission = "{}.{}".format(app_label, klass.VOTE_PERMISSION_NAME)
+		return permission
+
+	@classmethod
 	def generate_default_slug(cls, title):
 		slug_final = slug = "new-poll-from-{}".format(date.today().isoformat())
 		count = 2

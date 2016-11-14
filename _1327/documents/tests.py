@@ -301,17 +301,19 @@ class TestSignals(TestCase):
 		test_user.save()
 
 		model_permissions = get_perms_for_model(InformationDocument)
+		permission_names = []
 		for permission in model_permissions:
 			permission_name = "{}.{}".format(permission.content_type.app_label, permission.codename)
 			assign_perm(permission_name, group)
+			permission_names.append(permission_name)
 
 		# test whether we can remove a permission from the group
 		# the permission should not be added again
 		test_object = mommy.make(InformationDocument)
-		self.assertTrue(test_user.has_perm(model_permissions[0].codename, test_object))
-		remove_perm(model_permissions[0].codename, group, test_object)
+		self.assertTrue(test_user.has_perm(permission_names[0], test_object))
+		remove_perm(permission_names[0], group, test_object)
 		test_object.save()
-		self.assertFalse(test_user.has_perm(model_permissions[0].codename, test_object))
+		self.assertFalse(test_user.has_perm(permission_names[0], test_object))
 
 
 class TestSubclassConstraints(TestCase):
