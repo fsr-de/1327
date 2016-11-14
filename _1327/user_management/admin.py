@@ -78,6 +78,7 @@ class UserProfileAdmin(UserAdmin):
 	search_fields = ('username',)
 	ordering = ('username',)
 
+
 # Now register the new UserAdmin...
 admin.site.register(UserProfile, UserProfileAdmin)
 
@@ -126,6 +127,7 @@ class GroupAdminForm(forms.ModelForm):
 
 class MyGroupAdmin(GroupAdmin):
 	form = GroupAdminForm
+
 
 admin.site.unregister(Group)
 admin.site.register(Group, MyGroupAdmin)
