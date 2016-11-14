@@ -46,25 +46,25 @@ class TestEditor(WebTest):
 		unpublished_document.set_all_permissions(Group.objects.get(name="Staff"))
 		response = self.app.get(reverse('documents:view', args=[unpublished_document.url_title]), user=self.user)
 		self.assertIn("Publish", response)
-		self.assertNotIn("Berechtigungen", response)  # this is localized on the build server
+		self.assertNotIn("Permissions", response)
 
 		published_document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.PUBLISHED)
 		published_document.set_all_permissions(Group.objects.get(name="Staff"))
 		response = self.app.get(reverse('documents:view', args=[published_document.url_title]), user=self.user)
 		self.assertNotIn("Publish", response)
-		self.assertNotIn("Berechtigungen", response)  # this is localized on the build server
+		self.assertNotIn("Permissions", response)
 
 		internal_document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.INTERNAL)
 		internal_document.set_all_permissions(Group.objects.get(name="Staff"))
 		response = self.app.get(reverse('documents:view', args=[internal_document.url_title]), user=self.user)
 		self.assertNotIn("Publish", response)
-		self.assertNotIn("Berechtigungen", response)  # this is localized on the build server
+		self.assertNotIn("Permissions", response)
 
 		custom_document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.CUSTOM)
 		custom_document.set_all_permissions(Group.objects.get(name="Staff"))
 		response = self.app.get(reverse('documents:view', args=[custom_document.url_title]), user=self.user)
 		self.assertNotIn("Publish", response)
-		self.assertIn("Berechtigungen", response)  # this is localized on the build server
+		self.assertIn("Permissions", response)
 
 	def test_publish_button(self):
 		"""
