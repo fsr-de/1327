@@ -13,10 +13,9 @@ class IPRangeUserMiddleware:
 			raise ImproperlyConfigured from e
 
 	def process_request(self, request):
-		if request.user.is_anonymous():
-			address = ip_address(request.META.get('REMOTE_ADDR'))
-			for ip_range, group_name in self.ip_ranges.items():
-				if address in ip_range:
-					# user is in this IP range
-					request.user._ip_range_group_name = group_name
-					break
+		address = ip_address(request.META.get('REMOTE_ADDR'))
+		for ip_range, group_name in self.ip_ranges.items():
+			if address in ip_range:
+				# user is in this IP range
+				request.user._ip_range_group_name = group_name
+				break
