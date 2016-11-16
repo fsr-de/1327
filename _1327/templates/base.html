@@ -154,8 +154,10 @@
 				</ul>
 			</nav>
 		</div>
-		<div class="header-line gradient"></div> {# Gradient line #}
-		<div class="header-line"></div> {# Bottom line for menu #}
+		<div class="header-line-gradient gradient"></div> {# Gradient line #}
+		<div class="header-line-breadcrumbs">
+			{% block breadcrumbs %}{% endblock %}
+		</div> {# Bottom line for menu #}
 	</header>
 
 	{% hijack_notification %}
@@ -209,6 +211,7 @@
 			var points = "-10,0 " + (l+18) + ",0 " + l + ",50 -10,50";
 			$('.headline-bar')[0].setAttribute('points', points);
 			$('.headline-bar-shadow')[0].setAttribute('points', points);
+
 			$('[data-toggle="tooltip"]').tooltip();
 
 			// add scroll to top button

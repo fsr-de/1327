@@ -45,6 +45,7 @@ h6 {
 
 ::selection {
 	background: @hpi-blue;
+	color: @gray-lighter;
 }
 
 div#wrapper {
@@ -117,9 +118,14 @@ div#wrapper {
 	content: 'Logout';
 }
 
-.header-line {
+.header-line-gradient {
 	height: 5px;
 	background-color: @gray-dark;
+}
+.header-line-breadcrumbs {
+	color: @hpi-yellow;
+	background-color: @gray-dark;
+	min-height: 5px;
 }
 .footer-line {
 	height: 3px;
@@ -227,12 +233,35 @@ div#wrapper {
 .headline-text {
 	font-size: 26px;
 	dominant-baseline: central;
+	fill: @gray-darker;
 }
 .headline-bar {
 	fill: @hpi-yellow;
 }
 .headline-bar-shadow {
 	fill: @hpi-gray;
+}
+
+ul.breadcrumbs {
+	font-size: 10pt;
+	padding: 5px 0 5px 20px;
+	margin: 0;
+	li {
+		display: inline-block;
+		&:before {
+			padding: 0 2px;
+			color: @gray;
+		}
+		&:first-child:before {
+			padding: 0;
+		}
+		.glyphicon {
+			font-size: 8pt;
+		}
+	}
+	a {
+		color: @gray-lighter;
+	}
 }
 
 .messages {
