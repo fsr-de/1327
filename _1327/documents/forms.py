@@ -39,12 +39,14 @@ class DocumentForm(forms.ModelForm):
 		staff = Group.objects.get(name=settings.STAFF_GROUP_NAME)
 		self.user_groups = user.groups.all()
 		self.fields['group'].queryset = self.user_groups
-		if staff in self.user_groups and not self.fields['group'].initial:
-			self.fields['group'].initial = staff
-		elif len(self.user_groups) == 1:
-			self.fields['group'].initial = self.user_groups[0]
-			self.fields['group'].widget = forms.HiddenInput()
-		if not creation:
+		if creation:
+			if staff in self.user_groups and not self.fields['group'].initial:
+				self.fields['group'].initial = staff
+				self.fields['group'].widget.attrs['class'] = 'select2-selection'
+			elif len(self.user_groups) == 1:
+				self.fields['group'].initial = self.user_groups[0]
+				self.fields['group'].widget = forms.HiddenInput()
+		else:
 			self.fields['group'].widget = forms.HiddenInput()
 			self.fields['group'].required = False
 

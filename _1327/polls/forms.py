@@ -16,6 +16,15 @@ class PollForm(DocumentForm):
 		model = Poll
 		fields = ['title', 'url_title', 'text', 'start_date', 'end_date', 'max_allowed_number_of_answers', 'show_results_immediately', 'comment', 'group', 'vote_groups']
 
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		creation = kwargs.pop('creation', None)
+		if creation:
+			self.fields['vote_groups'].widget.attrs['class'] = 'select2-selection'
+		else:
+			self.fields['vote_groups'].widget = forms.HiddenInput()
+			self.fields['vote_groups'].required = False
+
 	def clean(self):
 		super().clean()
 		start_date = self.cleaned_data.get('start_date')
