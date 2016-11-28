@@ -13,7 +13,7 @@
 							{% else %}
 								"id": "[{{ minute.title }}](document:{{ minute.id }})",
 							{% endif %}
-							"text": "{{ minute.title }}"
+							"text": "{{ minute.title }} ({{ minute.date|date:"d.m.Y" }})"
 						}{% if not forloop.last %},{% endif %}
 					{% endfor %}
 				]
