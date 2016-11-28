@@ -25,7 +25,7 @@ def index(request):
 	upcoming_polls = []
 	# do not show polls that a user is not allowed to see
 	for poll in Poll.objects.all():
-		if request.user.has_perm(Poll.VIEW_PERMISSION_NAME, obj=poll) and poll.start_date <= datetime.date.today():
+		if request.user.has_perm(Poll.get_view_permission(), obj=poll) and poll.start_date <= datetime.date.today():
 			if datetime.date.today() <= poll.end_date \
 						and not poll.participants.filter(id=request.user.pk).exists() \
 						and request.user.has_perm(Poll.VOTE_PERMISSION_NAME, poll):
@@ -51,7 +51,7 @@ def results(request, poll, url_title):
 		# poll is not open
 		raise Http404
 
-	if request.user.has_perm(Poll.VOTE_PERMISSION_NAME, poll) \
+	if request.user.has_perm(Poll.get_vote_permission(), poll) \
 				and not poll.participants.filter(id=request.user.pk).exists() \
 				and poll.end_date >= datetime.date.today():
 		return vote(request, poll, url_title)

@@ -83,7 +83,7 @@ MIDDLEWARE_CLASSES = [
 AUTHENTICATION_BACKENDS = [
 	'django.contrib.auth.backends.ModelBackend',
 	'guardian.backends.ObjectPermissionBackend',
-	'_1327.user_management.authentication.IPRangeAuthorizationBackend',
+	'_1327.user_management.authentication._1327AuthorizationBackend',
 ]
 
 # needed by django-guardian library

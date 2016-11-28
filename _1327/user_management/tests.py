@@ -1,8 +1,12 @@
+from django.conf import settings
+from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 from django_webtest import WebTest
+from guardian.shortcuts import assign_perm
 from guardian.utils import get_anonymous_user
 from model_mommy import mommy
 
+from _1327.information_pages.models import InformationDocument
 from .models import UserProfile
 
 
@@ -102,3 +106,92 @@ class UserImpersonationTests(WebTest):
 
 		response = self.app.post('/hijack/{username}/'.format(username=user.username), user=self.user, expect_errors=True)
 		self.assertEqual(response.status_code, 400)
+
+
+class _1327AuthenticationBackendTests(WebTest):
+
+	csrf_checks = False
+	extra_environ = {'HTTP_ACCEPT_LANGUAGE': 'en'}
+
+	def setUp(self):
+		self.document = mommy.make(InformationDocument)
+		self.user = mommy.make(UserProfile)
+
+	def test_anonymous_fallback_if_user_has_no_permissions(self):
+		anonymous_user = get_anonymous_user()
+		anonymous_groups = anonymous_user.groups.all()
+		for group in anonymous_groups:
+			assign_perm(self.document.view_permission_name, group, self.document)
+
+		response = self.app.get(reverse('documents:view', args=[self.document.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+	def test_anonymous_fallback_without_anonymous_permission(self):
+		for group in Group.objects.all().exclude(name=settings.ANONYMOUS_GROUP_NAME):
+			assign_perm(self.document.view_permission_name, group, self.document)
+
+		response = self.app.get(reverse('documents:view', args=[self.document.url_title]), expect_errors=True, user=self.user)
+		self.assertEqual(response.status_code, 403)
+
+	def test_anonymous_fallback_not_used_if_user_has_permission(self):
+		group = mommy.make(Group)
+		self.user.groups.add(group)
+		self.user.save()
+
+		assign_perm(self.document.view_permission_name, group, self.document)
+
+		response = self.app.get(reverse('documents:view', args=[self.document.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+	def test_university_network_fallback_no_access(self):
+		# check that user is not allowed to view the document if he is not in the university network
+		university_group = mommy.make(Group)
+		assign_perm(self.document.view_permission_name, university_group, self.document)
+
+		university_group_setting = {
+			"ANONYMOUS_IP_RANGE_GROUPS": {
+				'8.0.0.0/8': university_group.name,
+			}
+		}
+
+		with self.settings(**university_group_setting):
+			response = self.app.get(reverse('documents:view', args=[self.document.url_title]), expect_errors=True)
+			self.assertEqual(response.status_code, 403)
+
+	def test_university_network_fallback_access_granted(self):
+		# check that user can see the document if he is in the university network
+		university_group = mommy.make(Group)
+		assign_perm(self.document.view_permission_name, university_group, self.document)
+
+		university_group_setting = {
+			"ANONYMOUS_IP_RANGE_GROUPS": {
+				'8.0.0.0/8': university_group.name,
+			}
+		}
+
+		with self.settings(**university_group_setting):
+			# mimic that the user is in the university network
+			request_meta = {'REMOTE_ADDR': '8.0.0.1'}
+
+			response = self.app.get(reverse('documents:view', args=[self.document.url_title]), extra_environ=request_meta)
+			self.assertEqual(response.status_code, 200)
+
+	def test_university_network_fallback_university_network_no_access(self):
+		university_group = mommy.make(Group)
+
+		university_group_setting = {
+			"ANONYMOUS_IP_RANGE_GROUPS": {
+				'8.0.0.0/8': university_group.name,
+			}
+		}
+
+		with self.settings(**university_group_setting):
+			# mimic that the user is in the university network
+			request_meta = {'REMOTE_ADDR': '8.0.0.1'}
+
+			response = self.app.get(
+				reverse('documents:view', args=[self.document.url_title]),
+				extra_environ=request_meta,
+				expect_errors=True,
+			)
+			self.assertEqual(response.status_code, 403)
