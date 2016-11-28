@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.admin.utils import NestedObjects
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import PermissionDenied, SuspiciousOperation
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, SuspiciousOperation
 from django.core.urlresolvers import reverse
 from django.db import DEFAULT_DB_ALIAS, models, transaction
 from django.forms import formset_factory
@@ -23,7 +23,7 @@ from sendfile import sendfile
 from _1327 import settings
 from _1327.documents.forms import get_permission_form
 from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
-from _1327.documents.models import Attachment, Document
+from _1327.documents.models import Attachment, Document, TemporaryDocumentText
 from _1327.documents.utils import delete_cascade_to_json, delete_old_empty_pages, get_model_function, get_new_autosaved_pages_for_user, \
 	handle_attachment, handle_autosave, handle_edit, permission_warning, prepare_versions
 from _1327.information_pages.models import InformationDocument
@@ -66,6 +66,19 @@ def edit(request, title, new_autosaved_pages=None, initial=None):
 	content_type = ContentType.objects.get_for_model(document)
 	if document.has_perms():
 		check_permissions(document, request.user, [document.edit_permission_name])
+	elif new_autosaved_pages is None and initial is None:
+		# page is not new and has no permissions set, it is likely that somebody tries to view an autosaved page
+		# users are only allowed to view autosaved pages if they have the "add" permission for documents
+		check_permissions(document, request.user, [document.add_permission_name])
+
+		try:
+			autosave = TemporaryDocumentText.objects.get(document=document)
+			if autosave.author != request.user:
+				raise PermissionDenied
+		except ObjectDoesNotExist:
+			# There is no autosave linked to this document, this means that the document can be treated as a new
+			# document, hence everyone with add permissions may work with this document
+			pass
 
 	# if the edit form has a formset we will initialize it here
 	formset_factory = document.Form.get_formset_factory()
