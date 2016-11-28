@@ -36,8 +36,10 @@
 			<div class="divider"></div>
 		{% endif %}
 	{% endblock %}
-	<p class="toc-heading">{% trans "Table of Contents" %}</p>
-	{{ toc|safe }}
+	{% if "<li>" in toc %}
+		<p class="toc-heading">{% trans "Table of Contents" %}</p>
+		{{ toc|safe }}
+	{% endif %}
 	{% if attachments %}
 		<div class="toc hidden-print">
 			<ul><li><a href="#attachments" title="{% trans "Attachments" %}">{% trans "Attachments" %}</a></li></ul>
