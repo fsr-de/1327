@@ -17,7 +17,7 @@ from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdo
 from _1327.information_pages.models import InformationDocument
 from _1327.user_management.models import UserProfile
 
-from .models import Attachment, Document
+from .models import Attachment, Document, TemporaryDocumentText
 
 
 class TestInternalLinkMarkDown(TestCase):
@@ -92,6 +92,7 @@ class TestRevertion(WebTest):
 
 class TestAutosave(WebTest):
 	csrf_checks = False
+	extra_environ = {'HTTP_ACCEPT_LANGUAGE': 'en'}
 
 	def setUp(self):
 		self.user = mommy.make(UserProfile, is_superuser=True)
@@ -206,6 +207,35 @@ class TestAutosave(WebTest):
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		self.assertIn((reverse('documents:edit', args=[url_title]) + '?restore'), str(response.body))
+
+	def test_autosave_not_possible_to_view_without_permissions(self):
+		document = Document.objects.get()
+		autosave = mommy.make(TemporaryDocumentText, document=document, author=self.user)
+
+		self.assertFalse(document.has_perms())
+
+		response = self.app.get(reverse('documents:edit', args=[autosave.document.url_title]), expect_errors=True)
+		self.assertEqual(response.status_code, 403)
+
+	def test_autosave_possible_to_view_autosave_with_permissions(self):
+		document = Document.objects.get()
+		autosave = mommy.make(TemporaryDocumentText, document=document, author=self.user)
+
+		self.assertFalse(document.has_perms())
+		assign_perm(document.add_permission_name, self.user)
+
+		response = self.app.get(reverse('documents:edit', args=[autosave.document.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn("This document was autosaved on", response.body.decode('utf-8'))
+
+	def test_autosave_not_possible_to_view_because_not_author(self):
+		document = Document.objects.get()
+		autosave = mommy.make(TemporaryDocumentText, document=document)
+
+		self.assertFalse(document.has_perms())
+
+		response = self.app.get(reverse('documents:edit', args=[autosave.document.url_title]), expect_errors=True, user=self.user)
+		self.assertEqual(response.status_code, 403)
 
 
 class TestMarkdownRendering(WebTest):
