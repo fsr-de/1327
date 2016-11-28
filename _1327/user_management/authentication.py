@@ -22,14 +22,14 @@ class _1327AuthorizationBackend:
 
 		group_name = user_obj._ip_range_group_name if hasattr(user_obj, '_ip_range_group_name') else None
 
-		has_perm = False
 		if user_obj.is_authenticated():
-			# user is not anonymous user and has no permissions on other elements
+			# user is not anonymous user and no other backend confirmed the permission yet
 			# --> we need to check the anonymous permissions again
 			check = ObjectPermissionChecker(get_anonymous_user())
-			has_perm = check.has_perm(perm, obj)
-		elif group_name:
+			if check.has_perm(perm, obj):
+				return True
+		if group_name:
 			group = Group.objects.get(name=group_name)
 			check = ObjectPermissionChecker(group)
-			has_perm = check.has_perm(perm, obj)
-		return has_perm
+			return check.has_perm(perm, obj)
+		return False
