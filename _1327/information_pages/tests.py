@@ -68,6 +68,8 @@ class TestEditor(WebTest):
 		self.assertEqual(form.get('title').value, self.document.title)
 		self.assertEqual(form.get('text').value, self.document.text)
 
+		self.assertTrue("Hidden" in str(form.fields['group'][0]))
+
 		form.set('comment', 'changed title')
 		form.set('title', 'new-title')
 		form.set('url_title', 'new-url-title')
@@ -309,6 +311,7 @@ class TestNewPage(WebTest):
 		form.set('comment', text)
 		form.set('url_title', slugify(text))
 		form.set('group', group.pk)
+
 		response = form.submit().follow()
 		self.assertEqual(response.status_code, 200)
 
@@ -322,3 +325,21 @@ class TestNewPage(WebTest):
 		self.assertEqual(document.title, text)
 		self.assertEqual(document.text, text)
 		self.assertEqual(versions[0].revision.comment, text)
+
+	def test_group_field_hidden_when_user_has_one_group(self):
+		group = mommy.make(Group)
+		self.user.groups.add(group)
+		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		form = response.forms[0]
+		self.assertTrue("Hidden" in str(form.fields['group'][0]))
+
+	def test_group_field_not_hidden_when_user_has_multiple_groups(self):
+		groups = mommy.make(Group, _quantity=2)
+		self.user.groups.add(*groups)
+		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		form = response.forms[0]
+		self.assertFalse("Hidden" in str(form.fields['group'][0]))

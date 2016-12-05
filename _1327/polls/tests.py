@@ -125,11 +125,31 @@ class PollViewTests(WebTest):
 		form['comment'] = 'sample comment'
 		form['group'] = group.pk
 
+		self.assertFalse("Hidden" in str(form.fields['vote_groups'][0]))
+
 		response = form.submit()
 		self.assertEqual(response.status_code, 302)
 
 		poll = Poll.objects.get(title='TestPoll')
 		self.assertEqual(poll.choices.count(), 2)
+
+	def test_group_field_hidden_when_user_has_one_group(self):
+		group = mommy.make(Group)
+		self.user.groups.add(group)
+		response = self.app.get(reverse('documents:create', args=['poll']), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		form = response.forms['document-form']
+		self.assertTrue("Hidden" in str(form.fields['group'][0]))
+
+	def test_group_field_not_hidden_when_user_has_multiple_groups(self):
+		groups = mommy.make(Group, _quantity=2)
+		self.user.groups.add(*groups)
+		response = self.app.get(reverse('documents:create', args=['poll']), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		form = response.forms['document-form']
+		self.assertFalse("Hidden" in str(form.fields['group'][0]))
 
 	def test_create_poll_with_permissions(self):
 		group = mommy.make(Group)
@@ -189,6 +209,8 @@ class PollViewTests(WebTest):
 		form['choices-0-text'] = choice_text
 		form['text'] = poll_description
 		form['comment'] = 'sample comment'
+
+		self.assertTrue("Hidden" in str(form.fields['vote_groups'][0]))
 
 		response = form.submit()
 		self.assertEqual(response.status_code, 302)
