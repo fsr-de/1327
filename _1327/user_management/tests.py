@@ -29,13 +29,49 @@ class UsecaseTests(WebTest):
 		login_form = page.forms[0]
 		login_form['username'] = "user"
 		login_form['password'] = "wrong_password"
-		self.assertIn("Please enter a correct User name and password.", login_form.submit())
+		response = login_form.submit()
+		self.assertIn("Please enter a correct User name and password", response.body.decode('utf-8'))
 
 		login_form = page.forms[0]
 		login_form['username'] = "user"
 		login_form['password'] = "test"
 
 		self.assertEqual(login_form.submit().status_code, 302)
+
+	def test_login_redirect_sufficient_permissions(self):
+		document = mommy.make(InformationDocument)
+		assign_perm(document.view_permission_name, self.user, document)
+
+		response = self.app.get(reverse(document.get_view_url_name(), args=[document.url_title]))
+		redirect_url = reverse('login') + '?next=' + reverse(document.get_view_url_name(), args=[document.url_title])
+		self.assertRedirects(response, redirect_url)
+		response = response.follow()
+
+		login_form = response.forms[0]
+		login_form['username'] = "user"
+		login_form['password'] = "test"
+
+		response = login_form.submit()
+		self.assertRedirects(response, reverse(document.get_view_url_name(), args=[document.url_title]))
+		response = response.follow()
+		self.assertEqual(response.status_code, 200)
+
+	def test_login_insufficient_permissions(self):
+		document = mommy.make(InformationDocument)
+
+		response = self.app.get(reverse(document.get_view_url_name(), args=[document.url_title]))
+		redirect_url = reverse('login') + '?next=' + reverse(document.get_view_url_name(), args=[document.url_title])
+		self.assertRedirects(response, redirect_url)
+		response = response.follow()
+
+		login_form = response.forms[0]
+		login_form['username'] = "user"
+		login_form['password'] = "test"
+
+		response = login_form.submit()
+		self.assertRedirects(response, reverse(document.get_view_url_name(), args=[document.url_title]), target_status_code=403)
+		response = response.follow(status=403)
+		self.assertEqual(response.status_code, 403)
 
 	def test_name(self):
 		user = UserProfile.objects.get(username='noname')
@@ -155,8 +191,9 @@ class _1327AuthenticationBackendTests(WebTest):
 		}
 
 		with self.settings(**university_group_setting):
-			response = self.app.get(reverse(self.document.get_view_url_name(), args=[self.document.url_title]), expect_errors=True)
-			self.assertEqual(response.status_code, 403)
+			response = self.app.get(reverse(self.document.get_view_url_name(), args=[self.document.url_title]))
+			redirect_url = reverse('login') + '?next=' + reverse(self.document.get_view_url_name(), args=[self.document.url_title])
+			self.assertRedirects(response, redirect_url)
 
 	def test_university_network_fallback_access_granted(self):
 		# check that user can see the document if he is in the university network
@@ -192,6 +229,6 @@ class _1327AuthenticationBackendTests(WebTest):
 			response = self.app.get(
 				reverse(self.document.get_view_url_name(), args=[self.document.url_title]),
 				extra_environ=request_meta,
-				expect_errors=True,
 			)
-			self.assertEqual(response.status_code, 403)
+			redirect_url = reverse('login') + '?next=' + reverse(self.document.get_view_url_name(), args=[self.document.url_title])
+			self.assertRedirects(response, redirect_url)
