@@ -5,5 +5,6 @@ from . import views
 
 urlpatterns = [
 	url(r"^$", views.index, name="index"),
+	url(r"(?P<title>[\w-]+)/view$", views.view, name='view'),
 ]
-urlpatterns.extend(document_urls.urlpatterns)
+urlpatterns.extend(document_urls.document_urlpatterns)

@@ -2,6 +2,8 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 
+from _1327.documents import urls as document_urls
+from _1327.documents import views as documents_views
 from _1327.main import views as main_views
 from _1327.user_management import views as user_management_views
 
@@ -28,3 +30,7 @@ urlpatterns = [
 	url(r'^admin/', include(admin.site.urls)),
 	url(r'^hijack/', include('hijack.urls')),
 ]
+urlpatterns.extend(document_urls.document_urlpatterns)
+urlpatterns.extend([
+	url(r"(?P<title>[\w-]+)$", documents_views.view, name='view'),
+])
