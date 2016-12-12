@@ -51,6 +51,21 @@ class Document(PolymorphicModel):
 	def get_edit_url(self):
 		raise NotImplementedError()
 
+	def get_view_url_name(self):
+		return 'documents:view'
+
+	def get_edit_url_name(self):
+		return 'documents:edit'
+
+	def get_attachments_url_name(self):
+		return 'documents:attachments'
+
+	def get_permissions_url_name(self):
+		return 'documents:permissions'
+
+	def get_versions_url_name(self):
+		return 'documents:versions'
+
 	@classmethod
 	def get_view_permission(klass):
 		content_type = ContentType.objects.get_for_model(klass)

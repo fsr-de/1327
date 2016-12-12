@@ -20,10 +20,10 @@ class InformationDocument(Document):
 		)
 
 	def get_view_url(self):
-		return reverse('documents:view', args=(self.url_title, ))
+		return reverse(self.get_view_url_name(), args=(self.url_title, ))
 
 	def get_edit_url(self):
-		return reverse('documents:edit', args=(self.url_title, ))
+		return reverse(self.get_edit_url_name(), args=(self.url_title, ))
 
 	def can_be_changed_by(self, user):
 		permission_name = self.edit_permission_name
