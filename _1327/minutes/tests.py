@@ -1,10 +1,12 @@
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
+from django.utils.text import slugify
 from django_webtest import WebTest
 from guardian.core import ObjectPermissionChecker
 from guardian.shortcuts import assign_perm
 from model_mommy import mommy
+from reversion import revisions
 
 from _1327.minutes.models import MinutesDocument
 from _1327.user_management.models import UserProfile
@@ -37,6 +39,7 @@ class TestEditor(WebTest):
 		self.assertEqual(form.get('text').value, self.document.text)
 		self.assertEqual(int(form.get('moderator').value), self.document.moderator.id)
 		self.assertEqual(sorted([int(id) for id in form.get('participants').value]), sorted([participant.id for participant in self.document.participants.all()]))
+		self.assertTrue("Hidden" in str(form.fields['group'][0]))
 
 	def test_publish_permission_button_displayed(self):
 		"""
@@ -156,3 +159,58 @@ class TestEditor(WebTest):
 		self.assertTrue(checker.has_perm(document.view_permission_name, document))
 		self.assertTrue(checker.has_perm(document.edit_permission_name, document))
 		self.assertTrue(checker.has_perm(document.delete_permission_name, document))
+
+
+class TestNewMinutesDocument(WebTest):
+	csrf_checks = False
+
+	def setUp(self):
+		self.user = mommy.make(UserProfile, is_superuser=True)
+
+	def test_save_new_minutes_document(self):
+		# get the editor page and save the site
+		group = mommy.make(Group)
+		group.user_set.add(self.user)
+		response = self.app.get(reverse('documents:create', args=['minutesdocument']), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		form = response.forms[0]
+		text = "Lorem ipsum"
+		form.set('text', text)
+		form.set('title', text)
+		form.set('participants', [self.user.pk])
+		form.set('comment', text)
+		form.set('url_title', slugify(text))
+		form.set('group', group.pk)
+
+		response = form.submit().follow()
+		self.assertEqual(response.status_code, 200)
+
+		document = MinutesDocument.objects.get(title=text)
+
+		# check whether number of versions is correct
+		versions = revisions.get_for_object(document)
+		self.assertEqual(len(versions), 1)
+
+		# check whether the properties of the new document are correct
+		self.assertEqual(document.title, text)
+		self.assertEqual(document.text, text)
+		self.assertEqual(versions[0].revision.comment, text)
+
+	def test_group_field_hidden_when_user_has_one_group(self):
+		group = mommy.make(Group)
+		self.user.groups.add(group)
+		response = self.app.get(reverse('documents:create', args=['minutesdocument']), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		form = response.forms[0]
+		self.assertTrue("Hidden" in str(form.fields['group'][0]))
+
+	def test_group_field_not_hidden_when_user_has_multiple_groups(self):
+		groups = mommy.make(Group, _quantity=2)
+		self.user.groups.add(*groups)
+		response = self.app.get(reverse('documents:create', args=['minutesdocument']), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		form = response.forms[0]
+		self.assertFalse("Hidden" in str(form.fields['group'][0]))

@@ -11,15 +11,16 @@ class MinutesDocumentForm(DocumentForm):
 
 	class Meta:
 		model = MinutesDocument
-		fields = ['title', 'date', 'moderator', 'participants', 'labels', 'state', 'text', 'comment', 'url_title', 'group']
+		fields = ['title', 'date', 'moderator', 'author', 'participants', 'labels', 'state', 'text', 'comment', 'url_title', 'group']
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		if not self.instance.participants.exists():
 			self.initial['participants'] = [user.id for user in Group.objects.get(name=settings.STAFF_GROUP_NAME).user_set.all()]
 
-		self.fields['moderator'].widget.attrs['class'] = 'user-selection'
-		self.fields['participants'].widget.attrs['class'] = 'user-selection'
+		self.fields['moderator'].widget.attrs['class'] = 'select2-selection'
+		self.fields['author'].widget.attrs['class'] = 'select2-selection'
+		self.fields['participants'].widget.attrs['class'] = 'select2-selection'
 
 	@classmethod
 	def get_formset_factory(cls):
