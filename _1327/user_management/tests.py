@@ -123,14 +123,14 @@ class _1327AuthenticationBackendTests(WebTest):
 		for group in anonymous_groups:
 			assign_perm(self.document.view_permission_name, group, self.document)
 
-		response = self.app.get(reverse('documents:view', args=[self.document.url_title]), user=self.user)
+		response = self.app.get(reverse(self.document.get_view_url_name(), args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
 	def test_anonymous_fallback_without_anonymous_permission(self):
 		for group in Group.objects.all().exclude(name=settings.ANONYMOUS_GROUP_NAME):
 			assign_perm(self.document.view_permission_name, group, self.document)
 
-		response = self.app.get(reverse('documents:view', args=[self.document.url_title]), expect_errors=True, user=self.user)
+		response = self.app.get(reverse(self.document.get_view_url_name(), args=[self.document.url_title]), expect_errors=True, user=self.user)
 		self.assertEqual(response.status_code, 403)
 
 	def test_anonymous_fallback_not_used_if_user_has_permission(self):
@@ -140,7 +140,7 @@ class _1327AuthenticationBackendTests(WebTest):
 
 		assign_perm(self.document.view_permission_name, group, self.document)
 
-		response = self.app.get(reverse('documents:view', args=[self.document.url_title]), user=self.user)
+		response = self.app.get(reverse(self.document.get_view_url_name(), args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
 	def test_university_network_fallback_no_access(self):
@@ -155,7 +155,7 @@ class _1327AuthenticationBackendTests(WebTest):
 		}
 
 		with self.settings(**university_group_setting):
-			response = self.app.get(reverse('documents:view', args=[self.document.url_title]), expect_errors=True)
+			response = self.app.get(reverse(self.document.get_view_url_name(), args=[self.document.url_title]), expect_errors=True)
 			self.assertEqual(response.status_code, 403)
 
 	def test_university_network_fallback_access_granted(self):
@@ -173,7 +173,7 @@ class _1327AuthenticationBackendTests(WebTest):
 			# mimic that the user is in the university network
 			request_meta = {'REMOTE_ADDR': '8.0.0.1'}
 
-			response = self.app.get(reverse('documents:view', args=[self.document.url_title]), extra_environ=request_meta)
+			response = self.app.get(reverse(self.document.get_view_url_name(), args=[self.document.url_title]), extra_environ=request_meta)
 			self.assertEqual(response.status_code, 200)
 
 	def test_university_network_fallback_university_network_no_access(self):
@@ -190,7 +190,7 @@ class _1327AuthenticationBackendTests(WebTest):
 			request_meta = {'REMOTE_ADDR': '8.0.0.1'}
 
 			response = self.app.get(
-				reverse('documents:view', args=[self.document.url_title]),
+				reverse(self.document.get_view_url_name(), args=[self.document.url_title]),
 				extra_environ=request_meta,
 				expect_errors=True,
 			)
