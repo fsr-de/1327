@@ -85,6 +85,7 @@ MIDDLEWARE_CLASSES = [
 	'django.contrib.messages.middleware.MessageMiddleware',
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
 	'django.middleware.locale.LocaleMiddleware',
+	'_1327.user_management.middleware.LoginRedirectMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = [
