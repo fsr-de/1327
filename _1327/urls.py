@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 
 from _1327.documents import urls as document_urls
 from _1327.main import views as main_views
@@ -14,7 +15,7 @@ urlpatterns = [
 	url(r"^" + settings.POLLS_URL_NAME + "/", include('_1327.polls.urls', namespace='polls')),
 	url(r"^documents/", include('_1327.documents.urls', namespace='documents')),
 	url(r"^information_pages/", include('_1327.information_pages.urls', namespace='information_pages')),
-	url(r"^login$", user_management_views.login, name='login'),
+	url(r"^login$", auth_views.login, {'template_name': 'login.html', }, name='login'),
 	url(r"^logout$", user_management_views.logout, name='logout'),
 	url(r'^view_as$', user_management_views.view_as, name='view_as'),
 

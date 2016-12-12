@@ -29,7 +29,7 @@ class UsecaseTests(WebTest):
 		login_form = page.forms[0]
 		login_form['username'] = "user"
 		login_form['password'] = "wrong_password"
-		self.assertIn("Please enter a correct username and password", login_form.submit())
+		self.assertIn("Please enter a correct User name and password.", login_form.submit())
 
 		login_form = page.forms[0]
 		login_form['username'] = "user"
