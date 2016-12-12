@@ -42,6 +42,9 @@ ANONYMOUS_IP_RANGE_GROUPS = {
 	# Example: '127.0.0.0/8': UNIVERSITY_GROUP_NAME,
 }
 
+MINUTES_URL_NAME = "minutes"
+POLLS_URL_NAME = "polls"
+
 
 # Application definition
 

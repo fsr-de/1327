@@ -46,7 +46,7 @@ class Poll(Document):
 		def url(self, id):
 			poll = Poll.objects.get(id=id)
 			if poll:
-				return reverse('documents:view', args=[poll.id])
+				return reverse(poll.get_view_url_name(), args=[poll.id])
 			return ''
 
 	@classmethod
@@ -74,10 +74,28 @@ class Poll(Document):
 		return Poll.get_vote_permission()
 
 	def get_view_url(self):
-		return reverse('documents:view', args=(self.url_title,))
+		return reverse(self.get_view_url_name(), args=(self.url_title,))
 
 	def get_edit_url(self):
-		return reverse('documents:edit', args=(self.url_title,))
+		return reverse(self.get_edit_url_name(), args=(self.url_title,))
+
+	def get_view_url_name(self):
+		return 'polls:view'
+
+	def get_edit_url_name(self):
+		return 'polls:edit'
+
+	def get_attachments_url_name(self):
+		return 'polls:attachments'
+
+	def get_permissions_url_name(self):
+		return 'polls:permissions'
+
+	def get_versions_url_name(self):
+		return 'polls:versions'
+
+	def get_publish_url_name(self):
+		return 'polls:publish'
 
 	def save_formset(self, formset):
 		choices = formset.save(commit=False)
