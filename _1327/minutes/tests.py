@@ -1,13 +1,13 @@
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
-from django.utils.text import slugify
 from django_webtest import WebTest
 from guardian.core import ObjectPermissionChecker
 from guardian.shortcuts import assign_perm
 from model_mommy import mommy
 from reversion import revisions
 
+from _1327.main.utils import slugify
 from _1327.minutes.models import MinutesDocument
 from _1327.user_management.models import UserProfile
 

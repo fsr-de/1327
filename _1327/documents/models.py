@@ -4,13 +4,13 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
-from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from guardian.shortcuts import assign_perm, get_groups_with_perms, get_users_with_perms, remove_perm
 from polymorphic.models import PolymorphicModel
 from reversion import revisions
 
 from _1327.documents.markdown_internal_link_pattern import InternalLinkPattern
+from _1327.main.utils import slugify
 from _1327.user_management.models import UserProfile
 
 
@@ -21,7 +21,7 @@ DOCUMENT_VIEW_PERMISSION_NAME = 'view_document'
 class Document(PolymorphicModel):
 	created = models.DateTimeField(default=timezone.now)
 	title = models.CharField(max_length=255)
-	url_title = models.SlugField(unique=True)
+	url_title = models.CharField(unique=True, max_length=255, verbose_name='url_title')
 	text = models.TextField()
 
 	DOCUMENT_LINK_REGEX = r'\[(?P<title>[^\[]+)\]\(document:(?P<id>\d+)\)'
@@ -35,7 +35,6 @@ class Document(PolymorphicModel):
 		)
 
 	class LinkPattern (InternalLinkPattern):
-
 		def url(self, id):
 			document = Document.objects.get(id=id)
 			if document:
@@ -44,6 +43,11 @@ class Document(PolymorphicModel):
 
 	def __str__(self):
 		return self.title
+
+	def save(self, *args, **kwargs):
+		# make sure that the url is slugified
+		self.url_title = slugify(self.url_title)
+		super().save(*args, **kwargs)
 
 	def get_view_url(self):
 		raise NotImplementedError()

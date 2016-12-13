@@ -6,7 +6,6 @@ from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.test import TestCase
-from django.utils.text import slugify
 from django_webtest import WebTest
 from guardian.shortcuts import assign_perm, get_perms, get_perms_for_model, remove_perm
 import markdown
@@ -15,13 +14,13 @@ from reversion import revisions
 
 from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
 from _1327.information_pages.models import InformationDocument
+from _1327.main.utils import slugify
 from _1327.user_management.models import UserProfile
 
 from .models import Attachment, Document, TemporaryDocumentText
 
 
 class TestInternalLinkMarkDown(TestCase):
-
 	def setUp(self):
 		self.user = mommy.make(UserProfile, is_superuser=True)
 
@@ -262,7 +261,6 @@ class TestMarkdownRendering(WebTest):
 
 
 class TestSignals(TestCase):
-
 	def setUp(self):
 		self.user = mommy.make(UserProfile, is_superuser=True)
 
@@ -317,7 +315,6 @@ class TestSignals(TestCase):
 
 
 class TestSubclassConstraints(TestCase):
-
 	def is_abstract_model(self, cls):
 		return hasattr(cls._meta, "abstract") and cls._meta.abstract
 
@@ -350,7 +347,6 @@ class TestAttachments(WebTest):
 		Tests creating, viewing and deleting attachments
 		InformationDocuments are used as testclass. It is assumed that the behavior is similar with other documenttypes
 	"""
-
 	csrf_checks = False
 
 	def setUp(self):

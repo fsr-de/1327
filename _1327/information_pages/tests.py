@@ -2,7 +2,6 @@ from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.test import TestCase
-from django.utils.text import slugify
 from django_webtest import WebTest
 from guardian.shortcuts import assign_perm, get_perms_for_model, remove_perm
 from guardian.utils import get_anonymous_user
@@ -11,6 +10,7 @@ from reversion import revisions
 
 from _1327.documents.models import Document
 from _1327.information_pages.models import InformationDocument
+from _1327.main.utils import slugify
 from _1327.user_management.models import UserProfile
 
 
@@ -25,9 +25,9 @@ class TestDocument(TestCase):
 		document.save()
 		self.assertEqual(document.url_title, "titlea")
 
-		document.url_title = "bla-keks-kekskeks"
+		document.url_title = "bla/KEKS-kekskeks"
 		document.save()
-		self.assertEqual(document.url_title, "bla-keks-kekskeks")
+		self.assertEqual(document.url_title, "bla/keks-kekskeks")
 
 
 class TestDocumentWeb(WebTest):
@@ -324,6 +324,36 @@ class TestNewPage(WebTest):
 		self.assertEqual(document.title, text)
 		self.assertEqual(document.text, text)
 		self.assertEqual(versions[0].revision.comment, text)
+
+	def test_save_new_page_with_slash_url(self):
+		# get the editor page and save the site
+		group = mommy.make(Group)
+		group.user_set.add(self.user)
+		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		form = response.forms[0]
+		text = "Lorem ipsum"
+		url = "some/page-with-slash"
+		form.set('text', text)
+		form.set('title', text)
+		form.set('comment', text)
+		form.set('url_title', url)
+		form.set('group', group.pk)
+
+		response = form.submit().follow()
+		self.assertEqual(response.status_code, 200)
+
+		document = InformationDocument.objects.get(title=text)
+		self.assertEqual(document.url_title, url)
+
+		response = self.app.get('/' + url, user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertTemplateUsed(response, 'documents_base.html')
+
+		response = self.app.get('/' + url + '/edit', user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertTemplateUsed(response, 'documents_edit.html')
 
 	def test_group_field_hidden_when_user_has_one_group(self):
 		group = mommy.make(Group)
