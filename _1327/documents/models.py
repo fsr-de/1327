@@ -39,7 +39,7 @@ class Document(PolymorphicModel):
 		def url(self, id):
 			document = Document.objects.get(id=id)
 			if document:
-				return reverse('documents:view', args=[document.url_title])
+				return reverse(document.get_view_url_name(), args=[document.url_title])
 			return ''
 
 	def __str__(self):
@@ -50,6 +50,21 @@ class Document(PolymorphicModel):
 
 	def get_edit_url(self):
 		raise NotImplementedError()
+
+	def get_view_url_name(self):
+		return 'view'
+
+	def get_edit_url_name(self):
+		return 'edit'
+
+	def get_attachments_url_name(self):
+		return 'attachments'
+
+	def get_permissions_url_name(self):
+		return 'permissions'
+
+	def get_versions_url_name(self):
+		return 'versions'
 
 	@classmethod
 	def get_view_permission(klass):

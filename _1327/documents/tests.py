@@ -35,7 +35,7 @@ class TestInternalLinkMarkDown(TestCase):
 		document = InformationDocument.objects.get()
 		md = markdown.Markdown(safe_mode='escape', extensions=[InternalLinksMarkdownExtension()])
 		text = md.convert('[description](document:' + str(document.id) + ')')
-		link = reverse('documents:view', args=[document.url_title])
+		link = reverse(document.get_view_url_name(), args=[document.url_title])
 		self.assertIn('<a href="' + link + '">description</a>', text)
 
 
@@ -108,7 +108,7 @@ class TestAutosave(WebTest):
 		document = Document.objects.get()
 
 		# document text should be text
-		response = self.app.get(reverse('documents:edit', args=[document.url_title]), user=self.user)
+		response = self.app.get(reverse(document.get_edit_url_name(), args=[document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
 		self.assertEqual(form.get('text').value, 'text')
@@ -118,13 +118,13 @@ class TestAutosave(WebTest):
 		self.assertEqual(response.status_code, 200)
 
 		# if not loading autosave text should be still text
-		response = self.app.get(reverse('documents:edit', args=[document.url_title]), user=self.user)
+		response = self.app.get(reverse(document.get_edit_url_name(), args=[document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
 		self.assertEqual(form.get('text').value, 'text')
 
 		# if loading autosave text should be AUTO
-		response = self.app.get(reverse('documents:edit', args=[document.url_title]), {'restore': ''}, user=self.user)
+		response = self.app.get(reverse(document.get_edit_url_name(), args=[document.url_title]), {'restore': ''}, user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
 		self.assertEqual(form.get('text').value, 'AUTO')
@@ -134,7 +134,7 @@ class TestAutosave(WebTest):
 		self.assertEqual(response.status_code, 200)
 
 		# if loading autosave text should be AUTO2
-		response = self.app.get(reverse('documents:edit', args=[document.url_title]), {'restore': ''}, user=self.user)
+		response = self.app.get(reverse(document.get_edit_url_name(), args=[document.url_title]), {'restore': ''}, user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
 		self.assertEqual(form.get('text').value, 'AUTO2')
@@ -153,13 +153,13 @@ class TestAutosave(WebTest):
 		# on the new page site should be a banner with a restore link
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
-		self.assertIn((reverse('documents:edit', args=[url_title]) + '?restore'), str(response.body))
+		self.assertIn((reverse('edit', args=[url_title]) + '?restore'), str(response.body))
 
 		user2 = mommy.make(UserProfile, is_superuser=True)
 		# on the new page site should be a banner with a restore link but not for another user
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=user2)
 		self.assertEqual(response.status_code, 200)
-		self.assertNotIn((reverse('documents:edit', args=[url_title]) + '?restore'), str(response.body))
+		self.assertNotIn((reverse('edit', args=[url_title]) + '?restore'), str(response.body))
 
 		# create second document
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
@@ -173,17 +173,17 @@ class TestAutosave(WebTest):
 
 		# on the new page site should be a banner with a restore link for both sites
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
-		self.assertIn((reverse('documents:edit', args=[url_title]) + '?restore'), str(response.body))
-		self.assertIn((reverse('documents:edit', args=[url_title2]) + '?restore'), str(response.body))
+		self.assertIn((reverse('edit', args=[url_title]) + '?restore'), str(response.body))
+		self.assertIn((reverse('edit', args=[url_title2]) + '?restore'), str(response.body))
 
 		# if not loading autosave text should be still empty
-		response = self.app.get(reverse('documents:edit', args=[url_title]), user=self.user)
+		response = self.app.get(reverse('edit', args=[url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
 		self.assertEqual(form.get('text').value, '')
 
 		# if loading autosave text should be AUTO
-		response = self.app.get(reverse('documents:edit', args=[url_title]), {'restore': ''}, user=self.user)
+		response = self.app.get(reverse('edit', args=[url_title]), {'restore': ''}, user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
 		self.assertEqual(form.get('text').value, 'AUTO')
@@ -201,12 +201,12 @@ class TestAutosave(WebTest):
 
 		# there should be no restore link on creation page for different document type
 		response = self.app.get(reverse('documents:create', args=['poll']), user=self.user)
-		self.assertNotIn((reverse('documents:edit', args=[url_title]) + '?restore'), str(response.body))
+		self.assertNotIn((reverse('edit', args=[url_title]) + '?restore'), str(response.body))
 
 		# on the new page site should be a banner with a restore link
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
-		self.assertIn((reverse('documents:edit', args=[url_title]) + '?restore'), str(response.body))
+		self.assertIn((reverse('edit', args=[url_title]) + '?restore'), str(response.body))
 
 	def test_autosave_not_possible_to_view_without_permissions(self):
 		document = Document.objects.get()
@@ -214,7 +214,7 @@ class TestAutosave(WebTest):
 
 		self.assertFalse(document.has_perms())
 
-		response = self.app.get(reverse('documents:edit', args=[autosave.document.url_title]), expect_errors=True)
+		response = self.app.get(reverse(autosave.document.get_edit_url_name(), args=[autosave.document.url_title]), expect_errors=True)
 		self.assertEqual(response.status_code, 403)
 
 	def test_autosave_possible_to_view_autosave_with_permissions(self):
@@ -224,7 +224,7 @@ class TestAutosave(WebTest):
 		self.assertFalse(document.has_perms())
 		assign_perm(document.add_permission_name, self.user)
 
-		response = self.app.get(reverse('documents:edit', args=[autosave.document.url_title]), user=self.user)
+		response = self.app.get(reverse(autosave.document.get_edit_url_name(), args=[autosave.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		self.assertIn("This document was autosaved on", response.body.decode('utf-8'))
 
@@ -234,7 +234,7 @@ class TestAutosave(WebTest):
 
 		self.assertFalse(document.has_perms())
 
-		response = self.app.get(reverse('documents:edit', args=[autosave.document.url_title]), expect_errors=True, user=self.user)
+		response = self.app.get(reverse(autosave.document.get_edit_url_name(), args=[autosave.document.url_title]), expect_errors=True, user=self.user)
 		self.assertEqual(response.status_code, 403)
 
 
@@ -389,14 +389,14 @@ class TestAttachments(WebTest):
 		normal_user = mommy.make(UserProfile)
 
 		response = self.app.get(
-			reverse('documents:attachments', args=[self.document.url_title]),
+			reverse(self.document.get_attachments_url_name(), args=[self.document.url_title]),
 			user=normal_user,
 			expect_errors=True
 		)
 		self.assertEqual(response.status_code, 403)
 
 		response = self.app.post(
-			reverse('documents:attachments', args=[self.document.url_title]),
+			reverse(self.document.get_attachments_url_name(), args=[self.document.url_title]),
 			content_type='multipart/form-data',
 			upload_files=upload_files,
 			user=normal_user,
@@ -409,14 +409,14 @@ class TestAttachments(WebTest):
 		assign_perm("view_informationdocument", normal_user, self.document)
 
 		response = self.app.get(
-			reverse('documents:attachments', args=[self.document.url_title]),
+			reverse(self.document.get_attachments_url_name(), args=[self.document.url_title]),
 			user=normal_user,
 			expect_errors=True
 		)
 		self.assertEqual(response.status_code, 403)
 
 		response = self.app.post(
-			reverse('documents:attachments', args=[self.document.url_title]),
+			reverse(self.document.get_attachments_url_name(), args=[self.document.url_title]),
 			content_type='multipart/form-data',
 			upload_files=upload_files,
 			user=normal_user,
@@ -426,11 +426,11 @@ class TestAttachments(WebTest):
 
 		# test that member of group who has according permissions is allowed to upload attachments
 		# and to see the corresponding page
-		response = self.app.get(reverse('documents:attachments', args=[self.document.url_title]), user=self.group_user)
+		response = self.app.get(reverse(self.document.get_attachments_url_name(), args=[self.document.url_title]), user=self.group_user)
 		self.assertEqual(response.status_code, 200)
 
 		response = self.app.post(
-			reverse('documents:attachments', args=[self.document.url_title]),
+			reverse(self.document.get_attachments_url_name(), args=[self.document.url_title]),
 			content_type='multipart/form-data',
 			upload_files=upload_files,
 			user=self.group_user
@@ -438,11 +438,11 @@ class TestAttachments(WebTest):
 		self.assertEqual(response.status_code, 200)
 
 		# test that superuser is allowed to upload attachments and to see the corresponding page
-		response = self.app.get(reverse('documents:attachments', args=[self.document.url_title]), user=self.user)
+		response = self.app.get(reverse(self.document.get_attachments_url_name(), args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
 		response = self.app.post(
-			reverse('documents:attachments', args=[self.document.url_title]),
+			reverse(self.document.get_attachments_url_name(), args=[self.document.url_title]),
 			content_type='multipart/form-data',
 			upload_files=upload_files,
 			user=self.user
@@ -649,7 +649,7 @@ class TestAttachments(WebTest):
 	def test_attachment_change_no_direct_download_view(self):
 		attachment = mommy.make(Attachment, document=self.document, displayname="pic.jpg", no_direct_download=True)
 		response = self.app.get(
-			reverse('documents:view', args=[self.document.url_title]),
+			reverse(self.document.get_view_url_name(), args=[self.document.url_title]),
 			user=self.user,
 		)
 		self.assertEqual(response.status_code, 200)
@@ -837,19 +837,19 @@ class TestDeletion(WebTest):
 
 	def test_delete_button_not_present_if_creating_document(self):
 		# test that the delete button is not visible if the document that gets edited has no revisions
-		response = self.app.get(reverse("documents:edit", args=[self.document.url_title]), user=self.user)
+		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		self.assertNotIn("deleteDocumentButton", response.body.decode('utf-8'))
 
 	def test_delete_button_present_if_editing_already_existing_document(self):
 		# test that the delete button is visible if the document has at least one revision
-		response = self.app.get(reverse("documents:edit", args=[self.document.url_title]), user=self.user)
+		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 
 		form = response.forms['document-form']
 		form['comment'] = 'new revision'
 		response = form.submit().follow()
 		self.assertEqual(response.status_code, 200)
 
-		response = self.app.get(reverse("documents:edit", args=[self.document.url_title]), user=self.user)
+		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		self.assertIn("deleteDocumentButton", response.body.decode('utf-8'))

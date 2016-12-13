@@ -30,7 +30,7 @@ from .utils import save_footer_item_order, save_main_menu_item_order
 def index(request):
 	try:
 		document = Document.objects.get(id=settings.MAIN_PAGE_ID)
-		return HttpResponseRedirect(reverse('documents:view', args=[document.url_title]))
+		return HttpResponseRedirect(reverse(document.get_view_url_name(), args=[document.url_title]))
 
 		md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), 'markdown.extensions.abbr'])
 		text = md.convert(document.text + abbreviation_explanation_markdown())

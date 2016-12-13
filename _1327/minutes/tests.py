@@ -28,10 +28,10 @@ class TestEditor(WebTest):
 		"""
 		Test if the edit page shows the correct content
 		"""
-		response = self.app.get(reverse('documents:edit', args=[self.document.url_title]), expect_errors=True)
+		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), expect_errors=True)
 		self.assertEqual(response.status_code, 403)  # test anonymous user cannot access page
 
-		response = self.app.get(reverse('documents:edit', args=[self.document.url_title]), user=self.user)
+		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
 		form = response.forms[0]
@@ -47,25 +47,25 @@ class TestEditor(WebTest):
 		"""
 		unpublished_document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.UNPUBLISHED)
 		unpublished_document.set_all_permissions(Group.objects.get(name="Staff"))
-		response = self.app.get(reverse('documents:view', args=[unpublished_document.url_title]), user=self.user)
+		response = self.app.get(reverse(unpublished_document.get_view_url_name(), args=[unpublished_document.url_title]), user=self.user)
 		self.assertIn("Publish", response)
 		self.assertNotIn("Permissions", response)
 
 		published_document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.PUBLISHED)
 		published_document.set_all_permissions(Group.objects.get(name="Staff"))
-		response = self.app.get(reverse('documents:view', args=[published_document.url_title]), user=self.user)
+		response = self.app.get(reverse(published_document.get_view_url_name(), args=[published_document.url_title]), user=self.user)
 		self.assertNotIn("Publish", response)
 		self.assertNotIn("Permissions", response)
 
 		internal_document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.INTERNAL)
 		internal_document.set_all_permissions(Group.objects.get(name="Staff"))
-		response = self.app.get(reverse('documents:view', args=[internal_document.url_title]), user=self.user)
+		response = self.app.get(reverse(internal_document.get_view_url_name(), args=[internal_document.url_title]), user=self.user)
 		self.assertNotIn("Publish", response)
 		self.assertNotIn("Permissions", response)
 
 		custom_document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.CUSTOM)
 		custom_document.set_all_permissions(Group.objects.get(name="Staff"))
-		response = self.app.get(reverse('documents:view', args=[custom_document.url_title]), user=self.user)
+		response = self.app.get(reverse(custom_document.get_view_url_name(), args=[custom_document.url_title]), user=self.user)
 		self.assertNotIn("Publish", response)
 		self.assertIn("Permissions", response)
 
