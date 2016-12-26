@@ -130,7 +130,7 @@ def vote(request, poll, url_title):
 
 def view(request, title):
 	poll = get_object_or_404(Document, url_title=title)
-	check_permissions(poll, request.user, [poll.view_permission_name])
+	check_permissions(poll, request.user, [Poll.get_view_permission()])
 	if poll.end_date < datetime.date.today() or poll.participants.filter(id=request.user.pk).exists():
 		return results(request, poll, title)
 	elif poll.start_date > datetime.date.today():
