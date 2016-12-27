@@ -2,7 +2,6 @@ from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.test import TestCase
-from django.utils.text import slugify
 from django_webtest import WebTest
 from guardian.shortcuts import assign_perm, get_perms_for_model, remove_perm
 from guardian.utils import get_anonymous_user
@@ -11,6 +10,7 @@ from reversion import revisions
 
 from _1327.documents.models import Document
 from _1327.information_pages.models import InformationDocument
+from _1327.main.utils import slugify
 from _1327.user_management.models import UserProfile
 
 
@@ -25,9 +25,9 @@ class TestDocument(TestCase):
 		document.save()
 		self.assertEqual(document.url_title, "titlea")
 
-		document.url_title = "bla-keks-kekskeks"
+		document.url_title = "bla/KEKS-kekskeks"
 		document.save()
-		self.assertEqual(document.url_title, "bla-keks-kekskeks")
+		self.assertEqual(document.url_title, "bla/keks-kekskeks")
 
 
 class TestDocumentWeb(WebTest):
@@ -58,10 +58,10 @@ class TestEditor(WebTest):
 		self.document.set_all_permissions(mommy.make(Group))
 
 	def test_get_editor(self):
-		response = self.app.get(reverse('documents:edit', args=[self.document.url_title]), status=403)
+		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), status=403)
 		self.assertEqual(response.status_code, 403)
 
-		response = self.app.get(reverse('documents:edit', args=[self.document.url_title]), user=self.user)
+		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
 		form = response.forms[0]
@@ -74,15 +74,14 @@ class TestEditor(WebTest):
 		form.set('title', 'new-title')
 		form.set('url_title', 'new-url-title')
 		response = form.submit('submit')
-		self.assertRedirects(response, reverse('documents:view', args=['new-url-title']))
+		self.assertRedirects(response, reverse(self.document.get_view_url_name(), args=['new-url-title']))
 
 		document = Document.objects.get(url_title='new-url-title')
 		self.assertEqual(document.url_title, 'new-url-title')
 
 	def test_editor_error(self):
 		for string in ['', ' ']:
-
-			response = self.app.get(reverse('documents:edit', args=[self.document.url_title]), user=self.user)
+			response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 
 			form = response.forms[0]
 			form.set('title', string)
@@ -96,14 +95,14 @@ class TestEditor(WebTest):
 		assign_perm(InformationDocument.VIEW_PERMISSION_NAME, test_user, self.document)
 
 		# test that test_user is not allowed to use editor
-		response = self.app.get(reverse('documents:edit', args=[self.document.url_title]), user=test_user, status=403)
+		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=test_user, status=403)
 		self.assertEqual(response.status_code, 403)
 
 		# give that user the necessary permission and check again
 		assign_perm('change_informationdocument', test_user, self.document)
 
 		# it should work now
-		response = self.app.get(reverse('documents:edit', args=[self.document.url_title]), user=test_user)
+		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=test_user)
 		self.assertEqual(response.status_code, 200)
 
 	def test_editor_permissions_for_groups(self):
@@ -114,14 +113,14 @@ class TestEditor(WebTest):
 		assign_perm(InformationDocument.VIEW_PERMISSION_NAME, test_group, self.document)
 
 		# user should not be able to use the editor
-		response = self.app.get(reverse('documents:edit', args=[self.document.url_title]), user=test_user, status=403)
+		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=test_user, status=403)
 		self.assertEqual(response.status_code, 403)
 
 		# add permission to group
 		assign_perm('change_informationdocument', test_group, self.document)
 
 		# user should now be able to use the editor
-		response = self.app.get(reverse('documents:edit', args=[self.document.url_title]), user=test_user)
+		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=test_user)
 		self.assertEqual(response.status_code, 200)
 
 
@@ -139,10 +138,10 @@ class TestVersions(WebTest):
 		self.document.set_all_permissions(mommy.make(Group))
 
 	def test_get_version_page(self):
-		response = self.app.get(reverse('documents:versions', args=[self.document.url_title]), status=403)
+		response = self.app.get(reverse(self.document.get_versions_url_name(), args=[self.document.url_title]), status=403)
 		self.assertEqual(response.status_code, 403)
 
-		response = self.app.get(reverse('documents:versions', args=[self.document.url_title]), user=self.user)
+		response = self.app.get(reverse(self.document.get_versions_url_name(), args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
 	def test_save_version(self):
@@ -151,7 +150,7 @@ class TestVersions(WebTest):
 		self.assertEqual(len(versions), 1)
 
 		# get the editor page and add a new revision
-		response = self.app.get(reverse('documents:edit', args=[self.document.url_title]), user=self.user)
+		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
 		form = response.forms[0]
@@ -188,24 +187,24 @@ class TestPermissions(WebTest):
 		# check that user is not allowed to see information document
 		document = Document.objects.get()
 
-		response = self.app.get(reverse('documents:view', args=[document.url_title]), user=self.user, status=403)
+		response = self.app.get(reverse(document.get_view_url_name(), args=[document.url_title]), user=self.user, status=403)
 		self.assertEqual(response.status_code, 403)
 
 		# grant view permission to that user
 		assign_perm(InformationDocument.VIEW_PERMISSION_NAME, self.user, document)
-		response = self.app.get(reverse('documents:view', args=[document.url_title]), user=self.user)
+		response = self.app.get(reverse(document.get_view_url_name(), args=[document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		remove_perm(InformationDocument.VIEW_PERMISSION_NAME, self.user, document)
 
 		# check that user is not allowed to see page anymore
-		response = self.app.get(reverse('documents:view', args=[document.url_title]), user=self.user, status=403)
+		response = self.app.get(reverse(document.get_view_url_name(), args=[document.url_title]), user=self.user, status=403)
 		self.assertEqual(response.status_code, 403)
 
 		# add user to test group and test that he is now allowed to see that document
 		self.user.groups.add(self.group)
 		self.user.save()
 
-		response = self.app.get(reverse('documents:view', args=[document.url_title]), user=self.user)
+		response = self.app.get(reverse(document.get_view_url_name(), args=[document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
 	def test_view_permissions_for_anonymous_user(self):
@@ -213,27 +212,27 @@ class TestPermissions(WebTest):
 		document = Document.objects.get()
 
 		# check that anonymous user is not allowed to see that document
-		response = self.app.get(reverse('documents:view', args=[document.url_title]), user=anonymous_user, status=403)
+		response = self.app.get(reverse(document.get_view_url_name(), args=[document.url_title]), user=anonymous_user, status=403)
 		self.assertEqual(response.status_code, 403)
 
 		# allow anonymous users to see that document and test that
 		assign_perm(InformationDocument.VIEW_PERMISSION_NAME, anonymous_user, document)
 
 		# it should work now
-		response = self.app.get(reverse('documents:view', args=[document.url_title]), user=anonymous_user)
+		response = self.app.get(reverse(document.get_view_url_name(), args=[document.url_title]), user=anonymous_user)
 		self.assertEqual(response.status_code, 200)
 
 		remove_perm(InformationDocument.VIEW_PERMISSION_NAME, anonymous_user, document)
 
 		# check that anonymous user is not allowed to see page anymore
-		response = self.app.get(reverse('documents:view', args=[document.url_title]), user=anonymous_user, status=403)
+		response = self.app.get(reverse(document.get_view_url_name(), args=[document.url_title]), user=anonymous_user, status=403)
 		self.assertEqual(response.status_code, 403)
 
 		# test the same with group
 		anonymous_user.groups.add(self.group)
 		anonymous_user.save()
 
-		response = self.app.get(reverse('documents:view', args=[document.url_title]), user=anonymous_user)
+		response = self.app.get(reverse(document.get_view_url_name(), args=[document.url_title]), user=anonymous_user)
 		self.assertEqual(response.status_code, 200)
 
 	def test_create_permissions_for_logged_in_user(self):
@@ -325,6 +324,36 @@ class TestNewPage(WebTest):
 		self.assertEqual(document.title, text)
 		self.assertEqual(document.text, text)
 		self.assertEqual(versions[0].revision.comment, text)
+
+	def test_save_new_page_with_slash_url(self):
+		# get the editor page and save the site
+		group = mommy.make(Group)
+		group.user_set.add(self.user)
+		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		form = response.forms[0]
+		text = "Lorem ipsum"
+		url = "some/page-with-slash"
+		form.set('text', text)
+		form.set('title', text)
+		form.set('comment', text)
+		form.set('url_title', url)
+		form.set('group', group.pk)
+
+		response = form.submit().follow()
+		self.assertEqual(response.status_code, 200)
+
+		document = InformationDocument.objects.get(title=text)
+		self.assertEqual(document.url_title, url)
+
+		response = self.app.get('/' + url, user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertTemplateUsed(response, 'documents_base.html')
+
+		response = self.app.get('/' + url + '/edit', user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertTemplateUsed(response, 'documents_edit.html')
 
 	def test_group_field_hidden_when_user_has_one_group(self):
 		group = mommy.make(Group)

@@ -80,10 +80,28 @@ class MinutesDocument(Document):
 		return slug_final
 
 	def get_view_url(self):
-		return reverse('documents:view', args=(self.url_title, ))
+		return reverse(self.get_view_url_name(), args=(self.url_title, ))
 
 	def get_edit_url(self):
-		return reverse('documents:edit', args=(self.url_title, ))
+		return reverse(self.get_edit_url_name(), args=(self.url_title, ))
+
+	def get_view_url_name(self):
+		return 'minutes:view'
+
+	def get_edit_url_name(self):
+		return 'minutes:edit'
+
+	def get_attachments_url_name(self):
+		return 'minutes:attachments'
+
+	def get_permissions_url_name(self):
+		return 'minutes:permissions'
+
+	def get_versions_url_name(self):
+		return 'minutes:versions'
+
+	def get_publish_url_name(self):
+		return 'documents:publish'
 
 	def can_be_changed_by(self, user):
 		permission_name = self.edit_permission_name

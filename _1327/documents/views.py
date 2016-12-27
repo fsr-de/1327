@@ -94,7 +94,7 @@ def edit(request, title, new_autosaved_pages=None, initial=None):
 
 	if success:
 		messages.success(request, _("Successfully saved changes"))
-		return HttpResponseRedirect(reverse('documents:view', args=[document.url_title]))
+		return HttpResponseRedirect(reverse(document.get_view_url_name(), args=[document.url_title]))
 	else:
 		return render(request, template_name, {
 			'document': document,
@@ -177,9 +177,9 @@ def permissions(request, title):
 		messages.success(request, _("Permissions have been changed successfully."))
 
 		if request.user.has_perm(document.edit_permission_name, document):
-			return HttpResponseRedirect(reverse('documents:permissions', args=[document.url_title]))
+			return HttpResponseRedirect(reverse(document.get_permissions_url_name(), args=[document.url_title]))
 		if request.user.has_perm(document.view_permission_name, document):
-			return HttpResponseRedirect(reverse('documents:view', args=[document.url_title]))
+			return HttpResponseRedirect(reverse(document.get_view_url_name(), args=[document.url_title]))
 		return HttpResponseRedirect(reverse('index'))
 
 	return render(request, 'documents_permissions.html', {
@@ -200,7 +200,7 @@ def publish(request, title, state_id):
 	document.publish(state_id)
 	messages.success(request, _("Minutes document has been published."))
 
-	return HttpResponseRedirect(reverse("documents:view", args=[document.url_title]))
+	return HttpResponseRedirect(reverse(document.get_view_url_name(), args=[document.url_title]))
 
 
 def attachments(request, title):
@@ -210,11 +210,11 @@ def attachments(request, title):
 	success, form, __ = handle_attachment(request, document)
 	if success:
 		messages.success(request, _("File has been uploaded successfully!"))
-		return HttpResponseRedirect(reverse("documents:attachments", args=[document.url_title]))
+		return HttpResponseRedirect(reverse(document.get_attachments_url_name(), args=[document.url_title]))
 	else:
 		return render(request, "documents_attachments.html", {
 			'document': document,
-			'edit_url': reverse('documents:attachments', args=[document.url_title]),
+			'edit_url': reverse(document.get_attachments_url_name(), args=[document.url_title]),
 			'form': form,
 			'attachments': document.attachments.all().order_by('index'),
 			'active_page': 'attachments',

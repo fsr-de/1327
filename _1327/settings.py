@@ -29,7 +29,11 @@ ALLOWED_HOSTS = []
 
 DELETE_EMPTY_PAGE_AFTER = timedelta(hours=1)
 
-FORBIDDEN_URLS = ["admin", "login", "logout", "documents", "minutes", "polls"]
+FORBIDDEN_URLS = [
+	"admin", "login", "logout", "documents", "information_pages", "minutes", "polls", "list", "view_as", "abbreviation_explanation",
+	"menu_items", "menu_item_delete", "menu_item", "create", "edit", "delete", "update_order", "hijack", "unlinked", "revert", "search", "download",
+	"update", "attachment", "no-direct-download", "autosave", "publish", "render", "delete-cascade", "versions", "permissions", "attachments",
+]
 
 ANONYMOUS_GROUP_NAME = "Anonymous"
 STAFF_GROUP_NAME = "Staff"
@@ -41,6 +45,9 @@ UNIVERSITY_GROUP_NAME = "University Network"
 ANONYMOUS_IP_RANGE_GROUPS = {
 	# Example: '127.0.0.0/8': UNIVERSITY_GROUP_NAME,
 }
+
+MINUTES_URL_NAME = "minutes"
+POLLS_URL_NAME = "polls"
 
 
 # Application definition

@@ -1,11 +1,10 @@
 from django.contrib.auth.models import Group
-from django.db.models import SlugField
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
-from django.utils.text import slugify
 from guardian.shortcuts import assign_perm, get_perms_for_model
 
 from _1327.documents.models import Document
+from _1327.main.utils import slugify
 
 
 @receiver(pre_save)
@@ -22,7 +21,7 @@ def pre_save_document(sender, instance, *args, **kwargs):
 	# get the max_length of a slug field as we need to make sure it is no longer than that
 	# as slugify is not doing that for us
 	for field in Document._meta.fields:
-		if isinstance(field, SlugField) and instance.url_title == "":
+		if field.verbose_name == 'url_title' and instance.url_title == "":
 			instance.url_title = slugify(instance.title)[:field.max_length]
 			return
 

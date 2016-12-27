@@ -1,7 +1,8 @@
-from .models import AbbreviationExplanation, MenuItem
+from django.utils.text import slugify as django_slugify
 
 
 def save_main_menu_item_order(main_menu_items, user, parent_id=None):
+	from .models import MenuItem
 	order_counter = 0
 	for item in main_menu_items:
 		item_id = item['id']
@@ -22,6 +23,7 @@ def save_main_menu_item_order(main_menu_items, user, parent_id=None):
 
 
 def save_footer_item_order(footer_items, user, order_counter=0):
+	from .models import MenuItem
 	for item in footer_items:
 		item_id = item['id']
 		menu_item = MenuItem.objects.get(pk=item_id)
@@ -38,4 +40,9 @@ def save_footer_item_order(footer_items, user, order_counter=0):
 
 
 def abbreviation_explanation_markdown():
+	from .models import AbbreviationExplanation
 	return "\n" + ("\n".join([str(abbr) for abbr in AbbreviationExplanation.objects.all()]))
+
+
+def slugify(string):
+	return '/'.join([django_slugify(part) for part in string.split('/')])

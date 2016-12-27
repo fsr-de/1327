@@ -93,10 +93,10 @@ def vote(request, poll, url_title):
 		choices = request.POST.getlist('choice')
 		if len(choices) == 0:
 			messages.error(request, _("You must select one Choice at least!"))
-			return HttpResponseRedirect(reverse('documents:view', args=[url_title]))
+			return HttpResponseRedirect(reverse(poll.get_view_url_name(), args=[url_title]))
 		if len(choices) > poll.max_allowed_number_of_answers:
 			messages.error(request, _("You can only select up to {} options!").format(poll.max_allowed_number_of_answers))
-			return HttpResponseRedirect(reverse('documents:view', args=[url_title]))
+			return HttpResponseRedirect(reverse(poll.get_view_url_name(), args=[url_title]))
 
 		for choice_id in choices:
 			choice = poll.choices.filter(id=choice_id)
@@ -107,7 +107,7 @@ def vote(request, poll, url_title):
 		if not poll.show_results_immediately:
 			messages.info(request, _("The results of this poll will be available as from {}".format((poll.end_date + datetime.timedelta(days=1)).strftime("%d. %B %Y"))))
 			return HttpResponseRedirect(reverse('polls:index'))
-		return HttpResponseRedirect(reverse('documents:view', args=[url_title]))
+		return HttpResponseRedirect(reverse(poll.get_view_url_name(), args=[url_title]))
 
 	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr'])
 	description = md.convert(poll.text + abbreviation_explanation_markdown())
