@@ -27,7 +27,7 @@ def list(request, groupid):
 	for m in minutes:
 		# we show all documents for which the requested group has edit permissions
 		# e.g. if you request FSR minutes, all minutes for which the FSR group has edit rights will be shown
-		if not group_checker.has_perm("minutes.change_minutesdocument", m):
+		if not group_checker.has_perm(m.edit_permission_name, m):
 			continue
 		# we only show documents for which the user has view permissions
 		if not user_checker.has_perm(MinutesDocument.get_view_permission(), m):
