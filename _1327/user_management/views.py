@@ -1,24 +1,10 @@
 from django.conf import settings
-from django.contrib.auth import login as auth_login, logout as auth_logout
+from django.contrib.auth import logout as auth_logout
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect, render
 
-from .forms import LoginForm, UserImpersonationForm
-
-
-def login(request):
-	if request.method == 'POST':
-		form = LoginForm(request.POST)
-		if form.is_valid():
-			auth_login(request, form.get_user())
-			return redirect(settings.LOGIN_REDIRECT_URL)
-	else:
-		form = LoginForm()
-
-	return render(request, "login.html", {
-		'form': form
-	})
+from .forms import UserImpersonationForm
 
 
 def logout(request):

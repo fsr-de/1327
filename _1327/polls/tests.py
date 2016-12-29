@@ -287,7 +287,12 @@ class PollResultTests(WebTest):
 		self.assign_vote_perm(user, obj)
 
 	def test_view_with_insufficient_permissions(self):
-		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), expect_errors=True)
+		user_without_perms = mommy.make(UserProfile)
+		response = self.app.get(
+			reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]),
+			expect_errors=True,
+			user=user_without_perms,
+		)
 		self.assertEqual(response.status_code, 403)
 
 	def test_view_result_without_vote(self):
@@ -366,7 +371,12 @@ class PollVoteTests(WebTest):
 		)
 
 	def test_vote_with_insufficient_permissions(self):
-		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), expect_errors=True)
+		user_without_perms = mommy.make(UserProfile)
+		response = self.app.get(
+			reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]),
+			expect_errors=True,
+			user=user_without_perms,
+		)
 		self.assertEqual(response.status_code, 403)
 
 		user = mommy.make(UserProfile)

@@ -28,7 +28,12 @@ class TestEditor(WebTest):
 		"""
 		Test if the edit page shows the correct content
 		"""
-		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), expect_errors=True)
+		user_without_perms = mommy.make(UserProfile)
+		response = self.app.get(
+			reverse(self.document.get_edit_url_name(), args=[self.document.url_title]),
+			expect_errors=True,
+			user=user_without_perms
+		)
 		self.assertEqual(response.status_code, 403)  # test anonymous user cannot access page
 
 		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)

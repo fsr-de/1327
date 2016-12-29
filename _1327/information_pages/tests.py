@@ -58,7 +58,12 @@ class TestEditor(WebTest):
 		self.document.set_all_permissions(mommy.make(Group))
 
 	def test_get_editor(self):
-		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), status=403)
+		user_without_perms = mommy.make(UserProfile)
+		response = self.app.get(
+			reverse(self.document.get_edit_url_name(), args=[self.document.url_title]),
+			status=403,
+			user=user_without_perms
+		)
 		self.assertEqual(response.status_code, 403)
 
 		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
@@ -138,7 +143,12 @@ class TestVersions(WebTest):
 		self.document.set_all_permissions(mommy.make(Group))
 
 	def test_get_version_page(self):
-		response = self.app.get(reverse(self.document.get_versions_url_name(), args=[self.document.url_title]), status=403)
+		user_without_perms = mommy.make(UserProfile)
+		response = self.app.get(
+			reverse(self.document.get_versions_url_name(), args=[self.document.url_title]),
+			status=403,
+			user=user_without_perms
+		)
 		self.assertEqual(response.status_code, 403)
 
 		response = self.app.get(reverse(self.document.get_versions_url_name(), args=[self.document.url_title]), user=self.user)

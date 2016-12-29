@@ -62,10 +62,20 @@ class TestRevertion(WebTest):
 		versions = revisions.get_for_object(document)
 		self.assertEqual(len(versions), 2)
 
-		response = self.app.post(reverse('documents:revert'), {'id': versions[1].pk, 'url_title': document.url_title}, status=404)
+		user_without_perms = mommy.make(UserProfile)
+		response = self.app.post(
+			reverse('documents:revert'), {'id': versions[1].pk, 'url_title': document.url_title},
+			status=404,
+			user=user_without_perms,
+		)
 		self.assertEqual(response.status_code, 404)
 
-		response = self.app.post(reverse('documents:revert'), {'id': versions[1].pk, 'url_title': document.url_title}, status=403, xhr=True)
+		response = self.app.post(
+			reverse('documents:revert'), {'id': versions[1].pk, 'url_title': document.url_title},
+			status=403,
+			xhr=True,
+			user=user_without_perms,
+		)
 		self.assertEqual(response.status_code, 403)
 
 		response = self.app.post(reverse('documents:revert'), {'id': versions[1].pk, 'url_title': document.url_title}, user=self.user, status=404)
@@ -213,7 +223,12 @@ class TestAutosave(WebTest):
 
 		self.assertFalse(document.has_perms())
 
-		response = self.app.get(reverse(autosave.document.get_edit_url_name(), args=[autosave.document.url_title]), expect_errors=True)
+		user_without_permissions = mommy.make(UserProfile)
+		response = self.app.get(
+			reverse(autosave.document.get_edit_url_name(), args=[autosave.document.url_title]),
+			expect_errors=True,
+			user=user_without_permissions
+		)
 		self.assertEqual(response.status_code, 403)
 
 	def test_autosave_possible_to_view_autosave_with_permissions(self):
@@ -247,7 +262,14 @@ class TestMarkdownRendering(WebTest):
 		self.document.set_all_permissions(mommy.make(Group))
 
 	def test_render_text_no_permission(self):
-		response = self.app.post(reverse('documents:render', args=[self.document.url_title]), {'text': self.document_text}, xhr=True, expect_errors=True)
+		user_without_permission = mommy.make(UserProfile)
+		response = self.app.post(
+			reverse('documents:render', args=[self.document.url_title]),
+			{'text': self.document_text},
+			xhr=True,
+			expect_errors=True,
+			user=user_without_permission
+		)
 		self.assertEqual(response.status_code, 403)
 
 	def test_render_text_wrong_method(self):
@@ -461,10 +483,11 @@ class TestAttachments(WebTest):
 		self.assertEqual(response.status_code, 404, msg="Requests that are not AJAX should return a 404 error")
 
 		response = self.app.post(reverse('documents:delete_attachment'), params=params, expect_errors=True, xhr=True)
-		self.assertEqual(
-			response.status_code,
-			403,
-			msg="If users have no permissions they should not be able to delete an attachment"
+		redirect_url = reverse('login') + '?next=' + reverse('documents:delete_attachment')
+		self.assertRedirects(
+			response,
+			redirect_url,
+			msg_prefix="If the site is visited by anonymous users they should see the login page"
 		)
 
 		# try to delete an attachment as user with no permissions
@@ -515,7 +538,9 @@ class TestAttachments(WebTest):
 		self.assertEqual(response.status_code, 400, msg="Should be bad request as user used wrong request method")
 
 		response = self.app.get(reverse('documents:download_attachment'), params=params, expect_errors=True)
-		self.assertEqual(response.status_code, 403, msg="Should be forbidden as user has insufficient permissions")
+		self.assertEqual(response.status_code, 302)
+		response = response.follow()
+		self.assertTemplateUsed(response, 'login.html', msg_prefix="Anonymous users should see the login page")
 
 		# test viewing an attachment using a user with insufficient permissions
 		normal_user = mommy.make(UserProfile)
