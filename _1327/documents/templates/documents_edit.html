@@ -142,8 +142,8 @@
 		});
 	}, 1000);
 
-	function addImageToText(editor, attachmentId, modal) {
-		var chunk = "![Image Alt]({% url 'documents:download_attachment' %}?attachment_id=" + attachmentId + "&embed=True)";
+	function addImageToText(editor, attachmentHash, modal) {
+		var chunk = "![Image Alt]({% url 'documents:download_attachment' %}?hash_value=" + attachmentHash + "&embed=True)";
 		editor.replaceSelection(chunk);
 		var cursor = editor.getSelection();
 
@@ -212,8 +212,8 @@
 								return;
 							}
 							// find the right spot to insert the text and create the correct markdown
-							var selectedAttachment = select.val();
-							addImageToText(e, selectedAttachment, modalItem)
+							var attachmentHash = select.val();
+							addImageToText(e, attachmentHash, modalItem)
 
 						});
 
@@ -300,8 +300,8 @@
 
 	// handler to update the preview in the modal
 	$('#attachmentModalSelect').on('change', function (event) {
-		var selectedAttachment = $(this).val();
-		$('#attachment-preview').attr('src', "{% url 'documents:download_attachment' %}?attachment_id=" + selectedAttachment + "&embed=True");
+		var attachmentHash = $(this).val();
+		$('#attachment-preview').attr('src', "{% url 'documents:download_attachment' %}?hash_value=" + attachmentHash + "&embed=True");
 	});
 
 	$('#addImage').on('click', function (event) {

@@ -42,7 +42,7 @@
 				<td class="sorthandle"><span class="glyphicon glyphicon-move"></span></td>
 				<td>
 					<input type="hidden" class="attachmentinput" name="file" value="{{ attachment.id }}">
-					<a href="{% url 'documents:download_attachment' %}?attachment_id={{ attachment.id }}">{{ attachment.displayname }}</a>
+					<a href="{% url 'documents:download_attachment' %}?hash_value={{ attachment.hash_value }}">{{ attachment.displayname }}</a>
 				</td>
 				<td>{{ attachment.file.name|filename }}</td>
 				<td>{{ attachment.created }}</td>

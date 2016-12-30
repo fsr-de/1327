@@ -318,7 +318,7 @@ def create_attachment(request):
 
 	success, __, attachment = handle_attachment(request, document)
 	if success:
-		return HttpResponse(attachment.id)
+		return HttpResponse(attachment.hash_value)
 	else:
 		raise SuspiciousOperation
 
@@ -342,7 +342,7 @@ def download_attachment(request):
 	if not request.method == "GET":
 		raise SuspiciousOperation
 
-	attachment = get_object_or_404(Attachment, pk=request.GET['attachment_id'])
+	attachment = get_object_or_404(Attachment, hash_value=request.GET['hash_value'])
 	# check whether user is allowed to see that document and thus download the attachment
 	document = attachment.document
 	if not request.user.has_perm(document.view_permission_name, document):
@@ -385,7 +385,7 @@ def get_attachments(request, document_id):
 		file_type = attachment.displayname.lower().split('.')[-1]
 		if file_type not in settings.SUPPORTED_IMAGE_TYPES:
 			continue
-		data[attachment.id] = attachment.displayname
+		data[attachment.hash_value] = attachment.displayname
 
 	return HttpResponse(json.dumps(data))
 

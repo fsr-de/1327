@@ -174,7 +174,7 @@ class AttachmentForm(forms.ModelForm):
 
 	class Meta:
 		model = Attachment
-		exclude = ('document', 'index')
+		exclude = ('document', 'index', 'hash_value')
 
 
 class AtLeastNFormSet(BaseInlineFormSet):

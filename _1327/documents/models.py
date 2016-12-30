@@ -1,4 +1,5 @@
 from datetime import datetime
+import hashlib
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
@@ -179,10 +180,15 @@ class TemporaryDocumentText(models.Model):
 
 
 class Attachment(models.Model):
+	def get_hash():
+		max_id = Attachment.objects.aggregate(models.Max('id'))['id__max'] or 0
+		return '{}_{}'.format(hashlib.md5(str(datetime.now()).encode()).hexdigest(), int(max_id) + 1)
+
 	displayname = models.TextField(max_length=255, blank=True, default="", verbose_name=_("Display name"))
 	document = models.ForeignKey(Document, related_name='attachments', verbose_name=_("Document"))
 	created = models.DateTimeField(auto_now=True, verbose_name=_("Created"))
 	file = models.FileField(upload_to="documents/%y/%m/", verbose_name=_("File"))
+	hash_value = models.CharField(max_length=40, unique=True, default=get_hash, verbose_name=_("Hash value"))  # used in download urls
 
 	index = models.IntegerField(verbose_name=_("ordering index"), default=0)
 	no_direct_download = models.BooleanField(default=False, verbose_name=_("Do not show as attachment (for embedded images)"))

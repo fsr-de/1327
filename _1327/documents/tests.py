@@ -529,7 +529,7 @@ class TestAttachments(WebTest):
 
 	def test_view_attachment(self):
 		params = {
-			'attachment_id': self.attachment.id,
+			'hash_value': self.attachment.hash_value,
 		}
 
 		# test that a user with insufficient permissions is not allowed to view/download an attachment
