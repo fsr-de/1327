@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-15 22:58+0100\n"
-"PO-Revision-Date: 2016-11-15 23:11+0100\n"
+"POT-Creation-Date: 2016-12-30 12:08+0100\n"
+"PO-Revision-Date: 2016-12-30 12:09+0100\n"
 "Last-Translator: Johannes Wolf <janno42@gmail.com>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -18,35 +18,39 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.8.11\n"
 
-#: _1327/documents/forms.py:27
+#: _1327/documents/forms.py:28
 msgid "URL"
 msgstr "URL"
 
-#: _1327/documents/forms.py:28
+#: _1327/documents/forms.py:29
 msgid "Comment"
 msgstr "Kommentar"
 
-#: _1327/documents/forms.py:29 _1327/main/forms.py:61 _1327/main/forms.py:94
+#: _1327/documents/forms.py:30 _1327/main/forms.py:61 _1327/main/forms.py:94
 msgid "Edit permissions"
 msgstr "Bearbeitungsrechte"
 
-#: _1327/documents/forms.py:55
+#: _1327/documents/forms.py:58
+msgid "Only the following characters are allowed in the URL: a-z, -, _, /"
+msgstr "Nur die folgenden Zeichen sind in der URL erlaubt: a-z, -, _, /"
+
+#: _1327/documents/forms.py:60
 msgid "The URL used for this page is not allowed."
 msgstr "Die angegebene URL darf nicht verwendet werden."
 
-#: _1327/documents/forms.py:57
+#: _1327/documents/forms.py:62
 msgid "The URL used for this page is already taken."
 msgstr "Die angegebene URL wird bereits verwendet."
 
-#: _1327/documents/forms.py:63 _1327/main/forms.py:89 _1327/main/forms.py:115
+#: _1327/documents/forms.py:68 _1327/main/forms.py:89 _1327/main/forms.py:115
 msgid "You are not a member of this group!"
 msgstr "Du bist kein Mitglied dieser Gruppe!"
 
-#: _1327/documents/forms.py:97 _1327/main/forms.py:126
+#: _1327/documents/forms.py:102 _1327/main/forms.py:126
 msgid "Role"
 msgstr "Rolle"
 
-#: _1327/documents/forms.py:136
+#: _1327/documents/forms.py:141
 msgid ""
 "If you want to enable additional permissions for a group you also need to "
 "enable the view permission for that group!"
@@ -54,55 +58,59 @@ msgstr ""
 "Wenn zusätzliche Berechtigungen vergeben werden sollen, muss immer auch die "
 "\"Anzeigen\"-Berechtigung für diese Gruppe vergeben werden!"
 
-#: _1327/documents/forms.py:188
+#: _1327/documents/forms.py:193
 msgid "You must have at least {} of these."
 msgstr "Es muss mindestens {} geben."
 
-#: _1327/documents/models.py:31 _1327/documents/models.py:164
+#: _1327/documents/models.py:32 _1327/documents/models.py:188
 #: _1327/main/models.py:29 _1327/main/templates/menu_items_list.html:20
 msgid "Document"
 msgstr "Dokument"
 
-#: _1327/documents/models.py:32
+#: _1327/documents/models.py:33
 #: _1327/documents/templates/documents/admin_app_name.html:2
 msgid "Documents"
 msgstr "Dokumente"
 
-#: _1327/documents/models.py:76
+#: _1327/documents/models.py:96
 msgid "New Page from {}"
 msgstr "Neue Seite vom {}"
 
-#: _1327/documents/models.py:163
+#: _1327/documents/models.py:187
 #: _1327/documents/templates/documents_attachments.html:31
 msgid "Display name"
 msgstr "Angezeigter Name"
 
-#: _1327/documents/models.py:165
+#: _1327/documents/models.py:189
 #: _1327/documents/templates/documents_attachments.html:33
 #: _1327/information_pages/templates/information_pages_meta_information.html:10
 msgid "Created"
 msgstr "Erstellt"
 
-#: _1327/documents/models.py:166
+#: _1327/documents/models.py:190
 msgid "File"
 msgstr "Datei"
 
-#: _1327/documents/models.py:168 _1327/polls/models.py:110
+#: _1327/documents/models.py:191
+msgid "Hash value"
+msgstr "Hashwert"
+
+#: _1327/documents/models.py:193 _1327/polls/models.py:134
 msgid "ordering index"
 msgstr "Sortierreihenfolge"
 
-#: _1327/documents/models.py:169
+#: _1327/documents/models.py:194
 msgid "Do not show as attachment (for embedded images)"
 msgstr "Nicht als Anhang anzeigen (für eingebettete Bilder)"
 
-#: _1327/documents/models.py:172
+#: _1327/documents/models.py:197
 msgid "Attachment"
 msgstr "Anhang"
 
-#: _1327/documents/models.py:173
+#: _1327/documents/models.py:198
 #: _1327/documents/templates/documents_base.html:19
-#: _1327/documents/templates/documents_base.html:43
-#: _1327/documents/templates/documents_base.html:53
+#: _1327/documents/templates/documents_base.html:45
+#: _1327/documents/templates/documents_base.html:71
 #: _1327/polls/templates/polls_results.html:50
 #: _1327/polls/templates/polls_vote.html:44
 msgid "Attachments"
@@ -228,7 +236,7 @@ msgstr "Veröffentlichen für Studierende"
 msgid "Versions"
 msgstr "Versionen"
 
-#: _1327/documents/templates/documents_base.html:39
+#: _1327/documents/templates/documents_base.html:40
 msgid "Table of Contents"
 msgstr "Inhaltsverzeichnis"
 
@@ -342,32 +350,32 @@ msgstr "Version wiederherstellen"
 msgid "Created document"
 msgstr "Dokument erstellt"
 
-#: _1327/documents/views.py:83
+#: _1327/documents/views.py:96
 msgid "Successfully saved changes"
 msgstr "Änderungen gespeichert"
 
-#: _1327/documents/views.py:164
+#: _1327/documents/views.py:177
 msgid "Permissions have been changed successfully."
 msgstr "Berechtigungen wurden angepasst."
 
-#: _1327/documents/views.py:188
+#: _1327/documents/views.py:201
 msgid "Minutes document has been published."
 msgstr "Protokoll wurde veröffentlicht."
 
-#: _1327/documents/views.py:199
+#: _1327/documents/views.py:212
 msgid "File has been uploaded successfully!"
 msgstr "Datei erfolgreich hochgeladen!"
 
-#: _1327/documents/views.py:293
+#: _1327/documents/views.py:306
 #, python-brace-format
 msgid "reverted to revision \"{revision_comment}\""
 msgstr "Version \"{revision_comment}\" wiederhergestellt"
 
-#: _1327/documents/views.py:323
+#: _1327/documents/views.py:336
 msgid "Successfully deleted Attachment!"
 msgstr "Anhang gelöscht!"
 
-#: _1327/documents/views.py:401
+#: _1327/documents/views.py:414
 msgid "Successfully deleted document: {}"
 msgstr "Dokument gelöscht: {}"
 
@@ -582,11 +590,11 @@ msgstr[1] "Protokolle"
 msgid "Staff Meeting"
 msgstr "FSR-Sitzung"
 
-#: _1327/minutes/models.py:146
+#: _1327/minutes/models.py:164
 msgid "Name"
 msgstr "Name"
 
-#: _1327/minutes/models.py:147
+#: _1327/minutes/models.py:165
 #: _1327/minutes/templates/minutes_meta_information.html:14
 msgid "Guests"
 msgstr "Gäste"
@@ -615,11 +623,11 @@ msgstr "Keine Labels"
 msgid "Vote permissions"
 msgstr "Abstimmungs-Berechtigung"
 
-#: _1327/polls/forms.py:25
+#: _1327/polls/forms.py:34
 msgid "The start date must be before or on the end date."
 msgstr "Das Startdatum muss am oder vor dem Enddatum liegen."
 
-#: _1327/polls/forms.py:44
+#: _1327/polls/forms.py:53
 msgid "Anonymous and university network groups are not allowed to vote!"
 msgstr "Anonyme Nutzer und Nutzer aus dem Uni-Netz können nicht abstimmen!"
 
@@ -909,7 +917,7 @@ msgstr "Admin"
 msgid "Main page"
 msgstr "Startseite"
 
-#: _1327/templates/base.html:198
+#: _1327/templates/base.html:200
 msgid "Return to the top of the page"
 msgstr "An den Seitenanfang scrollen"
 
@@ -918,7 +926,7 @@ msgstr "An den Seitenanfang scrollen"
 msgid "Recover deleted %(name)s"
 msgstr "%(name)s wiederherstellen"
 
-#: _1327/user_management/admin.py:14 _1327/user_management/forms.py:10
+#: _1327/user_management/admin.py:14
 msgid "Password"
 msgstr "Passwort"
 
@@ -934,25 +942,17 @@ msgstr "Passwörter stimmen nicht überein"
 msgid "Users"
 msgstr "Benutzer"
 
-#: _1327/user_management/forms.py:9 _1327/user_management/models.py:38
-msgid "User name"
-msgstr "Benutzername"
-
-#: _1327/user_management/forms.py:26
-msgid "Please enter a correct username and password."
-msgstr "Benutzername und/oder Passwort sind nicht korrekt."
-
-#: _1327/user_management/forms.py:28
-msgid "This account is inactive."
-msgstr "Dieser Account ist deaktiviert."
-
-#: _1327/user_management/forms.py:36
+#: _1327/user_management/forms.py:8
 msgid "Select a user"
 msgstr "Benutzer auswählen"
 
 #: _1327/user_management/models.py:12
 msgid "Users must have a username"
 msgstr "Benutzer müssen einen Benutzernamen haben"
+
+#: _1327/user_management/models.py:38
+msgid "User name"
+msgstr "Benutzername"
 
 #: _1327/user_management/models.py:39
 msgid "Email address"
@@ -975,9 +975,13 @@ msgid "User profiles"
 msgstr "Benutzerprofile"
 
 #: _1327/user_management/templates/login.html:5
-#: _1327/user_management/templates/login.html:14
+#: _1327/user_management/templates/login.html:22
 msgid "Login"
 msgstr "Login"
+
+#: _1327/user_management/templates/login.html:12
+msgid "Please login to see this page."
+msgstr "Bitte melde dich an, um diese Seite zu sehen."
 
 #: _1327/user_management/templates/user_impersonation.html:5
 msgid "View page as a different user"
