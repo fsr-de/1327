@@ -3,8 +3,10 @@
 <dl class="meta-information">
 	<dt>{% trans "Date" %}</dt>
 	<dd>{{ document.date|date:"d. M Y" }}</dd>
-	<dt>{% trans "Moderator" %}</dt>
-	<dd>{{ document.moderator }}</dd>
+	{% if document.moderator %}
+		<dt>{% trans "Moderator" %}</dt>
+		<dd>{{ document.moderator }}</dd>
+	{% endif %}
 	<dt>{% trans "Minutes taker" %}</dt>
 	<dd>{{ document.author }}</dd>
 	<dt>{% trans "Participants" %}</dt>
@@ -15,7 +17,7 @@
 	{% for guest in document.guests.all %}
 		<dd>{{ guest.name }}</dd>
 	{% empty %}
-		<dd>{% trans "No Guests" %}</dd>
+		<dd><i>{% trans "No Guests" %}</i></dd>
 	{% endfor %}
 
 	<dt class="hidden-print">{% trans "Labels" %}</dt>
@@ -28,7 +30,7 @@
 		{% elif  document.state == document.INTERNAL %}
 			<span class="label label-warning">{% trans "Internal" %}</span>
 		{% elif document.labels.all|length == 0 %}
-			{% trans "No Labels" %}
+			<i>{% trans "No Labels" %}</i>
 		{% endif %}
 	</dd>
 	<dt class="hidden-print">{% trans "Last change" %}</dt>
