@@ -379,6 +379,11 @@
 	}
 	save();
 
+	$(".select2-selection").select2({
+		language: "{{ LANGUAGE_CODE }}",
+		placeholder: "{% trans 'Please select...' %}"
+	});
+
 	$("#selectInternalLinkModal").select2({
 		language: "{{ LANGUAGE_CODE }}",
 		placeholder: "{% trans 'Please select...' %}",
@@ -388,11 +393,6 @@
 			dataType: 'json'
 		},
 		minimumInputLength: 1
-	});
-
-	$(".select2-selection").select2({
-		language: "{{ LANGUAGE_CODE }}",
-		placeholder: "{% trans 'Please select...' %}"
 	});
 
 	{% block additional_scripts %}{% endblock %}
