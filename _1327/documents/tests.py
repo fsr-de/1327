@@ -98,6 +98,22 @@ class TestRevertion(WebTest):
 		self.assertEqual(versions[0].object.text, "text")
 		self.assertEqual(versions[0].revision.comment, 'reverted to revision "test version"')
 
+	def test_revert_to_different_url(self):
+		document = Document.objects.get()
+		old_url = document.url_title
+
+		document.url_title = 'new/url'
+		with transaction.atomic(), revisions.create_revision():
+			document.save()
+			revisions.set_user(self.user)
+			revisions.set_comment('changed url')
+
+		versions = revisions.get_for_object(document)
+		response = self.app.post(reverse('documents:revert'), {'id': versions[2].pk, 'url_title': document.url_title}, user=self.user, xhr=True)
+
+		self.assertEqual(response.status_code, 200)
+		self.assertIn(reverse('versions', args=[old_url]), response.body.decode('utf-8'))
+
 
 class TestAutosave(WebTest):
 	csrf_checks = False

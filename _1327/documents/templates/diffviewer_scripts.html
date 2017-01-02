@@ -41,7 +41,7 @@
 				id: versionIDToRevert
 				url_title: '{{ document.url_title }}'
 			$.post '{% url "documents:revert" %}', data, (data, textStatus, jqXHR) ->
-				location.reload()
+				location.replace(data)
 			.fail (error) ->
 				console.log(error)
 				alert('{% trans "An error occurred. The revision could not be reverted." %}')
