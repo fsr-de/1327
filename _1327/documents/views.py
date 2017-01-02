@@ -305,7 +305,7 @@ def revert(request):
 		revisions.set_comment(
 			_('reverted to revision \"{revision_comment}\"'.format(revision_comment=revert_version.revision.comment)))
 
-	return HttpResponse()
+	return HttpResponse(reverse('versions', args=[reverted_document.url_title]))
 
 
 def create_attachment(request):
