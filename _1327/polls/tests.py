@@ -2,11 +2,13 @@ import datetime
 
 from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
+from django.db import transaction
 from django.template.defaultfilters import floatformat
 from django.test import TestCase
 from django_webtest import WebTest
 from guardian.shortcuts import assign_perm, get_perms
 from model_mommy import mommy
+from reversion import revisions
 
 from _1327.polls.models import Choice, Poll
 from _1327.user_management.models import UserProfile
@@ -610,3 +612,59 @@ class PollEditTests(WebTest):
 
 		form.submit()
 		self.assertEqual(Choice.objects.filter(poll=self.poll).count(), 4)
+
+
+class PollRevertionTests(WebTest):
+	csrf_checks = False
+	extra_environ = {'HTTP_ACCEPT_LANGUAGE': 'en'}
+
+	def setUp(self):
+		self.user = mommy.make(UserProfile, is_superuser=True)
+
+		self.poll = mommy.prepare(Poll, text='text', start_date=datetime.date.today(), end_date=datetime.date.today())
+		with transaction.atomic(), revisions.create_revision():
+			self.poll.save()
+			revisions.set_user(self.user)
+			revisions.set_comment('test version')
+
+		self.poll.text = 'very goood and nice text'
+		with transaction.atomic(), revisions.create_revision():
+			self.poll.save()
+			revisions.set_user(self.user)
+			revisions.set_comment('change text')
+
+	def test_revert_poll_no_votes(self):
+		poll = Poll.objects.get()
+		self.assertTrue(poll.can_be_reverted)
+		versions = revisions.get_for_object(poll)
+		self.assertEqual(len(versions), 2)
+
+		response = self.app.post(reverse('documents:revert'), {'id': versions[1].pk, 'url_title': poll.url_title}, user=self.user, xhr=True)
+		self.assertEqual(response.status_code, 200)
+
+		versions = revisions.get_for_object(poll)
+		self.assertEqual(len(versions), 3)
+
+		response = self.app.get(reverse('versions', args=[poll.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertNotIn('This Document can not be reverted!', response.body.decode('utf-8'))
+
+	def test_revert_poll_after_vote(self):
+		poll = Poll.objects.get()
+
+		self.assertTrue(poll.can_be_reverted)
+		poll.participants.add(self.user)
+		self.assertFalse(poll.can_be_reverted)
+
+		versions = revisions.get_for_object(poll)
+		self.assertEqual(len(versions), 2)
+
+		response = self.app.post(reverse('documents:revert'), {'id': versions[1].pk, 'url_title': poll.url_title}, user=self.user, xhr=True, status=400)
+		self.assertEqual(response.status_code, 400)
+
+		new_versions = revisions.get_for_object(poll)
+		self.assertEqual(len(versions), len(new_versions))
+
+		response = self.app.get(reverse('versions', args=[poll.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn('This Document can not be reverted!', response.body.decode('utf-8'))
