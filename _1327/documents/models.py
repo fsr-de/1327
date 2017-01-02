@@ -84,6 +84,10 @@ class Document(PolymorphicModel):
 	def can_be_changed_by(self, user):
 		raise NotImplementedError
 
+	@property
+	def can_be_reverted(self):
+		return True
+
 	def authors(self):
 		authors = set()
 		versions = revisions.get_for_object(self)

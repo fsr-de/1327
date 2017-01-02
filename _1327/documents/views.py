@@ -127,11 +127,15 @@ def versions(request, title):
 	check_permissions(document, request.user, [document.edit_permission_name])
 	document_versions = prepare_versions(document)
 
+	if not document.can_be_reverted:
+		messages.warning(request, _('This Document can not be reverted!'))
+
 	return render(request, 'documents_versions.html', {
 		'active_page': 'versions',
 		'versions': document_versions,
 		'document': document,
 		'permission_warning': permission_warning(request.user, document),
+		'can_be_reverted': document.can_be_reverted,
 	})
 
 
@@ -263,6 +267,9 @@ def revert(request):
 	document = get_object_or_404(Document, url_title=document_url_title)
 	check_permissions(document, request.user, [document.edit_permission_name])
 	versions = revisions.get_for_object(document)
+
+	if not document.can_be_reverted:
+		raise SuspiciousOperation('This Document can not be reverted!')
 
 	# find the we want to revert to
 	revert_version = None

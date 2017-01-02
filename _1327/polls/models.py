@@ -25,6 +25,10 @@ class Poll(Document):
 		permission_name = self.edit_permission_name
 		return user.has_perm(permission_name, self) or user.has_perm(permission_name)
 
+	@property
+	def can_be_reverted(self):
+		return self.participants.count() == 0
+
 	start_date = models.DateField(default=datetime.now, verbose_name=_("Start Date"))
 	end_date = models.DateField(default=datetime.now, verbose_name=_("End Date"))
 	max_allowed_number_of_answers = models.PositiveIntegerField(default=1)
