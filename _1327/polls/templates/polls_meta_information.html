@@ -2,13 +2,13 @@
 
 <dl class="meta-information">
 	<dt>{% trans "Start date" %}</dt>
-	<dd>{{ document.start_date|date:"d. M Y" }}</dd>
+	<dd>{{ document.start_date|date:"d.m.Y" }}</dd>
 	<dt>{% trans "End date" %}</dt>
-	<dd>{{ document.end_date|date:"d. M Y" }}</dd>
+	<dd>{{ document.end_date|date:"d.m.Y" }}</dd>
 	<dt>{% trans "Number of voters" %}</dt>
 	<dd>{{ document.participants.all|length }}</dd>
 	<dt>{% trans "Number of votes" %}</dt>
 	<dd>{{ document.num_votes }}</dd>
 	<dt>{% trans "Last change" %}</dt>
-	<dd>{{ document.last_change|date:"d. M Y, H:i" }}</dd>
+	<dd>{{ document.last_change|date:"d.m.Y, H:i" }}</dd>
 </dl>

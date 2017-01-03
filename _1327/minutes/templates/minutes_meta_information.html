@@ -2,7 +2,7 @@
 
 <dl class="meta-information">
 	<dt>{% trans "Date" %}</dt>
-	<dd>{{ document.date|date:"d. M Y" }}</dd>
+	<dd>{{ document.date|date:"d.m.Y" }}</dd>
 	{% if document.moderator %}
 		<dt>{% trans "Moderator" %}</dt>
 		<dd>{{ document.moderator }}</dd>
@@ -34,5 +34,5 @@
 		{% endif %}
 	</dd>
 	<dt class="hidden-print">{% trans "Last change" %}</dt>
-	<dd class="hidden-print">{{ document.last_change|date:"d. M Y, H:i" }}</dd>
+	<dd class="hidden-print">{{ document.last_change|date:"d.m.Y, H:i" }}</dd>
 </dl>

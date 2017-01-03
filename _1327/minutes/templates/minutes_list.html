@@ -19,18 +19,11 @@
 	{% for year, minutes in minutes_list %}
 		<h3 id="year{{ year }}">{{ year }}</h3>
 		<table class="table table-striped">
-			<tr>
-				<th class="col-xs-2">{% trans "Date" %}</th>
-				<th class="col-xs-4">{% trans "Title" %}</th>
-				<th class="col-xs-6"></th>
-			</tr>
 			{% for minute in minutes %}
 				<tr>
-					<td>{{ minute.date | date:"d.m.Y" }}</td>
-					<td>
-						<a href="{{ minute.get_view_url }}">{{ minute.title }}</a>
-					</td>
-					<td>
+					<td class="col-xs-2">
+						<a href="{{ minute.get_view_url }}">{{ minute.date | date:"d.m.Y" }}</td></a>
+					<td class="col-xs-3">
 						{% for label in minute.labels.all %}
 							<span class="label {{ label.class_for_text_color }}" style="background-color: {{ label.color }};">{{ label.title }}</span>
 						{% endfor %}
@@ -39,6 +32,9 @@
 						{% elif minute.state == minute.INTERNAL %}
 							<span class="label label-warning">{% trans "Internal" %}</span>
 						{% endif %}
+					</td>
+					<td class="col-xs-7">
+						<a href="{{ minute.get_view_url }}">{{ minute.title }}</a>
 					</td>
 				</tr>
 			{% endfor %}
