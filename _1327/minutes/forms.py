@@ -21,6 +21,7 @@ class MinutesDocumentForm(DocumentForm):
 		self.fields['moderator'].widget.attrs['class'] = 'select2-selection'
 		self.fields['author'].widget.attrs['class'] = 'select2-selection'
 		self.fields['participants'].widget.attrs['class'] = 'select2-selection'
+		self.fields['labels'].widget.attrs['class'] = 'select2-selection'
 
 	@classmethod
 	def get_formset_factory(cls):
