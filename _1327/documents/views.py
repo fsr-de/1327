@@ -356,9 +356,14 @@ def download_attachment(request):
 		raise PermissionDenied
 
 	filename = os.path.join(settings.MEDIA_ROOT, attachment.file.name)
+	extension = os.path.splitext(filename)[1]
 	is_attachment = not request.GET.get('embed', None)
 
-	return sendfile(request, filename, attachment=is_attachment, attachment_filename=attachment.displayname)
+	attachment_filename = attachment.displayname
+	if not attachment_filename.endswith(extension):
+		attachment_filename += extension
+
+	return sendfile(request, filename, attachment=is_attachment, attachment_filename=attachment_filename)
 
 
 def update_attachment_order(request):
