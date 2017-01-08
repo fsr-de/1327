@@ -40,6 +40,8 @@ STAFF_GROUP_NAME = "Staff"
 STUDENT_GROUP_NAME = "Student"
 UNIVERSITY_GROUP_NAME = "University Network"
 
+DEFAULT_USER_GROUP_NAME = ""  # if a name is set, all new users are automatically added to this group
+
 # Anonymous users in one of the given IP ranges are automatically assumed to be in the associated group.
 # Only the first match will be used.
 ANONYMOUS_IP_RANGE_GROUPS = {
