@@ -24,3 +24,8 @@ def can_delete_menu_item(menu_item, user):
 @register.filter(name='can_view_menu_item')
 def can_view_menu_item(menu_item, user):
 	return menu_item.can_view(user)
+
+
+@register.filter(name='sort_users_by_name')
+def sort_users_by_name(users):
+	return sorted(users, key=lambda user: (user.get_full_name().lower()))
