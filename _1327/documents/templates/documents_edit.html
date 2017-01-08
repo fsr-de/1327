@@ -384,6 +384,12 @@
 		placeholder: "{% trans 'Please select...' %}"
 	});
 
+	$(".select2-selection-clearable").select2({
+		language: "{{ LANGUAGE_CODE }}",
+		placeholder: "{% trans 'Please select...' %}",
+		allowClear: true
+	});
+
 	$("#selectInternalLinkModal").select2({
 		language: "{{ LANGUAGE_CODE }}",
 		placeholder: "{% trans 'Please select...' %}",
