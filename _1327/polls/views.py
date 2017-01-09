@@ -24,7 +24,7 @@ def index(request):
 	finished_polls = []
 	upcoming_polls = []
 	# do not show polls that a user is not allowed to see
-	for poll in Poll.objects.all():
+	for poll in Poll.objects.all().order_by('-end_date'):
 		if request.user.has_perm(Poll.get_view_permission(), obj=poll) and poll.start_date <= datetime.date.today():
 			if datetime.date.today() <= poll.end_date \
 						and not poll.participants.filter(id=request.user.pk).exists() \
