@@ -90,6 +90,16 @@ class UsecaseTests(WebTest):
 		self.assertEqual(user.get_full_name(), 'Admin User')
 		self.assertEqual(user.get_short_name(), 'Admin')
 
+	def test_default_group(self):
+		user = mommy.make(UserProfile)
+		self.assertEqual(user.groups.count(), 0)
+
+		with self.settings(DEFAULT_USER_GROUP_NAME='Default'):
+			user = mommy.make(UserProfile)
+			self.assertEqual(user.groups.count(), 1)
+			default_group = Group.objects.get(name='Default')
+			self.assertIn(default_group, user.groups.all())
+
 
 class UserImpersonationTests(WebTest):
 	csrf_checks = False

@@ -1,6 +1,8 @@
 from django.conf import settings
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Group, PermissionsMixin
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
@@ -67,3 +69,11 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
 	@cached_property
 	def is_staff(self):
 		return self.is_superuser or self.groups.filter(name=settings.STAFF_GROUP_NAME).exists()
+
+
+@receiver(post_save, sender=UserProfile)
+def add_to_default_group(sender, **kwargs):
+	if settings.DEFAULT_USER_GROUP_NAME and kwargs.get('created', False):
+		user = kwargs.get('instance')
+		group, __ = Group.objects.get_or_create(name=settings.DEFAULT_USER_GROUP_NAME)
+		user.groups.add(group)
