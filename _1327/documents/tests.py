@@ -404,7 +404,7 @@ class TestAttachments(WebTest):
 
 		self.content = "test content of test attachment"
 		attachment_file = ContentFile(self.content)
-		self.attachment = mommy.make(Attachment, document=self.document)
+		self.attachment = mommy.make(Attachment, document=self.document, displayname="test")  # displayname does not include the extension
 		self.attachment.file.save('temp.txt', attachment_file)
 		self.attachment.save()
 
@@ -578,6 +578,11 @@ class TestAttachments(WebTest):
 			response.body.decode('utf-8'),
 			self.content,
 			msg="An attachment that has been downloaded should contain its original content"
+		)
+		self.assertEqual(
+			response.headers['Content-Disposition'],
+			"attachment; filename=\"b\'test.txt\'\"; filename*=UTF-8\'\'test.txt",
+			msg="The filename should include the file extension although not included in the displayname"
 		)
 
 		# try the same with a user that is in a group having the correct permission
