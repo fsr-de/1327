@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load morefilters %}
 
 <dl class="meta-information">
 	<dt>{% trans "Date" %}</dt>
@@ -10,7 +11,7 @@
 	<dt>{% trans "Minutes taker" %}</dt>
 	<dd>{{ document.author }}</dd>
 	<dt>{% trans "Participants" %}</dt>
-	{% for participant in document.participants.all %}
+	{% for participant in document.participants.all|sort_users_by_name %}
 		<dd>{{ participant }}</dd>
 	{% endfor %}
 	<dt>{% trans "Guests" %}</dt>
