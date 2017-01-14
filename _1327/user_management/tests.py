@@ -79,11 +79,11 @@ class UsecaseTests(WebTest):
 		self.assertEqual(user.get_short_name(), 'noname')
 
 		user = UserProfile.objects.get(username='nofirstname')
-		self.assertEqual(user.get_full_name(), 'nofirstname')
+		self.assertEqual(user.get_full_name(), 'Last')
 		self.assertEqual(user.get_short_name(), 'nofirstname')
 
 		user = UserProfile.objects.get(username='nolastname')
-		self.assertEqual(user.get_full_name(), 'nolastname')
+		self.assertEqual(user.get_full_name(), 'First')
 		self.assertEqual(user.get_short_name(), 'First')
 
 		user = UserProfile.objects.get(username='admin')
