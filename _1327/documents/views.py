@@ -1,6 +1,8 @@
 import json
 import os
 
+from channels import Group as WebsocketGroup
+
 from django.contrib import messages
 from django.contrib.admin.utils import NestedObjects
 from django.contrib.auth.models import Group
@@ -119,7 +121,14 @@ def autosave(request, title):
 		pass
 
 	handle_autosave(request, document)
-	return HttpResponse()
+
+	data = {
+		'preview_url': request.build_absolute_uri(
+			reverse('documents:preview') + '?hash_value=' + document.document.get().hash_value
+		)
+	}
+
+	return HttpResponse(json.dumps(data))
 
 
 def versions(request, title):
@@ -237,6 +246,11 @@ def render_text(request, title):
 	text = request.POST['text']
 	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr'])
 	text = md.convert(text + abbreviation_explanation_markdown())
+
+	WebsocketGroup('preview').send({
+		'text': text
+	})
+
 	return HttpResponse(text, content_type='text/plain')
 
 
@@ -443,3 +457,24 @@ def get_delete_cascade(request, title):
 		simplified_delete_cascade.append(cascade_item)
 
 	return HttpResponse(json.dumps(delete_cascade_to_json(simplified_delete_cascade)))
+
+
+def preview(request):
+	if not request.GET or request.method != 'GET':
+		raise Http404
+
+	hash_value = request.GET['hash_value']
+	temporary_document = get_object_or_404(TemporaryDocumentText, hash_value=hash_value)
+
+	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr'])
+	text = md.convert(temporary_document.text + abbreviation_explanation_markdown())
+
+	return render(
+		request,
+		'documents_preview.html',
+		{
+			'title': temporary_document.document.title,
+			'text': text,
+			'preview_url': settings.PREVIEW_URL,
+		}
+	)

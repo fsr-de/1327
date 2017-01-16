@@ -70,6 +70,7 @@ INSTALLED_APPS = [
 	'django_extensions',
 	'hijack',
 	'compat',
+	'channels',
 	'_1327.main',
 	'_1327.user_management',
 	'_1327.documents',
@@ -125,6 +126,14 @@ DATABASES = {
 		'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 	}
 }
+
+CHANNEL_LAYERS = {
+	"default": {
+		"BACKEND": "asgiref.inmemory.ChannelLayer",
+		"ROUTING": "_1327.routing.channel_routing",
+	},
+}
+PREVIEW_URL = '/ws/preview'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/

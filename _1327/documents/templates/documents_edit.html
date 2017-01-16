@@ -34,7 +34,7 @@
 	{% endbuttons %}
 </form>
 
-	<h2>{% trans "Preview" %}</h2>
+	<h2>{% trans "Preview" %} <a id="shareText" class="hidden">Share</a></h2>
 	<div class="divider"></div>
 	<div id="text-preview"></div>
 
@@ -372,7 +372,14 @@
 			$.ajax({
 				url: "{% url 'documents:autosave' document.url_title %}",
 				type: "post",
-				data: serializedData
+				data: serializedData,
+				success: function(data, textStatus, jqXHR) {
+					data = JSON.parse(data);
+					var url = data.preview_url;
+					var destinationElement = $('#shareText');
+					destinationElement.attr('href', url);
+					destinationElement.removeClass('hidden');
+				}
 			});
 		}
 		setTimeout(function() { save(); }, 10000);

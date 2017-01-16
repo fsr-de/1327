@@ -177,10 +177,15 @@ class Document(PolymorphicModel):
 
 
 class TemporaryDocumentText(models.Model):
+	def get_hash():
+		max_id = TemporaryDocumentText.objects.aggregate(models.Max('id'))['id__max'] or 0
+		return '{}_{}'.format(hashlib.md5(str(datetime.now()).encode()).hexdigest(), int(max_id) + 1)
+
 	text = models.TextField()
 	document = models.ForeignKey(Document, related_name='document')
 	created = models.DateTimeField(auto_now=True)
 	author = models.ForeignKey(UserProfile, related_name='temporary_documents')
+	hash_value = models.CharField(max_length=40, unique=True, default=get_hash, verbose_name=_("Hash value"))
 
 
 class Attachment(models.Model):
