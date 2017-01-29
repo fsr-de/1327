@@ -51,19 +51,17 @@
 	{{ block.super }}
 	{% for menu_item in main_menu %}
 		{% if menu_item.selected and menu_item.document != document %}
-			<ul class="breadcrumbs">
-				<li><span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span> <a href="{{ menu_item.get_url }}">{{ menu_item.title }}</a></li>
-				{% for subitem in menu_item.submenu %}
-					{% if subitem.selected %}
-						<li><span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span> {% if subitem.document != document %}<a href="{{ subitem.get_url }}">{% endif %}{{ subitem.title }}{% if subitem.document != document %}</a>{% endif %}</li>
-						{% for subsubitem in subitem.submenu %}
-							{% if subsubitem.selected %}
-								<li><span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span> {{ subsubitem.title }}</li>
-							{% endif %}
-						{% endfor %}
-					{% endif %}
-				{% endfor %}
-			</ul>
+			<li><span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>&nbsp;<a href="{{ menu_item.get_url }}">{{ menu_item.title }}</a></li>
+			{% for subitem in menu_item.submenu %}
+				{% if subitem.selected %}
+					<li><span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>&nbsp;{% if subitem.document != document %}<a href="{{ subitem.get_url }}">{% endif %}{{ subitem.title }}{% if subitem.document != document %}</a>{% endif %}</li>
+					{% for subsubitem in subitem.submenu %}
+						{% if subsubitem.selected %}
+							<li><span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>&nbsp;{{ subsubitem.title }}</li>
+						{% endif %}
+					{% endfor %}
+				{% endif %}
+			{% endfor %}
 		{% endif %}
 	{% endfor %}
 {% endblock %}
