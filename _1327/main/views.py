@@ -20,8 +20,7 @@ from _1327.documents.models import Document
 from _1327.documents.utils import permission_warning
 from _1327.main.forms import AbbreviationExplanationForm, get_permission_form
 from _1327.main.models import AbbreviationExplanation
-from _1327.main.utils import abbreviation_explanation_markdown
-
+from _1327.main.utils import abbreviation_explanation_markdown, find_root_menu_items
 from .forms import MenuItemAdminForm, MenuItemCreationAdminForm, MenuItemCreationForm, MenuItemForm
 from .models import MenuItem
 from .utils import save_footer_item_order, save_main_menu_item_order
@@ -57,7 +56,10 @@ def menu_items_index(request):
 	main_menu_items = []
 	footer_items = []
 
-	items = [item for item in MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU, parent=None).order_by('order') if item.can_view_in_list(request.user)]
+	items = find_root_menu_items(
+		[item for item in MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU, children=None).order_by('order') if item.can_view_in_list(request.user)]
+	)
+
 	for item in items:
 		subitems = MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU, parent=item).order_by('order')
 		if subitems:

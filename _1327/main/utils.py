@@ -46,3 +46,21 @@ def abbreviation_explanation_markdown():
 
 def slugify(string):
 	return '/'.join([django_slugify(part) for part in string.split('/')])
+
+
+def find_root_menu_items(items):
+	# find root menu items by recursively traversing tree bottom-up
+	if len(items) == 0:
+		return []
+
+	real_root_items = []
+	questionable_root_items = set()
+
+	for item in items:
+		if item.parent is None:
+			real_root_items.append(item)
+		else:
+			questionable_root_items.add(item.parent)
+
+	real_root_items.extend(find_root_menu_items(questionable_root_items))
+	return real_root_items
