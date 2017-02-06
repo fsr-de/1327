@@ -7,6 +7,6 @@ from . import views
 admin.autodiscover()
 
 urlpatterns = [
-	url(r"list/(?P<groupid>[\d]+)$", views.list, name='list'),
+	url(r"list/(?P<groupid>[\d]+)/?$", views.list, name='list'),
 ]
 urlpatterns.extend(document_urls.document_urlpatterns)

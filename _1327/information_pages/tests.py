@@ -365,6 +365,10 @@ class TestNewPage(WebTest):
 		self.assertEqual(response.status_code, 200)
 		self.assertTemplateUsed(response, 'documents_edit.html')
 
+		response = self.app.get('/' + url + '/edit/', user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertTemplateUsed(response, 'documents_edit.html')
+
 	def test_group_field_hidden_when_user_has_one_group(self):
 		group = mommy.make(Group)
 		self.user.groups.add(group)

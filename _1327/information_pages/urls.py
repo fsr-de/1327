@@ -6,5 +6,5 @@ from . import views
 admin.autodiscover()
 
 urlpatterns = [
-	url(r"unlinked$", views.unlinked_list, name='unlinked_list'),
+	url(r"unlinked/?$", views.unlinked_list, name='unlinked_list'),
 ]

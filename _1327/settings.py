@@ -112,6 +112,7 @@ BOOTSTRAP3 = {
 DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
 
 ROOT_URLCONF = '_1327.urls'
+APPEND_SLASH = False
 
 WSGI_APPLICATION = '_1327.wsgi.application'
 
