@@ -207,11 +207,17 @@ div#wrapper {
 	border-radius: 0;
 	box-shadow: none;
 	-webkit-box-shadow: none;
+	visibility: hidden;
+	transition-delay: 0.2s;
 }
-.dropdown:hover .dropdown-menu {
+li:hover > .dropdown-menu {
+	visibility: visible;
+	transition-delay: 0.2s;
+}
 .menu-level-2 .menu-hover > a {
 	background-color: @gray-dark;
 }
+.dropdown-menu {
 	display: block;
 }
 .dropdown {
