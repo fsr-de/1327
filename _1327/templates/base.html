@@ -233,6 +233,13 @@
 				return false;
 			});
 			$('#back-to-top').tooltip('show');
+
+			// highlight parent of subsubmenuitem
+			$('ul .dropdown-menu').on('mouseover', function(){
+				$(this).parent().addClass('menu-hover');
+			}).on('mouseout', function(){
+				$(this).parent().removeClass('menu-hover');
+			})
 		});
 	</script>
 {% endblock %}
