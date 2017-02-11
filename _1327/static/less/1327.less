@@ -95,9 +95,11 @@ div#wrapper {
 		width: 1170px;
 	}
 }
-.nav > li > a {
-	padding-top: 15px;
-	padding-bottom: 15px;
+.nav > li > a,
+.nav > li > span {
+	padding: 15px;
+	color: @gray-lighter;
+	line-height: 20px;
 }
 .navbar-nav > li > a.navbar-brand {
 	padding: 0;
@@ -108,24 +110,21 @@ div#wrapper {
 .brand > a {
 	height: 50px;
 }
-.login-button:hover a.login-link span {
-	display: none;
-}
-.login-button:hover a.login-link:after {
-	content: 'Login';
-}
-.login-button.active:hover a.login-link:after {
-	content: 'Logout';
+
+.config-menu{
+	text-align: center;
+	width: 50px;
 }
 
 .header-line-gradient {
 	height: 5px;
 	background-color: @gray-dark;
 }
-.header-line-breadcrumbs {
-	color: @hpi-yellow;
+.header-line-subheader {
+	color: @gray-lighter;
 	background-color: @gray-dark;
-	min-height: 5px;
+	font-size: 10pt;
+	overflow: auto;
 }
 .footer-line {
 	height: 3px;
@@ -136,6 +135,28 @@ div#wrapper {
 }
 .gradient.gradient-inv {
 	#gradient.horizontal-three-colors(@hpi-yellow, @hpi-orange, 50%, @hpi-red);
+}
+.breadcrumb-area {
+	display: inline-block;
+}
+.login-area {
+	display: inline-block;
+}
+.login-info {
+	display: inline-block;
+	padding: 3px 10px 3px 10px;
+}
+.login-button {
+	display: inline-block;
+	width: 50px;
+	height: 25px;
+	text-align: center;
+	color: @gray-lighter;
+	padding: 3px 0;
+	&:hover,
+	&:focus {
+		background-color: @gray;
+	}
 }
 
 .navbar-collapse-menu {
@@ -186,8 +207,17 @@ div#wrapper {
 	border-radius: 0;
 	box-shadow: none;
 	-webkit-box-shadow: none;
+	visibility: hidden;
+	transition-delay: 0.2s;
 }
-.dropdown:hover .dropdown-menu {
+li:hover > .dropdown-menu {
+	visibility: visible;
+	transition-delay: 0.2s;
+}
+.menu-level-2 .menu-hover > a {
+	background-color: @gray-dark;
+}
+.dropdown-menu {
 	display: block;
 }
 .dropdown {
@@ -243,9 +273,9 @@ div#wrapper {
 }
 
 ul.breadcrumbs {
-	font-size: 10pt;
-	padding: 5px 0 5px 20px;
+	color: @hpi-yellow;
 	margin: 0;
+	padding: 3px 0 3px 20px;
 	li {
 		display: inline-block;
 		&:before {
@@ -258,6 +288,7 @@ ul.breadcrumbs {
 		.glyphicon {
 			font-size: 8pt;
 		}
+		padding-right: 3px;
 	}
 	a {
 		color: @gray-lighter;

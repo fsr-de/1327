@@ -134,7 +134,7 @@ class UserImpersonationTests(WebTest):
 			response = response.follow()
 			self.assertEqual(response.status_code, 200)
 
-			self.assertIn("Logged in as {username}".format(username=user.username), response.body.decode('utf-8'))
+			self.assertIn("{username}".format(username=user.get_full_name()), response.body.decode('utf-8'))
 
 	def test_impersonate_as_user(self):
 		users = list(UserProfile.objects.all().exclude(username=self.user.username))
