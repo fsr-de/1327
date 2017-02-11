@@ -150,7 +150,7 @@
 				</ul>
 			</div>
 			<div class="login-area pull-right">
-				<div class="login-info">
+				<div class="login-info" {% if user.groups.all %}data-toggle="tooltip" data-placement="bottom" data-container="body" title="{% trans 'Groups' %}: {{ user.groups.all|join:', ' }}"{% endif %}>
 					{% if user.is_authenticated %}{{ user.get_full_name }}{% endif %}
 				</div>
 				<a href="{% if user.is_authenticated %}{% url 'logout' %}{% else %}{% url 'login' %}{% endif %}">
