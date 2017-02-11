@@ -895,3 +895,34 @@ class TestDeletion(WebTest):
 		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		self.assertIn("deleteDocumentButton", response.body.decode('utf-8'))
+
+
+class TestPreview(WebTest):
+	csrf_checks = False
+
+	def setUp(self):
+		self.document = mommy.make(Document)
+		self.temporary_text = mommy.make(TemporaryDocumentText, document=self.document)
+		self.user = mommy.make(UserProfile, is_superuser=True)
+
+	def test_preview_wrong_method(self):
+		response = self.app.post(reverse('documents:preview') + '?hash_value={}'.format(self.temporary_text.hash_value), status=404)
+		self.assertEqual(response.status_code, 404)
+
+	def test_preview_document_does_not_exist(self):
+		response = self.app.get(reverse('documents:preview') + '?hash_value={}'.format(1), status=404)
+		self.assertEqual(response.status_code, 404)
+
+	def test_preview_without_get_param(self):
+		response = self.app.get(reverse('documents:preview'), status=404)
+		self.assertEqual(response.status_code, 404)
+
+	def test_preview_view(self):
+		response = self.app.get(reverse('documents:preview') + '?hash_value={}'.format(self.temporary_text.hash_value))
+		self.assertEqual(response.status_code, 200)
+
+		self.assertIn(self.temporary_text.text, response.body.decode('utf-8'))
+
+		preview_url = '/ws/preview'
+		with self.settings(PREVIEW_URL=preview_url):
+			self.assertIn(preview_url, response.body.decode('utf-8'))

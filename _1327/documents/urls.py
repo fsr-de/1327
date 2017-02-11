@@ -8,6 +8,7 @@ admin.autodiscover()
 urlpatterns = [
 	url(r"revert$", views.revert, name='revert'),
 	url(r"search$", views.search, name='search'),
+	url(r"preview$", views.preview, name='preview'),
 	url(r"attachment/create$", views.create_attachment, name='create_attachment'),
 	url(r"attachment/delete$", views.delete_attachment, name='delete_attachment'),
 	url(r"attachment/download$", views.download_attachment, name='download_attachment'),
