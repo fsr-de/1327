@@ -14,7 +14,7 @@
 		<link rel="shortcut icon" type="image/x-icon" href="{{STATIC_URL}}/images/favicon.ico"/>
 		<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/css/select2.min.css" />
-		{% if request|is_hijacked %}
+		{% if request and request|is_hijacked %}
 			<link rel="stylesheet" type="text/css" href="{% static 'hijack/hijack-styles.css' %}" />
 		{% endif %}
 		{% block css %}{% endblock %}
