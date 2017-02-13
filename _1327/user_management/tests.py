@@ -31,6 +31,8 @@ class UsecaseTests(WebTest):
 		login_form['password'] = "wrong_password"
 		response = login_form.submit()
 		self.assertIn("Please enter a correct User name and password", response.body.decode('utf-8'))
+		self.assertNotIn('has-success', response.body.decode('utf-8'))
+		self.assertIn('has-error', response.body.decode('utf-8'))
 
 		login_form = page.forms[0]
 		login_form['username'] = "user"
