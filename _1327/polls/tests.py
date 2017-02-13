@@ -420,6 +420,9 @@ class PollVoteTests(WebTest):
 		self.poll.max_allowed_number_of_answers = 2
 		self.poll.save()
 
+		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]) + '/', user=self.user)
+		self.assertEqual(response.status_code, 301)
+
 		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		self.assertIn(b"checkbox", response.body)
@@ -568,6 +571,9 @@ class PollEditTests(WebTest):
 		self.assertEqual(response.status_code, 200)
 
 	def test_submit_with_too_few_forms(self):
+		response = self.app.get(reverse(self.poll.get_edit_url_name(), args=[self.poll.url_title]) + '/', user=self.user)
+		self.assertEqual(response.status_code, 301)
+
 		response = self.app.get(reverse(self.poll.get_edit_url_name(), args=[self.poll.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
@@ -639,6 +645,9 @@ class PollRevertionTests(WebTest):
 		versions = revisions.get_for_object(poll)
 		self.assertEqual(len(versions), 2)
 
+		response = self.app.post(reverse('documents:revert') + '/', {'id': versions[1].pk, 'url_title': poll.url_title}, user=self.user, xhr=True)
+		self.assertEqual(response.status_code, 301)
+
 		response = self.app.post(reverse('documents:revert'), {'id': versions[1].pk, 'url_title': poll.url_title}, user=self.user, xhr=True)
 		self.assertEqual(response.status_code, 200)
 
@@ -658,6 +667,9 @@ class PollRevertionTests(WebTest):
 
 		versions = revisions.get_for_object(poll)
 		self.assertEqual(len(versions), 2)
+
+		response = self.app.post(reverse('documents:revert') + '/', {'id': versions[1].pk, 'url_title': poll.url_title}, user=self.user, xhr=True)
+		self.assertEqual(response.status_code, 301)
 
 		response = self.app.post(reverse('documents:revert'), {'id': versions[1].pk, 'url_title': poll.url_title}, user=self.user, xhr=True, status=400)
 		self.assertEqual(response.status_code, 400)

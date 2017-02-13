@@ -80,6 +80,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE_CLASSES = [
+	'_1327.main.middleware.RedirectToNoSlash',
 	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.common.CommonMiddleware',
 	'django.middleware.csrf.CsrfViewMiddleware',
@@ -113,6 +114,7 @@ BOOTSTRAP3 = {
 DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
 
 ROOT_URLCONF = '_1327.urls'
+APPEND_SLASH = False
 
 WSGI_APPLICATION = '_1327.wsgi.application'
 

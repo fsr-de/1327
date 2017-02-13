@@ -40,6 +40,10 @@ class MainPageTests(WebTest):
 			self.assertEqual(response.status_code, 200)
 			self.assertTemplateUsed(response, 'documents_base.html')
 
+			response = self.app.get(reverse('index') + '/').follow()
+			self.assertEqual(response.status_code, 200)
+			self.assertTemplateUsed(response, 'documents_base.html')
+
 	def test_main_page_minutes_document_set(self):
 		document = mommy.make(MinutesDocument)
 		assign_perm(MinutesDocument.VIEW_PERMISSION_NAME, get_anonymous_user(), document)

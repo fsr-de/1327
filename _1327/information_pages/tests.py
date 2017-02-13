@@ -197,16 +197,25 @@ class TestPermissions(WebTest):
 		# check that user is not allowed to see information document
 		document = Document.objects.get()
 
+		response = self.app.get(reverse(document.get_view_url_name(), args=[document.url_title]) + '/', user=self.user)
+		self.assertEqual(response.status_code, 301)
+
 		response = self.app.get(reverse(document.get_view_url_name(), args=[document.url_title]), user=self.user, status=403)
 		self.assertEqual(response.status_code, 403)
 
 		# grant view permission to that user
 		assign_perm(InformationDocument.VIEW_PERMISSION_NAME, self.user, document)
+		response = self.app.get(reverse(document.get_view_url_name(), args=[document.url_title]) + '/', user=self.user)
+		self.assertEqual(response.status_code, 301)
+
 		response = self.app.get(reverse(document.get_view_url_name(), args=[document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		remove_perm(InformationDocument.VIEW_PERMISSION_NAME, self.user, document)
 
 		# check that user is not allowed to see page anymore
+		response = self.app.get(reverse(document.get_view_url_name(), args=[document.url_title]) + '/', user=self.user)
+		self.assertEqual(response.status_code, 301)
+
 		response = self.app.get(reverse(document.get_view_url_name(), args=[document.url_title]), user=self.user, status=403)
 		self.assertEqual(response.status_code, 403)
 
@@ -357,9 +366,15 @@ class TestNewPage(WebTest):
 		document = InformationDocument.objects.get(title=text)
 		self.assertEqual(document.url_title, url)
 
+		response = self.app.get('/' + url + '/', user=self.user)
+		self.assertEqual(response.status_code, 301)
+
 		response = self.app.get('/' + url, user=self.user)
 		self.assertEqual(response.status_code, 200)
 		self.assertTemplateUsed(response, 'documents_base.html')
+
+		response = self.app.get('/' + url + '/edit/', user=self.user)
+		self.assertEqual(response.status_code, 301)
 
 		response = self.app.get('/' + url + '/edit', user=self.user)
 		self.assertEqual(response.status_code, 200)
