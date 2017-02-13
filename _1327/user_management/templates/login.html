@@ -13,7 +13,7 @@
 		</div>
 	{% endif %}
 	<form action="{% url 'login' %}" method="post" class="form-horizontal" role="form">
-	{% bootstrap_form form layout='horizontal' %}
+	{% bootstrap_form form layout='horizontal' bound_css_class='has-error' %}
 	<input type="hidden" name="next" value="{{ next }}" />
 	{% csrf_token %}
 	{% buttons %}
