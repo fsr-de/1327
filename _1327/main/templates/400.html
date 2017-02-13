@@ -1,0 +1,9 @@
+{% extends "base_without_sidebar.html" %}
+{% load i18n %}
+
+{% block title %}400 &ndash; {% trans "Bad request" %}{% endblock title %}
+{% block content %}
+    {{ block.super }}
+
+    {% trans "The request was not valid. Please refrain from tempering with the request data ;)" %}
+{% endblock %}

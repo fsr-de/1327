@@ -1,0 +1,9 @@
+{% extends "base_without_sidebar.html" %}
+{% load i18n %}
+
+{% block title %}500 &ndash; {% trans "Server error" %}{% endblock title %}
+{% block content %}
+    {{ block.super }}
+
+    {% trans "An internal server error occured. The admins have been informed and might contact you in case they need more information." %}
+{% endblock %}

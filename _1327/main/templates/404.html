@@ -1,0 +1,9 @@
+{% extends "base_without_sidebar.html" %}
+{% load i18n %}
+
+{% block title %}404 &ndash; {% trans "Page not found" %}{% endblock title %}
+{% block content %}
+    {{ block.super }}
+
+    {% trans "The page you requested does not exist. Please check the URL or use the menu above to find your page." %}
+{% endblock %}

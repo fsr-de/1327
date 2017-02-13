@@ -1,0 +1,16 @@
+{% extends "base_without_sidebar.html" %}
+{% load i18n %}
+
+{% block title %}403 &ndash; {% trans "Forbidden" %}{% endblock title %}
+{% block content %}
+    {{ block.super }}
+
+    {% trans "Unfortunately you are not allowed to view this page. This might have one of the following reasons:" %}
+    <ul>
+    	<li>{% trans "You are not logged in and are not accessing the page from the university network." %}</li>
+    	<li>{% trans "You are not logged in and the page is only available for logged in users." %}</li>
+    	<li>{% trans "You are logged in but don't have the required permissions to access this page." %}</li>
+    	<li>{% trans "The student representatives are trying to mock you." %}</li>
+    </ul>
+    {% trans "If you think this is a mistake, please contact the student representatives." %}
+{% endblock %}
