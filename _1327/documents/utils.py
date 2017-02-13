@@ -43,6 +43,10 @@ def handle_edit(request, document, formset=None, initial=None):
 
 			document.url_title = cleaned_data['url_title']
 
+			# remove trailing slash if user tries to set custom url with trailing slash
+			if document.url_title.endswith('/'):
+				document.url_title = document.url_title[:-1]
+
 			# save the document and also save the user and the comment the user added
 			with transaction.atomic(), revisions.create_revision():
 				document.handle_edit(cleaned_data)
