@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-30 12:08+0100\n"
-"PO-Revision-Date: 2016-12-30 14:06+0100\n"
+"POT-Creation-Date: 2017-02-14 18:45+0100\n"
+"PO-Revision-Date: 2017-02-14 18:52+0100\n"
 "Last-Translator: Johannes Wolf <janno42@gmail.com>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -62,7 +62,7 @@ msgstr ""
 msgid "You must have at least {} of these."
 msgstr "Es muss mindestens {} geben."
 
-#: _1327/documents/models.py:32 _1327/documents/models.py:188
+#: _1327/documents/models.py:32 _1327/documents/models.py:197
 #: _1327/main/models.py:29 _1327/main/templates/menu_items_list.html:20
 msgid "Document"
 msgstr "Dokument"
@@ -72,45 +72,45 @@ msgstr "Dokument"
 msgid "Documents"
 msgstr "Dokumente"
 
-#: _1327/documents/models.py:96
+#: _1327/documents/models.py:100
 msgid "New Page from {}"
 msgstr "Neue Seite vom {}"
 
-#: _1327/documents/models.py:187
+#: _1327/documents/models.py:188 _1327/documents/models.py:200
+msgid "Hash value"
+msgstr "Hashwert"
+
+#: _1327/documents/models.py:196
 #: _1327/documents/templates/documents_attachments.html:31
 msgid "Display name"
 msgstr "Angezeigter Name"
 
-#: _1327/documents/models.py:189
+#: _1327/documents/models.py:198
 #: _1327/documents/templates/documents_attachments.html:33
 #: _1327/information_pages/templates/information_pages_meta_information.html:10
 msgid "Created"
 msgstr "Erstellt"
 
-#: _1327/documents/models.py:190
+#: _1327/documents/models.py:199
 msgid "File"
 msgstr "Datei"
 
-#: _1327/documents/models.py:191
-msgid "Hash value"
-msgstr "Hashwert"
-
-#: _1327/documents/models.py:193 _1327/polls/models.py:134
+#: _1327/documents/models.py:202 _1327/polls/models.py:138
 msgid "ordering index"
 msgstr "Sortierreihenfolge"
 
-#: _1327/documents/models.py:194
+#: _1327/documents/models.py:203
 msgid "Do not show as attachment (for embedded images)"
 msgstr "Nicht als Anhang anzeigen (für eingebettete Bilder)"
 
-#: _1327/documents/models.py:197
+#: _1327/documents/models.py:206
 msgid "Attachment"
 msgstr "Anhang"
 
-#: _1327/documents/models.py:198
+#: _1327/documents/models.py:207
 #: _1327/documents/templates/documents_base.html:19
 #: _1327/documents/templates/documents_base.html:45
-#: _1327/documents/templates/documents_base.html:71
+#: _1327/documents/templates/documents_base.html:74
 #: _1327/polls/templates/polls_results.html:50
 #: _1327/polls/templates/polls_vote.html:44
 msgid "Attachments"
@@ -314,8 +314,9 @@ msgstr ""
 msgid "Select link target"
 msgstr "Ziel des Links auswählen"
 
-#: _1327/documents/templates/documents_edit.html:384
-#: _1327/documents/templates/documents_edit.html:395
+#: _1327/documents/templates/documents_edit.html:391
+#: _1327/documents/templates/documents_edit.html:396
+#: _1327/documents/templates/documents_edit.html:402
 #: _1327/main/templates/menu_item_edit.html:58
 #: _1327/main/templates/menu_item_edit.html:64
 msgid "Please select..."
@@ -346,36 +347,40 @@ msgstr "von"
 msgid "Revert to this version"
 msgstr "Version wiederherstellen"
 
-#: _1327/documents/views.py:57
+#: _1327/documents/views.py:59
 msgid "Created document"
 msgstr "Dokument erstellt"
 
-#: _1327/documents/views.py:96
+#: _1327/documents/views.py:98
 msgid "Successfully saved changes"
 msgstr "Änderungen gespeichert"
 
-#: _1327/documents/views.py:177
+#: _1327/documents/views.py:140
+msgid "This Document can not be reverted!"
+msgstr "Dieses Dokument kann nicht wiederhergestellt werden!"
+
+#: _1327/documents/views.py:190
 msgid "Permissions have been changed successfully."
 msgstr "Berechtigungen wurden angepasst."
 
-#: _1327/documents/views.py:201
+#: _1327/documents/views.py:214
 msgid "Minutes document has been published."
 msgstr "Protokoll wurde veröffentlicht."
 
-#: _1327/documents/views.py:212
+#: _1327/documents/views.py:225
 msgid "File has been uploaded successfully!"
 msgstr "Datei erfolgreich hochgeladen!"
 
-#: _1327/documents/views.py:306
+#: _1327/documents/views.py:327
 #, python-brace-format
 msgid "reverted to revision \"{revision_comment}\""
 msgstr "Version \"{revision_comment}\" wiederhergestellt"
 
-#: _1327/documents/views.py:336
+#: _1327/documents/views.py:357
 msgid "Successfully deleted Attachment!"
 msgstr "Anhang gelöscht!"
 
-#: _1327/documents/views.py:414
+#: _1327/documents/views.py:440
 msgid "Successfully deleted document: {}"
 msgstr "Dokument gelöscht: {}"
 
@@ -392,7 +397,7 @@ msgid "Information pages"
 msgstr "Informationsseiten"
 
 #: _1327/information_pages/templates/information_pages_meta_information.html:12
-#: _1327/minutes/templates/minutes_meta_information.html:34
+#: _1327/minutes/templates/minutes_meta_information.html:37
 #: _1327/polls/templates/polls_meta_information.html:12
 msgid "Last change"
 msgstr "Letzte Änderung"
@@ -435,7 +440,7 @@ msgstr "Hauptmenü"
 msgid "Footer"
 msgstr "Fußzeile"
 
-#: _1327/main/models.py:25 _1327/minutes/templates/minutes_list.html:24
+#: _1327/main/models.py:25
 msgid "Title"
 msgstr "Titel"
 
@@ -460,6 +465,88 @@ msgstr "Abkürzung"
 #: _1327/main/templates/abbreviation_explanation.html:20
 msgid "Explanation"
 msgstr "Erklärung"
+
+#: _1327/main/templates/400.html:4
+msgid "Bad request"
+msgstr "Ungültige Anfrage"
+
+#: _1327/main/templates/400.html:8
+msgid ""
+"The request was not valid. Please refrain from tempering with the request "
+"data ;)"
+msgstr ""
+"Die Anfrage war nicht gültig. Bitte spiele nicht an den gesendeten Daten "
+"herum ;)"
+
+#: _1327/main/templates/403.html:4
+msgid "Forbidden"
+msgstr "Zugriff verweigert"
+
+#: _1327/main/templates/403.html:8
+msgid ""
+"Unfortunately you are not allowed to view this page. This might have one of "
+"the following reasons:"
+msgstr ""
+"Unglücklicherweise darfst du diese Seite nicht sehen. Das kann einen der "
+"folgenden Gründe haben:"
+
+#: _1327/main/templates/403.html:10
+msgid ""
+"You are not logged in and are not accessing the page from the university "
+"network."
+msgstr ""
+"Du bist nicht angemeldet und greifst nicht aus dem Universitäts-Netzwerk auf "
+"die Seite zu."
+
+#: _1327/main/templates/403.html:11
+msgid ""
+"You are not logged in and the page is only available for logged in users."
+msgstr ""
+"Du bist nicht angemeldet und die Seite ist nur für angemeldete Nutzer "
+"verfügbar."
+
+#: _1327/main/templates/403.html:12
+msgid ""
+"You are logged in but don't have the required permissions to access this "
+"page."
+msgstr ""
+"Du bist angemeldet, hast aber nicht die notwendigen Berechtigungen, um diese "
+"Seite aufzurufen."
+
+#: _1327/main/templates/403.html:13
+msgid "The student representatives are trying to mock you."
+msgstr "Der Fachschaftsrat erlaubt sich einen Scherz mit dir."
+
+#: _1327/main/templates/403.html:15
+msgid ""
+"If you think this is a mistake, please contact the student representatives."
+msgstr ""
+"Wenn du der Meinung bist, dass es sich um einen Irrtum handelt, dann "
+"kontaktiere bitte den Fachschaftsrat."
+
+#: _1327/main/templates/404.html:4
+msgid "Page not found"
+msgstr "Seite nicht gefunden"
+
+#: _1327/main/templates/404.html:8
+msgid ""
+"The page you requested does not exist. Please check the URL or use the menu "
+"above to find your page."
+msgstr ""
+"Die angeforderte Seite existiert nicht. Bitte überprüfe die URL oder nutze "
+"das Menü oben, um die gewünschte Seite zu finden."
+
+#: _1327/main/templates/500.html:4
+msgid "Server error"
+msgstr "Serverfehler"
+
+#: _1327/main/templates/500.html:8
+msgid ""
+"An internal server error occured. The admins have been informed and might "
+"contact you in case they need more information."
+msgstr ""
+"Ein Serverfehler ist aufgetreten. Die Admins wurden informiert und werden "
+"sich eventuell bei dir melden, wenn sie weitere Informationen benötigen."
 
 #: _1327/main/templates/abbreviation_explanation.html:9
 msgid "Edit abbreviation explanations"
@@ -517,28 +604,28 @@ msgstr ""
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: _1327/main/views.py:90
+#: _1327/main/views.py:92
 msgid "Successfully created menu item."
 msgstr "Menüeintrag erstellt."
 
-#: _1327/main/views.py:116
+#: _1327/main/views.py:118
 msgid "Successfully edited menu item."
 msgstr "Menüeintrag bearbeitet."
 
-#: _1327/main/views.py:143
+#: _1327/main/views.py:145
 msgid "There must always be at least one item in the main menu."
 msgstr "Es muss immer mindestens einen Eintrag im Hauptmenü geben."
 
-#: _1327/main/views.py:145
+#: _1327/main/views.py:147
 msgid "There must always be at least one item in the footer menu."
 msgstr "Es muss immer mindestens einen Eintrag in der Fußzeile geben."
 
-#: _1327/main/views.py:165
+#: _1327/main/views.py:167
 msgid "Successfully updated the abbreviation explanations."
 msgstr "Abkürzungserklärungen aktualisiert."
 
-#: _1327/minutes/models.py:46 _1327/minutes/templates/minutes_list.html:38
-#: _1327/minutes/templates/minutes_meta_information.html:27
+#: _1327/minutes/models.py:46 _1327/minutes/templates/minutes_list.html:31
+#: _1327/minutes/templates/minutes_meta_information.html:30
 msgid "Unpublished"
 msgstr "Unveröffentlicht"
 
@@ -546,8 +633,8 @@ msgstr "Unveröffentlicht"
 msgid "Published for Students and University Network"
 msgstr "Für Studierende und Uni-Netzwerk veröffentlicht"
 
-#: _1327/minutes/models.py:48 _1327/minutes/templates/minutes_list.html:40
-#: _1327/minutes/templates/minutes_meta_information.html:29
+#: _1327/minutes/models.py:48 _1327/minutes/templates/minutes_list.html:33
+#: _1327/minutes/templates/minutes_meta_information.html:32
 msgid "Internal"
 msgstr "Intern"
 
@@ -559,8 +646,8 @@ msgstr "Benutzerdefiniert"
 msgid "Published for Students only"
 msgstr "Nur für Studierende veröffentlicht"
 
-#: _1327/minutes/models.py:53 _1327/minutes/templates/minutes_list.html:23
-#: _1327/minutes/templates/minutes_meta_information.html:4
+#: _1327/minutes/models.py:53
+#: _1327/minutes/templates/minutes_meta_information.html:5
 msgid "Date"
 msgstr "Datum"
 
@@ -569,18 +656,18 @@ msgid "State"
 msgstr "Status"
 
 #: _1327/minutes/models.py:55
-#: _1327/minutes/templates/minutes_meta_information.html:6
+#: _1327/minutes/templates/minutes_meta_information.html:8
 msgid "Moderator"
 msgstr "Sitzungsleitung"
 
 #: _1327/minutes/models.py:57
-#: _1327/minutes/templates/minutes_meta_information.html:10
+#: _1327/minutes/templates/minutes_meta_information.html:13
 msgid "Participants"
 msgstr "Teilnehmende"
 
 #: _1327/minutes/models.py:63 _1327/minutes/models.py:64
-#: _1327/minutes/templates/minutes_list.html:5 _1327/templates/base.html:70
-#: _1327/templates/base.html:115
+#: _1327/minutes/templates/minutes_list.html:5 _1327/templates/base.html:66
+#: _1327/templates/base.html:103
 msgid "Minutes"
 msgid_plural "Minutes"
 msgstr[0] "Protokoll"
@@ -595,7 +682,7 @@ msgid "Name"
 msgstr "Name"
 
 #: _1327/minutes/models.py:165
-#: _1327/minutes/templates/minutes_meta_information.html:14
+#: _1327/minutes/templates/minutes_meta_information.html:17
 msgid "Guests"
 msgstr "Gäste"
 
@@ -603,19 +690,19 @@ msgstr "Gäste"
 msgid "Add another guest"
 msgstr "Gast hinzufügen"
 
-#: _1327/minutes/templates/minutes_meta_information.html:8
+#: _1327/minutes/templates/minutes_meta_information.html:11
 msgid "Minutes taker"
-msgstr "Protokollführender"
+msgstr "Protokollführung"
 
-#: _1327/minutes/templates/minutes_meta_information.html:18
+#: _1327/minutes/templates/minutes_meta_information.html:21
 msgid "No Guests"
 msgstr "Keine Gäste"
 
-#: _1327/minutes/templates/minutes_meta_information.html:21
+#: _1327/minutes/templates/minutes_meta_information.html:24
 msgid "Labels"
 msgstr "Labels"
 
-#: _1327/minutes/templates/minutes_meta_information.html:31
+#: _1327/minutes/templates/minutes_meta_information.html:34
 msgid "No Labels"
 msgstr "Keine Labels"
 
@@ -631,19 +718,19 @@ msgstr "Das Startdatum muss am oder vor dem Enddatum liegen."
 msgid "Anonymous and university network groups are not allowed to vote!"
 msgstr "Anonyme Nutzer und Nutzer aus dem Uni-Netz können nicht abstimmen!"
 
-#: _1327/polls/models.py:28
+#: _1327/polls/models.py:32
 msgid "Start Date"
 msgstr "Startdatum"
 
-#: _1327/polls/models.py:29
+#: _1327/polls/models.py:33
 msgid "End Date"
 msgstr "Enddatum"
 
-#: _1327/polls/models.py:32
+#: _1327/polls/models.py:36
 msgid "show results immediately after vote"
 msgstr "Ergebnisse direkt nach dem Abstimmen anzeigen"
 
-#: _1327/polls/models.py:54
+#: _1327/polls/models.py:58
 msgid "New Poll"
 msgstr "Neue Umfrage"
 
@@ -672,8 +759,7 @@ msgstr "Beschreibung"
 msgid "Delete?"
 msgstr "Löschen?"
 
-#: _1327/polls/templates/polls_index.html:9 _1327/templates/base.html:73
-#: _1327/templates/base.html:118
+#: _1327/polls/templates/polls_index.html:9
 msgid "Polls"
 msgstr "Umfragen"
 
@@ -683,7 +769,8 @@ msgstr "Zukünftige Umfragen"
 
 #: _1327/polls/templates/polls_index.html:23
 #: _1327/polls/templates/polls_index.html:60
-#: _1327/polls/templates/polls_index.html:97
+#: _1327/polls/templates/polls_index.html:97 _1327/templates/base.html:69
+#: _1327/templates/base.html:106
 msgid "Poll"
 msgstr "Umfrage"
 
@@ -881,43 +968,43 @@ msgstr "Suchen"
 msgid "FSR logo"
 msgstr "FSR-Logo"
 
-#: _1327/templates/base.html:61 _1327/templates/base.html:102
-msgid "Logged in as"
-msgstr "Angemeldet als"
-
-#: _1327/templates/base.html:65 _1327/templates/base.html:109
+#: _1327/templates/base.html:61 _1327/templates/base.html:97
 msgid "Create content"
 msgstr "Inhalt erstellen"
 
-#: _1327/templates/base.html:67 _1327/templates/base.html:112
+#: _1327/templates/base.html:63 _1327/templates/base.html:100
 msgid "Information page"
 msgstr "Informationsseite"
 
-#: _1327/templates/base.html:79
+#: _1327/templates/base.html:74
 msgid "Manage menu items"
 msgstr "Menüeinträge bearbeiten"
 
-#: _1327/templates/base.html:82
+#: _1327/templates/base.html:77
 msgid "Find unlinked information pages"
 msgstr "Nicht-verlinkte Informationsseiten finden"
 
-#: _1327/templates/base.html:85
+#: _1327/templates/base.html:82
 msgid "Manage abbreviation explanations"
 msgstr "Abkürzungserklärungen bearbeiten"
 
-#: _1327/templates/base.html:86
+#: _1327/templates/base.html:83
 msgid "View page as different user"
 msgstr "Seite als anderer Nutzer betrachten"
 
-#: _1327/templates/base.html:91 _1327/templates/base.html:124
+#: _1327/templates/base.html:84 _1327/templates/base.html:112
 msgid "Admin"
 msgstr "Admin"
 
-#: _1327/templates/base.html:126
+#: _1327/templates/base.html:114
 msgid "Main page"
 msgstr "Startseite"
 
-#: _1327/templates/base.html:200
+#: _1327/templates/base.html:153
+msgid "Groups"
+msgstr "Gruppen"
+
+#: _1327/templates/base.html:202
 msgid "Return to the top of the page"
 msgstr "An den Seitenanfang scrollen"
 
@@ -946,31 +1033,31 @@ msgstr "Benutzer"
 msgid "Select a user"
 msgstr "Benutzer auswählen"
 
-#: _1327/user_management/models.py:12
+#: _1327/user_management/models.py:14
 msgid "Users must have a username"
 msgstr "Benutzer müssen einen Benutzernamen haben"
 
-#: _1327/user_management/models.py:38
+#: _1327/user_management/models.py:40
 msgid "User name"
 msgstr "Benutzername"
 
-#: _1327/user_management/models.py:39
+#: _1327/user_management/models.py:41
 msgid "Email address"
 msgstr "E-Mail-Adresse"
 
-#: _1327/user_management/models.py:40
+#: _1327/user_management/models.py:42
 msgid "First name"
 msgstr "Vorname"
 
-#: _1327/user_management/models.py:41
+#: _1327/user_management/models.py:43
 msgid "Last name"
 msgstr "Nachname"
 
-#: _1327/user_management/models.py:51
+#: _1327/user_management/models.py:53
 msgid "User profile"
 msgstr "Benutzerprofil"
 
-#: _1327/user_management/models.py:52
+#: _1327/user_management/models.py:54
 msgid "User profiles"
 msgstr "Benutzerprofile"
 
