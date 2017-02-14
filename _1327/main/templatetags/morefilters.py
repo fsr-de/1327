@@ -28,4 +28,4 @@ def can_view_menu_item(menu_item, user):
 
 @register.filter(name='sort_users_by_name')
 def sort_users_by_name(users):
-	return sorted(users, key=lambda user: (user.get_full_name().lower()))
+	return sorted(users, key=lambda user: (user.last_name.lower(), user.first_name.lower(), user.get_full_name().lower()))
