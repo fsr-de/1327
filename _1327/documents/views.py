@@ -159,7 +159,7 @@ def view(request, title):
 	except (ImportError, AttributeError):
 		pass
 
-	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr'])
+	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr', 'markdown.extensions.tables'])
 	text = md.convert(document.text + abbreviation_explanation_markdown())
 
 	return render(request, 'documents_base.html', {
@@ -244,7 +244,7 @@ def render_text(request, title):
 		check_permissions(document, request.user, [document.view_permission_name, document.edit_permission_name])
 
 	text = request.POST['text']
-	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr'])
+	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr', 'markdown.extensions.tables'])
 	text = md.convert(text + abbreviation_explanation_markdown())
 
 	WebsocketGroup('preview').send({
@@ -466,7 +466,7 @@ def preview(request):
 	hash_value = request.GET['hash_value']
 	temporary_document = get_object_or_404(TemporaryDocumentText, hash_value=hash_value)
 
-	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr'])
+	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr', 'markdown.extensions.tables'])
 	text = md.convert(temporary_document.text + abbreviation_explanation_markdown())
 
 	return render(

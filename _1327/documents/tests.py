@@ -32,7 +32,7 @@ class TestInternalLinkMarkDown(TestCase):
 
 	def test_information_documents(self):
 		document = InformationDocument.objects.get()
-		md = markdown.Markdown(safe_mode='escape', extensions=[InternalLinksMarkdownExtension()])
+		md = markdown.Markdown(safe_mode='escape', extensions=[InternalLinksMarkdownExtension(), 'markdown.extensions.tables'])
 		text = md.convert('[description](document:' + str(document.id) + ')')
 		link = reverse(document.get_view_url_name(), args=[document.url_title])
 		self.assertIn('<a href="' + link + '">description</a>', text)

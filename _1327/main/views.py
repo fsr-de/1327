@@ -31,7 +31,7 @@ def index(request):
 		document = Document.objects.get(id=settings.MAIN_PAGE_ID)
 		return HttpResponseRedirect(reverse(document.get_view_url_name(), args=[document.url_title]))
 
-		md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), 'markdown.extensions.abbr'])
+		md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), 'markdown.extensions.abbr', 'markdown.extensions.tables'])
 		text = md.convert(document.text + abbreviation_explanation_markdown())
 
 		template = 'information_pages_base.html' if document.polymorphic_ctype.model == 'informationdocument' else 'minutes_base.html'
