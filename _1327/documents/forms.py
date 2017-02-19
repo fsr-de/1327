@@ -8,7 +8,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from guardian.shortcuts import assign_perm, get_perms, remove_perm
 
-from _1327.main.utils import slugify
+from _1327.main.utils import slugify_and_clean_url_title
 from .models import Attachment, Document
 
 
@@ -54,13 +54,7 @@ class DocumentForm(forms.ModelForm):
 	def clean_url_title(self):
 		super().clean()
 		url_title = self.cleaned_data['url_title'].lower()
-		if not slugify(url_title) == url_title:
-			raise ValidationError(_('Only the following characters are allowed in the URL: a-z, -, _, /'))
-		if any(url_part in settings.FORBIDDEN_URLS for url_part in url_title.split('/')):
-			raise ValidationError(_('The URL used for this page is not allowed.'))
-		if Document.objects.filter(url_title=url_title).exclude(id=self.instance.id).exists():
-			raise ValidationError(_('The URL used for this page is already taken.'))
-		return url_title
+		return slugify_and_clean_url_title(self.instance, url_title)
 
 	def clean_group(self):
 		value = self.cleaned_data['group']
