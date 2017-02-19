@@ -71,6 +71,7 @@ def find_root_menu_items(items):
 
 def slugify_and_clean_url_title(instance, url_title):
 	from _1327.documents.models import Document
+	from _1327.shortlinks.models import Shortlink
 
 	if not slugify(url_title) == url_title:
 		raise ValidationError(_('Only the following characters are allowed in the URL: a-z, -, _, /'))
@@ -84,5 +85,7 @@ def slugify_and_clean_url_title(instance, url_title):
 		raise ValidationError(_('The URL contains parts that are not allowed in custom URLs.'))
 	if not instance.url_title == url_title:
 		if Document.objects.filter(url_title=url_title).exists():
+			raise ValidationError(_('This URL is already taken.'))
+		if Shortlink.objects.filter(url_title=url_title).exists():
 			raise ValidationError(_('This URL is already taken.'))
 	return url_title

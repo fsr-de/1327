@@ -26,10 +26,7 @@ urlpatterns = [
 ]
 
 document_urlpatterns = [
-	url(r"(?P<title>[\w\-/]+)/edit$", views.edit, name='edit'),
 	url(r"(?P<title>[\w\-/]+)/versions$", views.versions, name="versions"),
 	url(r"(?P<title>[\w\-/]+)/permissions$", views.permissions, name="permissions"),
 	url(r"(?P<title>[\w\-/]+)/attachments$", views.attachments, name="attachments"),
-
-	url(r"(?P<title>[\w\-/]+)$", views.view, name='view'),
 ]

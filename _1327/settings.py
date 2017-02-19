@@ -33,6 +33,7 @@ FORBIDDEN_URLS = [
 	"admin", "login", "logout", "documents", "information_pages", "minutes", "polls", "list", "view_as", "abbreviation_explanation",
 	"menu_items", "menu_item_delete", "menu_item", "create", "edit", "delete", "update_order", "hijack", "unlinked", "revert", "search", "download",
 	"update", "attachment", "no-direct-download", "autosave", "publish", "render", "delete-cascade", "versions", "permissions", "attachments",
+	"shortlink", "shortlinks",
 ]
 
 ANONYMOUS_GROUP_NAME = "Anonymous"
@@ -77,6 +78,7 @@ INSTALLED_APPS = [
 	'_1327.information_pages',
 	'_1327.minutes',
 	'_1327.polls',
+	'_1327.shortlinks'
 ]
 
 MIDDLEWARE_CLASSES = [
