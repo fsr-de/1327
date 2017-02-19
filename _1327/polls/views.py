@@ -63,7 +63,7 @@ def results(request, poll, url_title):
 		)
 		return HttpResponseRedirect(reverse('polls:index'))
 
-	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr'])
+	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr', 'markdown.extensions.tables'])
 	description = md.convert(poll.text + abbreviation_explanation_markdown())
 
 	return render(
@@ -109,7 +109,7 @@ def vote(request, poll, url_title):
 			return HttpResponseRedirect(reverse('polls:index'))
 		return HttpResponseRedirect(reverse(poll.get_view_url_name(), args=[url_title]))
 
-	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr'])
+	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr', 'markdown.extensions.tables'])
 	description = md.convert(poll.text + abbreviation_explanation_markdown())
 
 	return render(
