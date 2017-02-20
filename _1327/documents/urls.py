@@ -14,7 +14,7 @@ urlpatterns = [
 	url(r"attachment/download$", views.download_attachment, name='download_attachment'),
 	url(r"attachment/update$", views.update_attachment_order, name="update_attachment_order"),
 	url(r"attachment/(?P<document_id>[\d]+)/get$", views.get_attachments, name='get_attachments'),
-	url(r"attachment/no-direct-download", views.change_attachment_no_direct_download, name='change_attachment_no_direct_download'),
+	url(r"attachment/change", views.change_attachment, name='change_attachment'),
 
 	url(r"(?P<document_type>[\w-]+)/create$", views.create, name='create'),
 

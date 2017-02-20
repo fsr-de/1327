@@ -416,18 +416,21 @@ def get_attachments(request, document_id):
 	return HttpResponse(json.dumps(data))
 
 
-def change_attachment_no_direct_download(request):
+def change_attachment(request):
 	if not request.POST or not request.is_ajax():
 		raise Http404
 
-	attachment_id = request.POST['id']
-	no_direct_download = json.loads(request.POST['no_direct_download'])
+	attachment_id = request.POST.get('id', None)
+	if attachment_id is None:
+		raise SuspiciousOperation
 
-	attachment = Attachment.objects.get(pk=attachment_id)
+	attachment = Attachment.objects.get(id=attachment_id)
 	if not attachment.document.can_be_changed_by(request.user):
 		raise PermissionDenied
 
-	attachment.no_direct_download = no_direct_download
+	no_direct_download_value = request.POST.get('no_direct_download', None)
+	attachment.no_direct_download = json.loads(no_direct_download_value) if no_direct_download_value is not None else attachment.no_direct_download
+	attachment.displayname = request.POST.get('displayname', attachment.displayname)
 	attachment.save()
 	return HttpResponse()
 
