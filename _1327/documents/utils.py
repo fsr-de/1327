@@ -151,7 +151,6 @@ def permission_warning(user, document):
 
 @lru_cache(maxsize=32)
 def get_model_function(content_type, function_name):
-	# TODO add caching strategy?
 	module = __import__('_1327.{content_type}.views'.format(content_type=content_type.app_label), fromlist=[function_name])
 	return getattr(module, function_name)
 
