@@ -80,6 +80,7 @@
 								{% if user.is_superuser %}
 									<li role="separator" class="divider"></li>
 									<li><a href="{% url 'abbreviation_explanation' %}">{% trans "Manage abbreviation explanations" %}</a></li>
+									<li><a href="{% url 'shortlinks_index' %}">{% trans "Shortlinks" %}</a></li>
 									<li><a href="{% url 'view_as' %}">{% trans "View page as different user" %}</a></li>
 									<li><a href="{% url 'admin:index' %}">{% trans "Admin" %}</a></li>
 								{% endif %}
