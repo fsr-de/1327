@@ -48,7 +48,12 @@ def abbreviation_explanation_markdown():
 
 
 def slugify(string):
-	return '/'.join([django_slugify(part) for part in string.split('/')])
+	slug = '/'.join([django_slugify(part) for part in string.split('/')])
+	while slug.endswith('/'):
+		slug = slug[:-1]
+	while '//' in slug:
+		slug = slug.replace('//', '/')
+	return slug
 
 
 def find_root_menu_items(items):
@@ -75,11 +80,7 @@ def slugify_and_clean_url_title(instance, url_title):
 
 	if not slugify(url_title) == url_title:
 		raise ValidationError(_('Only the following characters are allowed in the URL: a-z, -, _, /'))
-	url_title = slugify(url_title.lower())
-	while url_title.endswith('/'):
-		url_title = url_title[:-1]
-	while '//' in url_title:
-		url_title = url_title.replace('//', '/')
+	url_title = slugify(url_title)
 
 	if any(url_part in settings.FORBIDDEN_URLS for url_part in url_title.split('/')):
 		raise ValidationError(_('The URL contains parts that are not allowed in custom URLs.'))

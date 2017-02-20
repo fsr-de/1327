@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from _1327.documents.models import Document
+from _1327.main.utils import slugify
 
 
 class Shortlink(models.Model):
@@ -12,3 +13,8 @@ class Shortlink(models.Model):
 	visit_count = models.IntegerField(default=0, verbose_name=_("Visit count"))
 	created = models.DateTimeField(default=timezone.now, verbose_name=_("Last access"))
 	last_access = models.DateTimeField(default=timezone.now, verbose_name=_("Last access"))
+
+	def save(self, *args, **kwargs):
+		# make sure that the url is slugified
+		self.url_title = slugify(self.url_title)
+		super().save(*args, **kwargs)
