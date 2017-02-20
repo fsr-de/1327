@@ -655,7 +655,7 @@ class TestAttachments(WebTest):
 	def test_attachment_change_no_direct_download(self):
 		self.assertFalse(self.attachment.no_direct_download, "attachments can be downloaded directly by default")
 		response = self.app.post(
-			reverse('documents:change_attachment_no_direct_download'),
+			reverse('documents:change_attachment'),
 			{'id': self.attachment.id, 'no_direct_download': 'false'},
 			user=self.user,
 			xhr=True,
@@ -668,7 +668,7 @@ class TestAttachments(WebTest):
 		self.assertFalse(self.attachment.no_direct_download)
 		user = mommy.make(UserProfile)
 		response = self.app.post(
-			reverse('documents:change_attachment_no_direct_download'),
+			reverse('documents:change_attachment'),
 			{'id': self.attachment.id, 'no_direct_download': 'false'},
 			user=user,
 			xhr=True,
@@ -678,7 +678,7 @@ class TestAttachments(WebTest):
 
 	def test_attachment_change_no_direct_download_wrong_request_type(self):
 		response = self.app.get(
-			reverse('documents:change_attachment_no_direct_download'),
+			reverse('documents:change_attachment'),
 			{'id': self.attachment.id, 'no_direct_download': 'false'},
 			user=self.user,
 			xhr=True,
@@ -688,8 +688,54 @@ class TestAttachments(WebTest):
 
 	def test_attachment_change_no_direct_download_no_ajax(self):
 		response = self.app.post(
-			reverse('documents:change_attachment_no_direct_download'),
+			reverse('documents:change_attachment'),
 			{'id': self.attachment.id, 'no_direct_download': 'false'},
+			user=self.user,
+			expect_errors=True,
+		)
+		self.assertEqual(response.status_code, 404)
+
+	def test_attachment_change_displayname(self):
+		new_displayname = 'lorem ipsum'
+		response = self.app.post(
+			reverse('documents:change_attachment'),
+			{'id': self.attachment.id, 'displayname': new_displayname},
+			user=self.user,
+			xhr=True,
+		)
+		self.assertEqual(response.status_code, 200, "it should be possible to change displayname")
+		attachment = Attachment.objects.get(pk=self.attachment.id)
+		self.assertEqual(attachment.displayname, new_displayname)
+
+	def test_attachment_change_displayname_permissions(self):
+		self.assertFalse(self.attachment.no_direct_download)
+		user = mommy.make(UserProfile)
+		new_displayname = 'lorem ipsum'
+		response = self.app.post(
+			reverse('documents:change_attachment'),
+			{'id': self.attachment.id, 'displayname': new_displayname},
+			user=user,
+			xhr=True,
+			expect_errors=True
+		)
+		self.assertEqual(response.status_code, 403)
+
+	def test_attachment_change_displayname_wrong_request_type(self):
+		new_displayname = 'lorem ipsum'
+		response = self.app.get(
+			reverse('documents:change_attachment'),
+			{'id': self.attachment.id, 'displayname': new_displayname},
+			user=self.user,
+			xhr=True,
+			expect_errors=True,
+		)
+		self.assertEqual(response.status_code, 404)
+
+	def test_attachment_change_attachment_no_ajax(self):
+		new_displayname = 'lorem ipsum'
+		response = self.app.post(
+			reverse('documents:change_attachment'),
+			{'id': self.attachment.id, 'displayname': new_displayname},
 			user=self.user,
 			expect_errors=True,
 		)

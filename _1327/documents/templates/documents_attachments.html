@@ -3,9 +3,15 @@
 {% load i18n %}
 {% load filename %}
 {% load bootstrap3 %}
+{% load static %}
 
 {% block title %}
 	{{ document.title }}
+{% endblock %}
+
+{% block css %}
+	{{ block.super }}
+	<link href="{% static 'bootstrap-editable/css/bootstrap-editable.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block document_content %}
@@ -29,12 +35,13 @@
 			<tr>
 				<th></th>
 				<th class="col-xs-3">{% trans "Display name" %}</th>
-				<th class="col-xs-4">{% trans "Filename" %}</th>
+				<th class="col-xs-3">{% trans "Filename" %}</th>
 				<th class="col-xs-2">{% trans "Created" %}</th>
 				<th class="col-xs-2">
 					{% trans "Do not show" %} <span data-toggle="tooltip" data-placement="top" class="glyphicon glyphicon-info-sign" title="{% blocktrans %}Select if attachment is only used as embedded image.{% endblocktrans %}"></span>
 				</th>
 				<th class="col-xs-1"></th>
+				<th></th>
 			</tr>
 		</thead>
 		{% for attachment in attachments %}
@@ -42,7 +49,7 @@
 				<td class="sorthandle"><span class="glyphicon glyphicon-move"></span></td>
 				<td>
 					<input type="hidden" class="attachmentinput" name="file" value="{{ attachment.id }}">
-					<a href="{% url 'documents:download_attachment' %}?hash_value={{ attachment.hash_value }}">{{ attachment.displayname }}</a>
+					<a class="attachment-display-name">{{ attachment.displayname }}</a>
 				</td>
 				<td>{{ attachment.file.name|filename }}</td>
 				<td>{{ attachment.created }}</td>
@@ -51,10 +58,13 @@
 					<input class="change-downloadable" type="checkbox" {% if attachment.no_direct_download %}checked{% endif %} name="downloadable">
 				</td>
 				<td>
-					<button type="button" data-displayname="{{ attachment.displayname }}" data-toggle="modal"
-							data-target="#confirmAttachmentDeleteModal" class="delete-attachment btn btn-sm btn-default">
+					<a data-displayname="{{ attachment.displayname }}" data-toggle="modal"
+							data-target="#confirmAttachmentDeleteModal" class="delete-attachment btn btn-sm btn-danger">
 						{% trans "Delete" %}
-					</button>
+					</a>
+				</td>
+				<td>
+					<a class="btn btn-sm btn-default" href="{% url 'documents:download_attachment' %}?hash_value={{ attachment.hash_value }}"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
 				</td>
 			</tr>
 		{% endfor %}
@@ -80,6 +90,7 @@
 		</div>
 	</div>
 
+	<script src="{% static 'bootstrap-editable/js/bootstrap-editable.js' %}"></script>
 	<script>
 		$('#confirmAttachmentDeleteModal').on('show.bs.modal', function (event){
 			var button = $(event.relatedTarget);
@@ -114,7 +125,7 @@
 			var attachmentId = tableRow.data('id');
 			var checked = this.checked;
 			$.post(
-				"{% url 'documents:change_attachment_no_direct_download' %}",
+				"{% url 'documents:change_attachment' %}",
 				{id: attachmentId, no_direct_download: checked},
 				function () {
 					tableRow.effect("highlight", {color: "#69a700"}, 2000);
@@ -123,6 +134,40 @@
 				tableRow.effect("highlight", {color: "#b1063a"}, 2000);
 			});
 
+		});
+
+		$('.attachment-display-name').editable({
+			type: 'text',
+			title: 'Change display name',
+			mode: 'inline',
+			name: 'displayname',
+			url: "{% url 'documents:change_attachment' %}",
+			send: 'always',
+			validate: function (value) {
+				if($.trim(value) === '') {
+					return "{% trans 'This field is required' %}";
+				}
+			},
+			params: function (params) {
+				var tableRow = $(this.closest('tr'));
+				params.id = tableRow.data('id');
+				params[params.name] = params.value;
+				// remove unecessary fields
+				delete params.name;
+				delete params.value;
+				delete params.pk;
+
+				return params;
+			},
+			success: function (response, newValue) {
+				var tableRow = $(this.closest('tr'));
+				tableRow.effect("highlight", {color: "#69a700"}, 2000);
+				tableRow.find('.delete-attachment').data('displayname', newValue);
+			},
+			error: function () {
+				var tableRow = $(this.closest('tr'));
+				tableRow.effect("highlight", {color: "#b1063a"}, 2000);
+			}
 		});
 
 		$('[data-toggle="tooltip"]').tooltip();
