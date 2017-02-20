@@ -51,6 +51,7 @@ class TestDocumentWeb(WebTest):
 
 class TestEditor(WebTest):
 	csrf_checks = False
+	extra_environ = {'HTTP_ACCEPT_LANGUAGE': 'en'}
 
 	def setUp(self):
 		self.user = mommy.make(UserProfile, is_superuser=True)
@@ -93,6 +94,16 @@ class TestEditor(WebTest):
 			response = form.submit()
 			self.assertEqual(response.status_code, 200)
 			self.assertIn('has-error', str(response.body))
+
+	def test_editor_slug_error(self):
+		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
+
+		form = response.forms[0]
+		form.set('url_title', 'not_ALLOWED!')
+		response = form.submit()
+		self.assertEqual(response.status_code, 200)
+		self.assertIn('has-error', str(response.body))
+		self.assertIn('Only the following characters are allowed in the URL', str(response.body))
 
 	def test_editor_permissions_for_single_user(self):
 		test_user = mommy.make(UserProfile)

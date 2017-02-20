@@ -1,7 +1,12 @@
+import re
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.text import slugify as django_slugify
 from django.utils.translation import ugettext_lazy as _
+
+
+URL_TITLE_REGEX = re.compile(r'^[a-zA-Z0-9-_\/]*$')
 
 
 def save_main_menu_item_order(main_menu_items, user, parent_id=None):
@@ -78,8 +83,8 @@ def slugify_and_clean_url_title(instance, url_title):
 	from _1327.documents.models import Document
 	from _1327.shortlinks.models import Shortlink
 
-	if not slugify(url_title) == url_title:
-		raise ValidationError(_('Only the following characters are allowed in the URL: a-z, -, _, /'))
+	if URL_TITLE_REGEX.fullmatch(url_title) is None:
+		raise ValidationError(_('Only the following characters are allowed in the URL: a-z, A-Z, 0-9, -, _, /'))
 	url_title = slugify(url_title)
 
 	if any(url_part in settings.FORBIDDEN_URLS for url_part in url_title.split('/')):
