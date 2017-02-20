@@ -1,7 +1,6 @@
 from django.contrib.auth.models import Group
-from django.core.exceptions import ObjectDoesNotExist, SuspiciousOperation
-from django.shortcuts import render
-
+from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import Http404, render
 from guardian.core import ObjectPermissionChecker
 
 from _1327.minutes.models import MinutesDocument
@@ -12,7 +11,7 @@ def list(request, groupid):
 	try:
 		group = Group.objects.get(id=groupid)
 	except ObjectDoesNotExist:
-		raise SuspiciousOperation
+		raise Http404
 	result = {}
 
 	minutes = MinutesDocument.objects.all().prefetch_related('labels').order_by('-date')
