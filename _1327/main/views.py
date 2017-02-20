@@ -8,7 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.urlresolvers import reverse
 from django.forms import formset_factory, modelformset_factory
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, Http404, redirect, render
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_POST
 from guardian.shortcuts import get_objects_for_user
@@ -18,9 +18,12 @@ from markdown.extensions.toc import TocExtension
 
 from _1327.documents.models import Document
 from _1327.documents.utils import permission_warning
+from _1327.documents.views import edit as document_edit, view as document_view
 from _1327.main.forms import AbbreviationExplanationForm, get_permission_form
 from _1327.main.models import AbbreviationExplanation
 from _1327.main.utils import abbreviation_explanation_markdown, find_root_menu_items
+from _1327.shortlinks.models import Shortlink
+from _1327.shortlinks.views import edit as shortlink_edit, view as shortlink_view
 from .forms import MenuItemAdminForm, MenuItemCreationAdminForm, MenuItemCreationForm, MenuItemForm
 from .models import MenuItem
 from .utils import save_footer_item_order, save_main_menu_item_order
@@ -47,6 +50,22 @@ def index(request):
 	except ObjectDoesNotExist:
 		# nobody created a mainpage yet -> show default main page
 		return render(request, 'index.html')
+
+
+def view(request, title):
+	if Document.objects.filter(url_title=title).exists():
+		return document_view(request, title)
+	if Shortlink.objects.filter(url_title=title).exists():
+		return shortlink_view(request, title)
+	raise Http404
+
+
+def edit(request, title):
+	if Document.objects.filter(url_title=title).exists():
+		return document_edit(request, title)
+	if Shortlink.objects.filter(url_title=title).exists():
+		return shortlink_edit(request, title)
+	raise Http404
 
 
 def menu_items_index(request):

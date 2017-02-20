@@ -1,0 +1,25 @@
+{% extends 'base_without_sidebar.html' %}
+
+{% load i18n %}
+{% load guardian_tags %}
+{% load bootstrap3 %}
+
+{% block title %}
+	{% if form.instance.pk %}
+		{% trans "Edit shortlink" %}
+	{% else %}
+		{% trans "Create shortlink" %}
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+	<form method="post" class="form-horizontal" role="form" enctype="multipart/form-data">
+		{% bootstrap_form form layout='horizontal' %}
+		{% csrf_token %}
+		{% buttons %}
+			<div class="col-md-offset-2 col-md-9">
+				<button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+			</div>
+		{% endbuttons %}
+	</form>
+{% endblock %}
