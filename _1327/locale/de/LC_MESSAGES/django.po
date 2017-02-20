@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-14 18:45+0100\n"
-"PO-Revision-Date: 2017-02-14 18:52+0100\n"
+"POT-Creation-Date: 2017-02-20 23:29+0100\n"
+"PO-Revision-Date: 2017-02-20 23:33+0100\n"
 "Last-Translator: Johannes Wolf <janno42@gmail.com>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -16,9 +16,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.8.11\n"
+"X-Generator: Poedit 1.8.12\n"
 
 #: _1327/documents/forms.py:28
+#: _1327/shortlinks/templates/shortlinks_index.html:15
 msgid "URL"
 msgstr "URL"
 
@@ -30,27 +31,15 @@ msgstr "Kommentar"
 msgid "Edit permissions"
 msgstr "Bearbeitungsrechte"
 
-#: _1327/documents/forms.py:58
-msgid "Only the following characters are allowed in the URL: a-z, -, _, /"
-msgstr "Nur die folgenden Zeichen sind in der URL erlaubt: a-z, -, _, /"
-
-#: _1327/documents/forms.py:60
-msgid "The URL used for this page is not allowed."
-msgstr "Die angegebene URL darf nicht verwendet werden."
-
-#: _1327/documents/forms.py:62
-msgid "The URL used for this page is already taken."
-msgstr "Die angegebene URL wird bereits verwendet."
-
-#: _1327/documents/forms.py:68 _1327/main/forms.py:89 _1327/main/forms.py:115
+#: _1327/documents/forms.py:62 _1327/main/forms.py:89 _1327/main/forms.py:115
 msgid "You are not a member of this group!"
 msgstr "Du bist kein Mitglied dieser Gruppe!"
 
-#: _1327/documents/forms.py:102 _1327/main/forms.py:126
+#: _1327/documents/forms.py:96 _1327/main/forms.py:126
 msgid "Role"
 msgstr "Rolle"
 
-#: _1327/documents/forms.py:141
+#: _1327/documents/forms.py:135
 msgid ""
 "If you want to enable additional permissions for a group you also need to "
 "enable the view permission for that group!"
@@ -58,12 +47,18 @@ msgstr ""
 "Wenn zusätzliche Berechtigungen vergeben werden sollen, muss immer auch die "
 "\"Anzeigen\"-Berechtigung für diese Gruppe vergeben werden!"
 
-#: _1327/documents/forms.py:193
+#: _1327/documents/forms.py:187
 msgid "You must have at least {} of these."
 msgstr "Es muss mindestens {} geben."
 
+#: _1327/documents/markdown_internal_link_pattern.py:16
+msgid "[missing link]"
+msgstr "[fehlender Link]"
+
 #: _1327/documents/models.py:32 _1327/documents/models.py:197
 #: _1327/main/models.py:29 _1327/main/templates/menu_items_list.html:20
+#: _1327/shortlinks/models.py:12
+#: _1327/shortlinks/templates/shortlinks_index.html:31
 msgid "Document"
 msgstr "Dokument"
 
@@ -81,13 +76,14 @@ msgid "Hash value"
 msgstr "Hashwert"
 
 #: _1327/documents/models.py:196
-#: _1327/documents/templates/documents_attachments.html:31
+#: _1327/documents/templates/documents_attachments.html:37
 msgid "Display name"
 msgstr "Angezeigter Name"
 
 #: _1327/documents/models.py:198
-#: _1327/documents/templates/documents_attachments.html:33
+#: _1327/documents/templates/documents_attachments.html:39
 #: _1327/information_pages/templates/information_pages_meta_information.html:10
+#: _1327/shortlinks/templates/shortlinks_index.html:17
 msgid "Created"
 msgstr "Erstellt"
 
@@ -148,35 +144,36 @@ msgstr "Version A"
 msgid "Version B"
 msgstr "Version B"
 
-#: _1327/documents/templates/documents_attachments.html:12
+#: _1327/documents/templates/documents_attachments.html:18
 msgid "Add attachment"
 msgstr "Anhang hinzufügen"
 
-#: _1327/documents/templates/documents_attachments.html:20
+#: _1327/documents/templates/documents_attachments.html:26
 #: _1327/documents/templates/documents_edit.html:26
 #: _1327/documents/templates/documents_permissions.html:38
 #: _1327/main/templates/menu_item_edit.html:46
 #: _1327/polls/templates/polls_create_poll.html:58
+#: _1327/shortlinks/templates/shortlink_edit.html:21
 msgid "Save"
 msgstr "Speichern"
 
-#: _1327/documents/templates/documents_attachments.html:26
+#: _1327/documents/templates/documents_attachments.html:32
 msgid "Uploaded attachments"
 msgstr "Hochgeladene Anhänge"
 
-#: _1327/documents/templates/documents_attachments.html:32
+#: _1327/documents/templates/documents_attachments.html:38
 msgid "Filename"
 msgstr "Dateiname"
 
-#: _1327/documents/templates/documents_attachments.html:35
+#: _1327/documents/templates/documents_attachments.html:41
 msgid "Do not show"
 msgstr "Nicht anzeigen"
 
-#: _1327/documents/templates/documents_attachments.html:35
+#: _1327/documents/templates/documents_attachments.html:41
 msgid "Select if attachment is only used as embedded image."
 msgstr "Auswählen, wenn Anhang nur als eingebettetes Bild verwendet wird."
 
-#: _1327/documents/templates/documents_attachments.html:56
+#: _1327/documents/templates/documents_attachments.html:63
 #: _1327/documents/templates/documents_edit.html:30
 #: _1327/documents/templates/documents_edit.html:100
 #: _1327/main/templates/abbreviation_explanation.html:58
@@ -185,22 +182,29 @@ msgstr "Auswählen, wenn Anhang nur als eingebettetes Bild verwendet wird."
 msgid "Delete"
 msgstr "Löschen"
 
-#: _1327/documents/templates/documents_attachments.html:70
+#: _1327/documents/templates/documents_attachments.html:80
+#: _1327/shortlinks/templates/shortlinks_index.html:55
 msgid "Please Confirm"
 msgstr "Bitte bestätigen"
 
-#: _1327/documents/templates/documents_attachments.html:73
+#: _1327/documents/templates/documents_attachments.html:83
 #, python-format
 msgid "Do you really want to delete the Attachment %(name)s?"
 msgstr "Willst du den Anhang %(name)s wirklich löschen?"
 
-#: _1327/documents/templates/documents_attachments.html:76
+#: _1327/documents/templates/documents_attachments.html:86
+#: _1327/shortlinks/templates/shortlinks_index.html:61
 msgid "Yes"
 msgstr "Ja"
 
-#: _1327/documents/templates/documents_attachments.html:77
+#: _1327/documents/templates/documents_attachments.html:87
+#: _1327/shortlinks/templates/shortlinks_index.html:62
 msgid "No"
 msgstr "Nein"
+
+#: _1327/documents/templates/documents_attachments.html:148
+msgid "This field is required"
+msgstr "Dieses Feld ist erforderlich"
 
 #: _1327/documents/templates/documents_base.html:17
 msgid "View"
@@ -380,7 +384,7 @@ msgstr "Version \"{revision_comment}\" wiederhergestellt"
 msgid "Successfully deleted Attachment!"
 msgstr "Anhang gelöscht!"
 
-#: _1327/documents/views.py:440
+#: _1327/documents/views.py:443
 msgid "Successfully deleted document: {}"
 msgstr "Dokument gelöscht: {}"
 
@@ -424,11 +428,11 @@ msgstr "Du musst ein Dokument auswählen"
 msgid "This link is not valid."
 msgstr "Dieser Link ist ungültig."
 
-#: _1327/main/forms.py:53
+#: _1327/main/forms.py:53 _1327/shortlinks/forms.py:22
 msgid "You are only allowed to define one of document and link"
 msgstr "Du kannst nur entweder ein Dokument oder einen Link angeben"
 
-#: _1327/main/forms.py:56
+#: _1327/main/forms.py:56 _1327/shortlinks/forms.py:25
 msgid "You must select a document or link"
 msgstr "Du musst ein Dokument auswählen oder einen Link angeben"
 
@@ -445,6 +449,7 @@ msgid "Title"
 msgstr "Titel"
 
 #: _1327/main/models.py:28 _1327/main/templates/menu_items_list.html:19
+#: _1327/shortlinks/templates/shortlinks_index.html:16
 msgid "Link"
 msgstr "Link"
 
@@ -604,23 +609,39 @@ msgstr ""
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: _1327/main/views.py:92
+#: _1327/main/utils.py:87
+msgid ""
+"Only the following characters are allowed in the URL: a-z, A-Z, 0-9, -, _, /"
+msgstr ""
+"Nur die folgenden Zeichen sind in der URL erlaubt: a-z, A-Z, 0-9, -, _, /"
+
+#: _1327/main/utils.py:91
+msgid "The URL contains parts that are not allowed in custom URLs."
+msgstr ""
+"Die URL enthält Bestandteile, die in benutzerdefinierten URLs nicht erlaubt "
+"sind."
+
+#: _1327/main/utils.py:94 _1327/main/utils.py:96
+msgid "This URL is already taken."
+msgstr "Diese URL wird bereits verwendet."
+
+#: _1327/main/views.py:111
 msgid "Successfully created menu item."
 msgstr "Menüeintrag erstellt."
 
-#: _1327/main/views.py:118
+#: _1327/main/views.py:137
 msgid "Successfully edited menu item."
 msgstr "Menüeintrag bearbeitet."
 
-#: _1327/main/views.py:145
+#: _1327/main/views.py:164
 msgid "There must always be at least one item in the main menu."
 msgstr "Es muss immer mindestens einen Eintrag im Hauptmenü geben."
 
-#: _1327/main/views.py:147
+#: _1327/main/views.py:166
 msgid "There must always be at least one item in the footer menu."
 msgstr "Es muss immer mindestens einen Eintrag in der Fußzeile geben."
 
-#: _1327/main/views.py:167
+#: _1327/main/views.py:186
 msgid "Successfully updated the abbreviation explanations."
 msgstr "Abkürzungserklärungen aktualisiert."
 
@@ -877,6 +898,57 @@ msgstr "Die Ergebnisse dieser Umfrage sind ab dem {} verfügbar"
 #: _1327/polls/views.py:137
 msgid "This poll has not yet started."
 msgstr "Diese Umfrage hat noch nicht begonnen."
+
+#: _1327/shortlinks/models.py:10
+msgid "Url title"
+msgstr "URL"
+
+#: _1327/shortlinks/models.py:11
+msgid "External link"
+msgstr "Externer Link"
+
+#: _1327/shortlinks/models.py:13
+#: _1327/shortlinks/templates/shortlinks_index.html:18
+msgid "Visit count"
+msgstr "Anzahl Aufrufe"
+
+#: _1327/shortlinks/models.py:14 _1327/shortlinks/models.py:15
+#: _1327/shortlinks/templates/shortlinks_index.html:19
+msgid "Last access"
+msgstr "Letzter Aufruf"
+
+#: _1327/shortlinks/templates/shortlink_edit.html:9
+msgid "Edit shortlink"
+msgstr "Kurzlink bearbeiten"
+
+#: _1327/shortlinks/templates/shortlink_edit.html:11
+msgid "Create shortlink"
+msgstr "Kurzlink erstellen"
+
+#: _1327/shortlinks/templates/shortlinks_index.html:8
+msgid "Shortlinks"
+msgstr "Kurzlinks"
+
+#: _1327/shortlinks/templates/shortlinks_index.html:46
+msgid "Create new shortlink"
+msgstr "Neuen Kurzlink erstellen"
+
+#: _1327/shortlinks/templates/shortlinks_index.html:58
+#, python-format
+msgid "Do you really want to delete the Shortlink %(name)s?"
+msgstr "Willst du den Kurzlink %(name)s wirklich löschen?"
+
+#: _1327/shortlinks/views.py:29
+msgid "Successfully created shortlink."
+msgstr "Kurzlink erstellt."
+
+#: _1327/shortlinks/views.py:42
+msgid "Successfully deleted Shortlink."
+msgstr "Kurzlink gelöscht."
+
+#: _1327/shortlinks/views.py:67
+msgid "Successfully edited shortlink."
+msgstr "Kurzlink bearbeitet."
 
 #: _1327/templates/admin/app_index.html:7
 #: _1327/templates/admin/base_bootstrap-admin.html:18
