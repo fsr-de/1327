@@ -24,6 +24,8 @@ class TestInternalLinkMarkDown(TestCase):
 	def setUp(self):
 		self.user = mommy.make(UserProfile, is_superuser=True)
 
+		self.md = markdown.Markdown(safe_mode='escape', extensions=[InternalLinksMarkdownExtension(), 'markdown.extensions.tables'])
+
 		document = mommy.prepare(InformationDocument, text="text")
 		with transaction.atomic(), revisions.create_revision():
 				document.save()
@@ -32,10 +34,15 @@ class TestInternalLinkMarkDown(TestCase):
 
 	def test_information_documents(self):
 		document = InformationDocument.objects.get()
-		md = markdown.Markdown(safe_mode='escape', extensions=[InternalLinksMarkdownExtension(), 'markdown.extensions.tables'])
-		text = md.convert('[description](document:' + str(document.id) + ')')
+		text = self.md.convert('[description](document:' + str(document.id) + ')')
 		link = reverse(document.get_view_url_name(), args=[document.url_title])
 		self.assertIn('<a href="' + link + '">description</a>', text)
+
+	def test_document_deleted(self):
+		document = InformationDocument.objects.get()
+		document.delete()
+		text = self.md.convert('[description](document:{})'.format(document.id))
+		self.assertIn('<a>[missing link]</a>', text)
 
 
 class TestRevertion(WebTest):
