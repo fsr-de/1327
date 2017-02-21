@@ -14,6 +14,7 @@ def list(request, groupid):
 		raise Http404
 	result = {}
 
+	own_group = group in request.user.groups.all()
 	minutes = MinutesDocument.objects.all().prefetch_related('labels').order_by('-date')
 	# Prefetch group permissions
 	group_checker = ObjectPermissionChecker(group)
@@ -42,4 +43,5 @@ def list(request, groupid):
 		result[m.date.year].append(m)
 	return render(request, "minutes_list.html", {
 		'minutes_list': sorted(result.items(), reverse=True),
+		'own_group': own_group
 	})

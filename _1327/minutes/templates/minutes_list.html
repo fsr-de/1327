@@ -22,16 +22,27 @@
 			{% for minute in minutes %}
 				<tr>
 					<td class="col-xs-2">
-						<a href="{{ minute.get_view_url }}">{{ minute.date | date:"d.m.Y" }}</td></a>
-					<td class="col-xs-3">
+						<a href="{{ minute.get_view_url }}">{{ minute.date | date:"d.m.Y" }}</a>
+					</td>
+					{% if own_group %}
+						<td class="col-xs-1" style="text-align: center; font-weight: lighter;">
+							{% if minute.state == minute.UNPUBLISHED %}
+								<span class="text-red" data-toggle="tooltip" data-placement="top" data-container="body" title="{% trans 'Unpublished' %}"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span></span>
+							{% elif minute.state == minute.INTERNAL %}
+								<span class="text-yellow" data-toggle="tooltip" data-placement="top" data-container="body" title="{% trans 'Internal' %}"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span></span>
+							{% elif minute.state == minute.PUBLISHED %}
+								<span class="text-gray" data-toggle="tooltip" data-placement="top" data-container="body" title="{% trans 'Published for Students and University Network' %}"><span class="glyphicon glyphicon-education" aria-hidden="true"></span><span class="glyphicon glyphicon-user" aria-hidden="true"></span></span>
+							{% elif minute.state == minute.PUBLISHED_STUDENT %}
+								<span class="text-gray" data-toggle="tooltip" data-placement="top" data-container="body" title="{% trans 'Published for Students' %}"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></span>
+							{% elif minute.state == minute.CUSTOM %}
+								<span class="text-gray" data-toggle="tooltip" data-placement="top" data-container="body" title="{% trans 'Custom Permissions' %}"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></span>
+							{% endif %}
+						</td>
+					{% endif %}
+					<td class="col-xs-2">
 						{% for label in minute.labels.all %}
 							<span class="label {{ label.class_for_text_color }}" style="background-color: {{ label.color }};">{{ label.title }}</span>
 						{% endfor %}
-						{% if minute.state == minute.UNPUBLISHED %}
-							<span class="label label-danger">{% trans "Unpublished" %}</span>
-						{% elif minute.state == minute.INTERNAL %}
-							<span class="label label-warning">{% trans "Internal" %}</span>
-						{% endif %}
 					</td>
 					<td class="col-xs-7">
 						<a href="{{ minute.get_view_url }}">{{ minute.title }}</a>
