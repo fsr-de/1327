@@ -10,6 +10,8 @@ admin.autodiscover()
 urlpatterns = [
 	url(r"list/(?P<groupid>[\d]+)$", views.list, name='list'),
 	url(r"(?P<title>[\w\-/]+)/edit$", document_views.edit, name='edit'),
-	url(r"(?P<title>[\w\-/]+)$", document_views.view, name='view'),
 ]
 urlpatterns.extend(document_urls.document_urlpatterns)
+urlpatterns.extend([
+	url(r"(?P<title>[\w\-/]+)$", document_views.view, name='view'),
+])
