@@ -166,6 +166,47 @@ class TestEditor(WebTest):
 		self.assertTrue(checker.has_perm(document.delete_permission_name, document))
 
 
+class TestMinutesList(WebTest):
+	csrf_checks = False
+
+	def setUp(self):
+		self.user = mommy.make(UserProfile, is_superuser=True)
+		self.minutes_document = mommy.make(MinutesDocument)
+		self.group = mommy.make(Group)
+		self.minutes_document.set_all_permissions(self.group)
+
+	def test_list_permission_display(self):
+		"""
+		Test if the permissions are correctly shown in the minutes list
+		"""
+		self.assertEqual(MinutesDocument.objects.count(), 1)
+
+		self.minutes_document.state = MinutesDocument.UNPUBLISHED
+		self.minutes_document.save()
+		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
+		self.assertIn("glyphicon-alert", response)
+
+		self.minutes_document.state = MinutesDocument.PUBLISHED
+		self.minutes_document.save()
+		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
+		self.assertIn("glyphicon-education", response)
+
+		self.minutes_document.state = MinutesDocument.INTERNAL
+		self.minutes_document.save()
+		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
+		self.assertIn("glyphicon-lock", response)
+
+		self.minutes_document.state = MinutesDocument.CUSTOM
+		self.minutes_document.save()
+		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
+		self.assertIn("glyphicon-cog", response)
+
+		self.minutes_document.state = MinutesDocument.PUBLISHED_STUDENT
+		self.minutes_document.save()
+		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
+		self.assertIn("glyphicon-user", response)
+
+
 class TestNewMinutesDocument(WebTest):
 	csrf_checks = False
 
