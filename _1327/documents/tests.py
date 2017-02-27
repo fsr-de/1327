@@ -955,11 +955,10 @@ class TestPreview(WebTest):
 
 	def setUp(self):
 		self.document = mommy.make(Document)
-		self.temporary_text = mommy.make(TemporaryDocumentText, document=self.document)
 		self.user = mommy.make(UserProfile, is_superuser=True)
 
 	def test_preview_wrong_method(self):
-		response = self.app.post(reverse('documents:preview') + '?hash_value={}'.format(self.temporary_text.hash_value), status=404)
+		response = self.app.post(reverse('documents:preview') + '?hash_value={}'.format(self.document.hash_value), status=404)
 		self.assertEqual(response.status_code, 404)
 
 	def test_preview_document_does_not_exist(self):
@@ -971,10 +970,10 @@ class TestPreview(WebTest):
 		self.assertEqual(response.status_code, 404)
 
 	def test_preview_view(self):
-		response = self.app.get(reverse('documents:preview') + '?hash_value={}'.format(self.temporary_text.hash_value))
+		response = self.app.get(reverse('documents:preview') + '?hash_value={}'.format(self.document.hash_value))
 		self.assertEqual(response.status_code, 200)
 
-		self.assertIn(self.temporary_text.text, response.body.decode('utf-8'))
+		self.assertIn(self.document.text, response.body.decode('utf-8'))
 
 		preview_url = '/ws/preview'
 		with self.settings(PREVIEW_URL=preview_url):
