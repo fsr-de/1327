@@ -1,6 +1,7 @@
 import json
 import tempfile
 
+from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
@@ -15,6 +16,8 @@ from reversion import revisions
 from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
 from _1327.information_pages.models import InformationDocument
 from _1327.main.utils import slugify
+from _1327.minutes.models import MinutesDocument
+from _1327.polls.models import Poll
 from _1327.user_management.models import UserProfile
 
 from .models import Attachment, Document, TemporaryDocumentText
@@ -978,3 +981,63 @@ class TestPreview(WebTest):
 		preview_url = '/ws/preview'
 		with self.settings(PREVIEW_URL=preview_url):
 			self.assertIn(preview_url, response.body.decode('utf-8'))
+
+
+class TestPermissionOverview(WebTest):
+	csrf_checks = False
+
+	def setUp(self):
+		self.user = mommy.make(UserProfile, is_superuser=True)
+		self.minutes_document = mommy.make(MinutesDocument)
+		self.poll = mommy.make(Poll)
+		self.information_document = mommy.make(InformationDocument)
+		self.group = mommy.make(Group)
+		self.minutes_document.set_all_permissions(self.group)
+		self.poll.set_all_permissions(self.group)
+		self.information_document.set_all_permissions(self.group)
+
+		self.anonymous_group = Group.objects.get(name=settings.ANONYMOUS_GROUP_NAME)
+		self.university_network_group = Group.objects.get(name=settings.UNIVERSITY_GROUP_NAME)
+		self.student_group = Group.objects.get(name=settings.STUDENT_GROUP_NAME)
+		self.staff_group = Group.objects.get(name=settings.STAFF_GROUP_NAME)
+		groups = [self.anonymous_group, self.university_network_group, self.student_group, self.staff_group]
+		self.documents = [self.minutes_document, self.poll, self.information_document]
+		for document in self.documents:
+			for group in groups:
+				assign_perm(document.view_permission_name, group, document)
+			assign_perm(document.edit_permission_name, self.staff_group, document)
+
+	def test_permission_display(self):
+		"""
+		Test if the permissions are correctly shown in the sidebar
+		"""
+		icons = [
+			"glyphicon-globe permission-icon-view",
+			"glyphicon-education permission-icon-view",
+			"glyphicon-user permission-icon-view",
+			"glyphicon-briefcase permission-icon-edit"
+		]
+		for document in self.documents:
+			response = self.app.get(reverse(document.get_edit_url_name(), args=[self.minutes_document.url_title]), user=self.user)
+			for icon in icons:
+				self.assertIn(icon, response)
+
+	def test_permission_display_2(self):
+		"""
+		Test if the permissions are correctly shown in the sidebar
+		"""
+		for document in self.documents:
+			remove_perm(document.view_permission_name, self.anonymous_group, document)
+			assign_perm(document.edit_permission_name, self.student_group, document)
+			remove_perm(document.edit_permission_name, self.staff_group, document)
+
+		icons = [
+			"glyphicon-globe permission-icon-none",
+			"glyphicon-education permission-icon-view",
+			"glyphicon-user permission-icon-edit",
+			"glyphicon-briefcase permission-icon-view"
+		]
+		for document in self.documents:
+			response = self.app.get(reverse(document.get_edit_url_name(), args=[self.minutes_document.url_title]), user=self.user)
+			for icon in icons:
+				self.assertIn(icon, response)

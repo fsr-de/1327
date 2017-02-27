@@ -6,7 +6,6 @@ from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.utils import timezone
-from guardian.utils import get_anonymous_user
 from reversion import revisions
 
 from _1327.documents.forms import AttachmentForm, DocumentForm
@@ -141,12 +140,6 @@ def handle_attachment(request, document):
 	else:
 		form = AttachmentForm()
 	return False, form, None
-
-
-def permission_warning(user, document):
-	anonymous_rights = get_anonymous_user().has_perm(document.view_permission_name, document)
-	edit_rights = user.has_perm(document.edit_permission_name, document)
-	return edit_rights and not anonymous_rights
 
 
 @lru_cache(maxsize=32)
