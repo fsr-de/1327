@@ -31,7 +31,7 @@ from _1327.documents.utils import delete_cascade_to_json, delete_old_empty_pages
 	handle_attachment, handle_autosave, handle_edit, prepare_versions
 from _1327.information_pages.models import InformationDocument
 from _1327.information_pages.forms import InformationDocumentForm  # noqa
-from _1327.main.utils import abbreviation_explanation_markdown, get_permission_overview
+from _1327.main.utils import abbreviation_explanation_markdown, document_permission_overview
 from _1327.minutes.models import MinutesDocument
 from _1327.minutes.forms import MinutesDocumentForm  # noqa
 from _1327.polls.models import Poll
@@ -106,8 +106,7 @@ def edit(request, title, new_autosaved_pages=None, initial=None):
 			'active_page': 'edit',
 			'creation': document.is_in_creation,
 			'new_autosaved_pages': new_autosaved_pages,
-			'can_edit': True,
-			'permission_overview': get_permission_overview(document),
+			'permission_overview': document_permission_overview(request.user, document),
 			'supported_image_types': settings.SUPPORTED_IMAGE_TYPES,
 			'formset': formset,
 		})
@@ -145,8 +144,7 @@ def versions(request, title):
 		'active_page': 'versions',
 		'versions': document_versions,
 		'document': document,
-		'can_edit': True,
-		'permission_overview': get_permission_overview(document),
+		'permission_overview': document_permission_overview(request.user, document),
 		'can_be_reverted': document.can_be_reverted,
 	})
 
@@ -165,11 +163,6 @@ def view(request, title):
 	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr', 'markdown.extensions.tables'])
 	text = md.convert(document.text + abbreviation_explanation_markdown())
 
-	can_edit = request.user.has_perm(document.edit_permission_name, document)
-	permission_overview = []
-	if can_edit:
-		permission_overview = get_permission_overview(document)
-
 	return render(request, 'documents_base.html', {
 		'document': document,
 		'text': text,
@@ -177,8 +170,7 @@ def view(request, title):
 		'attachments': document.attachments.filter(no_direct_download=False).order_by('index'),
 		'active_page': 'view',
 		'view_page': True,
-		'can_edit': can_edit,
-		'permission_overview': permission_overview,
+		'permission_overview': document_permission_overview(request.user, document),
 	})
 
 
@@ -209,8 +201,7 @@ def permissions(request, title):
 		'formset_header': PermissionForm.header(content_type),
 		'formset': formset,
 		'active_page': 'permissions',
-		'can_edit': True,
-		'permission_overview': get_permission_overview(document),
+		'permission_overview': document_permission_overview(request.user, document),
 	})
 
 
@@ -241,8 +232,7 @@ def attachments(request, title):
 			'form': form,
 			'attachments': document.attachments.all().order_by('index'),
 			'active_page': 'attachments',
-			'can_edit': True,
-			'permission_overview': get_permission_overview(document),
+			'permission_overview': document_permission_overview(request.user, document),
 		})
 
 

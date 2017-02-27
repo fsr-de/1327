@@ -100,7 +100,11 @@ def slugify_and_clean_url_title(instance, url_title):
 	return url_title
 
 
-def get_permission_overview(document):
+def document_permission_overview(user, document):
+	can_edit = user.has_perm(document.edit_permission_name, document)
+	if not can_edit:
+		return []
+
 	main_groups = [
 		settings.ANONYMOUS_GROUP_NAME,
 		settings.UNIVERSITY_GROUP_NAME,

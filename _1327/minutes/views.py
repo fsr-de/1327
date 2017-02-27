@@ -14,7 +14,7 @@ def list(request, groupid):
 		raise Http404
 	result = {}
 
-	own_group = group in request.user.groups.all()
+	own_group = request.user.is_superuser or group in request.user.groups.all()
 	minutes = MinutesDocument.objects.all().prefetch_related('labels').order_by('-date')
 	# Prefetch group permissions
 	group_checker = ObjectPermissionChecker(group)

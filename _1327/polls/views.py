@@ -13,7 +13,7 @@ from markdown.extensions.toc import TocExtension
 
 from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
 from _1327.documents.models import Document
-from _1327.main.utils import abbreviation_explanation_markdown, get_permission_overview
+from _1327.main.utils import abbreviation_explanation_markdown, document_permission_overview
 from _1327.polls.models import Poll
 from _1327.user_management.shortcuts import check_permissions
 
@@ -65,11 +65,6 @@ def results(request, poll, url_title):
 	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr', 'markdown.extensions.tables'])
 	description = md.convert(poll.text + abbreviation_explanation_markdown())
 
-	can_edit = request.user.has_perm(poll.edit_permission_name, poll)
-	permission_overview = []
-	if can_edit:
-		permission_overview = get_permission_overview(poll)
-
 	return render(
 		request,
 		'polls_results.html',
@@ -80,8 +75,7 @@ def results(request, poll, url_title):
 			'active_page': 'view',
 			'view_page': True,
 			'attachments': poll.attachments.filter(no_direct_download=False).order_by('index'),
-			'can_edit': can_edit,
-			'permission_overview': permission_overview,
+			'permission_overview': document_permission_overview(request.user, poll),
 		}
 	)
 
@@ -117,11 +111,6 @@ def vote(request, poll, url_title):
 	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr', 'markdown.extensions.tables'])
 	description = md.convert(poll.text + abbreviation_explanation_markdown())
 
-	can_edit = request.user.has_perm(poll.edit_permission_name, poll)
-	permission_overview = []
-	if can_edit:
-		permission_overview = get_permission_overview(poll)
-
 	return render(
 		request,
 		'polls_vote.html',
@@ -133,8 +122,7 @@ def vote(request, poll, url_title):
 			'view_page': True,
 			"widget": "checkbox" if poll.max_allowed_number_of_answers != 1 else "radio",
 			'attachments': poll.attachments.filter(no_direct_download=False).order_by('index'),
-			'can_edit': can_edit,
-			'permission_overview': permission_overview,
+			'permission_overview': document_permission_overview(request.user, poll),
 		}
 	)
 

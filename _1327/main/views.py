@@ -20,7 +20,7 @@ from _1327.documents.models import Document
 from _1327.documents.views import edit as document_edit, view as document_view
 from _1327.main.forms import AbbreviationExplanationForm, get_permission_form
 from _1327.main.models import AbbreviationExplanation
-from _1327.main.utils import abbreviation_explanation_markdown, find_root_menu_items, get_permission_overview
+from _1327.main.utils import abbreviation_explanation_markdown, document_permission_overview, find_root_menu_items
 from _1327.shortlinks.models import Shortlink
 from _1327.shortlinks.views import edit as shortlink_edit, view as shortlink_view
 from .forms import MenuItemAdminForm, MenuItemCreationAdminForm, MenuItemCreationForm, MenuItemForm
@@ -36,11 +36,6 @@ def index(request):
 		md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), 'markdown.extensions.abbr', 'markdown.extensions.tables'])
 		text = md.convert(document.text + abbreviation_explanation_markdown())
 
-		can_edit = request.user.has_perm(document.edit_permission_name, document)
-		permission_overview = []
-		if can_edit:
-			permission_overview = get_permission_overview(document)
-
 		template = 'information_pages_base.html' if document.polymorphic_ctype.model == 'informationdocument' else 'minutes_base.html'
 		return render(request, template, {
 			'document': document,
@@ -49,8 +44,7 @@ def index(request):
 			'attachments': document.attachments.filter(no_direct_download=False).order_by('index'),
 			'active_page': 'view',
 			'view_page': True,
-			'can_edit': can_edit,
-			'permission_overview': permission_overview,
+			'permission_overview': document_permission_overview(request.user, document),
 		})
 	except ObjectDoesNotExist:
 		# nobody created a mainpage yet -> show default main page

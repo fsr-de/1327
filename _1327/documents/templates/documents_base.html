@@ -12,7 +12,7 @@
 	{{ document.meta_information_html }}
 	<div class="divider hidden-print"></div>
 	{% block document_nav %}
-		{% if can_edit %}
+		{% if permission_overview %}
 			<div role="tablist" class="hidden-print">
 				<a class="btn btn-sm btn-sidebar {% if active_page == 'view' %}btn-warning{% else %}btn-default{% endif %}" href="{% url document.get_view_url_name document.url_title %}" role="tab">{% trans "View" %}</a>
 				<a class="btn btn-sm btn-sidebar {% if active_page == 'edit' %}btn-warning{% else %}btn-default{% endif %}" href="{% url document.get_edit_url_name document.url_title %}" role="tab">{% trans "Edit" %}</a>
