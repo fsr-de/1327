@@ -16,6 +16,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='temporarydocumenttext',
             name='hash_value',
-            field=models.CharField(default=_1327.documents.models.TemporaryDocumentText.get_hash, max_length=40, unique=True, verbose_name='Hash value'),
+            field=models.CharField(default=getattr(_1327.documents.models.TemporaryDocumentText, 'get_hash', '0'), max_length=40, unique=True, verbose_name='Hash value'),
         ),
     ]
