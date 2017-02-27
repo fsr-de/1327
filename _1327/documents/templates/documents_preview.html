@@ -15,7 +15,7 @@
 
 	<script>
 		var websocketMethod = location.protocol == 'http:' ? 'ws://' : 'wss://';
-		var socket = new WebSocket(websocketMethod + window.location.host + '{{ preview_url }}');
+		var socket = new WebSocket(websocketMethod + window.location.host + '{{ preview_url }}/{{ hash_value }}');
 		socket.onmessage = function(e) {
 			$('.content').html(e.data);
 		};

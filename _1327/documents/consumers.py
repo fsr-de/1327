@@ -1,17 +1,22 @@
 from channels import Group
 
 
-def send_preview(message):
-	Group('preview').send({
+def get_group_name(id):
+	return '_'.join(['preview', id])
+
+
+def send_preview(message, id):
+	Group(get_group_name(id)).send({
 		"text": message.content['text'],
 	})
 
 
 def ws_add(message):
-	print("new user")
 	message.reply_channel.send({"accept": True})
-	Group("preview").add(message.reply_channel)
+	group_name = message.content['path'].replace('/ws/', '').replace('/', '_')
+	Group(group_name).add(message.reply_channel)
 
 
 def ws_disconnect(message):
-	Group("preview").discard(message.reply_channel)
+	group_name = message.content['path'].replace('/ws/', '').replace('/', '_')
+	Group(group_name).discard(message.reply_channel)
