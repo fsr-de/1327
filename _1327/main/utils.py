@@ -69,16 +69,16 @@ def find_root_menu_items(items):
 	if len(items) == 0:
 		return []
 
-	real_root_items = []
+	real_root_items = set()
 	questionable_root_items = set()
 
 	for item in items:
 		if item.parent is None:
-			real_root_items.append(item)
+			real_root_items.add(item)
 		else:
 			questionable_root_items.add(item.parent)
 
-	real_root_items.extend(find_root_menu_items(questionable_root_items))
+	real_root_items.update(find_root_menu_items(questionable_root_items))
 	return real_root_items
 
 

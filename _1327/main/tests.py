@@ -6,6 +6,7 @@ from guardian.utils import get_anonymous_user
 from model_mommy import mommy
 
 from _1327.information_pages.models import InformationDocument
+from _1327.main.utils import find_root_menu_items
 from _1327.minutes.models import MinutesDocument
 from _1327.user_management.models import UserProfile
 from .context_processors import mark_selected
@@ -75,3 +76,12 @@ class MenuItemTests(WebTest):
 			self.assertIn(self.root_menu_item.title, response_text)
 			self.assertIn(self.sub_item.title, response_text)
 			self.assertIn(self.sub_sub_item.title, response_text)
+
+	def test_find_root_menu_items(self):
+		sub_item = mommy.make(MenuItem, parent=self.root_menu_item)
+		sub_sub_item = mommy.make(MenuItem, parent=self.sub_item)
+
+		menu_items = [sub_sub_item, self.sub_sub_item, sub_item]
+		root_menu_items = find_root_menu_items(menu_items)
+
+		self.assertCountEqual(root_menu_items, [self.root_menu_item])
