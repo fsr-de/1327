@@ -23,6 +23,7 @@ from reversion import revisions
 from sendfile import sendfile
 
 from _1327 import settings
+from _1327.documents.consumers import get_group_name
 from _1327.documents.forms import get_permission_form
 from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
 from _1327.documents.models import Attachment, Document, TemporaryDocumentText
@@ -124,7 +125,7 @@ def autosave(request, title):
 
 	data = {
 		'preview_url': request.build_absolute_uri(
-			reverse('documents:preview') + '?hash_value=' + document.document.get().hash_value
+			reverse('documents:preview') + '?hash_value=' + document.hash_value
 		)
 	}
 
@@ -247,7 +248,7 @@ def render_text(request, title):
 	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr', 'markdown.extensions.tables'])
 	text = md.convert(text + abbreviation_explanation_markdown())
 
-	WebsocketGroup('preview').send({
+	WebsocketGroup(get_group_name(document.hash_value)).send({
 		'text': text
 	})
 
@@ -467,17 +468,18 @@ def preview(request):
 		raise Http404
 
 	hash_value = request.GET['hash_value']
-	temporary_document = get_object_or_404(TemporaryDocumentText, hash_value=hash_value)
+	document = get_object_or_404(Document, hash_value=hash_value)
 
 	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr', 'markdown.extensions.tables'])
-	text = md.convert(temporary_document.text + abbreviation_explanation_markdown())
+	text = md.convert(document.text + abbreviation_explanation_markdown())
 
 	return render(
 		request,
 		'documents_preview.html',
 		{
-			'title': temporary_document.document.title,
+			'title': document.title,
 			'text': text,
 			'preview_url': settings.PREVIEW_URL,
+			'hash_value': hash_value,
 		}
 	)
