@@ -3,7 +3,13 @@ branch = True
 omit =
 	*/tests.py
 	*/migrations/*
+	*/apps.py
 	_1327/wsgi.py
 	_1327/main/management/commands/flake8.py
 	_1327/main/management/commands/run.py
+	_1327/main/management/commands/reload_db.py
+	_1327/main/management/commands/lint.py
+	_1327/asgi.py
+	_1327/routing.py
+	_1327/settings.py
 source = _1327
