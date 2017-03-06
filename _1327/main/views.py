@@ -13,14 +13,11 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_POST
 from guardian.shortcuts import get_objects_for_user
 
-import markdown
-from markdown.extensions.toc import TocExtension
-
 from _1327.documents.models import Document
 from _1327.documents.views import edit as document_edit, view as document_view
 from _1327.main.forms import AbbreviationExplanationForm, get_permission_form
 from _1327.main.models import AbbreviationExplanation
-from _1327.main.utils import abbreviation_explanation_markdown, document_permission_overview, find_root_menu_items
+from _1327.main.utils import find_root_menu_items
 from _1327.shortlinks.models import Shortlink
 from _1327.shortlinks.views import edit as shortlink_edit, view as shortlink_view
 from .forms import MenuItemAdminForm, MenuItemCreationAdminForm, MenuItemCreationForm, MenuItemForm
@@ -32,20 +29,6 @@ def index(request):
 	try:
 		document = Document.objects.get(id=settings.MAIN_PAGE_ID)
 		return HttpResponseRedirect(reverse(document.get_view_url_name(), args=[document.url_title]))
-
-		md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), 'markdown.extensions.abbr', 'markdown.extensions.tables'])
-		text = md.convert(document.text + abbreviation_explanation_markdown())
-
-		template = 'information_pages_base.html' if document.polymorphic_ctype.model == 'informationdocument' else 'minutes_base.html'
-		return render(request, template, {
-			'document': document,
-			'text': text,
-			'toc': md.toc,
-			'attachments': document.attachments.filter(no_direct_download=False).order_by('index'),
-			'active_page': 'view',
-			'view_page': True,
-			'permission_overview': document_permission_overview(request.user, document),
-		})
 	except ObjectDoesNotExist:
 		# nobody created a mainpage yet -> show default main page
 		return render(request, 'index.html')
