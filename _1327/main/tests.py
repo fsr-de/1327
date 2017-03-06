@@ -77,6 +77,15 @@ class MenuItemTests(WebTest):
 			self.assertIn(self.sub_item.title, response_text)
 			self.assertIn(self.sub_sub_item.title, response_text)
 
+	def test_possibility_to_change_root_item(self):
+		response = self.app.get(reverse('menu_items_index'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertNotIn(reverse('menu_item_edit', args=[self.root_menu_item.id]), response.body.decode('utf-8'))
+
+		response = self.app.get(reverse('menu_items_index'), user=self.root_user)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn(reverse('menu_item_edit', args=[self.root_menu_item.id]), response.body.decode('utf-8'))
+
 	def test_find_root_menu_items(self):
 		sub_item = mommy.make(MenuItem, parent=self.root_menu_item)
 		sub_sub_item = mommy.make(MenuItem, parent=self.sub_item)
@@ -85,3 +94,45 @@ class MenuItemTests(WebTest):
 		root_menu_items = find_root_menu_items(menu_items)
 
 		self.assertCountEqual(root_menu_items, [self.root_menu_item])
+
+	def test_set_edit_permission_on_menu_item(self):
+		response = self.app.get(reverse('menu_items_index'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertNotIn(reverse('menu_item_edit', args=[self.sub_item.id]), response.body.decode('utf-8'))
+		self.assertIn(reverse('menu_item_edit', args=[self.sub_sub_item.id]), response.body.decode('utf-8'))
+
+		assign_perm(self.sub_item.edit_permission_name, self.user, self.sub_item)
+
+		response = self.app.get(reverse('menu_items_index'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn(reverse('menu_item_edit', args=[self.sub_item.id]), response.body.decode('utf-8'))
+		self.assertIn(reverse('menu_item_edit', args=[self.sub_sub_item.id]), response.body.decode('utf-8'))
+
+	def test_change_parent_without_edit_permission(self):
+		extra_sub_item = mommy.make(MenuItem, parent=self.sub_item)
+
+		response = self.app.get(reverse('menu_items_index'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn(reverse('menu_item_edit', args=[extra_sub_item.id]), response.body.decode('utf-8'))
+
+		extra_sub_item.parent = self.root_menu_item
+		extra_sub_item.save()
+
+		response = self.app.get(reverse('menu_items_index'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertNotIn(reverse('menu_item_edit', args=[extra_sub_item.id]), response.body.decode('utf-8'))
+
+	def test_change_parent_with_edit_permission(self):
+		extra_sub_item = mommy.make(MenuItem, parent=self.sub_item)
+		assign_perm(extra_sub_item.edit_permission_name, self.user, extra_sub_item)
+
+		response = self.app.get(reverse('menu_items_index'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn(reverse('menu_item_edit', args=[extra_sub_item.id]), response.body.decode('utf-8'))
+
+		extra_sub_item.parent = self.root_menu_item
+		extra_sub_item.save()
+
+		response = self.app.get(reverse('menu_items_index'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn(reverse('menu_item_edit', args=[extra_sub_item.id]), response.body.decode('utf-8'))
