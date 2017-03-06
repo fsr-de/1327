@@ -1,7 +1,9 @@
+import re
+
 from django.core.urlresolvers import reverse
 from django.test import RequestFactory, TestCase
 from django_webtest import WebTest
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import assign_perm, remove_perm
 from guardian.utils import get_anonymous_user
 from model_mommy import mommy
 
@@ -136,3 +138,28 @@ class MenuItemTests(WebTest):
 		response = self.app.get(reverse('menu_items_index'), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		self.assertIn(reverse('menu_item_edit', args=[extra_sub_item.id]), response.body.decode('utf-8'))
+
+	def test_menu_item_ordering(self):
+		self.root_menu_item.order = 2
+		self.root_menu_item.save()
+		remove_perm(self.sub_item.change_children_permission_name, self.user, self.sub_item)
+		self.sub_item.delete()
+
+		mommy.make(MenuItem, order=0)
+		mommy.make(MenuItem, order=1)
+
+		menu_items = list(MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU).order_by('order'))
+		for idx, item in enumerate(menu_items):
+			assign_perm(item.change_children_permission_name, self.user, item)
+			item.order = idx
+			item.save()
+		menu_items.append(MenuItem.objects.get(menu_type=MenuItem.FOOTER))
+
+		response = self.app.get(reverse('menu_items_index'), user=self.root_user)
+		response_text = response.body.decode('utf-8')
+
+		menu_item_ids = re.findall(r"menu_item/(\d+)/edit", response_text)
+		self.assertEqual(len(menu_item_ids), len(menu_items))
+
+		for menu_item_id, menu_item in zip(menu_item_ids, menu_items):
+			self.assertEqual(menu_item.id, int(menu_item_id), 'Menu Item ordering is not as expected')
