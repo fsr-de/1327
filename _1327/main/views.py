@@ -58,8 +58,9 @@ def menu_items_index(request):
 	footer_items = []
 
 	items = find_root_menu_items(
-		[item for item in MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU, children=None).order_by('order') if item.can_view_in_list(request.user)]
+		[item for item in MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU, children=None) if item.can_view_in_list(request.user)]
 	)
+	items = sorted(items, key=lambda x: x.order)
 
 	for item in items:
 		subitems = MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU, parent=item).order_by('order')
