@@ -4,6 +4,7 @@ import json
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import SuspiciousOperation
 from django.db import transaction
 from django.utils import timezone
 from reversion import revisions
@@ -59,38 +60,41 @@ def handle_edit(request, document, formset=None, initial=None):
 
 			# delete Autosave
 			try:
-				autosave = TemporaryDocumentText.objects.get(document=document)
-				autosave.delete()
+				autosaves = TemporaryDocumentText.objects.filter(document=document)
+				for autosave in autosaves:
+					autosave.delete()
 			except TemporaryDocumentText.DoesNotExist:
 				pass
 
 			return True, form
 	else:
 		# load Autosave
-		autosave = None
-		try:
-			autosave = TemporaryDocumentText.objects.get(document=document)
-			autosaved = True
-		except TemporaryDocumentText.DoesNotExist:
-			autosaved = False
+		autosaves = TemporaryDocumentText.objects.filter(document=document, author=request.user)
+		autosaved = autosaves.count() > 0
 
-		if 'restore' in request.GET:
-			autosaved = False
+		if 'restore' in request.GET and autosaved:
+			autosave_to_restore = None
+			for autosave in autosaves:
+				if int(request.GET['restore']) == autosave.id:
+					autosave_to_restore = autosave
 
-		if 'restore' in request.GET and autosave is not None:
+			if autosave_to_restore is None:
+				raise SuspiciousOperation
+
 			form_data = {
-				'text': autosave.text,
+				'text': autosave_to_restore.text,
 				'url_title': document.url_title,
 			}
 			if initial is None:
 				initial = {}
 			initial.update(form_data)
+			autosaved = False
 
 		form = document.Form(initial=initial, instance=document, user=request.user, creation=document.is_in_creation)
 
-		form.autosave = autosaved
+		form.autosaved = autosaved
 		if autosaved:
-			form.autosave_date = autosave.created
+			form.autosaves = autosaves
 
 	return False, form
 
@@ -104,10 +108,9 @@ def handle_autosave(request, document):
 			cleaned_data = form.cleaned_data
 
 			if document is None:
-				temporary_document_text = TemporaryDocumentText(author=request.user)
+				temporary_document_text = TemporaryDocumentText.objects.create(author=request.user)
 			elif document.text != cleaned_data['text']:
 				temporary_document_text, __ = TemporaryDocumentText.objects.get_or_create(document=document, author=request.user)
-				temporary_document_text.document = document
 			else:
 				return
 

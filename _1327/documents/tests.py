@@ -186,6 +186,7 @@ class TestAutosave(WebTest):
 		self.assertEqual(form.get('text').value, 'text')
 
 		# if loading autosave text should be AUTO
+		
 		response = self.app.get(
 			reverse(document.get_edit_url_name(), args=[document.url_title]),
 			params={'restore': ''},
