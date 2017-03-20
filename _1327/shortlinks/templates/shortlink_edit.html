@@ -23,3 +23,20 @@
 		{% endbuttons %}
 	</form>
 {% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+
+    <script type="text/javascript">
+        var documentSelection = $("#shortlink-document-selection");
+        documentSelection.empty();
+        documentSelection.prepend("<option value='' selected='selected'></option>");
+        documentSelection.select2({
+            language: "{{ LANGUAGE_CODE }}",
+            placeholder: "{% trans 'Please select...' %}",
+            data: {{ document_selection }}
+        });
+    </script>
+
+
+{% endblock %}

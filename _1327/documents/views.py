@@ -260,7 +260,7 @@ def search(request):
 	information_documents = get_objects_for_user(request.user, InformationDocument.VIEW_PERMISSION_NAME, klass=InformationDocument.objects.filter(title__icontains=request.GET['q']))
 	polls = get_objects_for_user(request.user, Poll.VIEW_PERMISSION_NAME, klass=Poll.objects.filter(title__icontains=request.GET['q']))
 
-	return render(request, "search_api.json", {
+	return render(request, "ajax_search_api.json", {
 		'minutes': minutes,
 		'information_documents': information_documents,
 		'polls': polls,
