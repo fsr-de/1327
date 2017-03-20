@@ -74,24 +74,36 @@ class TestRevertion(WebTest):
 
 		user_without_perms = mommy.make(UserProfile)
 		response = self.app.post(
-			reverse('documents:revert'), {'id': versions[1].pk, 'url_title': document.url_title},
+			reverse('documents:revert'),
+			params={'id': versions[1].pk, 'url_title': document.url_title},
 			status=404,
 			user=user_without_perms,
 		)
 		self.assertEqual(response.status_code, 404)
 
 		response = self.app.post(
-			reverse('documents:revert'), {'id': versions[1].pk, 'url_title': document.url_title},
+			reverse('documents:revert'),
+			params={'id': versions[1].pk, 'url_title': document.url_title},
 			status=403,
 			xhr=True,
 			user=user_without_perms,
 		)
 		self.assertEqual(response.status_code, 403)
 
-		response = self.app.post(reverse('documents:revert'), {'id': versions[1].pk, 'url_title': document.url_title}, user=self.user, status=404)
+		response = self.app.post(
+			reverse('documents:revert'),
+			params={'id': versions[1].pk, 'url_title': document.url_title},
+			user=self.user,
+			status=404
+		)
 		self.assertEqual(response.status_code, 404)
 
-		response = self.app.post(reverse('documents:revert'), {'id': versions[1].pk, 'url_title': document.url_title}, user=self.user, xhr=True)
+		response = self.app.post(
+			reverse('documents:revert'),
+			params={'id': versions[1].pk, 'url_title': document.url_title},
+			user=self.user,
+			xhr=True
+		)
 		self.assertEqual(response.status_code, 200)
 
 	def test_revert_document(self):
@@ -100,7 +112,12 @@ class TestRevertion(WebTest):
 		self.assertEqual(len(versions), 2)
 
 		# second step try to revert to old version
-		response = self.app.post(reverse('documents:revert'), {'id': versions[1].pk, 'url_title': document.url_title}, user=self.user, xhr=True)
+		response = self.app.post(
+			reverse('documents:revert'),
+			params={'id': versions[1].pk, 'url_title': document.url_title},
+			user=self.user,
+			xhr=True
+		)
 		self.assertEqual(response.status_code, 200)
 
 		versions = revisions.get_for_object(document)
@@ -119,7 +136,12 @@ class TestRevertion(WebTest):
 			revisions.set_comment('changed url')
 
 		versions = revisions.get_for_object(document)
-		response = self.app.post(reverse('documents:revert'), {'id': versions[2].pk, 'url_title': document.url_title}, user=self.user, xhr=True)
+		response = self.app.post(
+			reverse('documents:revert'),
+			params={'id': versions[2].pk, 'url_title': document.url_title},
+			user=self.user,
+			xhr=True
+		)
 
 		self.assertEqual(response.status_code, 200)
 		self.assertIn(reverse('versions', args=[old_url]), response.body.decode('utf-8'))
@@ -149,7 +171,12 @@ class TestAutosave(WebTest):
 		self.assertEqual(form.get('text').value, 'text')
 
 		# autosave AUTO
-		response = self.app.post(reverse('documents:autosave', args=[document.url_title]), {'text': 'AUTO', 'title': form.get('title').value, 'comment': ''}, user=self.user, xhr=True)
+		response = self.app.post(
+			reverse('documents:autosave', args=[document.url_title]),
+			params={'text': 'AUTO', 'title': form.get('title').value, 'comment': ''},
+			user=self.user,
+			xhr=True
+		)
 		self.assertEqual(response.status_code, 200)
 
 		# if not loading autosave text should be still text
@@ -159,17 +186,30 @@ class TestAutosave(WebTest):
 		self.assertEqual(form.get('text').value, 'text')
 
 		# if loading autosave text should be AUTO
-		response = self.app.get(reverse(document.get_edit_url_name(), args=[document.url_title]), {'restore': ''}, user=self.user)
+		response = self.app.get(
+			reverse(document.get_edit_url_name(), args=[document.url_title]),
+			params={'restore': ''},
+			user=self.user
+		)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
 		self.assertEqual(form.get('text').value, 'AUTO')
 
 		# second autosave AUTO2
-		response = self.app.post(reverse('documents:autosave', args=[document.url_title]), {'text': 'AUTO2', 'title': form.get('title').value, 'comment': ''}, user=self.user, xhr=True)
+		response = self.app.post(
+			reverse('documents:autosave', args=[document.url_title]),
+			params={'text': 'AUTO2', 'title': form.get('title').value, 'comment': ''},
+			user=self.user,
+			xhr=True
+		)
 		self.assertEqual(response.status_code, 200)
 
 		# if loading autosave text should be AUTO2
-		response = self.app.get(reverse(document.get_edit_url_name(), args=[document.url_title]), {'restore': ''}, user=self.user)
+		response = self.app.get(
+			reverse(document.get_edit_url_name(), args=[document.url_title]),
+			params={'restore': ''},
+			user=self.user
+		)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
 		self.assertEqual(form.get('text').value, 'AUTO2')
@@ -182,7 +222,11 @@ class TestAutosave(WebTest):
 		url_title = slugify(form.get('title').value)
 
 		# autosave AUTO
-		response = self.app.post(reverse('documents:autosave', args=[url_title]), {'text': 'AUTO', 'title': form.get('title').value, 'comment': ''}, xhr=True)
+		response = self.app.post(
+			reverse('documents:autosave', args=[url_title]),
+			params={'text': 'AUTO', 'title': form.get('title').value, 'comment': ''},
+			xhr=True
+		)
 		self.assertEqual(response.status_code, 200)
 
 		# on the new page site should be a banner with a restore link
@@ -203,7 +247,12 @@ class TestAutosave(WebTest):
 		url_title2 = slugify(form.get('title').value)
 
 		# autosave second document AUTO
-		response = self.app.post(reverse('documents:autosave', args=[url_title2]), {'text': 'AUTO', 'title': form.get('title').value, 'comment': ''}, user=self.user, xhr=True)
+		response = self.app.post(
+			reverse('documents:autosave', args=[url_title2]),
+			params={'text': 'AUTO', 'title': form.get('title').value, 'comment': ''},
+			user=self.user,
+			xhr=True
+		)
 		self.assertEqual(response.status_code, 200)
 
 		# on the new page site should be a banner with a restore link for both sites
@@ -218,7 +267,11 @@ class TestAutosave(WebTest):
 		self.assertEqual(form.get('text').value, '')
 
 		# if loading autosave text should be AUTO
-		response = self.app.get(reverse('edit', args=[url_title]), {'restore': ''}, user=self.user)
+		response = self.app.get(
+			reverse('edit', args=[url_title]),
+			params={'restore': ''},
+			user=self.user
+		)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
 		self.assertEqual(form.get('text').value, 'AUTO')
@@ -231,7 +284,11 @@ class TestAutosave(WebTest):
 		url_title = slugify(form.get('title').value)
 
 		# autosave AUTO
-		response = self.app.post(reverse('documents:autosave', args=[url_title]), {'text': 'AUTO', 'title': form.get('title').value, 'comment': '', 'group': mommy.make(Group)}, xhr=True)
+		response = self.app.post(
+			reverse('documents:autosave', args=[url_title]),
+			params={'text': 'AUTO', 'title': form.get('title').value, 'comment': '', 'group': mommy.make(Group)},
+			xhr=True
+		)
 		self.assertEqual(response.status_code, 200)
 
 		# there should be no restore link on creation page for different document type
@@ -291,7 +348,7 @@ class TestMarkdownRendering(WebTest):
 		user_without_permission = mommy.make(UserProfile)
 		response = self.app.post(
 			reverse('documents:render', args=[self.document.url_title]),
-			{'text': self.document_text},
+			params={'text': self.document_text},
 			xhr=True,
 			expect_errors=True,
 			user=user_without_permission
@@ -299,11 +356,22 @@ class TestMarkdownRendering(WebTest):
 		self.assertEqual(response.status_code, 403)
 
 	def test_render_text_wrong_method(self):
-		response = self.app.get(reverse('documents:render', args=[self.document.url_title]), {'text': self.document_text}, user=self.user, xhr=True, expect_errors=True)
+		response = self.app.get(
+			reverse('documents:render', args=[self.document.url_title]),
+			params={'text': self.document_text},
+			user=self.user,
+			xhr=True,
+			expect_errors=True
+		)
 		self.assertEqual(response.status_code, 400)
 
 	def test_render_text(self):
-		response = self.app.post(reverse('documents:render', args=[self.document.url_title]), {'text': self.document_text}, user=self.user, xhr=True)
+		response = self.app.post(
+			reverse('documents:render', args=[self.document.url_title]),
+			params={'text': self.document_text},
+			user=self.user,
+			xhr=True
+		)
 		self.assertEqual(response.status_code, 200)
 		self.assertEqual('<p>' + self.document_text + '</p>', response.body.decode('utf-8'))
 
@@ -640,7 +708,7 @@ class TestAttachments(WebTest):
 
 		response = self.app.post(
 			reverse('documents:update_attachment_order'),
-			new_attachment_order,
+			params=new_attachment_order,
 			xhr=True,
 			user=self.user,
 		)
@@ -659,7 +727,7 @@ class TestAttachments(WebTest):
 		self.assertFalse(self.attachment.no_direct_download, "attachments can be downloaded directly by default")
 		response = self.app.post(
 			reverse('documents:change_attachment'),
-			{'id': self.attachment.id, 'no_direct_download': 'false'},
+			params={'id': self.attachment.id, 'no_direct_download': 'false'},
 			user=self.user,
 			xhr=True,
 		)
@@ -672,7 +740,7 @@ class TestAttachments(WebTest):
 		user = mommy.make(UserProfile)
 		response = self.app.post(
 			reverse('documents:change_attachment'),
-			{'id': self.attachment.id, 'no_direct_download': 'false'},
+			params={'id': self.attachment.id, 'no_direct_download': 'false'},
 			user=user,
 			xhr=True,
 			expect_errors=True
@@ -682,7 +750,7 @@ class TestAttachments(WebTest):
 	def test_attachment_change_no_direct_download_wrong_request_type(self):
 		response = self.app.get(
 			reverse('documents:change_attachment'),
-			{'id': self.attachment.id, 'no_direct_download': 'false'},
+			params={'id': self.attachment.id, 'no_direct_download': 'false'},
 			user=self.user,
 			xhr=True,
 			expect_errors=True,
@@ -692,7 +760,7 @@ class TestAttachments(WebTest):
 	def test_attachment_change_no_direct_download_no_ajax(self):
 		response = self.app.post(
 			reverse('documents:change_attachment'),
-			{'id': self.attachment.id, 'no_direct_download': 'false'},
+			params={'id': self.attachment.id, 'no_direct_download': 'false'},
 			user=self.user,
 			expect_errors=True,
 		)
@@ -702,7 +770,7 @@ class TestAttachments(WebTest):
 		new_displayname = 'lorem ipsum'
 		response = self.app.post(
 			reverse('documents:change_attachment'),
-			{'id': self.attachment.id, 'displayname': new_displayname},
+			params={'id': self.attachment.id, 'displayname': new_displayname},
 			user=self.user,
 			xhr=True,
 		)
@@ -716,7 +784,7 @@ class TestAttachments(WebTest):
 		new_displayname = 'lorem ipsum'
 		response = self.app.post(
 			reverse('documents:change_attachment'),
-			{'id': self.attachment.id, 'displayname': new_displayname},
+			params={'id': self.attachment.id, 'displayname': new_displayname},
 			user=user,
 			xhr=True,
 			expect_errors=True
@@ -727,7 +795,7 @@ class TestAttachments(WebTest):
 		new_displayname = 'lorem ipsum'
 		response = self.app.get(
 			reverse('documents:change_attachment'),
-			{'id': self.attachment.id, 'displayname': new_displayname},
+			params={'id': self.attachment.id, 'displayname': new_displayname},
 			user=self.user,
 			xhr=True,
 			expect_errors=True,
@@ -738,7 +806,7 @@ class TestAttachments(WebTest):
 		new_displayname = 'lorem ipsum'
 		response = self.app.post(
 			reverse('documents:change_attachment'),
-			{'id': self.attachment.id, 'displayname': new_displayname},
+			params={'id': self.attachment.id, 'displayname': new_displayname},
 			user=self.user,
 			expect_errors=True,
 		)

@@ -645,10 +645,20 @@ class PollRevertionTests(WebTest):
 		versions = revisions.get_for_object(poll)
 		self.assertEqual(len(versions), 2)
 
-		response = self.app.post(reverse('documents:revert') + '/', {'id': versions[1].pk, 'url_title': poll.url_title}, user=self.user, xhr=True)
+		response = self.app.post(
+			reverse('documents:revert') + '/',
+			params={'id': versions[1].pk, 'url_title': poll.url_title},
+			user=self.user,
+			xhr=True
+		)
 		self.assertEqual(response.status_code, 301)
 
-		response = self.app.post(reverse('documents:revert'), {'id': versions[1].pk, 'url_title': poll.url_title}, user=self.user, xhr=True)
+		response = self.app.post(
+			reverse('documents:revert'),
+			params={'id': versions[1].pk, 'url_title': poll.url_title},
+			user=self.user,
+			xhr=True
+		)
 		self.assertEqual(response.status_code, 200)
 
 		versions = revisions.get_for_object(poll)
@@ -668,10 +678,21 @@ class PollRevertionTests(WebTest):
 		versions = revisions.get_for_object(poll)
 		self.assertEqual(len(versions), 2)
 
-		response = self.app.post(reverse('documents:revert') + '/', {'id': versions[1].pk, 'url_title': poll.url_title}, user=self.user, xhr=True)
+		response = self.app.post(
+			reverse('documents:revert') + '/',
+			params={'id': versions[1].pk, 'url_title': poll.url_title},
+			user=self.user,
+			xhr=True
+		)
 		self.assertEqual(response.status_code, 301)
 
-		response = self.app.post(reverse('documents:revert'), {'id': versions[1].pk, 'url_title': poll.url_title}, user=self.user, xhr=True, status=400)
+		response = self.app.post(
+			reverse('documents:revert'),
+			params={'id': versions[1].pk, 'url_title': poll.url_title},
+			user=self.user,
+			xhr=True,
+			status=400
+		)
 		self.assertEqual(response.status_code, 400)
 
 		new_versions = revisions.get_for_object(poll)
