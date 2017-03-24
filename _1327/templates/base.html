@@ -150,7 +150,7 @@
 					{% block breadcrumbs %}{% endblock %}
 				</ul>
 			</div>
-			<div class="login-area pull-right">
+			<div class="login-area pull-right hidden-print">
 				<div class="login-info" {% if user.groups.all %}data-toggle="tooltip" data-placement="bottom" data-container="body" title="{% trans 'Groups' %}: {{ user.groups.all|join:', ' }}"{% endif %}>
 					{% if user.is_authenticated %}{{ user.get_full_name }}{% endif %}
 				</div>
@@ -200,7 +200,7 @@
 		</div>
 	</footer>
 </div>
-<a id="back-to-top" href="#" class="btn btn-primary back-to-top" role="button" title="{% trans 'Return to the top of the page' %}" data-toggle="tooltip" data-placement="left"><span class="glyphicon glyphicon-chevron-up"></span></a>
+<a id="back-to-top" href="#" class="btn btn-primary back-to-top hidden-print" role="button" title="{% trans 'Return to the top of the page' %}" data-toggle="tooltip" data-placement="left"><span class="glyphicon glyphicon-chevron-up"></span></a>
 {% endblock %}
 
 

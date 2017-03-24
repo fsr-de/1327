@@ -21,8 +21,8 @@
 		<dd><i>{% trans "No Guests" %}</i></dd>
 	{% endfor %}
 
-	<dt class="hidden-print">{% trans "Labels" %}</dt>
-	<dd class="hidden-print">
+	<dt {% if document.labels.all|length == 0 %}class="hidden-print"{% endif %}>{% trans "Labels" %}</dt>
+	<dd {% if document.labels.all|length == 0 %}class="hidden-print"{% endif %}>
 		{% for label in document.labels.all %}
 			<span class="label {{ label.class_for_text_color }}" style="background-color: {{ label.color }};">{{ label.title }}</span>
 		{% endfor %}
