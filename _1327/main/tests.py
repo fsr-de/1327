@@ -345,3 +345,31 @@ class MenuItemTests(WebTest):
 
 		for menu_item_id, menu_item in zip(menu_item_ids, menu_items):
 			self.assertEqual(menu_item.id, int(menu_item_id), 'Menu Item ordering is not as expected')
+
+	def test_menu_item_visible_for_user(self):
+		document = mommy.make(InformationDocument)
+		self.sub_item.document = document
+		self.sub_item.save()
+		assign_perm(self.root_menu_item.view_permission_name, self.user, self.root_menu_item)
+
+		response = self.app.get(reverse('index'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn(reverse('view', args=[document.url_title]), response.body.decode('utf-8'))
+
+		document2 = mommy.make(InformationDocument)
+		self.sub_sub_item.document = document2
+		self.sub_sub_item.save()
+		assign_perm(self.sub_sub_item.view_permission_name, self.user, self.sub_sub_item)
+
+		response = self.app.get(reverse('index'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn(reverse('view', args=[document2.url_title]), response.body.decode('utf-8'))
+
+	def test_menu_item_not_visible_for_user(self):
+		document = mommy.make(InformationDocument)
+		self.root_menu_item.document = document
+		self.root_menu_item.save()
+
+		response = self.app.get(reverse('index'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertNotIn(reverse('view', args=[document.url_title]), response.body.decode('utf-8'))
