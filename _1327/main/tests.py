@@ -1,4 +1,5 @@
 import re
+
 from django.conf import settings
 from django.contrib.auth.models import Group
 
@@ -373,3 +374,31 @@ class MenuItemTests(WebTest):
 		response = self.app.get(reverse('index'), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		self.assertNotIn(reverse('view', args=[document.url_title]), response.body.decode('utf-8'))
+
+	def test_menu_item_edit_no_permission(self):
+		response = self.app.get(reverse('menu_item_edit', args=[self.root_menu_item.pk]), user=self.user, expect_errors=True)
+		self.assertEqual(response.status_code, 403)
+
+	def test_menu_item_edit(self):
+		document = mommy.make(InformationDocument)
+		document_2 = mommy.make(InformationDocument)
+		self.sub_item.document = document_2
+		self.sub_item.save()
+
+		assign_perm(self.root_menu_item.change_children_permission_name, self.user, self.root_menu_item)
+
+		response = self.app.get(reverse('menu_item_edit', args=[self.sub_item.pk]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		original_menu_item = self.sub_item
+
+		form = response.form
+		form['title'] = 'Lorem Ipsum'
+		form['document'] = document.pk
+
+		response = form.submit().maybe_follow()
+		self.assertEqual(response.status_code, 200)
+
+		changed_menu_item = MenuItem.objects.get(pk=self.sub_item.pk)
+		self.assertNotEqual(original_menu_item.title, changed_menu_item.title)
+		self.assertNotEqual(original_menu_item.document.id, changed_menu_item.document.id)
