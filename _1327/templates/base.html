@@ -173,17 +173,11 @@
 
 	{% block rawcontent %}
 	<div class="headline">
-		<svg height="60" width="100%">
-			<defs>
-				<filter id="shadow" width="200%" height="200%">
-					<feOffset result="offOut" in="SourceGraphic" dx="3" dy="5"></feOffset>
-					<feGaussianBlur result="blurOut" in="offOut" stdDeviation="3"></feGaussianBlur>
-				</filter>
-			</defs>
-			<polygon class="headline-bar-shadow hidden-print" filter="url(#shadow)" points=""></polygon>
-			<polygon class="headline-bar hidden-print" points=""></polygon>
-			<text class="headline-text" dx="20" dy="25">{% block title %}{% endblock %}</text>
-		</svg>
+		<div class="headline-triangle-back"></div>
+		<div class="headline-box-shadow">
+			<span class="headline-box">{% block title %}{% endblock title %}</span>
+			<span class="headline-box-end"></span>
+		</div>
 	</div>
 	{% endblock %}
 
@@ -209,13 +203,13 @@
 
 	<script type="text/javascript">
 		$(document).ready(function() {
-			// resize headline bar to fit the text
-			var l = $('.headline-text')[0].getComputedTextLength() + 28;
-			var points = "-10,0 " + (l+18) + ",0 " + l + ",50 -10,50";
-			$('.headline-bar')[0].setAttribute('points', points);
-			$('.headline-bar-shadow')[0].setAttribute('points', points);
-
 			$('[data-toggle="tooltip"]').tooltip();
+			$('.headline-box').tooltip({
+				delay: { "show": 1500, "hide": 0 },
+				placement: "bottom",
+				container: "body",
+				title: function(){ return $('.headline-box').text(); }
+			});
 
 			// add scroll to top button
 			$(window).scroll(function () {
