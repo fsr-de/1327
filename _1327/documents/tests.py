@@ -153,6 +153,7 @@ class TestAutosave(WebTest):
 
 	def setUp(self):
 		self.user = mommy.make(UserProfile, is_superuser=True)
+		self.group = mommy.make(Group)
 
 		document = mommy.prepare(InformationDocument, text="text")
 		with transaction.atomic(), revisions.create_revision():
@@ -186,9 +187,10 @@ class TestAutosave(WebTest):
 		self.assertEqual(form.get('text').value, 'text')
 
 		# if loading autosave text should be AUTO
+		autosave = TemporaryDocumentText.objects.get()
 		response = self.app.get(
 			reverse(document.get_edit_url_name(), args=[document.url_title]),
-			params={'restore': ''},
+			params={'restore': autosave.id},
 			user=self.user
 		)
 		self.assertEqual(response.status_code, 200)
@@ -205,9 +207,10 @@ class TestAutosave(WebTest):
 		self.assertEqual(response.status_code, 200)
 
 		# if loading autosave text should be AUTO2
+		autosave = TemporaryDocumentText.objects.get()
 		response = self.app.get(
 			reverse(document.get_edit_url_name(), args=[document.url_title]),
-			params={'restore': ''},
+			params={'restore': autosave.id},
 			user=self.user
 		)
 		self.assertEqual(response.status_code, 200)
@@ -267,9 +270,10 @@ class TestAutosave(WebTest):
 		self.assertEqual(form.get('text').value, '')
 
 		# if loading autosave text should be AUTO
+		autosave = TemporaryDocumentText.objects.first()
 		response = self.app.get(
 			reverse('edit', args=[url_title]),
-			params={'restore': ''},
+			params={'restore': autosave.id},
 			user=self.user
 		)
 		self.assertEqual(response.status_code, 200)
@@ -332,7 +336,91 @@ class TestAutosave(WebTest):
 		self.assertFalse(document.has_perms())
 
 		response = self.app.get(reverse(autosave.document.get_edit_url_name(), args=[autosave.document.url_title]), expect_errors=True, user=self.user)
-		self.assertEqual(response.status_code, 403)
+		self.assertNotIn('?restore={}'.format(autosave.id), response.body.decode('utf-8'))
+
+	def test_can_not_restore_autosave_of_different_user(self):
+		document = Document.objects.get()
+		mommy.make(TemporaryDocumentText, document=document, author=self.user)
+		second_user = mommy.make(UserProfile)
+		second_document = mommy.prepare(InformationDocument, text="text")
+
+		with transaction.atomic(), revisions.create_revision():
+			second_document.save()
+			revisions.set_user(second_user)
+			revisions.set_comment('test version')
+
+		autosave_2 = mommy.make(TemporaryDocumentText, document=second_document, author=second_user)
+		autosave_3 = mommy.make(TemporaryDocumentText, document=document, author=second_user)
+
+		response = self.app.get(
+			reverse(document.get_edit_url_name(), args=[document.url_title]) + "?restore={}".format(autosave_2.id),
+			user=self.user,
+			expect_errors=True,
+		)
+		self.assertEqual(response.status_code, 400)
+
+		response = self.app.get(
+			reverse(document.get_edit_url_name(), args=[document.url_title]) + "?restore={}".format(autosave_3.id),
+			user=self.user,
+			expect_errors=True,
+		)
+		self.assertEqual(response.status_code, 400)
+
+	def test_multiple_autosaves_while_editing(self):
+		document = Document.objects.get()
+		assign_perm(document.edit_permission_name, self.group, document)
+		mommy.make(TemporaryDocumentText, document=document, author=self.user, _quantity=2)
+
+		response = self.app.get(reverse(document.get_edit_url_name(), args=[document.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn("This document was autosaved on", response.body.decode('utf-8'))
+
+	def test_restore_one_of_multiple_autosaves(self):
+		document = Document.objects.get()
+		assign_perm(document.edit_permission_name, self.group, document)
+		autosave = mommy.make(TemporaryDocumentText, document=document, author=self.user)
+		second_user = mommy.make(UserProfile)
+		mommy.make(TemporaryDocumentText, document=document, author=second_user)
+
+		response = self.app.get(
+			reverse(document.get_edit_url_name(), args=[document.url_title]) + "?restore={}".format(autosave.id),
+			user=self.user
+		)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn(autosave.text, response.body.decode('utf-8'))
+
+	def test_autosave_with_multiple_autosaves(self):
+		document = Document.objects.get()
+		assign_perm(document.edit_permission_name, self.group, document)
+		mommy.make(TemporaryDocumentText, document=document, author=self.user)
+		second_user = mommy.make(UserProfile)
+		mommy.make(TemporaryDocumentText, document=document, author=second_user)
+
+		response = self.app.post(
+			reverse('documents:autosave', args=[document.url_title]),
+			params={'text': 'AUTO', 'title': document.title, 'comment': ''},
+			user=self.user,
+			xhr=True,
+		)
+
+		latest_autosave = TemporaryDocumentText.objects.filter(document=document).latest('created')
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(latest_autosave.text, 'AUTO')
+
+	def test_autosaves_removed_after_successful_edit(self):
+		document = Document.objects.get()
+		assign_perm(document.edit_permission_name, self.group, document)
+		mommy.make(TemporaryDocumentText, document=document, author=self.user, _quantity=2)
+
+		self.assertEqual(TemporaryDocumentText.objects.count(), 2)
+
+		response = self.app.get(reverse(document.get_edit_url_name(), args=[document.url_title]), user=self.user)
+		form = response.forms['document-form']
+		form['title'] = 'new title'
+
+		response = form.submit().follow()
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(TemporaryDocumentText.objects.count(), 0)
 
 
 class TestMarkdownRendering(WebTest):
