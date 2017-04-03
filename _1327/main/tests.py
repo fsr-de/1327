@@ -1,5 +1,8 @@
 import re
 
+from django.conf import settings
+from django.contrib.auth.models import Group
+
 from django.core.urlresolvers import reverse
 from django.test import RequestFactory, TestCase
 from django_webtest import WebTest
@@ -62,12 +65,192 @@ class MenuItemTests(WebTest):
 		self.root_user = mommy.make(UserProfile, is_superuser=True)
 		self.user = mommy.make(UserProfile)
 
+		self.staff_group = Group.objects.get(name=settings.STAFF_GROUP_NAME)
+		self.root_user.groups.add(self.staff_group)
+		self.user.groups.add(self.staff_group)
+
 		self.root_menu_item = mommy.make(MenuItem)
 		self.sub_item = mommy.make(MenuItem, parent=self.root_menu_item)
 		self.sub_sub_item = mommy.make(MenuItem, parent=self.sub_item)
 
 		assign_perm(self.sub_item.change_children_permission_name, self.user, self.sub_item)
 		assign_perm(self.sub_item.view_permission_name, self.user, self.sub_item)
+
+	def test_visit_menu_item_page(self):
+		user = mommy.make(UserProfile)
+
+		response = self.app.get(reverse('menu_items_index'), user=user, status=403)
+		self.assertEqual(response.status_code, 403)
+
+		assign_perm(self.root_menu_item.change_children_permission_name, user, self.root_menu_item)
+		response = self.app.get(reverse('menu_items_index'), user=user)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn(self.root_menu_item.title, response.body.decode('utf-8'))
+
+	def test_create_menu_item_as_superuser_no_document_and_link(self):
+		menu_item_count = MenuItem.objects.count()
+
+		response = self.app.get(reverse('menu_item_create'), user=self.root_user)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn("Link", response.body.decode('utf-8'))
+
+		form = response.form
+		form['group'].select(text=self.staff_group.name)
+
+		response = form.submit()
+		self.assertEqual(200, response.status_code)
+		self.assertIn('You must select a document or link', response.body.decode('utf-8'))
+		self.assertEqual(MenuItem.objects.count(), menu_item_count)
+
+	def test_create_menu_item_as_superuser_document_and_link(self):
+		menu_item_count = MenuItem.objects.count()
+		document = mommy.make(InformationDocument)
+
+		response = self.app.get(reverse('menu_item_create'), user=self.root_user)
+		form = response.form
+		form['link'] = 'polls:index'
+		form['document'].select(text=document.title)
+		form['group'].select(text=self.staff_group.name)
+
+		response = form.submit()
+		self.assertEqual(200, response.status_code)
+		self.assertIn('You are only allowed to define one of document and link', response.body.decode('utf-8'))
+		self.assertEqual(MenuItem.objects.count(), menu_item_count)
+
+	def test_create_menu_item_as_superuser_with_link(self):
+		menu_item_count = MenuItem.objects.count()
+
+		response = self.app.get(reverse('menu_item_create'), user=self.root_user)
+		form = response.form
+		form['title'] = 'test title'
+		form['link'] = 'polls:index'
+		form['group'].select(text=self.staff_group.name)
+
+		response = form.submit().follow()
+		self.assertEqual(200, response.status_code)
+		self.assertIn("Successfully created menu item.", response.body.decode('utf-8'))
+		self.assertEqual(MenuItem.objects.count(), menu_item_count + 1)
+
+	def test_create_menu_item_as_superuser_with_link_and_param(self):
+		menu_item_count = MenuItem.objects.count()
+
+		response = self.app.get(reverse('menu_item_create'), user=self.root_user)
+		form = response.form
+		form['title'] = 'test title'
+		form['link'] = 'minutes:list?{}'.format(self.staff_group.id)
+		form['group'].select(text=self.staff_group.name)
+
+		response = form.submit().maybe_follow()
+		self.assertEqual(200, response.status_code)
+		self.assertIn("Successfully created menu item.", response.body.decode('utf-8'))
+		self.assertEqual(MenuItem.objects.count(), menu_item_count + 1)
+
+	def test_create_menu_item_as_superuser_wrong_link(self):
+		menu_item_count = MenuItem.objects.count()
+
+		response = self.app.get(reverse('menu_item_create'), user=self.root_user)
+		form = response.form
+		form['title'] = 'test title'
+		form['link'] = 'polls:index?kekse?kekse2'
+		form['group'].select(text=self.staff_group.name)
+
+		response = form.submit().maybe_follow()
+		self.assertEqual(200, response.status_code)
+		self.assertIn('This link is not valid.', response.body.decode('utf-8'))
+		self.assertEqual(MenuItem.objects.count(), menu_item_count)
+
+	def test_create_menu_item_as_superuser_wrong_link_2(self):
+		menu_item_count = MenuItem.objects.count()
+
+		response = self.app.get(reverse('menu_item_create'), user=self.root_user)
+		form = response.form
+		form['title'] = 'test title'
+		form['link'] = 'www.example.com'
+		form['group'].select(text=self.staff_group.name)
+
+		response = form.submit().maybe_follow()
+		self.assertEqual(200, response.status_code)
+		self.assertIn('This link is not valid.', response.body.decode('utf-8'))
+		self.assertEqual(MenuItem.objects.count(), menu_item_count)
+
+	def test_create_menu_item_as_superuser_with_document(self):
+		menu_item_count = MenuItem.objects.count()
+		document = mommy.make(InformationDocument)
+
+		response = self.app.get(reverse('menu_item_create'), user=self.root_user)
+		form = response.form
+		form['title'] = 'test title'
+		form['document'].select(text=document.title)
+		form['group'].select(text=self.staff_group.name)
+
+		response = form.submit().follow()
+		self.assertEqual(200, response.status_code)
+		self.assertIn("Successfully created menu item.", response.body.decode('utf-8'))
+		self.assertEqual(MenuItem.objects.count(), menu_item_count + 1)
+
+	def test_create_menu_item_as_normal_user(self):
+		response = self.app.get(reverse('menu_item_create'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertNotIn("Link", response.body.decode('utf-8'))
+
+	def test_create_menu_item_as_normal_user_no_document_and_link(self):
+		menu_item_count = MenuItem.objects.count()
+
+		response = self.app.get(reverse('menu_item_create'), user=self.user)
+		form = response.form
+		form['group'].select(text=self.staff_group.name)
+
+		response = form.submit()
+		self.assertEqual(200, response.status_code)
+		self.assertIn('You must select a document', response.body.decode('utf-8'))
+		self.assertEqual(MenuItem.objects.count(), menu_item_count)
+
+	def test_create_menu_item_as_normal_user_with_document(self):
+		menu_item_count = MenuItem.objects.count()
+		document = mommy.make(InformationDocument)
+
+		response = self.app.get(reverse('menu_item_create'), user=self.user)
+		form = response.form
+		form['title'] = 'test title'
+		form['document'].select(text=document.title)
+		form['group'].select(text=self.staff_group.name)
+		form['parent'].select(text=self.sub_item.title)
+
+		response = form.submit().maybe_follow()
+		self.assertEqual(200, response.status_code)
+		self.assertIn("Successfully created menu item.", response.body.decode('utf-8'))
+		self.assertEqual(MenuItem.objects.count(), menu_item_count + 1)
+
+	def test_create_menu_item_as_normal_user_with_document_without_parent(self):
+		menu_item_count = MenuItem.objects.count()
+		document = mommy.make(InformationDocument)
+
+		response = self.app.get(reverse('menu_item_create'), user=self.user)
+		form = response.form
+		form['title'] = 'test title'
+		form['document'].select(text=document.title)
+		form['group'].select(text=self.staff_group.name)
+
+		response = form.submit().maybe_follow()
+		self.assertEqual(200, response.status_code)
+		self.assertIn("This field is required", response.body.decode('utf-8'))
+		self.assertEqual(MenuItem.objects.count(), menu_item_count)
+
+	def test_create_menu_wrong_group(self):
+		menu_item_count = MenuItem.objects.count()
+		document = mommy.make(InformationDocument)
+		group = mommy.make(Group)
+
+		response = self.app.get(reverse('menu_item_create'), user=self.user)
+		form = response.form
+		form['title'] = 'test title'
+		form['document'].select(text=document.title)
+		form['group'].force_value(group.id)
+
+		response = form.submit().maybe_follow()
+		self.assertEqual(200, response.status_code)
+		self.assertIn("Select a valid choice. That choice is not one of the available choices.", response.body.decode('utf-8'))
+		self.assertEqual(MenuItem.objects.count(), menu_item_count)
 
 	def test_change_menu_items(self):
 		for user in [self.root_user, self.user]:
@@ -163,3 +346,59 @@ class MenuItemTests(WebTest):
 
 		for menu_item_id, menu_item in zip(menu_item_ids, menu_items):
 			self.assertEqual(menu_item.id, int(menu_item_id), 'Menu Item ordering is not as expected')
+
+	def test_menu_item_visible_for_user(self):
+		document = mommy.make(InformationDocument)
+		self.sub_item.document = document
+		self.sub_item.save()
+		assign_perm(self.root_menu_item.view_permission_name, self.user, self.root_menu_item)
+
+		response = self.app.get(reverse('index'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn(reverse('view', args=[document.url_title]), response.body.decode('utf-8'))
+
+		document2 = mommy.make(InformationDocument)
+		self.sub_sub_item.document = document2
+		self.sub_sub_item.save()
+		assign_perm(self.sub_sub_item.view_permission_name, self.user, self.sub_sub_item)
+
+		response = self.app.get(reverse('index'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn(reverse('view', args=[document2.url_title]), response.body.decode('utf-8'))
+
+	def test_menu_item_not_visible_for_user(self):
+		document = mommy.make(InformationDocument)
+		self.root_menu_item.document = document
+		self.root_menu_item.save()
+
+		response = self.app.get(reverse('index'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertNotIn(reverse('view', args=[document.url_title]), response.body.decode('utf-8'))
+
+	def test_menu_item_edit_no_permission(self):
+		response = self.app.get(reverse('menu_item_edit', args=[self.root_menu_item.pk]), user=self.user, expect_errors=True)
+		self.assertEqual(response.status_code, 403)
+
+	def test_menu_item_edit(self):
+		document = mommy.make(InformationDocument)
+		document_2 = mommy.make(InformationDocument)
+		self.sub_item.document = document_2
+		self.sub_item.save()
+
+		assign_perm(self.root_menu_item.change_children_permission_name, self.user, self.root_menu_item)
+
+		response = self.app.get(reverse('menu_item_edit', args=[self.sub_item.pk]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		original_menu_item = self.sub_item
+
+		form = response.form
+		form['title'] = 'Lorem Ipsum'
+		form['document'] = document.pk
+
+		response = form.submit().maybe_follow()
+		self.assertEqual(response.status_code, 200)
+
+		changed_menu_item = MenuItem.objects.get(pk=self.sub_item.pk)
+		self.assertNotEqual(original_menu_item.title, changed_menu_item.title)
+		self.assertNotEqual(original_menu_item.document.id, changed_menu_item.document.id)
