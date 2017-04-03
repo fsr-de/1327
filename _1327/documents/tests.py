@@ -9,6 +9,7 @@ from django.db import transaction
 from django.test import TestCase
 from django_webtest import WebTest
 from guardian.shortcuts import assign_perm, get_perms, get_perms_for_model, remove_perm
+from guardian.utils import get_anonymous_user
 import markdown
 from model_mommy import mommy
 from reversion import revisions
@@ -216,6 +217,23 @@ class TestAutosave(WebTest):
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
 		self.assertEqual(form.get('text').value, 'AUTO2')
+
+	def test_autosave_not_logged_in(self):
+		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		form = response.forms['document-form']
+		url_title = slugify(form.get('title').value)
+
+		# autosave AUTO
+		response = self.app.post(
+			reverse('documents:autosave', args=[url_title]),
+			params={'text': 'AUTO', 'title': form.get('title').value, 'comment': ''},
+			xhr=True,
+			user=get_anonymous_user(),
+			expect_errors=True,
+		)
+		self.assertEqual(response.status_code, 403)
 
 	def test_autosave_newPage(self):
 		# create document
@@ -665,12 +683,7 @@ class TestAttachments(WebTest):
 		self.assertEqual(response.status_code, 404, msg="Requests that are not AJAX should return a 404 error")
 
 		response = self.app.post(reverse('documents:delete_attachment'), params=params, expect_errors=True, xhr=True)
-		redirect_url = reverse('login') + '?next=' + reverse('documents:delete_attachment')
-		self.assertRedirects(
-			response,
-			redirect_url,
-			msg_prefix="If the site is visited by anonymous users they should see the login page"
-		)
+		self.assertEqual(response.status_code, 403)
 
 		# try to delete an attachment as user with no permissions
 		normal_user = mommy.make(UserProfile)
