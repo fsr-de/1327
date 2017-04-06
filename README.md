@@ -3,6 +3,7 @@
 
 [![Build Status](https://travis-ci.org/fsr-itse/1327.svg?branch=master)](https://travis-ci.org/fsr-itse/1327)
 [![Code Health](https://landscape.io/github/fsr-itse/1327/master/landscape.svg?style=flat)](https://landscape.io/github/fsr-itse/1327/master)
+[![Coverage Status](https://coveralls.io/repos/github/fsr-itse/1327/badge.svg?branch=master)](https://coveralls.io/github/fsr-itse/1327?branch=master)
 
 A student representatives website. This is currently **work in progress** - please wait for basic functionality until the [launch](https://github.com/fsr-itse/1327/milestone/1) happened.
 
