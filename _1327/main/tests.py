@@ -137,7 +137,7 @@ class MenuItemTests(WebTest):
 		response = self.app.get(reverse('menu_item_create'), user=self.root_user)
 		form = response.form
 		form['title'] = 'test title'
-		form['link'] = 'minutes:list?{}'.format(self.staff_group.id)
+		form['link'] = 'minutes:list?groupid={}'.format(self.staff_group.id)
 		form['group'].select(text=self.staff_group.name)
 
 		response = form.submit().maybe_follow()

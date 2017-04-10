@@ -53,7 +53,8 @@ class MenuItem(models.Model):
 			if len(split) == 1:
 				return reverse(split[0])
 			else:
-				return reverse(split[0], args=split[1])
+				key, value = split[1].split('=')
+				return reverse(split[0], kwargs={key: value})
 		elif self.document:
 			return self.document.get_view_url()
 		else:
