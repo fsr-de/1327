@@ -20,7 +20,7 @@ urlpatterns = [
 	url(r"^logout$", user_management_views.logout, name='logout'),
 	url(r'^view_as$', user_management_views.view_as, name='view_as'),
 
-	url(r'^abbreviation_explanation/', main_views.abbreviation_explanation_edit, name="abbreviation_explanation"),
+	url(r'^abbreviation_explanation$', main_views.abbreviation_explanation_edit, name="abbreviation_explanation"),
 
 	url(r'^menu_items$', main_views.menu_items_index, name='menu_items_index'),
 	url(r"^menu_item/create$", main_views.menu_item_create, name="menu_item_create"),
