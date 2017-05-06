@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-06 17:02+0200\n"
-"PO-Revision-Date: 2017-05-06 17:05+0200\n"
+"PO-Revision-Date: 2017-05-06 17:20+0200\n"
 "Last-Translator: Johannes Wolf <janno42@gmail.com>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -1119,7 +1119,7 @@ msgstr "Abmelden"
 #: _1327/templates/base.html:159 _1327/user_management/templates/login.html:5
 #: _1327/user_management/templates/login.html:22
 msgid "Login"
-msgstr "Login"
+msgstr "Anmelden"
 
 #: _1327/templates/base.html:197
 msgid "Return to the top of the page"
