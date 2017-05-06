@@ -40,7 +40,10 @@ class MenuItemAdminForm(MenuItemForm):
 				if len(split) == 1:
 					reverse(split[0])
 				elif len(split) == 2:
-					reverse(split[0], args=split[1])
+					arguments = split[1].split('=')
+					if len(arguments) == 1:
+						raise ValidationError(_('Arguments for links must be provided as keyword arguments.'))
+					reverse(split[0], kwargs={arguments[0]: arguments[1]})
 				else:
 					raise ValidationError(_('This link is not valid.'), code='nonexistent')
 			except NoReverseMatch:
