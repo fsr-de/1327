@@ -7,7 +7,7 @@
 
 {% block body %}
 <div class="container main-container" id="wrapper">
-	<header>
+	<header class="hidden-print">
 		<div class="navbar navbar-default">
 
 			{# Toggle button #}
@@ -173,10 +173,10 @@
 
 	{% block rawcontent %}
 	<div class="headline">
-		<div class="headline-triangle-back"></div>
+		<div class="headline-triangle-back hidden-print"></div>
 		<div class="headline-box-shadow">
 			<span class="headline-box">{% block title %}{% endblock title %}</span>
-			<span class="headline-box-end"></span>
+			<span class="headline-box-end hidden-print"></span>
 		</div>
 	</div>
 	{% endblock %}

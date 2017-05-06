@@ -511,13 +511,12 @@ footer {
 }
 
 @media print {
-	.headline {
-		position: relative;
-		left: -17px;
-
+	.headline-box {
+		left: 0;
+		padding-left: 15px;
 	}
-	.headline-text {
-		font-weight: bold;
+	.headline-box-shadow {
+		filter: none !important;
 	}
 	dt {
 	  float: left;
@@ -538,6 +537,7 @@ footer {
 	}
 	.container.content {
 		margin-bottom: 0;
+		padding-left: 15px;
 	}
 }
 
