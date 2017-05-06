@@ -152,11 +152,11 @@
 			</div>
 			<div class="login-area pull-right hidden-print">
 				<div class="login-info" {% if user.groups.all %}data-toggle="tooltip" data-placement="bottom" data-container="body" title="{% trans 'Groups' %}: {{ user.groups.all|join:', ' }}"{% endif %}>
-					{% if user.is_authenticated %}{{ user.get_full_name }}{% endif %}
+					{% if user.is_authenticated %}{% trans 'Logged in as' %} <b>{{ user.get_full_name }}</b>{% endif %}
 				</div>
 				<a href="{% if user.is_authenticated %}{% url 'logout' %}{% else %}{% url 'login' %}{% endif %}">
 					<div class="login-button">
-						{% if user.is_authenticated %}<span class="glyphicon glyphicon-log-out"></span>{% else %}<span class="glyphicon glyphicon-log-in"></span>{% endif %}
+						{% if user.is_authenticated %}{% trans 'Logout' %}{% else %}{% trans 'Login' %}{% endif %}
 					</div>
 				</a>
 			</div>
@@ -173,17 +173,11 @@
 
 	{% block rawcontent %}
 	<div class="headline">
-		<svg height="60" width="100%">
-			<defs>
-				<filter id="shadow" width="200%" height="200%">
-					<feOffset result="offOut" in="SourceGraphic" dx="3" dy="5"></feOffset>
-					<feGaussianBlur result="blurOut" in="offOut" stdDeviation="3"></feGaussianBlur>
-				</filter>
-			</defs>
-			<polygon class="headline-bar-shadow hidden-print" filter="url(#shadow)" points=""></polygon>
-			<polygon class="headline-bar hidden-print" points=""></polygon>
-			<text class="headline-text" dx="20" dy="25">{% block title %}{% endblock %}</text>
-		</svg>
+		<div class="headline-triangle-back"></div>
+		<div class="headline-box-shadow">
+			<span class="headline-box">{% block title %}{% endblock title %}</span>
+			<span class="headline-box-end"></span>
+		</div>
 	</div>
 	{% endblock %}
 
@@ -209,13 +203,13 @@
 
 	<script type="text/javascript">
 		$(document).ready(function() {
-			// resize headline bar to fit the text
-			var l = $('.headline-text')[0].getComputedTextLength() + 28;
-			var points = "-10,0 " + (l+18) + ",0 " + l + ",50 -10,50";
-			$('.headline-bar')[0].setAttribute('points', points);
-			$('.headline-bar-shadow')[0].setAttribute('points', points);
-
 			$('[data-toggle="tooltip"]').tooltip();
+			$('.headline-box').tooltip({
+				delay: { "show": 1500, "hide": 0 },
+				placement: "bottom",
+				container: "body",
+				title: function(){ return $('.headline-box').text(); }
+			});
 
 			// add scroll to top button
 			$(window).scroll(function () {
