@@ -122,6 +122,25 @@
 		</div>
 	</div>
 </div>
+
+<div class="modal fade ontop" id="autosaveErrorDialog" role="dialog" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<div class="modal-title">{% trans "Autosave failed" %}</div>
+			</div>
+			<div class="modal-body">
+                <span class="autosaveErrorDialogExplanation"></span>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary autosaveErrorDialogClose">{% trans "Close" %}</button>
+			</div>
+		</div>
+	</div>
+</div>
 {% endblock %}
 
 {% block scripts %}
@@ -379,7 +398,30 @@
 					var destinationElement = $('#shareText');
 					destinationElement.attr('href', url);
 					destinationElement.removeClass('hidden');
-				}
+				},
+				error: function(jqXHR, textStatus, errorThrown) {
+                    var reasonDisplay = $('.autosaveErrorDialogExplanation');
+                    var statusCode = jqXHR.status;
+                    var reason = "";
+                    switch (statusCode) {
+                        case 403:
+                            reason = "{% trans "Probably you are logged out!" %}";
+                            break;
+                        case 404:
+                            reason = "{% trans "The document you are editing does not exist!" %}";
+                            break;
+                        default:
+                            reason = "{% trans "There was an unknown error!" %}";
+                            break;
+                    }
+                    reasonDisplay.html(reason);
+
+                    var errorDisplay = $('#autosaveErrorDialog');
+                    errorDisplay.modal();
+                    $('.autosaveErrorDialogClose').on('click', function() {
+                        errorDisplay.modal('hide');
+                    });
+                }
 			});
 		}
 		setTimeout(function() { save(); }, 10000);

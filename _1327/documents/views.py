@@ -16,6 +16,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, Http404, render
 from django.utils.translation import ugettext_lazy as _
 from guardian.shortcuts import get_objects_for_user
+from guardian.utils import get_anonymous_user
 
 import markdown
 from markdown.extensions.toc import TocExtension
@@ -104,6 +105,9 @@ def edit(request, title, new_autosaved_pages=None, initial=None):
 
 
 def autosave(request, title):
+	if request.user.is_anonymous() or request.user == get_anonymous_user():
+		raise PermissionDenied()
+
 	document = None
 	try:
 		document = get_object_or_404(Document, url_title=title)

@@ -26,7 +26,7 @@ class IPRangeUserMiddleware:
 
 class LoginRedirectMiddleware:
 	def process_exception(self, request, exception):
-		if isinstance(exception, PermissionDenied) and not request.user.is_authenticated():
+		if isinstance(exception, PermissionDenied) and not request.user.is_authenticated() and not request.is_ajax():
 			path = request.build_absolute_uri()
 			resolved_login_url = resolve_url(settings.LOGIN_URL)
 			# If the login url is the same scheme and net location then just
