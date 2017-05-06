@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-04 18:29+0100\n"
-"PO-Revision-Date: 2017-03-04 18:30+0100\n"
+"POT-Creation-Date: 2017-05-06 17:02+0200\n"
+"PO-Revision-Date: 2017-05-06 17:05+0200\n"
 "Last-Translator: Johannes Wolf <janno42@gmail.com>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.8.12\n"
+"X-Generator: Poedit 2.0.1\n"
 
 #: _1327/documents/forms.py:28
 #: _1327/shortlinks/templates/shortlinks_index.html:15
@@ -27,15 +27,15 @@ msgstr "URL"
 msgid "Comment"
 msgstr "Kommentar"
 
-#: _1327/documents/forms.py:30 _1327/main/forms.py:61 _1327/main/forms.py:94
+#: _1327/documents/forms.py:30 _1327/main/forms.py:64 _1327/main/forms.py:97
 msgid "Edit permissions"
 msgstr "Bearbeitungsrechte"
 
-#: _1327/documents/forms.py:62 _1327/main/forms.py:89 _1327/main/forms.py:115
+#: _1327/documents/forms.py:62 _1327/main/forms.py:92 _1327/main/forms.py:118
 msgid "You are not a member of this group!"
 msgstr "Du bist kein Mitglied dieser Gruppe!"
 
-#: _1327/documents/forms.py:96 _1327/main/forms.py:126
+#: _1327/documents/forms.py:96 _1327/main/forms.py:129
 msgid "Role"
 msgstr "Rolle"
 
@@ -60,7 +60,7 @@ msgid "Hash value"
 msgstr "Hashwert"
 
 #: _1327/documents/models.py:37 _1327/documents/models.py:197
-#: _1327/main/models.py:29 _1327/main/templates/menu_items_list.html:20
+#: _1327/main/models.py:30 _1327/main/templates/menu_items_list.html:20
 #: _1327/shortlinks/models.py:12
 #: _1327/shortlinks/templates/shortlinks_index.html:31
 msgid "Document"
@@ -105,8 +105,8 @@ msgstr "Anhang"
 
 #: _1327/documents/models.py:207
 #: _1327/documents/templates/documents_base.html:19
-#: _1327/documents/templates/documents_base.html:57
-#: _1327/documents/templates/documents_base.html:86
+#: _1327/documents/templates/documents_base.html:59
+#: _1327/documents/templates/documents_base.html:88
 #: _1327/polls/templates/polls_results.html:50
 #: _1327/polls/templates/polls_vote.html:44
 msgid "Attachments"
@@ -114,6 +114,7 @@ msgstr "Anhänge"
 
 #: _1327/documents/templates/diffviewer_scripts.html:9
 #: _1327/documents/templates/diffviewer_scripts.html:17
+#: _1327/documents/templates/documents_edit.html:139
 #: _1327/templates/admin/base_bootstrap-admin.html:28
 msgid "Close"
 msgstr "Schließen"
@@ -238,7 +239,7 @@ msgstr "Veröffentlichen für Studierende und Uni-Netzwerk"
 msgid "Publish for Students only"
 msgstr "Veröffentlichen für Studierende"
 
-#: _1327/documents/templates/documents_base.html:52
+#: _1327/documents/templates/documents_base.html:53
 msgid "Table of Contents"
 msgstr "Inhaltsverzeichnis"
 
@@ -316,9 +317,25 @@ msgstr ""
 msgid "Select link target"
 msgstr "Ziel des Links auswählen"
 
-#: _1327/documents/templates/documents_edit.html:391
-#: _1327/documents/templates/documents_edit.html:396
-#: _1327/documents/templates/documents_edit.html:402
+#: _1327/documents/templates/documents_edit.html:133
+msgid "Autosave failed"
+msgstr "Automatisches Speichern fehlgeschlagen"
+
+#: _1327/documents/templates/documents_edit.html:408
+msgid "Probably you are logged out!"
+msgstr "Du bist vermutlich nicht angemeldet!"
+
+#: _1327/documents/templates/documents_edit.html:411
+msgid "The document you are editing does not exist!"
+msgstr "Das Dokument, das du bearbeitest, existiert nicht!"
+
+#: _1327/documents/templates/documents_edit.html:414
+msgid "There was an unknown error!"
+msgstr "Es gab einen unbekannten Fehler!"
+
+#: _1327/documents/templates/documents_edit.html:433
+#: _1327/documents/templates/documents_edit.html:438
+#: _1327/documents/templates/documents_edit.html:444
 #: _1327/main/templates/menu_item_edit.html:58
 #: _1327/main/templates/menu_item_edit.html:64
 msgid "Please select..."
@@ -349,40 +366,40 @@ msgstr "von"
 msgid "Revert to this version"
 msgstr "Version wiederherstellen"
 
-#: _1327/documents/views.py:60
+#: _1327/documents/views.py:61
 msgid "Created document"
 msgstr "Dokument erstellt"
 
-#: _1327/documents/views.py:99
+#: _1327/documents/views.py:91
 msgid "Successfully saved changes"
 msgstr "Änderungen gespeichert"
 
-#: _1327/documents/views.py:141
+#: _1327/documents/views.py:136
 msgid "This Document can not be reverted!"
 msgstr "Dieses Dokument kann nicht wiederhergestellt werden!"
 
-#: _1327/documents/views.py:191
+#: _1327/documents/views.py:186
 msgid "Permissions have been changed successfully."
 msgstr "Berechtigungen wurden angepasst."
 
-#: _1327/documents/views.py:215
+#: _1327/documents/views.py:210
 msgid "Minutes document has been published."
 msgstr "Protokoll wurde veröffentlicht."
 
-#: _1327/documents/views.py:226
+#: _1327/documents/views.py:221
 msgid "File has been uploaded successfully!"
 msgstr "Datei erfolgreich hochgeladen!"
 
-#: _1327/documents/views.py:328
+#: _1327/documents/views.py:323
 #, python-brace-format
 msgid "reverted to revision \"{revision_comment}\""
 msgstr "Version \"{revision_comment}\" wiederhergestellt"
 
-#: _1327/documents/views.py:358
+#: _1327/documents/views.py:353
 msgid "Successfully deleted Attachment!"
 msgstr "Anhang gelöscht!"
 
-#: _1327/documents/views.py:444
+#: _1327/documents/views.py:439
 msgid "Successfully deleted document: {}"
 msgstr "Dokument gelöscht: {}"
 
@@ -422,49 +439,57 @@ msgstr "Du kannst nur ein Dokument angeben"
 msgid "You must select a document"
 msgstr "Du musst ein Dokument auswählen"
 
-#: _1327/main/forms.py:45 _1327/main/forms.py:47
+#: _1327/main/forms.py:45
+msgid "Arguments for links must be provided as keyword arguments."
+msgstr "Argumente für Links müssen als keyword arguments übergeben werden."
+
+#: _1327/main/forms.py:48 _1327/main/forms.py:50
 msgid "This link is not valid."
 msgstr "Dieser Link ist ungültig."
 
-#: _1327/main/forms.py:53 _1327/shortlinks/forms.py:22
+#: _1327/main/forms.py:56 _1327/shortlinks/forms.py:22
 msgid "You are only allowed to define one of document and link"
 msgstr "Du kannst nur entweder ein Dokument oder einen Link angeben"
 
-#: _1327/main/forms.py:56 _1327/shortlinks/forms.py:25
+#: _1327/main/forms.py:59 _1327/shortlinks/forms.py:25
 msgid "You must select a document or link"
 msgstr "Du musst ein Dokument auswählen oder einen Link angeben"
 
-#: _1327/main/models.py:22
+#: _1327/main/models.py:23
 msgid "Main Menu"
 msgstr "Hauptmenü"
 
-#: _1327/main/models.py:23
+#: _1327/main/models.py:24
 msgid "Footer"
 msgstr "Fußzeile"
 
-#: _1327/main/models.py:25
+#: _1327/main/models.py:26
 msgid "Title"
 msgstr "Titel"
 
-#: _1327/main/models.py:28 _1327/main/templates/menu_items_list.html:19
+#: _1327/main/models.py:29 _1327/main/templates/menu_items_list.html:19
 #: _1327/shortlinks/templates/shortlinks_index.html:16
 msgid "Link"
 msgstr "Link"
 
-#: _1327/main/models.py:95
+#: _1327/main/models.py:107
 msgid "view"
 msgstr "Anzeigen"
 
-#: _1327/main/models.py:96
+#: _1327/main/models.py:108
 msgid "change children"
 msgstr "Unterpunkte bearbeiten"
 
-#: _1327/main/models.py:102
+#: _1327/main/models.py:109
+msgid "edit"
+msgstr "bearbeiten"
+
+#: _1327/main/models.py:115
 #: _1327/main/templates/abbreviation_explanation.html:19
 msgid "Abbreviation"
 msgstr "Abkürzung"
 
-#: _1327/main/models.py:103
+#: _1327/main/models.py:116
 #: _1327/main/templates/abbreviation_explanation.html:20
 msgid "Explanation"
 msgstr "Erklärung"
@@ -623,23 +648,23 @@ msgstr ""
 msgid "This URL is already taken."
 msgstr "Diese URL wird bereits verwendet."
 
-#: _1327/main/views.py:110
+#: _1327/main/views.py:94
 msgid "Successfully created menu item."
 msgstr "Menüeintrag erstellt."
 
-#: _1327/main/views.py:136
+#: _1327/main/views.py:120
 msgid "Successfully edited menu item."
 msgstr "Menüeintrag bearbeitet."
 
-#: _1327/main/views.py:163
+#: _1327/main/views.py:147
 msgid "There must always be at least one item in the main menu."
 msgstr "Es muss immer mindestens einen Eintrag im Hauptmenü geben."
 
-#: _1327/main/views.py:165
+#: _1327/main/views.py:149
 msgid "There must always be at least one item in the footer menu."
 msgstr "Es muss immer mindestens einen Eintrag in der Fußzeile geben."
 
-#: _1327/main/views.py:185
+#: _1327/main/views.py:169
 msgid "Successfully updated the abbreviation explanations."
 msgstr "Abkürzungserklärungen aktualisiert."
 
@@ -1083,7 +1108,20 @@ msgstr "Startseite"
 msgid "Groups"
 msgstr "Gruppen"
 
-#: _1327/templates/base.html:203
+#: _1327/templates/base.html:155
+msgid "Logged in as"
+msgstr "Angemeldet als"
+
+#: _1327/templates/base.html:159
+msgid "Logout"
+msgstr "Abmelden"
+
+#: _1327/templates/base.html:159 _1327/user_management/templates/login.html:5
+#: _1327/user_management/templates/login.html:22
+msgid "Login"
+msgstr "Login"
+
+#: _1327/templates/base.html:197
 msgid "Return to the top of the page"
 msgstr "An den Seitenanfang scrollen"
 
@@ -1139,11 +1177,6 @@ msgstr "Benutzerprofil"
 #: _1327/user_management/models.py:54
 msgid "User profiles"
 msgstr "Benutzerprofile"
-
-#: _1327/user_management/templates/login.html:5
-#: _1327/user_management/templates/login.html:22
-msgid "Login"
-msgstr "Login"
 
 #: _1327/user_management/templates/login.html:12
 msgid "Please login to see this page."
