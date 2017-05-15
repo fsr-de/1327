@@ -23,7 +23,7 @@
 	<table class="table table-striped">
 		<tr>
 			<th class="col-sm-3">{% trans "Choice" %}</th>
-			<th class="col-sm-5">{% trans "Description" %}</th>
+			{% if has_choice_descriptions %}<th class="col-sm-5">{% trans "Description" %}</th>{% endif %}
 			<th class="col-sm-1 text-right">{% trans "Votes" %}</th>
 			<th class="col-sm-1 text-right">{% trans "Percentage" %}</th>
 			<th class="col-sm-2"></th>
@@ -31,7 +31,7 @@
 		{% for choice in document.choices.all %}
 			<tr class="choice-row">
 				<td>{{ choice.text }}</td>
-				<td>{{ choice.description }}</td>
+				{% if has_choice_descriptions %}<td>{{ choice.description }}</td>{% endif %}
 				<td class="text-right">{{ choice.votes }}</td>
 				<td class="text-right">{{ choice.percentage|percentage }}</td>
 				<td>
