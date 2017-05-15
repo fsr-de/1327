@@ -10,6 +10,7 @@ from reversion import revisions
 
 from _1327.documents.models import Document
 from _1327.information_pages.models import InformationDocument
+from _1327.main.models import MenuItem
 from _1327.main.utils import slugify
 from _1327.user_management.models import UserProfile
 
@@ -408,3 +409,25 @@ class TestNewPage(WebTest):
 
 		form = response.forms[0]
 		self.assertFalse("Hidden" in str(form.fields['group'][0]))
+
+
+class TestUnlinkedList(WebTest):
+
+	def setUp(self):
+		self.user = mommy.make(UserProfile, is_superuser=True)
+		self.informationdocument1 = mommy.make(InformationDocument)
+		self.informationdocument2 = mommy.make(InformationDocument, text="Lorem ipsum [link](document:{}).".format(self.informationdocument1.id))
+		self.menu_item = mommy.make(MenuItem, document=self.informationdocument2)
+
+	def test_url_shows_document(self):
+		self.assertTrue(self.informationdocument2.menu_items.count() > 0)
+		self.assertEqual(self.informationdocument1.menu_items.count(), 0)
+
+		response = self.app.get(reverse('information_pages:unlinked_list'), user=self.user)
+		self.assertIn(self.informationdocument1.title.encode("utf-8"), response.body, msg="The displayed page should contain the unlinked document's title")
+
+		self.informationdocument2.is_menu_page = True
+		self.informationdocument2.save()
+
+		response = self.app.get(reverse('information_pages:unlinked_list'), user=self.user)
+		self.assertNotIn(self.informationdocument1.title.encode("utf-8"), response.body, msg="The displayed page should not contain the document's title")

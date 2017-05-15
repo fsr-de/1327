@@ -1,4 +1,5 @@
 from django.core.urlresolvers import reverse
+from django.db import models
 from django.template import loader
 from django.utils.translation import ugettext_lazy as _
 from reversion import revisions
@@ -10,6 +11,8 @@ INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME = 'view_informationdocument'
 
 class InformationDocument(Document):
 	VIEW_PERMISSION_NAME = INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME
+
+	is_menu_page = models.BooleanField(default=False, verbose_name=_("Is menu page"), help_text=_("Select this if the page is used mainly for navigation purposes and if all documents linked on the page should be removed from the 'unlinked information pages' list."))
 
 	class Meta(Document.Meta):
 
