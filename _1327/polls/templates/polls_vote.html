@@ -21,7 +21,7 @@
 			<tr>
 				<th class="col-xs-1"></th>
 				<th class="col-xs-5">{% trans "Choice" %}</th>
-				<th class="col-xs-6">{% trans "Description" %}</th>
+				{% if has_choice_descriptions %}<th class="col-xs-6">{% trans "Description" %}</th>{% endif %}
 			</tr>
 			{% for choice in document.choices.all %}
 				<tr>
@@ -29,7 +29,7 @@
 						<input type="{{ widget }}" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}"/>
 					</td>
 					<td>{{ choice.text }}</td>
-					<td>{{ choice.description }}</td>
+					{% if has_choice_descriptions %}<td>{{ choice.description }}</td>{% endif %}
 				</tr>
 			{% endfor %}
 		</table>

@@ -65,6 +65,12 @@ def results(request, poll, url_title):
 	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr', 'markdown.extensions.tables'])
 	description = md.convert(poll.text + abbreviation_explanation_markdown())
 
+	has_choice_descriptions = False
+	for choice in poll.choices.all():
+		if choice.description:
+			has_choice_descriptions = True
+			break
+
 	return render(
 		request,
 		'polls_results.html',
@@ -76,6 +82,7 @@ def results(request, poll, url_title):
 			'view_page': True,
 			'attachments': poll.attachments.filter(no_direct_download=False).order_by('index'),
 			'permission_overview': document_permission_overview(request.user, poll),
+			"has_choice_descriptions": has_choice_descriptions,
 		}
 	)
 
@@ -111,6 +118,12 @@ def vote(request, poll, url_title):
 	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr', 'markdown.extensions.tables'])
 	description = md.convert(poll.text + abbreviation_explanation_markdown())
 
+	has_choice_descriptions = False
+	for choice in poll.choices.all():
+		if choice.description:
+			has_choice_descriptions = True
+			break
+
 	return render(
 		request,
 		'polls_vote.html',
@@ -123,6 +136,7 @@ def vote(request, poll, url_title):
 			"widget": "checkbox" if poll.max_allowed_number_of_answers != 1 else "radio",
 			'attachments': poll.attachments.filter(no_direct_download=False).order_by('index'),
 			'permission_overview': document_permission_overview(request.user, poll),
+			"has_choice_descriptions": has_choice_descriptions,
 		}
 	)
 
