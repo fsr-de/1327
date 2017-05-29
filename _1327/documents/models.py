@@ -205,3 +205,6 @@ class Attachment(models.Model):
 	class Meta:
 		verbose_name = _("Attachment")
 		verbose_name_plural = _("Attachments")
+
+	def __str__(self):
+		return self.displayname
