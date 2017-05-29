@@ -1,5 +1,6 @@
 import datetime
 
+from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 from django.db import transaction
@@ -46,6 +47,7 @@ class PollViewTests(WebTest):
 
 	def setUp(self):
 		self.user = mommy.make(UserProfile, is_superuser=True)
+		self.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
 		self.poll = mommy.make(
 			Poll,
 			start_date=datetime.date.today(),
@@ -136,8 +138,6 @@ class PollViewTests(WebTest):
 		self.assertEqual(poll.choices.count(), 2)
 
 	def test_group_field_hidden_when_user_has_one_group(self):
-		group = mommy.make(Group)
-		self.user.groups.add(group)
 		response = self.app.get(reverse('documents:create', args=['poll']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
@@ -546,6 +546,7 @@ class PollEditTests(WebTest):
 
 	def setUp(self):
 		self.user = mommy.make(UserProfile, is_superuser=True)
+		self.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
 		self.poll = mommy.make(
 			Poll,
 			start_date=datetime.date.today(),

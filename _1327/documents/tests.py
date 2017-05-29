@@ -154,6 +154,7 @@ class TestAutosave(WebTest):
 
 	def setUp(self):
 		self.user = mommy.make(UserProfile, is_superuser=True)
+		self.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
 		self.group = mommy.make(Group)
 
 		document = mommy.prepare(InformationDocument, text="text")
@@ -256,6 +257,7 @@ class TestAutosave(WebTest):
 		self.assertIn((reverse('edit', args=[url_title]) + '?restore'), str(response.body))
 
 		user2 = mommy.make(UserProfile, is_superuser=True)
+		user2.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
 		# on the new page site should be a banner with a restore link but not for another user
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=user2)
 		self.assertEqual(response.status_code, 200)
@@ -1051,6 +1053,7 @@ class TestDeletion(WebTest):
 
 	def setUp(self):
 		self.user = mommy.make(UserProfile, is_superuser=True)
+		self.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
 		self.document = mommy.make(InformationDocument)
 		self.document.set_all_permissions(mommy.make(Group))
 
@@ -1157,6 +1160,7 @@ class TestPermissionOverview(WebTest):
 
 	def setUp(self):
 		self.user = mommy.make(UserProfile, is_superuser=True)
+		self.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
 		self.minutes_document = mommy.make(MinutesDocument)
 		self.poll = mommy.make(Poll)
 		self.information_document = mommy.make(InformationDocument)
@@ -1210,3 +1214,48 @@ class TestPermissionOverview(WebTest):
 			response = self.app.get(reverse(document.get_edit_url_name(), args=[self.minutes_document.url_title]), user=self.user)
 			for icon in icons:
 				self.assertIn(icon, response)
+
+
+class DocumentCreationTests(WebTest):
+
+	csrf_checks = False
+
+	def setUp(self):
+		self.user = mommy.make(UserProfile, is_superuser=True)
+		for group in Group.objects.all():
+			self.user.groups.add(group)
+		self.user.save()
+
+		self.document_types = ['minutesdocument', 'informationdocument']
+		self.hidden_groups = Group.objects.filter(name__in=settings.GROUPS_HIDDEN_DURING_CREATION)
+
+	def test_create_document_with_one_group(self):
+		for document_type in self.document_types:
+			response = self.app.get(reverse('documents:create', args=[document_type]), user=self.user)
+			self.assertEqual(response.status_code, 200)
+			body = response.body.decode('utf-8')
+			for group in self.hidden_groups:
+				self.assertNotIn('<option value="{}">{}</option>'.format(group.id, group.name), body)
+			self.assertIn('name="group" type="hidden"', body)
+
+	def test_create_document_with_two_groups(self):
+		group = mommy.make(Group)
+		self.user.groups.add(group)
+		self.user.save()
+
+		for document_type in self.document_types:
+			response = self.app.get(reverse('documents:create', args=[document_type]), user=self.user)
+			self.assertEqual(response.status_code, 200)
+			body = response.body.decode('utf-8')
+			for group in self.hidden_groups:
+				self.assertNotIn('<option value="{}">{}</option>'.format(group.id, group.name), body)
+			self.assertNotIn("name=group type=hidden", body, msg="User should have the choice of groups if he is in more than one group, that are not in the list of hidden groups")
+
+	def test_create_document_with_no_groups(self):
+		for group in Group.objects.all():
+			self.user.groups.remove(group)
+		self.user.save()
+
+		for document_type in self.document_types:
+			response = self.app.get(reverse('documents:create', args=[document_type]), user=self.user, expect_errors=True)
+			self.assertEqual(response.status_code, 403)

@@ -19,6 +19,7 @@ class TestEditor(WebTest):
 		num_participants = 8
 
 		self.user = mommy.make(UserProfile, is_superuser=True)
+		self.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
 		self.moderator = mommy.make(UserProfile)
 		self.participants = mommy.make(UserProfile, _quantity=num_participants)
 		self.document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator)
