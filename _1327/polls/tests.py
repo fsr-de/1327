@@ -258,6 +258,15 @@ class PollViewTests(WebTest):
 		self.assertEqual(response.status_code, 200)
 		self.assertEqual(Poll.objects.count(), 0)
 
+	def test_no_description_column_if_no_description(self):
+		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), user=self.user)
+		self.assertNotIn("Description", response.body.decode('utf-8'))
+		choice = self.poll.choices.first()
+		choice.description = "test"
+		choice.save()
+		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), user=self.user)
+		self.assertIn("Description", response.body.decode('utf-8'))
+
 
 class PollResultTests(WebTest):
 	csrf_checks = False

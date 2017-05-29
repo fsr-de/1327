@@ -125,6 +125,13 @@ class Poll(Document):
 			assign_perm("{app}.view_{model}".format(app=content_type.app_label, model=content_type.model), group, self)
 			assign_perm("{app}.vote_{model}".format(app=content_type.app_label, model=content_type.model), group, self)
 
+	@property
+	def has_choice_descriptions(self):
+		for choice in self.choices.all():
+			if choice.description:
+				return True
+		return False
+
 
 revisions.register(Poll, follow=["document_ptr"])
 
