@@ -21,11 +21,11 @@
 		<table class="table table-striped">
 			{% for minute in minutes %}
 				<tr>
-					<td class="col-xs-2">
+					<td style="width: 15%;">
 						<a href="{{ minute.get_view_url }}">{{ minute.date | date:"d.m.Y" }}</a>
 					</td>
 					{% if own_group %}
-						<td class="col-xs-1" style="text-align: center; font-weight: lighter;">
+						<td style="width: 10%; text-align: center; font-weight: lighter;">
 							{% if minute.state == minute.UNPUBLISHED %}
 								<span class="text-red" data-toggle="tooltip" data-placement="top" data-container="body" title="{% trans 'Unpublished' %}"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span></span>
 							{% elif minute.state == minute.INTERNAL %}
@@ -39,13 +39,20 @@
 							{% endif %}
 						</td>
 					{% endif %}
-					<td class="col-xs-2">
+					<td style="width: 15%;">
 						{% for label in minute.labels.all %}
 							<span class="label {{ label.class_for_text_color }}" style="background-color: {{ label.color }};">{{ label.title }}</span>
 						{% endfor %}
 					</td>
-					<td class="col-xs-7">
+					<td style="width: 55%;">
 						<a href="{{ minute.get_view_url }}">{{ minute.title }}</a>
+					</td>
+					<td style="width: 5%; text-align: center;">
+						{% if minute.attachments.count > 0 %}
+							<span class="text-gray" data-toggle="tooltip" data-placement="left" data-container="body" title="{{ minute.attachments.all|join:', ' }}">
+								<span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+							</span>
+						{% endif %}
 					</td>
 				</tr>
 			{% endfor %}
