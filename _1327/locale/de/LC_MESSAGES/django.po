@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-06 17:02+0200\n"
-"PO-Revision-Date: 2017-05-06 17:20+0200\n"
+"POT-Creation-Date: 2017-06-01 12:04+0200\n"
+"PO-Revision-Date: 2017-06-01 12:06+0200\n"
 "Last-Translator: Johannes Wolf <janno42@gmail.com>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.0.1\n"
+"X-Generator: Poedit 2.0.2\n"
 
 #: _1327/documents/forms.py:28
 #: _1327/shortlinks/templates/shortlinks_index.html:15
@@ -82,7 +82,7 @@ msgstr "Angezeigter Name"
 
 #: _1327/documents/models.py:198
 #: _1327/documents/templates/documents_attachments.html:39
-#: _1327/information_pages/templates/information_pages_meta_information.html:10
+#: _1327/information_pages/templates/information_pages_meta_information.html:11
 #: _1327/shortlinks/templates/shortlinks_index.html:17
 msgid "Created"
 msgstr "Erstellt"
@@ -91,7 +91,7 @@ msgstr "Erstellt"
 msgid "File"
 msgstr "Datei"
 
-#: _1327/documents/models.py:202 _1327/polls/models.py:138
+#: _1327/documents/models.py:202 _1327/polls/models.py:144
 msgid "ordering index"
 msgstr "Sortierreihenfolge"
 
@@ -403,11 +403,25 @@ msgstr "Anhang gelöscht!"
 msgid "Successfully deleted document: {}"
 msgstr "Dokument gelöscht: {}"
 
-#: _1327/information_pages/models.py:16
+#: _1327/information_pages/models.py:15
+msgid "Is menu page"
+msgstr "Ist Menü-Seite"
+
+#: _1327/information_pages/models.py:15
+msgid ""
+"Select this if the page is used mainly for navigation purposes and if all "
+"documents linked on the page should be removed from the 'unlinked "
+"information pages' list."
+msgstr ""
+"Wähle diese Option, wenn die Seite hauptsächlich zur Navigation genutzt wird "
+"und alle auf der Seite verlinkten Seiten aus der Liste 'nicht verlinkte "
+"Informationsseiten' entfernt werden sollen."
+
+#: _1327/information_pages/models.py:19
 msgid "Information document"
 msgstr "Informationsseite"
 
-#: _1327/information_pages/models.py:17
+#: _1327/information_pages/models.py:20
 msgid "Information documents"
 msgstr "Informationsseiten"
 
@@ -415,8 +429,8 @@ msgstr "Informationsseiten"
 msgid "Information pages"
 msgstr "Informationsseiten"
 
-#: _1327/information_pages/templates/information_pages_meta_information.html:12
-#: _1327/minutes/templates/minutes_meta_information.html:37
+#: _1327/information_pages/templates/information_pages_meta_information.html:14
+#: _1327/minutes/templates/minutes_meta_information.html:38
 #: _1327/polls/templates/polls_meta_information.html:12
 msgid "Last change"
 msgstr "Letzte Änderung"
@@ -721,11 +735,11 @@ msgstr[1] "Protokolle"
 msgid "Staff Meeting"
 msgstr "FSR-Sitzung"
 
-#: _1327/minutes/models.py:164
+#: _1327/minutes/models.py:163
 msgid "Name"
 msgstr "Name"
 
-#: _1327/minutes/models.py:165
+#: _1327/minutes/models.py:164
 #: _1327/minutes/templates/minutes_meta_information.html:17
 msgid "Guests"
 msgstr "Gäste"
@@ -910,23 +924,23 @@ msgstr ""
 "Du kannst die Ergebnisse dieser Abstimmung noch nicht sehen. Du muss bis zum "
 "{} warten."
 
-#: _1327/polls/views.py:94
+#: _1327/polls/views.py:95
 msgid "You must select one Choice at least!"
 msgstr "Du musst mindestens eine Antwort auswählen!"
 
-#: _1327/polls/views.py:97
+#: _1327/polls/views.py:98
 msgid "You can only select up to {} options!"
 msgstr "Du kannst maximal {} Antworten auswählen!"
 
-#: _1327/polls/views.py:105
+#: _1327/polls/views.py:106
 msgid "We've received your vote!"
 msgstr "Deine Stimme wurde festgehalten!"
 
-#: _1327/polls/views.py:107
+#: _1327/polls/views.py:108
 msgid "The results of this poll will be available as from {}"
 msgstr "Die Ergebnisse dieser Umfrage sind ab dem {} verfügbar"
 
-#: _1327/polls/views.py:136
+#: _1327/polls/views.py:138
 msgid "This poll has not yet started."
 msgstr "Diese Umfrage hat noch nicht begonnen."
 
