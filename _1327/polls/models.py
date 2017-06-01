@@ -115,8 +115,7 @@ class Poll(Document):
 
 	@property
 	def meta_information_html(self):
-		template = loader.get_template('polls_meta_information.html')
-		return template.render({'document': self})
+		return loader.get_template('polls_meta_information.html')
 
 	def handle_edit(self, cleaned_data):
 		content_type = ContentType.objects.get_for_model(self)

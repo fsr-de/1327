@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block sidebar %}
-	{{ document.meta_information_html }}
+	{% include document.meta_information_html %}
 	<div class="divider hidden-print"></div>
 	{% block document_nav %}
 		{% if permission_overview %}

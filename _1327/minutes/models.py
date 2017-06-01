@@ -122,8 +122,7 @@ class MinutesDocument(Document):
 
 	@property
 	def meta_information_html(self):
-		template = loader.get_template('minutes_meta_information.html')
-		return template.render({'document': self})
+		return loader.get_template('minutes_meta_information.html')
 
 	def save_formset(self, formset):
 		guests = formset.save(commit=False)

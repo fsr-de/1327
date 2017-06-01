@@ -1,13 +1,15 @@
 {% load i18n %}
 
 <dl class="meta-information">
-    {% comment %}
-    	Don't show authors for now. Could be changed in #425
-	    <dt>{% blocktrans count counter=document.authors|length %}Author{% plural %}Authors{% endblocktrans %}</dt>
-	    <dd>{% for author in document.authors %}{{ author }}{% if not forloop.last %}, {% endif %}{% endfor %}</dd>
-    {% endcomment %}
-    <dt>{% trans "Created" %}</dt>
-    <dd>{{ document.created|date:"d.m.Y, H:i" }}</dd>
-    <dt>{% trans "Last change" %}</dt>
+	{% comment %}
+		Don't show authors for now. Could be changed in #425
+		<dt>{% blocktrans count counter=document.authors|length %}Author{% plural %}Authors{% endblocktrans %}</dt>
+		<dd>{% for author in document.authors %}{{ author }}{% if not forloop.last %}, {% endif %}{% endfor %}</dd>
+	{% endcomment %}
+	{% if permission_overview %}
+		<dt>{% trans "Created" %}</dt>
+		<dd>{{ document.created|date:"d.m.Y, H:i" }}</dd>
+	{% endif %}
+	<dt>{% trans "Last change" %}</dt>
 	<dd>{{ document.last_change|date:"d.m.Y, H:i" }}</dd>
 </dl>

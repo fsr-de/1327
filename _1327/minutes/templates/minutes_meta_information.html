@@ -34,6 +34,8 @@
 			<i>{% trans "No Labels" %}</i>
 		{% endif %}
 	</dd>
-	<dt class="hidden-print">{% trans "Last change" %}</dt>
-	<dd class="hidden-print">{{ document.last_change|date:"d.m.Y, H:i" }}</dd>
+	{% if permission_overview %}
+		<dt class="hidden-print">{% trans "Last change" %}</dt>
+		<dd class="hidden-print">{{ document.last_change|date:"d.m.Y, H:i" }}</dd>
+	{% endif %}
 </dl>

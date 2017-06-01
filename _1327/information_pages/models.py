@@ -34,8 +34,7 @@ class InformationDocument(Document):
 
 	@property
 	def meta_information_html(self):
-		template = loader.get_template('information_pages_meta_information.html')
-		return template.render({'document': self})
+		return loader.get_template('information_pages_meta_information.html')
 
 
 revisions.register(InformationDocument, follow=["document_ptr"])
