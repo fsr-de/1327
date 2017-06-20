@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 from django.db import transaction
@@ -56,6 +57,7 @@ class TestEditor(WebTest):
 
 	def setUp(self):
 		self.user = mommy.make(UserProfile, is_superuser=True)
+		self.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
 		self.document = mommy.make(InformationDocument)
 		self.document.set_all_permissions(mommy.make(Group))
 
@@ -108,6 +110,7 @@ class TestEditor(WebTest):
 
 	def test_editor_permissions_for_single_user(self):
 		test_user = mommy.make(UserProfile)
+		test_user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
 
 		assign_perm(InformationDocument.VIEW_PERMISSION_NAME, test_user, self.document)
 
@@ -146,6 +149,7 @@ class TestVersions(WebTest):
 
 	def setUp(self):
 		self.user = mommy.make(UserProfile, is_superuser=True)
+		self.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
 
 		self.document = mommy.prepare(InformationDocument)
 		with transaction.atomic(), revisions.create_revision():
@@ -196,6 +200,7 @@ class TestPermissions(WebTest):
 
 	def setUp(self):
 		self.user = mommy.make(UserProfile)
+		self.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
 
 		self.group = mommy.make(Group, make_m2m=True)
 		for permission in get_perms_for_model(InformationDocument):
@@ -302,10 +307,18 @@ class TestPermissions(WebTest):
 		assign_perm('information_pages.add_informationdocument', anonymous_user)
 		assign_perm('information_pages.change_informationdocument', anonymous_user)
 
+		# it should still not work
+		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=anonymous_user, status=403)
+		self.assertEqual(response.status_code, 403)
+
+		# the user also needs to be in a group that allows him to create documents
+		anonymous_user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
+
 		# it should work now
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=anonymous_user)
 		self.assertEqual(response.status_code, 200)
 
+		anonymous_user.groups.remove(Group.objects.get(name=settings.STAFF_GROUP_NAME))
 		remove_perm('information_pages.add_informationdocument', anonymous_user)
 		remove_perm('information_pages.change_informationdocument', anonymous_user)
 
