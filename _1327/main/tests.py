@@ -1,8 +1,9 @@
+import datetime
 import re
 
 from django.conf import settings
 from django.contrib.auth.models import Group
-
+from django.core import mail, management
 from django.core.urlresolvers import reverse
 from django.test import RequestFactory, TestCase
 from django_webtest import WebTest
@@ -402,3 +403,29 @@ class MenuItemTests(WebTest):
 		changed_menu_item = MenuItem.objects.get(pk=self.sub_item.pk)
 		self.assertNotEqual(original_menu_item.title, changed_menu_item.title)
 		self.assertNotEqual(original_menu_item.document.id, changed_menu_item.document.id)
+
+
+class TestSendRemindersCommand(TestCase):
+
+	def test_remind_users_about_due_unpublished_minutes_documents(self):
+		author_1 = mommy.make(UserProfile)
+		author_2 = mommy.make(UserProfile)
+		mommy.make(
+			MinutesDocument,
+			date=datetime.date.today() - datetime.timedelta(days=settings.MINUTES_PUBLISH_REMINDER_DAYS),
+			author=author_1
+		)
+		mommy.make(
+			MinutesDocument,
+			date=datetime.date.today() - datetime.timedelta(days=settings.MINUTES_PUBLISH_REMINDER_DAYS),
+			author=author_2
+		)
+		# don't send a reminder for this one
+		mommy.make(
+			MinutesDocument,
+			date=datetime.date.today() - datetime.timedelta(days=settings.MINUTES_PUBLISH_REMINDER_DAYS + 1),
+			author=author_1
+		)
+
+		management.call_command('send_reminders')
+		self.assertEqual(len(mail.outbox), 2)
