@@ -135,6 +135,11 @@ a {
 	color: @gray-lighter;
 }
 
+// fix abbr underline (https://github.com/twbs/bootstrap/issues/22562)
+abbr[title] {
+	border-bottom: none;
+}
+
 div#wrapper {
 	position: relative;
 	min-height: 100%;
