@@ -27,6 +27,16 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# The page URL that is used in email templates
+PAGE_URL = "localhost:8000"
+
+
+# People who receive emails on errors
+ADMINS = [
+	# ('Your Name', 'your_email@example.com'),
+]
+
+
 DELETE_EMPTY_PAGE_AFTER = timedelta(hours=1)
 
 FORBIDDEN_URLS = [
@@ -57,6 +67,9 @@ ANONYMOUS_IP_RANGE_GROUPS = {
 
 MINUTES_URL_NAME = "minutes"
 POLLS_URL_NAME = "polls"
+
+# number of days after which a reminder for unpublished minutes documents is sent
+MINUTES_PUBLISH_REMINDER_DAYS = 6
 
 
 # Application definition
@@ -144,6 +157,13 @@ CHANNEL_LAYERS = {
 	},
 }
 PREVIEW_URL = '/ws/preview'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = ''
+EMAIL_PORT = '25'
+DEFAULT_FROM_EMAIL = 'noreply@example.com'
+SERVER_EMAIL = 'noreply@example.com'
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
