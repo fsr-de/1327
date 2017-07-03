@@ -25,10 +25,7 @@ def save_main_menu_item_order(main_menu_items, user, parent_id=None):
 	# order of the menu items, as we are not allowed to do so.
 	all_menu_items_on_this_level = MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU, parent_id=parent_id)
 	menu_item_order_map = {menu_item: menu_item.order for menu_item in all_menu_items_on_this_level if menu_item.can_edit(user)}
-	if len(menu_item_order_map) != all_menu_items_on_this_level.count():
-		use_old_order = True
-	else:
-		use_old_order = False
+	use_old_order = len(menu_item_order_map) != all_menu_items_on_this_level.count()
 
 	for item in main_menu_items:
 		item_id = item['id']

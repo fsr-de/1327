@@ -1,4 +1,6 @@
 import datetime
+import json
+
 import re
 
 from django.conf import settings
@@ -61,6 +63,8 @@ class MainPageTests(WebTest):
 
 
 class MenuItemTests(WebTest):
+
+	csrf_checks = False
 
 	@classmethod
 	def setUpTestData(cls):
@@ -407,6 +411,91 @@ class MenuItemTests(WebTest):
 		changed_menu_item = MenuItem.objects.get(pk=self.sub_item.pk)
 		self.assertNotEqual(original_menu_item.title, changed_menu_item.title)
 		self.assertNotEqual(original_menu_item.document.id, changed_menu_item.document.id)
+
+	def test_update_order_as_superuser(self):
+		all_main_menu_items = list(MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU, parent_id=None).exclude(id=self.root_menu_item.id))
+		menu_items = [self.root_menu_item]
+		menu_items.extend(all_main_menu_items)
+
+		# change order of root menu items
+		order_data = {
+			'main_menu_items': [{'id': m.id} for m in menu_items],
+			'footer_items': [{'id': m.id} for m in MenuItem.objects.filter(menu_type=MenuItem.FOOTER)],
+		}
+
+		response = self.app.post(reverse('menu_items_update_order'), params=json.dumps(order_data), user=self.root_user)
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(MenuItem.objects.get(id=self.root_menu_item.id).order, 0)
+
+		child_elements_with_large_order_number = MenuItem.objects.filter(order__gte=1, menu_type=MenuItem.MAIN_MENU).exclude(parent_id=None)
+		child_data = [{'id': child.id} for child in child_elements_with_large_order_number]
+		# move children from self.root_element to another menu element
+		new_parent = order_data['main_menu_items'][1]
+		new_parent['children'] = child_data
+
+		response = self.app.post(reverse('menu_items_update_order'), params=json.dumps(order_data), user=self.root_user)
+		self.assertEqual(response.status_code, 200)
+
+		changed_child_elements = MenuItem.objects.filter(id__in=[child.id for child in child_elements_with_large_order_number])
+		for changed_child in changed_child_elements:
+			self.assertEqual(changed_child.parent.id, new_parent['id'])
+
+	def test_update_order_as_non_superuser(self):
+		def test_root_menu_order(root_menu_items):
+			# check that order of root menu items has been preserved
+			root_menu_iterator = zip(
+				MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU, parent_id=None),
+				root_menu_items
+			)
+			for possibly_changed_root_item, old_root_item in root_menu_iterator:
+				self.assertEqual(possibly_changed_root_item.order, old_root_item.order)
+
+		assign_perm(MenuItem.CHANGE_CHILDREN_PERMISSION_NAME, self.user, self.root_menu_item)
+		root_menu_items = MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU, parent_id=None)
+
+		# move subsub item to sub item position
+		children_data = [{'id': menu_item.id} for menu_item in [self.sub_item, self.sub_sub_item]]
+		order_data = {
+			'main_menu_items': [
+				{
+					'id': self.root_menu_item.id,
+					'children': children_data,
+				},
+			],
+			'footer_items': [],
+		}
+		response = self.app.post(reverse('menu_items_update_order'), params=json.dumps(order_data), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		root_menu_children = MenuItem.objects.filter(parent_id=self.root_menu_item.id)
+		self.assertEqual(root_menu_children.count(), 2)
+		test_root_menu_order(root_menu_items)
+
+		# change order of children
+		children_data = [{'id': menu_item.id} for menu_item in reversed(root_menu_children)]
+		order_data['main_menu_items'][0]['children'] = children_data
+
+		response = self.app.post(reverse('menu_items_update_order'), params=json.dumps(order_data), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		# check that order has indeed changed
+		for changed_child, old_child in zip(reversed(MenuItem.objects.filter(parent_id=self.root_menu_item.id)), root_menu_children):
+			self.assertNotEqual(changed_child.order, old_child.order)
+		test_root_menu_order(root_menu_items)
+
+		# put one child as child of another
+		children_data = [
+			{
+				'id': root_menu_children[0].id,
+				'children': [{'id': root_menu_children[1].id}],
+			},
+		]
+		order_data['main_menu_items'][0]['children'] = children_data
+
+		response = self.app.post(reverse('menu_items_update_order'), params=json.dumps(order_data), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		self.assertEqual(MenuItem.objects.filter(parent_id=root_menu_children[0].id).count(), 1)
+		test_root_menu_order(root_menu_items)
 
 
 class TestSendRemindersCommand(TestCase):
