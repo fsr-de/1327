@@ -11,6 +11,10 @@ class ShortlinkForm(forms.ModelForm):
 		model = Shortlink
 		fields = ("url_title", "link", "document")
 
+	def __init__(self, *args, **kwargs):
+		super(ShortlinkForm, self).__init__(*args, **kwargs)
+		self.fields['document'].widget.attrs['id'] = 'shortlink-document-selection'
+
 	def clean_url_title(self):
 		super().clean()
 		url_title = self.cleaned_data['url_title'].lower()

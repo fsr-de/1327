@@ -22,12 +22,16 @@
 	{{ block.super }}
 
 	<script type="text/javascript">
-		$("#id_username").on('change', function(event) {
-			console.log(event);
+		$("#id_username").on('change', function() {
 			var selectedUserId = $(this).find(":selected").val();
 			var form = $('#user_impersonation_form');
 			form.attr('action', 'hijack/' + selectedUserId + '/');
 			form.find(":submit").prop('disabled', false);
 		});
+
+		$(".select2-selection").select2({
+            language: "{{ LANGUAGE_CODE }}",
+            placeholder: "{% trans 'Please select...' %}"
+        });
 	</script>
 {% endblock %}

@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, Http404, redirect, render
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
+from _1327.shortlinks.utils import get_document_selection
 from .forms import ShortlinkForm
 from .models import Shortlink
 
@@ -29,7 +30,14 @@ def shortlink_create(request):
 		messages.success(request, _("Successfully created shortlink."))
 		return redirect('shortlinks_index')
 	else:
-		return render(request, 'shortlink_edit.html', {'form': form})
+		return render(
+			request,
+			'shortlink_edit.html',
+			{
+				'form': form,
+				'document_selection': get_document_selection(request),
+			}
+		)
 
 
 def shortlink_delete(request):
@@ -67,4 +75,11 @@ def edit(request, title):
 		messages.success(request, _("Successfully edited shortlink."))
 		return redirect('shortlinks_index')
 	else:
-		return render(request, 'shortlink_edit.html', {'form': form})
+		return render(
+			request,
+			'shortlink_edit.html',
+			{
+				'form': form,
+				'document_selection': get_document_selection(request),
+			}
+		)

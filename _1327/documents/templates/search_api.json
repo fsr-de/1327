@@ -1,57 +1,56 @@
 {% load static %}
 {% load i18n %}
-{
-	"results": [
-		{% if minutes %}
-			{
-				"text": "{% trans 'Minutes' %}",
-				"children": [
-					{% for minute in minutes %}
-						{
-							{% if id_only %}
-								"id": {{ minute.id }},
-							{% else %}
-								"id": "[{{ minute.title }}](document:{{ minute.id }})",
-							{% endif %}
-							"text": "{{ minute.title }} ({{ minute.date|date:"d.m.Y" }})"
-						}{% if not forloop.last %},{% endif %}
-					{% endfor %}
-				]
-			}{% if information_documents or polls %},{% endif %}
-		{% endif %}
-		{% if information_documents %}
-			{
-				"text": "{% trans 'Information Documents' %}",
-				"children": [
-					{% for information_document in information_documents %}
-						{
-							{% if id_only %}
-								"id": {{ information_document.id }},
-							{% else %}
-								"id": "[{{ information_document.title }}](document:{{ information_document.id }})",
-							{% endif %}
-							"text": "{{ information_document.title }}"
-						}{% if not forloop.last %},{% endif %}
-					{% endfor %}
-				]
-			}{% if polls %},{% endif %}
-		{% endif %}
-		{% if polls %}
-			{
-				"text": "{% trans 'Polls' %}",
-				"children": [
-					{% for poll in polls %}
-						{
-							{% if id_only %}
-								"id": {{ poll.id }},
-							{% else %}
-								"id": "[{{ poll.title }}](poll:{{ poll.id }})",
-							{% endif %}
-							"text": "{{ poll.title }}"
-						}{% if not forloop.last %},{% endif %}
-					{% endfor %}
-				]
-			}
-		{% endif %}
-	]
-}
+
+[
+	{% if minutes %}
+		{
+			"text": "{% trans 'Minutes' %}",
+			"children": [
+				{% for minute in minutes %}
+					{
+						{% if id_only %}
+							"id": {{ minute.id }},
+						{% else %}
+							"id": "[{{ minute.title }}](document:{{ minute.id }})",
+						{% endif %}
+						"text": "{{ minute.title }} ({{ minute.date|date:"d.m.Y" }})"
+					}{% if not forloop.last %},{% endif %}
+				{% endfor %}
+			]
+		}{% if information_documents or polls %},{% endif %}
+	{% endif %}
+	{% if information_documents %}
+		{
+			"text": "{% trans 'Information Documents' %}",
+			"children": [
+				{% for information_document in information_documents %}
+					{
+						{% if id_only %}
+							"id": {{ information_document.id }},
+						{% else %}
+							"id": "[{{ information_document.title }}](document:{{ information_document.id }})",
+						{% endif %}
+						"text": "{{ information_document.title }}"
+					}{% if not forloop.last %},{% endif %}
+				{% endfor %}
+			]
+		}{% if polls %},{% endif %}
+	{% endif %}
+	{% if polls %}
+		{
+			"text": "{% trans 'Polls' %}",
+			"children": [
+				{% for poll in polls %}
+					{
+						{% if id_only %}
+							"id": {{ poll.id }},
+						{% else %}
+							"id": "[{{ poll.title }}](poll:{{ poll.id }})",
+						{% endif %}
+						"text": "{{ poll.title }}"
+					}{% if not forloop.last %},{% endif %}
+				{% endfor %}
+			]
+		}
+	{% endif %}
+]
