@@ -103,6 +103,7 @@ INSTALLED_APPS = [
 MIDDLEWARE_CLASSES = [
 	'_1327.main.middleware.RedirectToNoSlash',
 	'django.contrib.sessions.middleware.SessionMiddleware',
+	'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
 	'django.middleware.common.CommonMiddleware',
 	'django.middleware.csrf.CsrfViewMiddleware',
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
