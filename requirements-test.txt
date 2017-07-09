@@ -1,6 +1,3 @@
-# Pin Django version to 1.9.x
-Django >=1.9, <1.10
-
 # Unit tests
 webtest >= 2.0.15
 django-webtest >= 1.9
