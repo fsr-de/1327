@@ -3,8 +3,8 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import NoReverseMatch, reverse
 from django.db.models import Q
+from django.urls import NoReverseMatch, reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from guardian.shortcuts import get_objects_for_user, get_perms

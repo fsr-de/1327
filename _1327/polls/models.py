@@ -1,10 +1,10 @@
 from datetime import date, datetime
 
 from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Sum
 from django.template import loader
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from guardian.shortcuts import assign_perm
 

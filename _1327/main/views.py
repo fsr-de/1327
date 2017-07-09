@@ -5,10 +5,10 @@ from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
-from django.core.urlresolvers import reverse
 from django.forms import formset_factory, modelformset_factory
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, Http404, redirect, render
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_POST
 from guardian.shortcuts import get_objects_for_user

@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.models import Group
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django_webtest import WebTest
 from guardian.core import ObjectPermissionChecker
 from guardian.shortcuts import assign_perm

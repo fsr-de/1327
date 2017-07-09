@@ -4,8 +4,8 @@ import re
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core import mail, management
-from django.core.urlresolvers import reverse
 from django.test import RequestFactory, TestCase
+from django.urls import reverse
 from django_webtest import WebTest
 from guardian.shortcuts import assign_perm, remove_perm
 from guardian.utils import get_anonymous_user
