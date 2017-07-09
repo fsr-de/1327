@@ -102,7 +102,7 @@ def edit(request, title, new_autosaved_pages=None, initial=None):
 
 
 def autosave(request, title):
-	if request.user.is_anonymous() or request.user == get_anonymous_user():
+	if request.user.is_anonymous or request.user == get_anonymous_user():
 		raise PermissionDenied()
 
 	document = None

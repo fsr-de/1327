@@ -22,7 +22,7 @@ class _1327AuthorizationBackend:
 
 		group_name = user_obj._ip_range_group_name if hasattr(user_obj, '_ip_range_group_name') else None
 
-		if user_obj.is_authenticated():
+		if user_obj.is_authenticated:
 			# user is not anonymous user and no other backend confirmed the permission yet
 			# --> we need to check the anonymous permissions again
 			check = ObjectPermissionChecker(get_anonymous_user())
