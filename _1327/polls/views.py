@@ -2,10 +2,10 @@ import datetime
 
 
 from django.contrib import messages
-from django.core.urlresolvers import reverse
 from django.db.models import F
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from _1327.documents.models import Document

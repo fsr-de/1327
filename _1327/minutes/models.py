@@ -3,11 +3,11 @@ from datetime import date, datetime
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.exceptions import SuspiciousOperation
-from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template import loader
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _, ungettext_lazy
 from guardian.shortcuts import assign_perm
 from reversion import revisions

@@ -2,10 +2,10 @@ import datetime
 
 from django.conf import settings
 from django.contrib.auth.models import Group
-from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.template.defaultfilters import floatformat
 from django.test import TestCase
+from django.urls import reverse
 from django_webtest import WebTest
 from guardian.shortcuts import assign_perm, get_perms
 from model_mommy import mommy
