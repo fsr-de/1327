@@ -12,21 +12,9 @@ from _1327.main.utils import slugify_and_clean_url_title
 from .models import Attachment, Document
 
 
-class StrippedCharField(forms.CharField):
-	"""
-		CharField that saves trimmed strings
-	"""
-
-	def to_python(self, value):
-		super(StrippedCharField, self).to_python(value)
-		if value is None:
-			return None
-		return value.strip()
-
-
 class DocumentForm(forms.ModelForm):
-	url_title = StrippedCharField(label=_('URL'), max_length=255, required=True)
-	comment = StrippedCharField(label=_('Comment'), max_length=255, required=False)
+	url_title = forms.CharField(label=_('URL'), max_length=255, required=True)
+	comment = forms.CharField(label=_('Comment'), max_length=255, required=False)
 	group = forms.ModelChoiceField(Group.objects.all(), label=_('Edit permissions'), disabled=False, required=True)
 
 	class Meta:
@@ -170,7 +158,7 @@ def get_permission_form(document):
 
 
 class AttachmentForm(forms.ModelForm):
-	displayname = StrippedCharField(max_length=255, required=False)
+	displayname = forms.CharField(max_length=255, required=False)
 
 	class Meta:
 		model = Attachment
