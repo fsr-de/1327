@@ -7,6 +7,8 @@ from . import views
 
 admin.autodiscover()
 
+app_name = 'minutes'
+
 urlpatterns = [
 	url(r"list/(?P<groupid>[\d]+)$", views.list, name='list'),
 	url(r"(?P<title>[\w\-/]+)/edit$", document_views.edit, name='edit'),
