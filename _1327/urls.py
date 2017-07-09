@@ -8,8 +8,6 @@ from _1327.main import views as main_views
 from _1327.shortlinks import views as shortlinks_views
 from _1327.user_management import views as user_management_views
 
-admin.autodiscover()
-
 urlpatterns = [
 	url(r"^$", main_views.index, name='index'),
 	url(r"^" + settings.MINUTES_URL_NAME + "/", include('_1327.minutes.urls')),
