@@ -12,10 +12,10 @@ admin.autodiscover()
 
 urlpatterns = [
 	url(r"^$", main_views.index, name='index'),
-	url(r"^" + settings.MINUTES_URL_NAME + "/", include('_1327.minutes.urls', namespace='minutes')),
-	url(r"^" + settings.POLLS_URL_NAME + "/", include('_1327.polls.urls', namespace='polls')),
-	url(r"^documents/", include('_1327.documents.urls', namespace='documents')),
-	url(r"^information_pages/", include('_1327.information_pages.urls', namespace='information_pages')),
+	url(r"^" + settings.MINUTES_URL_NAME + "/", include('_1327.minutes.urls')),
+	url(r"^" + settings.POLLS_URL_NAME + "/", include('_1327.polls.urls')),
+	url(r"^documents/", include('_1327.documents.urls')),
+	url(r"^information_pages/", include('_1327.information_pages.urls')),
 	url(r"^login$", auth_views.login, {'template_name': 'login.html', }, name='login'),
 	url(r"^logout$", user_management_views.logout, name='logout'),
 	url(r'^view_as$', user_management_views.view_as, name='view_as'),
@@ -32,7 +32,7 @@ urlpatterns = [
 	url(r'^shortlink/create$', shortlinks_views.shortlink_create, name='shortlink_create'),
 	url(r'^shortlink/delete$', shortlinks_views.shortlink_delete, name='shortlink_delete'),
 
-	url(r'^admin/', include(admin.site.urls)),
+	url(r'^admin/', admin.site.urls),
 	url(r'^hijack/', include('hijack.urls')),
 ]
 urlpatterns.extend(document_urls.document_urlpatterns)

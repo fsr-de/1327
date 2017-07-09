@@ -5,6 +5,8 @@ from . import views
 
 admin.autodiscover()
 
+app_name = 'documents'
+
 urlpatterns = [
 	url(r"revert$", views.revert, name='revert'),
 	url(r"search$", views.search, name='search'),

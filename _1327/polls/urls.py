@@ -4,6 +4,8 @@ from _1327.documents import urls as document_urls
 from _1327.documents import views as document_views
 from . import views
 
+app_name = 'polls'
+
 urlpatterns = [
 	url(r"list$", views.index, name="index"),
 	url(r"(?P<title>[\w\-/]+)/edit$", document_views.edit, name='edit'),
