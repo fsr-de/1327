@@ -24,7 +24,7 @@ class ShortlinkForm(forms.ModelForm):
 		if 'link' in self.cleaned_data and self.cleaned_data['link'] and\
 			'document' in self.cleaned_data and self.cleaned_data['document']:
 			raise ValidationError(_('You are only allowed to define one of document and link'))
-		if ('link' not in self.cleaned_data or self.cleaned_data['link'] == "") and\
+		if ('link' not in self.cleaned_data or self.cleaned_data['link'] is None) and\
 			('document' not in self.cleaned_data or self.cleaned_data['document'] is None):
 			raise ValidationError(_('You must select a document or link'))
 		return self.cleaned_data
