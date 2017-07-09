@@ -102,7 +102,7 @@ INSTALLED_APPS = [
 	'_1327.shortlinks'
 ]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
 	'_1327.main.middleware.RedirectToNoSlash',
 	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
