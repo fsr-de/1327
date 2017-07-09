@@ -13,7 +13,7 @@ node default {
         ensure => installed,
     } ->
     # python packages
-    package { ['python3', 'python3-dev', 'python3-pip', 'gettext']:
+    package { ['python3', 'python3-dev', 'python3-pip', 'gettext', 'libpq-dev']:
         ensure => installed,
     } ->
     package { ['nodejs', 'npm']:
@@ -31,11 +31,8 @@ node default {
 
     class { 'postgresql::globals':
         python_package_name => 'python3'
-    } ->
-    class { 'postgresql::lib::python':
-        package_name => 'python3-psycopg2',
-        package_ensure => 'latest'
     }
+
     class { 'postgresql::server':
     } -> postgresql::server::role { '1327':
         password_hash  => postgresql_password('1327', '1327'),
@@ -57,6 +54,10 @@ node default {
     } -> exec { '/vagrant/requirements-test.txt':
         provider       => shell,
         command        => 'pip3 --log-file /tmp/pip.log install --user -r /vagrant/requirements-test.txt',
+        user        => 'vagrant'
+    } -> exec { 'install-psycopg2':
+        provider    => shell,
+        command     => 'pip3 --log-file /tmp/pip.log install --user psycopg2==2.7.1',
         user        => 'vagrant'
     } -> class { 'd1327':
         db_connector   => 'postgresql_psycopg2'
