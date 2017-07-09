@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.contrib.auth.models import Group
+from django.test.utils import override_settings
 from django.urls import reverse
+
 from django_webtest import WebTest
 from guardian.shortcuts import assign_perm
 from guardian.utils import get_anonymous_user
@@ -161,9 +163,10 @@ class _1327AuthenticationBackendTests(WebTest):
 	csrf_checks = False
 	extra_environ = {'HTTP_ACCEPT_LANGUAGE': 'en'}
 
-	def setUp(self):
-		self.document = mommy.make(InformationDocument)
-		self.user = mommy.make(UserProfile)
+	@classmethod
+	def setUpTestData(cls):
+		cls.document = mommy.make(InformationDocument)
+		cls.user = mommy.make(UserProfile)
 
 	def test_anonymous_fallback_if_user_has_no_permissions(self):
 		anonymous_user = get_anonymous_user()
@@ -191,56 +194,43 @@ class _1327AuthenticationBackendTests(WebTest):
 		response = self.app.get(reverse(self.document.get_view_url_name(), args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
+
+@override_settings(ANONYMOUS_IP_RANGE_GROUPS={'8.0.0.0/8': 'university_group'})
+class _1327AuthenticationBackendUniversityNetworkTests(WebTest):
+
+	csrf_checks = False
+	extra_environ = {'HTTP_ACCEPT_LANGUAGE': 'en'}
+
+	@classmethod
+	def setUpTestData(cls):
+		cls.document = mommy.make(InformationDocument)
+		cls.university_group = mommy.make(Group, name='university_group')
+
 	def test_university_network_fallback_no_access(self):
 		# check that user is not allowed to view the document if he is not in the university network
-		university_group = mommy.make(Group)
-		assign_perm(self.document.view_permission_name, university_group, self.document)
+		assign_perm(self.document.view_permission_name, self.university_group, self.document)
 
-		university_group_setting = {
-			"ANONYMOUS_IP_RANGE_GROUPS": {
-				'8.0.0.0/8': university_group.name,
-			}
-		}
-
-		with self.settings(**university_group_setting):
-			response = self.app.get(reverse(self.document.get_view_url_name(), args=[self.document.url_title]))
-			redirect_url = reverse('login') + '?next=' + reverse(self.document.get_view_url_name(), args=[self.document.url_title])
-			self.assertRedirects(response, redirect_url)
+		response = self.app.get(reverse(self.document.get_view_url_name(), args=[self.document.url_title]))
+		redirect_url = reverse('login') + '?next=' + reverse(self.document.get_view_url_name(), args=[self.document.url_title])
+		self.assertRedirects(response, redirect_url)
 
 	def test_university_network_fallback_access_granted(self):
 		# check that user can see the document if he is in the university network
-		university_group = mommy.make(Group)
-		assign_perm(self.document.view_permission_name, university_group, self.document)
+		assign_perm(self.document.view_permission_name, self.university_group, self.document)
 
-		university_group_setting = {
-			"ANONYMOUS_IP_RANGE_GROUPS": {
-				'8.0.0.0/8': university_group.name,
-			}
-		}
+		# mimic that the user is in the university network
+		request_meta = {'REMOTE_ADDR': '8.0.0.1'}
 
-		with self.settings(**university_group_setting):
-			# mimic that the user is in the university network
-			request_meta = {'REMOTE_ADDR': '8.0.0.1'}
-
-			response = self.app.get(reverse(self.document.get_view_url_name(), args=[self.document.url_title]), extra_environ=request_meta)
-			self.assertEqual(response.status_code, 200)
+		response = self.app.get(reverse(self.document.get_view_url_name(), args=[self.document.url_title]), extra_environ=request_meta)
+		self.assertEqual(response.status_code, 200)
 
 	def test_university_network_fallback_university_network_no_access(self):
-		university_group = mommy.make(Group)
+		# mimic that the user is in the university network
+		request_meta = {'REMOTE_ADDR': '8.0.0.1'}
 
-		university_group_setting = {
-			"ANONYMOUS_IP_RANGE_GROUPS": {
-				'8.0.0.0/8': university_group.name,
-			}
-		}
-
-		with self.settings(**university_group_setting):
-			# mimic that the user is in the university network
-			request_meta = {'REMOTE_ADDR': '8.0.0.1'}
-
-			response = self.app.get(
-				reverse(self.document.get_view_url_name(), args=[self.document.url_title]),
-				extra_environ=request_meta,
-			)
-			redirect_url = reverse('login') + '?next=' + reverse(self.document.get_view_url_name(), args=[self.document.url_title])
-			self.assertRedirects(response, redirect_url)
+		response = self.app.get(
+			reverse(self.document.get_view_url_name(), args=[self.document.url_title]),
+			extra_environ=request_meta,
+		)
+		redirect_url = reverse('login') + '?next=' + reverse(self.document.get_view_url_name(), args=[self.document.url_title])
+		self.assertRedirects(response, redirect_url)
