@@ -3,9 +3,7 @@ from guardian.admin import GuardedModelAdmin
 from polymorphic.admin import PolymorphicParentModelAdmin
 from reversion.admin import VersionAdmin
 
-from _1327.information_pages.admin import InformationDocumentAdmin
 from _1327.information_pages.models import InformationDocument
-from _1327.minutes.admin import MinutesDocumentAdmin
 from _1327.minutes.models import MinutesDocument
 
 from .models import Attachment, Document
@@ -13,11 +11,7 @@ from .models import Attachment, Document
 
 class DocumentAdmin(GuardedModelAdmin, VersionAdmin, PolymorphicParentModelAdmin):
 	base_model = Document
-	child_models = (
-		(InformationDocument, InformationDocumentAdmin),
-		(MinutesDocument, MinutesDocumentAdmin),
-	)
-
+	child_models = (InformationDocument, MinutesDocument)  # no Polls in here?
 	list_display = ('title', 'url_title')
 
 
