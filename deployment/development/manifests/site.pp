@@ -46,12 +46,18 @@ node default {
         password       => ''
     } -> package { 'libapache2-mod-wsgi-py3':
         ensure         => latest,
+    } -> exec { 'update-pip':
+        provider       => shell,
+        command        => 'sudo pip3 install -U pip',
+        user        => 'vagrant'
     } -> exec { '/vagrant/requirements.txt':
         provider       => shell,
-        command        => 'pip3 --log-file /tmp/pip.log install --user -r /vagrant/requirements.txt'
+        command        => 'pip3 --log-file /tmp/pip.log install --user -r /vagrant/requirements.txt',
+        user        => 'vagrant'
     } -> exec { '/vagrant/requirements-test.txt':
         provider       => shell,
-        command        => 'pip3 --log-file /tmp/pip.log install --user -r /vagrant/requirements-test.txt'
+        command        => 'pip3 --log-file /tmp/pip.log install --user -r /vagrant/requirements-test.txt',
+        user        => 'vagrant'
     } -> class { 'd1327':
         db_connector   => 'postgresql_psycopg2'
     }
