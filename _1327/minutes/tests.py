@@ -5,7 +5,7 @@ from django_webtest import WebTest
 from guardian.core import ObjectPermissionChecker
 from guardian.shortcuts import assign_perm
 from model_mommy import mommy
-from reversion import revisions
+from reversion.models import Version
 
 from _1327.main.utils import slugify
 from _1327.minutes.models import MinutesDocument
@@ -236,7 +236,7 @@ class TestNewMinutesDocument(WebTest):
 		document = MinutesDocument.objects.get(title=text)
 
 		# check whether number of versions is correct
-		versions = revisions.get_for_object(document)
+		versions = Version.objects.get_for_object(document)
 		self.assertEqual(len(versions), 1)
 
 		# check whether the properties of the new document are correct

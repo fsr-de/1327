@@ -8,6 +8,7 @@ from django.core.exceptions import SuspiciousOperation
 from django.db import transaction
 from django.utils import timezone
 from reversion import revisions
+from reversion.models import Version
 
 from _1327.documents.forms import AttachmentForm, DocumentForm
 from _1327.documents.models import Document, TemporaryDocumentText
@@ -21,7 +22,7 @@ def get_new_autosaved_pages_for_user(user, content_type):
 		# if contenttype of autosave does not match contenttype of current document we will not show this autosave
 		if ContentType.objects.get_for_model(document) != content_type:
 			continue
-		if len(revisions.get_for_object(document)) == 0:
+		if len(Version.objects.get_for_object(document)) == 0:
 			autosaved_pages.append(document)
 	return autosaved_pages
 
@@ -29,7 +30,7 @@ def get_new_autosaved_pages_for_user(user, content_type):
 def delete_old_empty_pages():
 	all_documents = Document.objects.filter(created__lte=timezone.now() - settings.DELETE_EMPTY_PAGE_AFTER)
 	for document in all_documents:
-		if len(revisions.get_for_object(document)) == 0 and \
+		if len(Version.objects.get_for_object(document)) == 0 and \
 			not TemporaryDocumentText.objects.filter(document=document).exists():
 				document.delete()
 
@@ -119,7 +120,7 @@ def handle_autosave(request, document):
 
 
 def prepare_versions(document):
-	versions = revisions.get_for_object(document).reverse()
+	versions = Version.objects.get_for_object(document).reverse()
 
 	# prepare data for the template
 	version_list = []
