@@ -1237,7 +1237,7 @@ class DocumentCreationTests(WebTest):
 			body = response.body.decode('utf-8')
 			for group in self.hidden_groups:
 				self.assertNotIn('<option value="{}">{}</option>'.format(group.id, group.name), body)
-			self.assertIn('name="group" type="hidden"', body)
+			self.assertIn('type="hidden" name="group"', body)
 
 	def test_create_document_with_two_groups(self):
 		group = mommy.make(Group)
