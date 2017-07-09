@@ -8,11 +8,18 @@ from django.shortcuts import resolve_url
 
 
 class IPRangeUserMiddleware:
-	def __init__(self):
+
+	def __init__(self, get_response):
+		self.get_response = get_response
 		try:
 			self.ip_ranges = {ip_network(k): v for k, v in settings.ANONYMOUS_IP_RANGE_GROUPS.items()}
 		except ValueError as e:
 			raise ImproperlyConfigured from e
+
+	def __call__(self, request):
+		self.process_request(request)
+		response = self.get_response(request)
+		return response
 
 	def process_request(self, request):
 		if request.user.is_anonymous:
@@ -25,6 +32,13 @@ class IPRangeUserMiddleware:
 
 
 class LoginRedirectMiddleware:
+	def __init__(self, get_response):
+		self.get_response = get_response
+
+	def __call__(self, request):
+		response = self.get_response(request)
+		return response
+
 	def process_exception(self, request, exception):
 		if isinstance(exception, PermissionDenied) and not request.user.is_authenticated and not request.is_ajax():
 			path = request.build_absolute_uri()
