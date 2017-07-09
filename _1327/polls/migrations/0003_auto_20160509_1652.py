@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='poll',
             name='document_ptr',
-            field=models.OneToOneField(to='documents.Document', primary_key=True, serialize=False, parent_link=True, default=0, auto_created=True),
+            field=models.OneToOneField(to='documents.Document', primary_key=True, serialize=False, parent_link=True, default=0, auto_created=True, on_delete=models.deletion.CASCADE),
             preserve_default=False,
         ),
     ]

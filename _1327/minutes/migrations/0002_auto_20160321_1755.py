@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='minutesdocument',
             name='author',
-            field=models.ForeignKey(related_name='documents', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='documents', to=settings.AUTH_USER_MODEL, on_delete=models.deletion.PROTECT),
         ),
         migrations.AddField(
             model_name='minutesdocument',
@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='minutesdocument',
             name='moderator',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True, verbose_name='Moderator', related_name='moderations', blank=True),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True, verbose_name='Moderator', related_name='moderations', blank=True, on_delete=models.deletion.PROTECT),
         ),
         migrations.AddField(
             model_name='minutesdocument',
@@ -36,6 +36,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='guest',
             name='minute',
-            field=models.ForeignKey(to='minutes.MinutesDocument', verbose_name='Guests', related_name='guests'),
+            field=models.ForeignKey(to='minutes.MinutesDocument', verbose_name='Guests', related_name='guests', on_delete=models.deletion.CASCADE),
         ),
     ]

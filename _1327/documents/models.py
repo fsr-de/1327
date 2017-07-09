@@ -183,9 +183,9 @@ class Document(PolymorphicModel):
 
 class TemporaryDocumentText(models.Model):
 	text = models.TextField()
-	document = models.ForeignKey(Document, related_name='document')
+	document = models.ForeignKey(Document, on_delete=models.PROTECT, related_name='document')
 	created = models.DateTimeField(auto_now=True)
-	author = models.ForeignKey(UserProfile, related_name='temporary_documents')
+	author = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name='temporary_documents')
 
 
 class Attachment(models.Model):
@@ -194,7 +194,7 @@ class Attachment(models.Model):
 		return '{}_{}'.format(hashlib.md5(str(datetime.now()).encode()).hexdigest(), int(max_id) + 1)
 
 	displayname = models.TextField(max_length=255, blank=True, default="", verbose_name=_("Display name"))
-	document = models.ForeignKey(Document, related_name='attachments', verbose_name=_("Document"))
+	document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name='attachments', verbose_name=_("Document"))
 	created = models.DateTimeField(auto_now=True, verbose_name=_("Created"))
 	file = models.FileField(upload_to="documents/%y/%m/", verbose_name=_("File"))
 	hash_value = models.CharField(max_length=40, unique=True, default=get_hash, verbose_name=_("Hash value"))  # used in download urls
