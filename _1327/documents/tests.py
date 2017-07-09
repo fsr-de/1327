@@ -16,7 +16,7 @@ from reversion import revisions
 
 from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
 from _1327.information_pages.models import InformationDocument
-from _1327.main.utils import slugify
+from _1327.main.utils import EscapeHtml, slugify
 from _1327.minutes.models import MinutesDocument
 from _1327.polls.models import Poll
 from _1327.user_management.models import UserProfile
@@ -28,7 +28,7 @@ class TestInternalLinkMarkDown(TestCase):
 	def setUp(self):
 		self.user = mommy.make(UserProfile, is_superuser=True)
 
-		self.md = markdown.Markdown(safe_mode='escape', extensions=[InternalLinksMarkdownExtension(), 'markdown.extensions.tables'])
+		self.md = markdown.Markdown(extensions=[EscapeHtml(), InternalLinksMarkdownExtension(), 'markdown.extensions.tables'])
 
 		document = mommy.prepare(InformationDocument, text="text")
 		with transaction.atomic(), revisions.create_revision():
