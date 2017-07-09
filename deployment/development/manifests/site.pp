@@ -48,10 +48,10 @@ node default {
         ensure         => latest,
     } -> exec { '/vagrant/requirements.txt':
         provider       => shell,
-        command        => 'pip3 --log-file /tmp/pip.log install -r /vagrant/requirements.txt'
+        command        => 'pip3 --log-file /tmp/pip.log install --user -r /vagrant/requirements.txt'
     } -> exec { '/vagrant/requirements-test.txt':
         provider       => shell,
-        command        => 'pip3 --log-file /tmp/pip.log install -r /vagrant/requirements-test.txt'
+        command        => 'pip3 --log-file /tmp/pip.log install --user -r /vagrant/requirements-test.txt'
     } -> class { 'd1327':
         db_connector   => 'postgresql_psycopg2'
     }
@@ -71,7 +71,12 @@ node default {
         docroot                     => '/vagrant/_1327/staticfiles',
         aliases                     => [ { alias => '/static', path => '/vagrant/_1327/staticfiles' } ],
         wsgi_daemon_process         => 'wsgi',
-        wsgi_daemon_process_options => { processes => '2', threads => '15', display-name => '%{GROUP}' },
+        wsgi_daemon_process_options => {
+            processes => '2',
+            threads => '15',
+            display-name => '%{GROUP}',
+            user => 'vagrant'
+        },
         wsgi_process_group          => 'wsgi',
         wsgi_script_aliases         => { '/' => '/vagrant/_1327/wsgi.py' },
     }
