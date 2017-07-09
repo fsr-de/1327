@@ -18,21 +18,18 @@ from django.utils.translation import ugettext_lazy as _
 from guardian.shortcuts import get_objects_for_user
 from guardian.utils import get_anonymous_user
 
-import markdown
-from markdown.extensions.toc import TocExtension
 from reversion import revisions
 from sendfile import sendfile
 
 from _1327 import settings
 from _1327.documents.consumers import get_group_name
 from _1327.documents.forms import get_permission_form
-from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
 from _1327.documents.models import Attachment, Document
 from _1327.documents.utils import delete_cascade_to_json, delete_old_empty_pages, get_model_function, get_new_autosaved_pages_for_user, \
 	handle_attachment, handle_autosave, handle_edit, prepare_versions
 from _1327.information_pages.models import InformationDocument
 from _1327.information_pages.forms import InformationDocumentForm  # noqa
-from _1327.main.utils import abbreviation_explanation_markdown, document_permission_overview
+from _1327.main.utils import convert_markdown, document_permission_overview
 from _1327.minutes.models import MinutesDocument
 from _1327.minutes.forms import MinutesDocumentForm  # noqa
 from _1327.polls.models import Poll
@@ -155,13 +152,12 @@ def view(request, title):
 	except (ImportError, AttributeError):
 		pass
 
-	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr', 'markdown.extensions.tables'])
-	text = md.convert(document.text + abbreviation_explanation_markdown())
+	text, toc = convert_markdown(document.text)
 
 	return render(request, 'documents_base.html', {
 		'document': document,
 		'text': text,
-		'toc': md.toc,
+		'toc': toc,
 		'attachments': document.attachments.filter(no_direct_download=False).order_by('index'),
 		'active_page': 'view',
 		'view_page': True,
@@ -239,9 +235,7 @@ def render_text(request, title):
 	if document.has_perms():
 		check_permissions(document, request.user, [document.view_permission_name, document.edit_permission_name])
 
-	text = request.POST['text']
-	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr', 'markdown.extensions.tables'])
-	text = md.convert(text + abbreviation_explanation_markdown())
+	text, __ = convert_markdown(request.POST['text'])
 
 	WebsocketGroup(get_group_name(document.hash_value)).send({
 		'text': text
@@ -465,8 +459,7 @@ def preview(request):
 	hash_value = request.GET['hash_value']
 	document = get_object_or_404(Document, hash_value=hash_value)
 
-	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr', 'markdown.extensions.tables'])
-	text = md.convert(document.text + abbreviation_explanation_markdown())
+	text, __ = convert_markdown(document.text)
 
 	return render(
 		request,
