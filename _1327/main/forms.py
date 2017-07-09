@@ -34,7 +34,7 @@ class MenuItemAdminForm(MenuItemForm):
 
 	def clean_link(self):
 		data = self.cleaned_data['link']
-		if data != "":
+		if data is not None:
 			try:
 				split = data.split("?")
 				if len(split) == 1:
