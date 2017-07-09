@@ -15,7 +15,7 @@ class IPRangeUserMiddleware:
 			raise ImproperlyConfigured from e
 
 	def process_request(self, request):
-		if request.user.is_anonymous():
+		if request.user.is_anonymous:
 			address = ip_address(request.META.get('REMOTE_ADDR'))
 			for ip_range, group_name in self.ip_ranges.items():
 				if address in ip_range:
@@ -26,7 +26,7 @@ class IPRangeUserMiddleware:
 
 class LoginRedirectMiddleware:
 	def process_exception(self, request, exception):
-		if isinstance(exception, PermissionDenied) and not request.user.is_authenticated() and not request.is_ajax():
+		if isinstance(exception, PermissionDenied) and not request.user.is_authenticated and not request.is_ajax():
 			path = request.build_absolute_uri()
 			resolved_login_url = resolve_url(settings.LOGIN_URL)
 			# If the login url is the same scheme and net location then just
