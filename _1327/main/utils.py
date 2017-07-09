@@ -8,6 +8,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from guardian.core import ObjectPermissionChecker
 
+import markdown
+from markdown.extensions.toc import TocExtension
+
 
 URL_TITLE_REGEX = re.compile(r'^[a-zA-Z0-9-_\/]*$')
 
@@ -53,6 +56,12 @@ def save_footer_item_order(footer_items, user, order_counter=0):
 def abbreviation_explanation_markdown():
 	from .models import AbbreviationExplanation
 	return "\n" + ("\n".join([str(abbr) for abbr in AbbreviationExplanation.objects.all()]))
+
+
+def convert_markdown(text):
+	from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
+	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr', 'markdown.extensions.tables'])
+	return md.convert(text + abbreviation_explanation_markdown()), md.toc
 
 
 def slugify(string):
