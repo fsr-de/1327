@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='InformationDocument',
             fields=[
-                ('document_ptr', models.OneToOneField(primary_key=True, auto_created=True, to='documents.Document', serialize=False, parent_link=True)),
+                ('document_ptr', models.OneToOneField(primary_key=True, auto_created=True, to='documents.Document', serialize=False, parent_link=True, on_delete=models.deletion.CASCADE)),
             ],
             options={
                 'verbose_name_plural': 'Information documents',

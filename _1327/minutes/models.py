@@ -52,8 +52,8 @@ class MinutesDocument(Document):
 
 	date = models.DateField(default=datetime.now, verbose_name=_("Date"))
 	state = models.IntegerField(choices=CHOICES, default=UNPUBLISHED, verbose_name=_("State"))
-	moderator = models.ForeignKey(UserProfile, related_name='moderations', verbose_name=_("Moderator"), blank=True, null=True)
-	author = models.ForeignKey(UserProfile, related_name='documents')
+	moderator = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name='moderations', verbose_name=_("Moderator"), blank=True, null=True)
+	author = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name='documents')
 	participants = models.ManyToManyField(UserProfile, related_name='participations', verbose_name=_("Participants"))
 	labels = models.ManyToManyField(MinutesLabel, related_name="minutes", blank=True)
 
@@ -161,4 +161,4 @@ def update_permissions(sender, instance, **kwargs):
 
 class Guest(models.Model):
 	name = models.CharField(max_length=255, verbose_name=_('Name'))
-	minute = models.ForeignKey(MinutesDocument, related_name='guests', verbose_name=_("Guests"))
+	minute = models.ForeignKey(MinutesDocument, on_delete=models.CASCADE, related_name='guests', verbose_name=_("Guests"))

@@ -21,6 +21,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='choice',
             name='poll',
-            field=models.ForeignKey(related_name='choices', to='polls.Poll'),
+            field=models.ForeignKey(related_name='choices', to='polls.Poll', on_delete=models.deletion.CASCADE),
         ),
     ]

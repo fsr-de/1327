@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='MinutesDocument',
             fields=[
-                ('document_ptr', models.OneToOneField(primary_key=True, auto_created=True, to='documents.Document', serialize=False, parent_link=True)),
+                ('document_ptr', models.OneToOneField(primary_key=True, auto_created=True, to='documents.Document', serialize=False, parent_link=True, on_delete=models.deletion.CASCADE)),
                 ('date', models.DateField(verbose_name='Date', default=datetime.datetime.now)),
                 ('state', models.IntegerField(verbose_name='State', default=0, choices=[(0, 'Unpublished'), (1, 'Published'), (2, 'Internal')])),
             ],

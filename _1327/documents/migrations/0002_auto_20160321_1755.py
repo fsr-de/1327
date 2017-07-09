@@ -17,21 +17,21 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='temporarydocumenttext',
             name='author',
-            field=models.ForeignKey(related_name='temporary_documents', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='temporary_documents', to=settings.AUTH_USER_MODEL, on_delete=models.deletion.PROTECT),
         ),
         migrations.AddField(
             model_name='temporarydocumenttext',
             name='document',
-            field=models.ForeignKey(related_name='document', to='documents.Document'),
+            field=models.ForeignKey(related_name='document', to='documents.Document', on_delete=models.deletion.PROTECT),
         ),
         migrations.AddField(
             model_name='document',
             name='polymorphic_ctype',
-            field=models.ForeignKey(to='contenttypes.ContentType', null=True, related_name='polymorphic_documents.document_set+', editable=False),
+            field=models.ForeignKey(to='contenttypes.ContentType', null=True, related_name='polymorphic_documents.document_set+', editable=False, on_delete=models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='attachment',
             name='document',
-            field=models.ForeignKey(to='documents.Document', verbose_name='Document', related_name='attachments'),
+            field=models.ForeignKey(to='documents.Document', verbose_name='Document', related_name='attachments', on_delete=models.deletion.CASCADE),
         ),
     ]

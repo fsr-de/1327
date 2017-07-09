@@ -136,7 +136,7 @@ revisions.register(Poll, follow=["document_ptr"])
 
 
 class Choice(models.Model):
-	poll = models.ForeignKey(Poll, related_name="choices")
+	poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name="choices")
 	text = models.CharField(max_length=255)
 	description = models.TextField(default="", blank=True)
 	votes = models.IntegerField(default=0)

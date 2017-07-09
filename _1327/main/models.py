@@ -27,9 +27,10 @@ class MenuItem(models.Model):
 	order = models.IntegerField(default=999)
 
 	link = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Link"))
-	document = models.ForeignKey(Document, blank=True, null=True, verbose_name=_("Document"), related_name='menu_items')
+	# should these two be protected?
+	document = models.ForeignKey(Document, blank=True, null=True, on_delete=models.CASCADE, verbose_name=_("Document"), related_name='menu_items')
 
-	parent = models.ForeignKey('self', blank=True, null=True, related_name='children')
+	parent = models.ForeignKey('self', blank=True, null=True, on_delete=models.CASCADE, related_name='children')
 
 	menu_type = models.IntegerField(choices=MENU_TYPES, default=MAIN_MENU)
 
