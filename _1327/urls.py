@@ -14,7 +14,7 @@ urlpatterns = [
 	url(r"^" + settings.POLLS_URL_NAME + "/", include('_1327.polls.urls')),
 	url(r"^documents/", include('_1327.documents.urls')),
 	url(r"^information_pages/", include('_1327.information_pages.urls')),
-	url(r"^login$", auth_views.login, {'template_name': 'login.html', }, name='login'),
+	url(r"^login$", auth_views.LoginView.as_view(template_name='login.html'), name='login'),
 	url(r"^logout$", user_management_views.logout, name='logout'),
 	url(r'^view_as$', user_management_views.view_as, name='view_as'),
 
