@@ -13,6 +13,7 @@ from guardian.utils import get_anonymous_user
 import markdown
 from model_mommy import mommy
 from reversion import revisions
+from reversion.models import Version
 
 from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
 from _1327.information_pages.models import InformationDocument
@@ -70,7 +71,7 @@ class TestRevertion(WebTest):
 
 	def test_only_admin_may_revert(self):
 		document = Document.objects.get()
-		versions = revisions.get_for_object(document)
+		versions = Version.objects.get_for_object(document)
 		self.assertEqual(len(versions), 2)
 
 		user_without_perms = mommy.make(UserProfile)
@@ -109,7 +110,7 @@ class TestRevertion(WebTest):
 
 	def test_revert_document(self):
 		document = Document.objects.get()
-		versions = revisions.get_for_object(document)
+		versions = Version.objects.get_for_object(document)
 		self.assertEqual(len(versions), 2)
 
 		# second step try to revert to old version
@@ -121,7 +122,7 @@ class TestRevertion(WebTest):
 		)
 		self.assertEqual(response.status_code, 200)
 
-		versions = revisions.get_for_object(document)
+		versions = Version.objects.get_for_object(document)
 		self.assertEqual(len(versions), 3)
 		self.assertEqual(versions[0].object.text, "text")
 		self.assertEqual(versions[0].revision.comment, 'reverted to revision "test version"')
@@ -136,7 +137,7 @@ class TestRevertion(WebTest):
 			revisions.set_user(self.user)
 			revisions.set_comment('changed url')
 
-		versions = revisions.get_for_object(document)
+		versions = Version.objects.get_for_object(document)
 		response = self.app.post(
 			reverse('documents:revert'),
 			params={'id': versions[2].pk, 'url_title': document.url_title},

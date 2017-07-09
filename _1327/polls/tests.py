@@ -10,6 +10,7 @@ from django_webtest import WebTest
 from guardian.shortcuts import assign_perm, get_perms
 from model_mommy import mommy
 from reversion import revisions
+from reversion.models import Version
 
 from _1327.polls.models import Choice, Poll
 from _1327.user_management.models import UserProfile
@@ -652,7 +653,7 @@ class PollRevertionTests(WebTest):
 	def test_revert_poll_no_votes(self):
 		poll = Poll.objects.get()
 		self.assertTrue(poll.can_be_reverted)
-		versions = revisions.get_for_object(poll)
+		versions = Version.objects.get_for_object(poll)
 		self.assertEqual(len(versions), 2)
 
 		response = self.app.post(
@@ -671,7 +672,7 @@ class PollRevertionTests(WebTest):
 		)
 		self.assertEqual(response.status_code, 200)
 
-		versions = revisions.get_for_object(poll)
+		versions = Version.objects.get_for_object(poll)
 		self.assertEqual(len(versions), 3)
 
 		response = self.app.get(reverse('versions', args=[poll.url_title]), user=self.user)
@@ -685,7 +686,7 @@ class PollRevertionTests(WebTest):
 		poll.participants.add(self.user)
 		self.assertFalse(poll.can_be_reverted)
 
-		versions = revisions.get_for_object(poll)
+		versions = Version.objects.get_for_object(poll)
 		self.assertEqual(len(versions), 2)
 
 		response = self.app.post(
@@ -705,7 +706,7 @@ class PollRevertionTests(WebTest):
 		)
 		self.assertEqual(response.status_code, 400)
 
-		new_versions = revisions.get_for_object(poll)
+		new_versions = Version.objects.get_for_object(poll)
 		self.assertEqual(len(versions), len(new_versions))
 
 		response = self.app.get(reverse('versions', args=[poll.url_title]), user=self.user)

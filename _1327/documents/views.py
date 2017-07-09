@@ -19,6 +19,7 @@ from guardian.shortcuts import get_objects_for_user
 from guardian.utils import get_anonymous_user
 
 from reversion import revisions
+from reversion.models import Version
 from sendfile import sendfile
 
 from _1327 import settings
@@ -270,7 +271,7 @@ def revert(request):
 	document_url_title = request.POST['url_title']
 	document = get_object_or_404(Document, url_title=document_url_title)
 	check_permissions(document, request.user, [document.edit_permission_name])
-	versions = revisions.get_for_object(document)
+	versions = Version.objects.get_for_object(document)
 
 	if not document.can_be_reverted:
 		raise SuspiciousOperation('This Document can not be reverted!')
@@ -288,7 +289,7 @@ def revert(request):
 
 	revert_version.revision.revert(delete=False)
 	fields = revert_version.field_dict
-	document_class = ContentType.objects.get_for_id(fields.pop('polymorphic_ctype')).model_class()
+	document_class = ContentType.objects.get_for_id(fields.pop('polymorphic_ctype_id')).model_class()
 
 	# Remove all references to parent objects, rename ForeignKeyFields, extract ManyToManyFields.
 	new_fields = fields.copy()

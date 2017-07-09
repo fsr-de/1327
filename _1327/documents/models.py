@@ -9,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from guardian.shortcuts import assign_perm, get_groups_with_perms, get_users_with_perms, remove_perm
 from polymorphic.models import PolymorphicModel
 from reversion import revisions
+from reversion.models import Version
 
 from _1327.documents.markdown_internal_link_pattern import InternalLinkPattern
 from _1327.main.utils import slugify
@@ -95,7 +96,7 @@ class Document(PolymorphicModel):
 
 	def authors(self):
 		authors = set()
-		versions = revisions.get_for_object(self)
+		versions = Version.objects.get_for_object(self)
 		for version in versions:
 			authors.add(version.revision.user)
 		return authors
@@ -152,7 +153,7 @@ class Document(PolymorphicModel):
 
 	@property
 	def last_change(self):
-		last_revision = revisions.get_for_object(self).order_by('revision__date_created').last()
+		last_revision = Version.objects.get_for_object(self).order_by('revision__date_created').last()
 		if last_revision is None:
 			return None
 		return last_revision.revision.date_created

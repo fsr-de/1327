@@ -8,6 +8,7 @@ from guardian.shortcuts import assign_perm, get_perms_for_model, remove_perm
 from guardian.utils import get_anonymous_user
 from model_mommy import mommy
 from reversion import revisions
+from reversion.models import Version
 
 from _1327.documents.models import Document
 from _1327.information_pages.models import InformationDocument
@@ -172,7 +173,7 @@ class TestVersions(WebTest):
 
 	def test_save_version(self):
 		# first get all current versions of the document from the database
-		versions = revisions.get_for_object(self.document)
+		versions = Version.objects.get_for_object(self.document)
 		self.assertEqual(len(versions), 1)
 
 		# get the editor page and add a new revision
@@ -188,7 +189,7 @@ class TestVersions(WebTest):
 		self.assertEqual(response.status_code, 200)
 
 		# check whether number of versions increased
-		versions = revisions.get_for_object(self.document)
+		versions = Version.objects.get_for_object(self.document)
 		self.assertEqual(len(versions), 2)
 
 		# check whether the comment of the version correct
@@ -361,7 +362,7 @@ class TestNewPage(WebTest):
 		document = InformationDocument.objects.get(title=text)
 
 		# check whether number of versions is correct
-		versions = revisions.get_for_object(document)
+		versions = Version.objects.get_for_object(document)
 		self.assertEqual(len(versions), 1)
 
 		# check whether the properties of the new document are correct
