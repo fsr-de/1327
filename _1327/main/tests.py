@@ -408,8 +408,8 @@ class MenuItemTests(WebTest):
 class TestSendRemindersCommand(TestCase):
 
 	def test_remind_users_about_due_unpublished_minutes_documents(self):
-		author_1 = mommy.make(UserProfile)
-		author_2 = mommy.make(UserProfile)
+		author_1 = mommy.make(UserProfile, email='foo@example.com')
+		author_2 = mommy.make(UserProfile, email='bar@example.com')
 		mommy.make(
 			MinutesDocument,
 			date=datetime.date.today() - datetime.timedelta(days=settings.MINUTES_PUBLISH_REMINDER_DAYS),
