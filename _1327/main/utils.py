@@ -9,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from guardian.core import ObjectPermissionChecker
 
 import markdown
+from markdown.extensions import Extension
 from markdown.extensions.toc import TocExtension
 
 
@@ -58,9 +59,16 @@ def abbreviation_explanation_markdown():
 	return "\n" + ("\n".join([str(abbr) for abbr in AbbreviationExplanation.objects.all()]))
 
 
+# see https://pythonhosted.org/Markdown/release-2.6.html#safe_mode-deprecated
+class EscapeHtml(Extension):
+	def extendMarkdown(self, md, md_globals):
+		del md.preprocessors['html_block']
+		del md.inlinePatterns['html']
+
+
 def convert_markdown(text):
 	from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
-	md = markdown.Markdown(safe_mode='escape', extensions=[TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr', 'markdown.extensions.tables'])
+	md = markdown.Markdown(extensions=[EscapeHtml(), TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr', 'markdown.extensions.tables'])
 	return md.convert(text + abbreviation_explanation_markdown()), md.toc
 
 
