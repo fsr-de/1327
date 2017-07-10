@@ -19,8 +19,9 @@ from _1327.user_management.models import UserProfile
 
 class TestDocument(TestCase):
 
-	def setUp(self):
-		self.user = mommy.make(UserProfile)
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = mommy.make(UserProfile)
 
 	def test_slugification(self):
 		document = InformationDocument(title="titlea", text="text")
@@ -35,8 +36,9 @@ class TestDocument(TestCase):
 
 class TestDocumentWeb(WebTest):
 
-	def setUp(self):
-		self.user = mommy.make(UserProfile)
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = mommy.make(UserProfile)
 
 	def test_url_shows_document(self):
 		title = "Document title"
@@ -56,11 +58,12 @@ class TestEditor(WebTest):
 	csrf_checks = False
 	extra_environ = {'HTTP_ACCEPT_LANGUAGE': 'en'}
 
-	def setUp(self):
-		self.user = mommy.make(UserProfile, is_superuser=True)
-		self.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
-		self.document = mommy.make(InformationDocument)
-		self.document.set_all_permissions(mommy.make(Group))
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
+		cls.document = mommy.make(InformationDocument)
+		cls.document.set_all_permissions(mommy.make(Group))
 
 	def test_get_editor(self):
 		user_without_perms = mommy.make(UserProfile)
@@ -148,16 +151,17 @@ class TestEditor(WebTest):
 class TestVersions(WebTest):
 	csrf_checks = False
 
-	def setUp(self):
-		self.user = mommy.make(UserProfile, is_superuser=True)
-		self.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
 
-		self.document = mommy.prepare(InformationDocument)
+		cls.document = mommy.prepare(InformationDocument)
 		with transaction.atomic(), revisions.create_revision():
-			self.document.save()
-			revisions.set_user(self.user)
+			cls.document.save()
+			revisions.set_user(cls.user)
 			revisions.set_comment('test version')
-		self.document.set_all_permissions(mommy.make(Group))
+		cls.document.set_all_permissions(mommy.make(Group))
 
 	def test_get_version_page(self):
 		user_without_perms = mommy.make(UserProfile)
@@ -199,15 +203,16 @@ class TestVersions(WebTest):
 
 class TestPermissions(WebTest):
 
-	def setUp(self):
-		self.user = mommy.make(UserProfile)
-		self.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = mommy.make(UserProfile)
+		cls.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
 
-		self.group = mommy.make(Group, make_m2m=True)
+		cls.group = mommy.make(Group, make_m2m=True)
 		for permission in get_perms_for_model(InformationDocument):
 			permission_name = "{}.{}".format(permission.content_type.app_label, permission.codename)
-			assign_perm(permission_name, self.group)
-		self.group.save()
+			assign_perm(permission_name, cls.group)
+		cls.group.save()
 
 		mommy.make(InformationDocument)
 
@@ -338,8 +343,9 @@ class TestPermissions(WebTest):
 class TestNewPage(WebTest):
 	csrf_checks = False
 
-	def setUp(self):
-		self.user = mommy.make(UserProfile, is_superuser=True)
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = mommy.make(UserProfile, is_superuser=True)
 
 	def test_save_new_page(self):
 		# get the editor page and save the site
@@ -427,11 +433,12 @@ class TestNewPage(WebTest):
 
 class TestUnlinkedList(WebTest):
 
-	def setUp(self):
-		self.user = mommy.make(UserProfile, is_superuser=True)
-		self.informationdocument1 = mommy.make(InformationDocument)
-		self.informationdocument2 = mommy.make(InformationDocument, text="Lorem ipsum [link](document:{}).".format(self.informationdocument1.id))
-		self.menu_item = mommy.make(MenuItem, document=self.informationdocument2)
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.informationdocument1 = mommy.make(InformationDocument)
+		cls.informationdocument2 = mommy.make(InformationDocument, text="Lorem ipsum [link](document:{}).".format(cls.informationdocument1.id))
+		cls.menu_item = mommy.make(MenuItem, document=cls.informationdocument2)
 
 	def test_url_shows_document(self):
 		self.assertTrue(self.informationdocument2.menu_items.count() > 0)

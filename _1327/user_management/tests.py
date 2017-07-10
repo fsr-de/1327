@@ -15,8 +15,9 @@ from .models import UserProfile
 class UsecaseTests(WebTest):
 	extra_environ = {'HTTP_ACCEPT_LANGUAGE': 'en'}
 
-	def setUp(self):
-		self.user = mommy.make(
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = mommy.make(
 			UserProfile,
 			username="user",
 			password="pbkdf2_sha256$12000$uH9Cc7pBkaxQ$XLVGZKTbCyuDlgFQB65Mn5SAm6v/2kjpCTct1td2VTo=")
@@ -109,8 +110,9 @@ class UserImpersonationTests(WebTest):
 	csrf_checks = False
 	extra_environ = {'HTTP_ACCEPT_LANGUAGE': 'en'}
 
-	def setUp(self):
-		self.user = mommy.make(UserProfile, is_superuser=True)
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = mommy.make(UserProfile, is_superuser=True)
 		mommy.make(UserProfile, username='test')
 
 	def test_view_impersonation_page(self):

@@ -7,7 +7,7 @@ from django.core import mail, management
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 from django_webtest import WebTest
-from guardian.shortcuts import assign_perm, remove_perm
+from guardian.shortcuts import assign_perm
 from guardian.utils import get_anonymous_user
 from model_mommy import mommy
 
@@ -62,20 +62,26 @@ class MainPageTests(WebTest):
 
 class MenuItemTests(WebTest):
 
+	@classmethod
+	def setUpTestData(cls):
+		cls.root_user = mommy.make(UserProfile, is_superuser=True)
+		cls.user = mommy.make(UserProfile)
+
+		cls.staff_group = Group.objects.get(name=settings.STAFF_GROUP_NAME)
+		cls.root_user.groups.add(cls.staff_group)
+		cls.user.groups.add(cls.staff_group)
+
+		cls.root_menu_item = mommy.make(MenuItem)
+		cls.sub_item = mommy.make(MenuItem, parent=cls.root_menu_item)
+		cls.sub_sub_item = mommy.make(MenuItem, parent=cls.sub_item)
+
+		assign_perm(cls.sub_item.change_children_permission_name, cls.user, cls.sub_item)
+		assign_perm(cls.sub_item.view_permission_name, cls.user, cls.sub_item)
+
 	def setUp(self):
-		self.root_user = mommy.make(UserProfile, is_superuser=True)
-		self.user = mommy.make(UserProfile)
-
-		self.staff_group = Group.objects.get(name=settings.STAFF_GROUP_NAME)
-		self.root_user.groups.add(self.staff_group)
-		self.user.groups.add(self.staff_group)
-
-		self.root_menu_item = mommy.make(MenuItem)
-		self.sub_item = mommy.make(MenuItem, parent=self.root_menu_item)
-		self.sub_sub_item = mommy.make(MenuItem, parent=self.sub_item)
-
-		assign_perm(self.sub_item.change_children_permission_name, self.user, self.sub_item)
-		assign_perm(self.sub_item.view_permission_name, self.user, self.sub_item)
+		self.root_menu_item.refresh_from_db()
+		self.sub_item.refresh_from_db()
+		self.sub_sub_item.refresh_from_db()
 
 	def test_visit_menu_item_page(self):
 		user = mommy.make(UserProfile)
@@ -279,7 +285,7 @@ class MenuItemTests(WebTest):
 		menu_items = [sub_sub_item, self.sub_sub_item, sub_item]
 		root_menu_items = find_root_menu_items(menu_items)
 
-		self.assertCountEqual(root_menu_items, [self.root_menu_item])
+		self.assertEqual(root_menu_items, set([self.root_menu_item]))
 
 	def test_set_edit_permission_on_menu_item(self):
 		response = self.app.get(reverse('menu_items_index'), user=self.user)
@@ -326,8 +332,6 @@ class MenuItemTests(WebTest):
 	def test_menu_item_ordering(self):
 		self.root_menu_item.order = 2
 		self.root_menu_item.save()
-		remove_perm(self.sub_item.change_children_permission_name, self.user, self.sub_item)
-		self.sub_item.delete()
 
 		mommy.make(MenuItem, order=0)
 		mommy.make(MenuItem, order=1)

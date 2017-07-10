@@ -22,10 +22,11 @@ class TestShortlink(TestCase):
 
 class TestShortlinkWeb(WebTest):
 
-	def setUp(self):
-		self.user = mommy.make(UserProfile)
-		self.document = mommy.make(InformationDocument, text="Internal shortlink example")
-		assign_perm(InformationDocument.VIEW_PERMISSION_NAME, self.user, self.document)
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = mommy.make(UserProfile)
+		cls.document = mommy.make(InformationDocument, text="Internal shortlink example")
+		assign_perm(InformationDocument.VIEW_PERMISSION_NAME, cls.user, cls.document)
 
 	def test_follow_shortlink_external(self):
 		url = "https://github.com"

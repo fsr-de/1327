@@ -15,15 +15,16 @@ from _1327.user_management.models import UserProfile
 class TestEditor(WebTest):
 	csrf_checks = False
 
-	def setUp(self):
+	@classmethod
+	def setUpTestData(cls):
 		num_participants = 8
 
-		self.user = mommy.make(UserProfile, is_superuser=True)
-		self.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
-		self.moderator = mommy.make(UserProfile)
-		self.participants = mommy.make(UserProfile, _quantity=num_participants)
-		self.document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator)
-		self.document.set_all_permissions(mommy.make(Group))
+		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
+		cls.moderator = mommy.make(UserProfile)
+		cls.participants = mommy.make(UserProfile, _quantity=num_participants)
+		cls.document = mommy.make(MinutesDocument, participants=cls.participants, moderator=cls.moderator)
+		cls.document.set_all_permissions(mommy.make(Group))
 
 	def test_get_editor(self):
 		"""
@@ -170,11 +171,12 @@ class TestEditor(WebTest):
 class TestMinutesList(WebTest):
 	csrf_checks = False
 
-	def setUp(self):
-		self.user = mommy.make(UserProfile, is_superuser=True)
-		self.minutes_document = mommy.make(MinutesDocument)
-		self.group = mommy.make(Group)
-		self.minutes_document.set_all_permissions(self.group)
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.minutes_document = mommy.make(MinutesDocument)
+		cls.group = mommy.make(Group)
+		cls.minutes_document.set_all_permissions(cls.group)
 
 	def test_list_permission_display(self):
 		"""
@@ -211,8 +213,9 @@ class TestMinutesList(WebTest):
 class TestNewMinutesDocument(WebTest):
 	csrf_checks = False
 
-	def setUp(self):
-		self.user = mommy.make(UserProfile, is_superuser=True)
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = mommy.make(UserProfile, is_superuser=True)
 
 	def test_save_new_minutes_document(self):
 		# get the editor page and save the site
