@@ -297,13 +297,17 @@ def revert(request):
 		if "_ptr" in key:
 			del new_fields[key]
 			continue
-		if hasattr(document_class, key):
+
+		try:
 			field = getattr(document_class, key).field
-			if isinstance(field, models.ManyToManyField):
-				many_to_many_fields[key] = fields[key]
-			else:
-				new_fields[field.attname] = fields[key]
-			del new_fields[key]
+		except AttributeError:
+			continue
+
+		if isinstance(field, models.ManyToManyField):
+			many_to_many_fields[key] = fields[key]
+		else:
+			new_fields[field.attname] = fields[key]
+		del new_fields[key]
 
 	reverted_document = document_class(**new_fields)
 	with transaction.atomic(), revisions.create_revision():
