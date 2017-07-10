@@ -46,20 +46,24 @@ class PollModelTests(TestCase):
 class PollViewTests(WebTest):
 	csrf_checks = False
 
-	def setUp(self):
-		self.user = mommy.make(UserProfile, is_superuser=True)
-		self.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
-		self.poll = mommy.make(
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
+		cls.poll = mommy.make(
 			Poll,
 			start_date=datetime.date.today(),
 			end_date=datetime.date.today() + datetime.timedelta(days=3),
 		)
 		mommy.make(
 			Choice,
-			poll=self.poll,
+			poll=cls.poll,
 			_quantity=3,
 		)
-		self.poll.set_all_permissions(mommy.make(Group))
+		cls.poll.set_all_permissions(mommy.make(Group))
+
+	def setUp(self):
+		self.poll.refresh_from_db()
 
 	def test_view_all_running_poll_with_insufficient_permissions(self):
 		response = self.app.get(reverse('polls:index'))
@@ -272,19 +276,24 @@ class PollViewTests(WebTest):
 class PollResultTests(WebTest):
 	csrf_checks = False
 
-	def setUp(self):
-		self.user = mommy.make(UserProfile, is_superuser=True)
-		self.poll = mommy.make(
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = mommy.make(UserProfile)
+		cls.poll = mommy.make(
 			Poll,
 			start_date=datetime.date.today(),
 			end_date=datetime.date.today() + datetime.timedelta(days=3),
 		)
 		mommy.make(
 			Choice,
-			poll=self.poll,
+			poll=cls.poll,
 			votes=10,
 			_quantity=3,
 		)
+
+	def setUp(self):
+		self.user.refresh_from_db()
+		self.poll.refresh_from_db()
 
 	def assign_vote_perm(self, user, obj):
 		assign_perm('polls.{vote}'.format(vote=Poll.VOTE_PERMISSION_NAME), user, obj)
@@ -299,26 +308,23 @@ class PollResultTests(WebTest):
 		self.assign_vote_perm(user, obj)
 
 	def test_view_with_insufficient_permissions(self):
-		user_without_perms = mommy.make(UserProfile)
 		response = self.app.get(
 			reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]),
 			expect_errors=True,
-			user=user_without_perms,
+			user=self.user,
 		)
 		self.assertEqual(response.status_code, 403)
 
 	def test_view_result_without_vote(self):
-		user = mommy.make(UserProfile)
-		self.assign_view_vote_perms(user, self.poll)
-		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), user=user)
+		self.assign_view_vote_perms(self.user, self.poll)
+		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), user=self.user)
 		self.assertTemplateUsed(response, 'polls_vote.html')
 
 	def test_view_after_vote(self):
-		user = mommy.make(UserProfile)
-		self.assign_view_vote_perms(user, self.poll)
-		self.poll.participants.add(user)
+		self.assign_view_vote_perms(self.user, self.poll)
+		self.poll.participants.add(self.user)
 
-		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), user=user)
+		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		self.assertTemplateUsed(response, 'polls_results.html')
 
@@ -328,39 +334,35 @@ class PollResultTests(WebTest):
 			self.assertIn(str(choice.votes).encode('utf-8'), response.body)
 
 	def test_view_with_description_of_poll(self):
-		user = mommy.make(UserProfile)
-		self.assign_view_vote_perms(user, self.poll)
+		self.assign_view_vote_perms(self.user, self.poll)
 		self.poll.text = b"a nice description"
-		self.poll.participants.add(user)
+		self.poll.participants.add(self.user)
 		self.poll.save()
 
-		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), user=user)
+		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		self.assertIn(self.poll.text, response.body)
 
 	def test_view_before_poll_has_started(self):
-		user = mommy.make(UserProfile)
-		self.assign_view_vote_perms(user, self.poll)
+		self.assign_view_vote_perms(self.user, self.poll)
 		self.poll.start_date += datetime.timedelta(weeks=1)
 		self.poll.save()
 
-		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), user=user)
+		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		self.assertTemplateUsed(response, 'polls_index.html')
 
 	def test_view_poll_without_vote_permission(self):
-		user = mommy.make(UserProfile)
-		self.assign_view_perm(user, self.poll)
+		self.assign_view_perm(self.user, self.poll)
 
-		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), user=user, expect_errors=True)
+		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), user=self.user, expect_errors=True)
 		self.assertEqual(response.status_code, 200)
 		self.assertTemplateUsed(response, 'polls_results.html')
 
 	def test_vote_poll_without_vote_permission(self):
-		user = mommy.make(UserProfile)
-		self.assign_view_perm(user, self.poll)
+		self.assign_view_perm(self.user, self.poll)
 
-		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), user=user, expect_errors=True)
+		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), user=self.user, expect_errors=True)
 		self.assertEqual(response.status_code, 200)
 		self.assertTemplateUsed(response, 'polls_results.html')
 
@@ -368,19 +370,24 @@ class PollResultTests(WebTest):
 class PollVoteTests(WebTest):
 	csrf_checks = False
 
-	def setUp(self):
-		self.user = mommy.make(UserProfile, is_superuser=True)
-		self.poll = mommy.make(
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.poll = mommy.make(
 			Poll,
 			start_date=datetime.date.today(),
 			end_date=datetime.date.today() + datetime.timedelta(days=3),
 		)
 		mommy.make(
 			Choice,
-			poll=self.poll,
+			poll=cls.poll,
 			votes=10,
 			_quantity=3,
 		)
+
+	def setUp(self):
+		self.user.refresh_from_db()
+		self.poll.refresh_from_db()
 
 	def test_vote_with_insufficient_permissions(self):
 		user_without_perms = mommy.make(UserProfile)
@@ -461,9 +468,7 @@ class PollVoteTests(WebTest):
 		self.poll.max_allowed_number_of_answers = 1
 		self.poll.save()
 
-		data = []
-		for choice in self.poll.choices.all():
-			data.append(('choice', choice.id))
+		data = [('choice', choice.id) for choice in self.poll.choices.all()]
 
 		response = self.app.post(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), params=data, user=self.user)
 		self.assertRedirects(response, reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]))
@@ -545,21 +550,22 @@ class PollVoteTests(WebTest):
 class PollEditTests(WebTest):
 	csrf_checks = False
 
-	def setUp(self):
-		self.user = mommy.make(UserProfile, is_superuser=True)
-		self.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
-		self.poll = mommy.make(
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
+		cls.poll = mommy.make(
 			Poll,
 			start_date=datetime.date.today(),
 			end_date=datetime.date.today() + datetime.timedelta(days=3),
 		)
 		mommy.make(
 			Choice,
-			poll=self.poll,
+			poll=cls.poll,
 			votes=10,
 			_quantity=3,
 		)
-		self.poll.set_all_permissions(mommy.make(Group))
+		cls.poll.set_all_permissions(mommy.make(Group))
 
 	def test_create_two_polls_without_changing_url_title(self):
 		group = mommy.make(Group)
@@ -635,19 +641,20 @@ class PollRevertionTests(WebTest):
 	csrf_checks = False
 	extra_environ = {'HTTP_ACCEPT_LANGUAGE': 'en'}
 
-	def setUp(self):
-		self.user = mommy.make(UserProfile, is_superuser=True)
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = mommy.make(UserProfile, is_superuser=True)
 
-		self.poll = mommy.prepare(Poll, text='text', start_date=datetime.date.today(), end_date=datetime.date.today())
+		cls.poll = mommy.prepare(Poll, text='text', start_date=datetime.date.today(), end_date=datetime.date.today())
 		with transaction.atomic(), revisions.create_revision():
-			self.poll.save()
-			revisions.set_user(self.user)
+			cls.poll.save()
+			revisions.set_user(cls.user)
 			revisions.set_comment('test version')
 
-		self.poll.text = 'very goood and nice text'
+		cls.poll.text = 'very goood and nice text'
 		with transaction.atomic(), revisions.create_revision():
-			self.poll.save()
-			revisions.set_user(self.user)
+			cls.poll.save()
+			revisions.set_user(cls.user)
 			revisions.set_comment('change text')
 
 	def test_revert_poll_no_votes(self):
