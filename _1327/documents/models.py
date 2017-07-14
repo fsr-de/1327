@@ -184,9 +184,9 @@ class Document(PolymorphicModel):
 
 class TemporaryDocumentText(models.Model):
 	text = models.TextField()
-	document = models.ForeignKey(Document, on_delete=models.PROTECT, related_name='document')
+	document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name='document')
 	created = models.DateTimeField(auto_now=True)
-	author = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name='temporary_documents')
+	author = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='temporary_documents')
 
 
 class Attachment(models.Model):
