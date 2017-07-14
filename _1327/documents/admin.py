@@ -11,7 +11,7 @@ from .models import Attachment, Document
 
 class DocumentAdmin(GuardedModelAdmin, VersionAdmin, PolymorphicParentModelAdmin):
 	base_model = Document
-	child_models = (InformationDocument, MinutesDocument)  # no Polls in here?
+	child_models = (InformationDocument, MinutesDocument)
 	list_display = ('title', 'url_title')
 
 
