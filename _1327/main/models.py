@@ -27,8 +27,8 @@ class MenuItem(models.Model):
 	order = models.IntegerField(default=999)
 
 	link = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Link"))
-	# should these two be protected?
-	document = models.ForeignKey(Document, blank=True, null=True, on_delete=models.CASCADE, verbose_name=_("Document"), related_name='menu_items')
+
+	document = models.ForeignKey(Document, blank=True, null=True, on_delete=models.PROTECT, verbose_name=_("Document"), related_name='menu_items')
 
 	parent = models.ForeignKey('self', blank=True, null=True, on_delete=models.CASCADE, related_name='children')
 
