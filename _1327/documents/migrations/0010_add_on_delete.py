@@ -17,11 +17,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='temporarydocumenttext',
             name='author',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='temporary_documents', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='temporary_documents', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AlterField(
             model_name='temporarydocumenttext',
             name='document',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='document', to='documents.Document'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='document', to='documents.Document'),
         ),
     ]

@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('link', models.CharField(null=True, verbose_name='Link', blank=True, max_length=255)),
                 ('staff_only', models.BooleanField(verbose_name='Display for staff only', default=False)),
                 ('menu_type', models.IntegerField(choices=[(1, 'Main Menu'), (2, 'Footer')], default=1)),
-                ('document', models.ForeignKey(to='documents.Document', null=True, verbose_name='Document', blank=True, on_delete=models.deletion.CASCADE)),
+                ('document', models.ForeignKey(to='documents.Document', null=True, verbose_name='Document', blank=True, on_delete=models.deletion.PROTECT)),
                 ('parent', models.ForeignKey(to='main.MenuItem', null=True, related_name='children', blank=True, on_delete=models.deletion.CASCADE)),
             ],
             options={

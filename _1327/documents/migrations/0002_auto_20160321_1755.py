@@ -17,12 +17,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='temporarydocumenttext',
             name='author',
-            field=models.ForeignKey(related_name='temporary_documents', to=settings.AUTH_USER_MODEL, on_delete=models.deletion.PROTECT),
+            field=models.ForeignKey(related_name='temporary_documents', to=settings.AUTH_USER_MODEL, on_delete=models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='temporarydocumenttext',
             name='document',
-            field=models.ForeignKey(related_name='document', to='documents.Document', on_delete=models.deletion.PROTECT),
+            field=models.ForeignKey(related_name='document', to='documents.Document', on_delete=models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='document',
