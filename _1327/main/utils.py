@@ -19,13 +19,25 @@ URL_TITLE_REGEX = re.compile(r'^[a-zA-Z0-9-_\/]*$')
 def save_main_menu_item_order(main_menu_items, user, parent_id=None):
 	from .models import MenuItem
 	order_counter = 0
+
+	# check whether we are allowed to change all children of the current level
+	# in case we are not allowed to do that, we have to make sure, that we are not altering the original
+	# order of the menu items, as we are not allowed to do so.
+	all_menu_items_on_this_level = MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU, parent_id=parent_id)
+	menu_item_order_map = {menu_item: menu_item.order for menu_item in all_menu_items_on_this_level if menu_item.can_edit(user)}
+	use_old_order = len(menu_item_order_map) != all_menu_items_on_this_level.count()
+
 	for item in main_menu_items:
 		item_id = item['id']
 		menu_item = MenuItem.objects.get(pk=item_id)
 		if menu_item.can_edit(user):
 			menu_item.menu_type = MenuItem.MAIN_MENU
-			menu_item.order = order_counter
+			if use_old_order:
+				menu_item.order = menu_item_order_map[menu_item]
+			else:
+				menu_item.order = order_counter
 			order_counter += 1
+
 			if parent_id:
 				parent = MenuItem.objects.get(pk=parent_id)
 			else:
