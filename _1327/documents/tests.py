@@ -599,6 +599,16 @@ class TestAttachments(WebTest):
 			attachment.file.delete()
 		self.attachment.file.delete()
 
+	def test_view_attachment_overview_page(self):
+		response = self.app.get(reverse(self.document.get_attachments_url_name(), args=[self.document.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		# there should be our attachment
+		self.assertIn(self.attachment.displayname, response.body.decode('utf-8'))
+
+		# there should be no toc
+		self.assertNotIn("toc hidden-print", response.body.decode('utf-8'))
+
 	def test_create_attachment(self):
 		upload_files = [
 			('file', 'test.txt', bytes(tempfile.SpooledTemporaryFile(max_size=10000, prefix='txt', mode='r')))
