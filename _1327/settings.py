@@ -265,16 +265,16 @@ STATIC_PRECOMPILER_COMPILERS = [
 # Set this to the ID of the document that shall be shown as Main Page
 MAIN_PAGE_ID = -1
 
-# Create a localsettings.py to override settings per machine or user, e.g. for
-# development or different settings in deployments using multiple servers.
-try:
-	from _1327.localsettings import *  # noqa
-except ImportError:
-	pass
-
-
 TESTING = 'test' in sys.argv
 
 if TESTING:
 	DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3'}  # use sqlite to speed tests up
 	logging.disable(logging.CRITICAL)  # disable logging, primarily to prevent console spam
+
+
+# Create a localsettings.py to override settings per machine or user, e.g. for
+# development or different settings in deployments using multiple servers.
+_LOCAL_SETTINGS_FILENAME = os.path.join(BASE_DIR, "localsettings.py")
+if os.path.exists(_LOCAL_SETTINGS_FILENAME):
+	exec(compile(open(_LOCAL_SETTINGS_FILENAME, "rb").read(), _LOCAL_SETTINGS_FILENAME, 'exec'))
+del _LOCAL_SETTINGS_FILENAME
