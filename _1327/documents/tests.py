@@ -249,17 +249,20 @@ class TestAutosave(WebTest):
 		)
 		self.assertEqual(response.status_code, 200)
 
+		self.assertEqual(TemporaryDocumentText.objects.count(), 1)
+		autosave = TemporaryDocumentText.objects.first()
+
 		# on the new page site should be a banner with a restore link
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
-		self.assertIn((reverse('edit', args=[url_title]) + '?restore'), str(response.body))
+		self.assertIn((reverse('edit', args=[url_title]) + '?restore={}'.format(autosave.id)), str(response.body))
 
 		user2 = mommy.make(UserProfile, is_superuser=True)
 		user2.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
 		# on the new page site should be a banner with a restore link but not for another user
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=user2)
 		self.assertEqual(response.status_code, 200)
-		self.assertNotIn((reverse('edit', args=[url_title]) + '?restore'), str(response.body))
+		self.assertNotIn((reverse('edit', args=[url_title]) + '?restore={}'.format(autosave.id)), str(response.body))
 
 		# create second document
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
@@ -278,8 +281,8 @@ class TestAutosave(WebTest):
 
 		# on the new page site should be a banner with a restore link for both sites
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
-		self.assertIn((reverse('edit', args=[url_title]) + '?restore'), str(response.body))
-		self.assertIn((reverse('edit', args=[url_title2]) + '?restore'), str(response.body))
+		for urltitle, autosave in zip([url_title, url_title2], TemporaryDocumentText.objects.all()):
+			self.assertIn((reverse('edit', args=[urltitle]) + '?restore={}'.format(autosave.id)), str(response.body))
 
 		# if not loading autosave text should be still empty
 		response = self.app.get(reverse('edit', args=[url_title]), user=self.user)
@@ -313,14 +316,17 @@ class TestAutosave(WebTest):
 		)
 		self.assertEqual(response.status_code, 200)
 
+		self.assertEqual(TemporaryDocumentText.objects.count(), 1)
+		autosave = TemporaryDocumentText.objects.first()
+
 		# there should be no restore link on creation page for different document type
 		response = self.app.get(reverse('documents:create', args=['poll']), user=self.user)
-		self.assertNotIn((reverse('edit', args=[url_title]) + '?restore'), str(response.body))
+		self.assertNotIn((reverse('edit', args=[url_title]) + '?restore={}'.format(autosave.id)), str(response.body))
 
 		# on the new page site should be a banner with a restore link
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
-		self.assertIn((reverse('edit', args=[url_title]) + '?restore'), str(response.body))
+		self.assertIn((reverse('edit', args=[url_title]) + '?restore={}'.format(autosave.id)), str(response.body))
 
 	def test_autosave_not_possible_to_view_without_permissions(self):
 		autosave = mommy.make(TemporaryDocumentText, document=self.document, author=self.user)

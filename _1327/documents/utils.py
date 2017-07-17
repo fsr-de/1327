@@ -23,7 +23,7 @@ def get_new_autosaved_pages_for_user(user, content_type):
 		if ContentType.objects.get_for_model(document) != content_type:
 			continue
 		if len(Version.objects.get_for_object(document)) == 0:
-			autosaved_pages.append(document)
+			autosaved_pages.append(temp_document)
 	return autosaved_pages
 
 
