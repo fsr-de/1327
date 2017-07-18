@@ -20,11 +20,12 @@ class TestEditor(WebTest):
 		num_participants = 8
 
 		cls.user = mommy.make(UserProfile, is_superuser=True)
-		cls.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
+		staff_group = Group.objects.get(name=settings.STAFF_GROUP_NAME)
+		cls.user.groups.add(staff_group)
 		cls.moderator = mommy.make(UserProfile)
 		cls.participants = mommy.make(UserProfile, _quantity=num_participants)
 		cls.document = mommy.make(MinutesDocument, participants=cls.participants, moderator=cls.moderator)
-		cls.document.set_all_permissions(mommy.make(Group))
+		assign_perm("minutes.add_minutesdocument", staff_group)
 
 	def test_get_editor(self):
 		"""
@@ -216,11 +217,12 @@ class TestNewMinutesDocument(WebTest):
 	@classmethod
 	def setUpTestData(cls):
 		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.group = mommy.make(Group)
+		cls.user.groups.add(cls.group)
+		assign_perm("minutes.add_minutesdocument", cls.group)
 
 	def test_save_new_minutes_document(self):
 		# get the editor page and save the site
-		group = mommy.make(Group)
-		group.user_set.add(self.user)
 		response = self.app.get(reverse('documents:create', args=['minutesdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
@@ -231,7 +233,7 @@ class TestNewMinutesDocument(WebTest):
 		form.set('participants', [self.user.pk])
 		form.set('comment', text)
 		form.set('url_title', slugify(text))
-		form.set('group', group.pk)
+		form.set('group', self.group.pk)
 
 		response = form.submit().follow()
 		self.assertEqual(response.status_code, 200)
@@ -248,8 +250,6 @@ class TestNewMinutesDocument(WebTest):
 		self.assertEqual(versions[0].revision.comment, text)
 
 	def test_group_field_hidden_when_user_has_one_group(self):
-		group = mommy.make(Group)
-		self.user.groups.add(group)
 		response = self.app.get(reverse('documents:create', args=['minutesdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
@@ -257,8 +257,9 @@ class TestNewMinutesDocument(WebTest):
 		self.assertTrue("Hidden" in str(form.fields['group'][0]))
 
 	def test_group_field_not_hidden_when_user_has_multiple_groups(self):
-		groups = mommy.make(Group, _quantity=2)
-		self.user.groups.add(*groups)
+		other_group = mommy.make(Group)
+		self.user.groups.add(other_group)
+		assign_perm("minutes.add_minutesdocument", other_group)
 		response = self.app.get(reverse('documents:create', args=['minutesdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 

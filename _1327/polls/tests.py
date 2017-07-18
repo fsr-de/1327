@@ -1,6 +1,5 @@
 import datetime
 
-from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import transaction
 from django.template.defaultfilters import floatformat
@@ -49,7 +48,6 @@ class PollViewTests(WebTest):
 	@classmethod
 	def setUpTestData(cls):
 		cls.user = mommy.make(UserProfile, is_superuser=True)
-		cls.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
 		cls.poll = mommy.make(
 			Poll,
 			start_date=datetime.date.today(),
@@ -60,10 +58,10 @@ class PollViewTests(WebTest):
 			poll=cls.poll,
 			_quantity=3,
 		)
-		cls.poll.set_all_permissions(mommy.make(Group))
-
-	def setUp(self):
-		self.poll.refresh_from_db()
+		cls.group = mommy.make(Group)
+		cls.poll.set_all_permissions(cls.group)
+		cls.user.groups.add(cls.group)
+		assign_perm("polls.add_poll", cls.group)
 
 	def test_view_all_running_poll_with_insufficient_permissions(self):
 		response = self.app.get(reverse('polls:index'))
@@ -114,8 +112,6 @@ class PollViewTests(WebTest):
 		self.assertIn(b"There are no results you can see.", response.body)
 
 	def test_create_poll(self):
-		group = mommy.make(Group)
-		group.user_set.add(self.user)
 		response = self.app.get(reverse('documents:create', args=['poll']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
@@ -132,7 +128,7 @@ class PollViewTests(WebTest):
 		form['start_date'] = '2016-01-01'
 		form['end_date'] = '2088-01-01'
 		form['comment'] = 'sample comment'
-		form['group'] = group.pk
+		form['group'] = self.group.pk
 
 		self.assertFalse("Hidden" in str(form.fields['vote_groups'][0]))
 
@@ -150,8 +146,9 @@ class PollViewTests(WebTest):
 		self.assertTrue("Hidden" in str(form.fields['group'][0]))
 
 	def test_group_field_not_hidden_when_user_has_multiple_groups(self):
-		groups = mommy.make(Group, _quantity=2)
-		self.user.groups.add(*groups)
+		other_group = mommy.make(Group)
+		self.user.groups.add(other_group)
+		assign_perm("polls.add_poll", other_group)
 		response = self.app.get(reverse('documents:create', args=['poll']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
@@ -159,8 +156,6 @@ class PollViewTests(WebTest):
 		self.assertFalse("Hidden" in str(form.fields['group'][0]))
 
 	def test_create_poll_with_permissions(self):
-		group = mommy.make(Group)
-		group.user_set.add(self.user)
 		response = self.app.get(reverse('documents:create', args=['poll']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
@@ -177,16 +172,16 @@ class PollViewTests(WebTest):
 		form['start_date'] = '2016-01-01'
 		form['end_date'] = '2088-01-01'
 		form['comment'] = 'sample comment'
-		form['group'] = group.pk
-		form['vote_groups'] = [group.pk]
+		form['group'] = self.group.pk
+		form['vote_groups'] = [self.group.pk]
 
 		response = form.submit()
 		self.assertEqual(response.status_code, 302)
 
 		poll = Poll.objects.get(title='TestPoll')
 		self.assertEqual(poll.choices.count(), 2)
-		group_permissions = ["polls.{}".format(name) for name in get_perms(group, poll)]
-		self.assertEqual(len(group_permissions), 4)
+		group_permissions = ["polls.{}".format(name) for name in get_perms(self.group, poll)]
+		self.assertEqual(len(group_permissions), 5)
 		self.assertIn(poll.edit_permission_name, group_permissions)
 		self.assertIn(poll.vote_permission_name, group_permissions)
 		self.assertIn(poll.view_permission_name, group_permissions)
@@ -553,7 +548,6 @@ class PollEditTests(WebTest):
 	@classmethod
 	def setUpTestData(cls):
 		cls.user = mommy.make(UserProfile, is_superuser=True)
-		cls.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
 		cls.poll = mommy.make(
 			Poll,
 			start_date=datetime.date.today(),
@@ -565,11 +559,12 @@ class PollEditTests(WebTest):
 			votes=10,
 			_quantity=3,
 		)
-		cls.poll.set_all_permissions(mommy.make(Group))
+		cls.group = mommy.make(Group)
+		cls.poll.set_all_permissions(cls.group)
+		cls.user.groups.add(cls.group)
+		assign_perm("polls.add_poll", cls.group)
 
 	def test_create_two_polls_without_changing_url_title(self):
-		group = mommy.make(Group)
-		group.user_set.add(self.user)
 		response = self.app.get(reverse('documents:create', args=['poll']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
@@ -579,7 +574,7 @@ class PollEditTests(WebTest):
 		form['choices-1-text'] = 'test choice 2'
 		form['text'] = 'Description'
 		form['comment'] = 'sample comment'
-		form['group'] = group.pk
+		form['group'] = self.group.pk
 		response = form.submit().follow()
 		self.assertEqual(response.status_code, 200)
 		self.assertEqual(Poll.objects.count(), 2)
