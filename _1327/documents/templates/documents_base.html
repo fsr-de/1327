@@ -53,11 +53,11 @@
 			<p class="toc-heading">{% trans "Table of Contents" %}</p>
 			{{ toc|safe }}
 		</div>
-	{% endif %}
-	{% if attachments %}
-		<div class="toc hidden-print">
-			<ul><li><a href="#attachments" title="{% trans "Attachments" %}">{% trans "Attachments" %}</a></li></ul>
-		</div>
+		{% if attachments %}
+			<div class="toc hidden-print">
+				<ul><li><a href="#attachments" title="{% trans "Attachments" %}">{% trans "Attachments" %}</a></li></ul>
+			</div>
+		{% endif %}
 	{% endif %}
 {% endblock %}
 
