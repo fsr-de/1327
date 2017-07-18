@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import transaction
 from django.test import TestCase
@@ -61,9 +60,11 @@ class TestEditor(WebTest):
 	@classmethod
 	def setUpTestData(cls):
 		cls.user = mommy.make(UserProfile, is_superuser=True)
-		cls.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
 		cls.document = mommy.make(InformationDocument)
+		cls.group = mommy.make(Group)
+		cls.user.groups.add(cls.group)
 		cls.document.set_all_permissions(mommy.make(Group))
+		assign_perm("information_pages.add_informationdocument", cls.group)
 
 	def test_get_editor(self):
 		user_without_perms = mommy.make(UserProfile)
@@ -114,7 +115,6 @@ class TestEditor(WebTest):
 
 	def test_editor_permissions_for_single_user(self):
 		test_user = mommy.make(UserProfile)
-		test_user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
 
 		assign_perm(InformationDocument.VIEW_PERMISSION_NAME, test_user, self.document)
 
@@ -154,14 +154,15 @@ class TestVersions(WebTest):
 	@classmethod
 	def setUpTestData(cls):
 		cls.user = mommy.make(UserProfile, is_superuser=True)
-		cls.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
-
 		cls.document = mommy.prepare(InformationDocument)
 		with transaction.atomic(), revisions.create_revision():
 			cls.document.save()
 			revisions.set_user(cls.user)
 			revisions.set_comment('test version')
+		cls.group = mommy.make(Group)
+		cls.user.groups.add(cls.group)
 		cls.document.set_all_permissions(mommy.make(Group))
+		assign_perm("information_pages.add_informationdocument", cls.group)
 
 	def test_get_version_page(self):
 		user_without_perms = mommy.make(UserProfile)
@@ -206,8 +207,6 @@ class TestPermissions(WebTest):
 	@classmethod
 	def setUpTestData(cls):
 		cls.user = mommy.make(UserProfile)
-		cls.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
-
 		cls.group = mommy.make(Group, make_m2m=True)
 		for permission in get_perms_for_model(InformationDocument):
 			permission_name = "{}.{}".format(permission.content_type.app_label, permission.codename)
@@ -282,25 +281,18 @@ class TestPermissions(WebTest):
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user, status=403)
 		self.assertEqual(response.status_code, 403)
 
-		# grant add and change permission to that user
-		assign_perm('information_pages.add_informationdocument', self.user)
-		assign_perm('information_pages.change_informationdocument', self.user)
-
-		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
-		self.assertEqual(response.status_code, 200)
-		remove_perm('information_pages.add_informationdocument', self.user)
-		remove_perm('information_pages.change_informationdocument', self.user)
-
-		# check that user is not allowed to see page anymore
-		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user, status=403)
-		self.assertEqual(response.status_code, 403)
-
-		# add user to test group and test that he is now allowed to create a information document
+		# add user to group that has add permission
 		self.user.groups.add(self.group)
 		self.user.save()
 
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
+		# remove add permission
+		remove_perm('information_pages.add_informationdocument', self.group)
+
+		# check that user is not allowed to see page anymore
+		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user, status=403)
+		self.assertEqual(response.status_code, 403)
 
 	def test_create_permissions_for_anonymous_user(self):
 		anonymous_user = get_anonymous_user()
@@ -309,8 +301,7 @@ class TestPermissions(WebTest):
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=anonymous_user, status=403)
 		self.assertEqual(response.status_code, 403)
 
-		# allow anonymous users to see that document and test that
-		assign_perm('information_pages.add_informationdocument', anonymous_user)
+		# allow anonymous users to edit that document and test that
 		assign_perm('information_pages.change_informationdocument', anonymous_user)
 
 		# it should still not work
@@ -318,26 +309,18 @@ class TestPermissions(WebTest):
 		self.assertEqual(response.status_code, 403)
 
 		# the user also needs to be in a group that allows him to create documents
-		anonymous_user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
+		anonymous_user.groups.add(self.group)
 
 		# it should work now
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=anonymous_user)
 		self.assertEqual(response.status_code, 200)
 
-		anonymous_user.groups.remove(Group.objects.get(name=settings.STAFF_GROUP_NAME))
-		remove_perm('information_pages.add_informationdocument', anonymous_user)
+		anonymous_user.groups.remove(self.group)
 		remove_perm('information_pages.change_informationdocument', anonymous_user)
 
 		# check that anonymous user is not allowed to see page anymore
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=anonymous_user, status=403)
 		self.assertEqual(response.status_code, 403)
-
-		# test the same with group
-		anonymous_user.groups.add(self.group)
-		anonymous_user.save()
-
-		response = self.app.get(reverse('documents:create', args=['informationdocument']))
-		self.assertEqual(response.status_code, 200)
 
 
 class TestNewPage(WebTest):
@@ -346,11 +329,12 @@ class TestNewPage(WebTest):
 	@classmethod
 	def setUpTestData(cls):
 		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.group = mommy.make(Group)
+		cls.user.groups.add(cls.group)
+		assign_perm("information_pages.add_informationdocument", cls.group)
 
 	def test_save_new_page(self):
 		# get the editor page and save the site
-		group = mommy.make(Group)
-		group.user_set.add(self.user)
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
@@ -360,7 +344,7 @@ class TestNewPage(WebTest):
 		form.set('title', text)
 		form.set('comment', text)
 		form.set('url_title', slugify(text))
-		form.set('group', group.pk)
+		form.set('group', self.group.pk)
 
 		response = form.submit().follow()
 		self.assertEqual(response.status_code, 200)
@@ -378,8 +362,6 @@ class TestNewPage(WebTest):
 
 	def test_save_new_page_with_slash_url(self):
 		# get the editor page and save the site
-		group = mommy.make(Group)
-		group.user_set.add(self.user)
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
@@ -390,7 +372,7 @@ class TestNewPage(WebTest):
 		form.set('title', text)
 		form.set('comment', text)
 		form.set('url_title', url)
-		form.set('group', group.pk)
+		form.set('group', self.group.pk)
 
 		response = form.submit().follow()
 		self.assertEqual(response.status_code, 200)
@@ -413,8 +395,6 @@ class TestNewPage(WebTest):
 		self.assertTemplateUsed(response, 'documents_edit.html')
 
 	def test_group_field_hidden_when_user_has_one_group(self):
-		group = mommy.make(Group)
-		self.user.groups.add(group)
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
@@ -422,8 +402,9 @@ class TestNewPage(WebTest):
 		self.assertTrue("Hidden" in str(form.fields['group'][0]))
 
 	def test_group_field_not_hidden_when_user_has_multiple_groups(self):
-		groups = mommy.make(Group, _quantity=2)
-		self.user.groups.add(*groups)
+		other_group = mommy.make(Group)
+		self.user.groups.add(other_group)
+		assign_perm("information_pages.add_informationdocument", other_group)
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
