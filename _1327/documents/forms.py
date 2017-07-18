@@ -2,7 +2,6 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import PermissionDenied, ValidationError
 from django.forms import BaseInlineFormSet
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -22,39 +21,14 @@ class DocumentForm(forms.ModelForm):
 		fields = ['title', 'text', 'url_title', 'group', 'comment']
 
 	def __init__(self, *args, **kwargs):
-		user = kwargs.pop('user', None)
-		creation = kwargs.pop('creation', None)
+		kwargs.pop('user', None)
+		kwargs.pop('creation', None)
 		super().__init__(*args, **kwargs)
-		staff = Group.objects.get(name=settings.STAFF_GROUP_NAME)
-
-		self.user_groups = user.groups.exclude(name__in=settings.GROUPS_HIDDEN_DURING_CREATION)
-		if self.user_groups.count() == 0:
-			# The user should not be able to view that page, as he is not in any group that might be able to create
-			# content
-			raise PermissionDenied
-
-		self.fields['group'].queryset = self.user_groups
-		self.fields['group'].widget.attrs['class'] = 'select2-selection'
-		if creation:
-			if len(self.user_groups) == 1:
-				self.fields['group'].initial = self.user_groups[0]
-				self.fields['group'].widget = forms.HiddenInput()
-			elif staff in self.user_groups and not self.fields['group'].initial:
-				self.fields['group'].initial = staff
-		else:
-			self.fields['group'].widget = forms.HiddenInput()
-			self.fields['group'].required = False
 
 	def clean_url_title(self):
 		super().clean()
 		url_title = self.cleaned_data['url_title'].lower()
 		return slugify_and_clean_url_title(self.instance, url_title)
-
-	def clean_group(self):
-		value = self.cleaned_data['group']
-		if value and value not in self.user_groups:
-			raise ValidationError(_("You are not a member of this group!"))
-		return value
 
 	@classmethod
 	def get_formset_factory(cls):
