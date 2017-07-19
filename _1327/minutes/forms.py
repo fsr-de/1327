@@ -1,11 +1,11 @@
 from django import forms
-from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.exceptions import PermissionDenied
 from django.forms import inlineformset_factory
 
 from _1327.documents.forms import DocumentForm
 from _1327.minutes.models import Guest, MinutesDocument
+from _1327.minutes.utils import get_last_minutes_document_for_group
 
 
 class MinutesDocumentForm(DocumentForm):
@@ -17,8 +17,8 @@ class MinutesDocumentForm(DocumentForm):
 	def __init__(self, *args, **kwargs):
 		user = kwargs.pop('user', None)
 		creation = kwargs.pop('creation', None)
+		creation_group = kwargs.pop('creation_group', None)
 		super().__init__(*args, **kwargs)
-		staff = Group.objects.get(name=settings.STAFF_GROUP_NAME)
 
 		if user.is_superuser:
 			permitted_groups = Group.objects.filter(permissions__codename="add_minutesdocument")
@@ -30,18 +30,25 @@ class MinutesDocumentForm(DocumentForm):
 
 		self.fields['group'].queryset = permitted_groups.all()
 		self.fields['group'].widget.attrs['class'] = 'select2-selection'
-		if creation:
+		if creation and creation_group:
 			if len(permitted_groups.all()) == 1:
 				self.fields['group'].initial = permitted_groups.first()
 				self.fields['group'].widget = forms.HiddenInput()
-			elif staff in permitted_groups.all() and not self.fields['group'].initial:
-				self.fields['group'].initial = staff
+			elif not self.fields['group'].initial:
+				self.fields['group'].initial = creation_group
+
+			last_minutes_document = get_last_minutes_document_for_group(creation_group)
+			if last_minutes_document:
+				self.initial['moderator'] = last_minutes_document.moderator
+				self.initial['title'] = last_minutes_document.title
+			else:
+				self.initial['moderator'] = user
 		else:
 			self.fields['group'].widget = forms.HiddenInput()
 			self.fields['group'].required = False
 
-		if not self.instance.participants.exists():
-			self.initial['participants'] = [user.id for user in Group.objects.get(name=settings.STAFF_GROUP_NAME).user_set.all()]
+		if not self.instance.participants.exists() and creation_group:
+			self.initial['participants'] = [user.id for user in creation_group.user_set.all()]
 
 		self.fields['moderator'].widget.attrs['class'] = 'select2-selection-clearable'
 		self.fields['author'].widget.attrs['class'] = 'select2-selection'

@@ -58,15 +58,23 @@
 						<li class="dropdown pull-right config-menu">
 							<span class="glyphicon glyphicon-menu-hamburger"></span>
 							<ul class="dropdown-menu">
-								<li class="disabled"><a href="#">{% trans "Create content" %}</a></li>
 								{% if CAN_CREATE_INFORMATIONPAGE %}
-									<li class="indented"><a href="{% url 'documents:create' 'informationdocument'%}">{% trans "Information page" %}</a></li>
-								{% endif %}
-								{% if CAN_CREATE_MINUTES %}
-									<li class="indented"><a href="{% url 'documents:create' 'minutesdocument' %}">{% blocktrans count counter=1 %}Minutes{% plural %}Minutes{% endblocktrans %}</a></li>
+									<li><a href="{% url 'documents:create' 'informationdocument'%}">{% trans "Create information page" %}</a></li>
 								{% endif %}
 								{% if CAN_CREATE_POLL %}
-									<li class="indented"><a href="{% url 'documents:create' 'poll' %}">{% trans "Poll" %}</a></li>
+									<li><a href="{% url 'documents:create' 'poll' %}">{% trans "Create poll" %}</a></li>
+								{% endif %}
+								{% if CAN_CREATE_MINUTES %}
+									{% if CAN_CREATE_MINUTES|length > 1 %}
+										<li class="disabled"><a href="#">{% trans "Create minutes" %}</a></li>
+										<ul class="sublist">
+											{% for group in CAN_CREATE_MINUTES %}
+												<li><a href="{% url 'documents:create' 'minutesdocument' %}?group={{ group.id }}">{{ group.name }}</a></li>
+											{% endfor %}
+										</ul>
+									{% else %}
+										<li><a href="{% url 'documents:create' 'minutesdocument' %}?group={{ CAN_CREATE_MINUTES.first.id }}">{% trans "Create minutes" %}</a></li>
+									{% endif %}
 								{% endif %}
 								{% if CAN_CHANGE_MENU_ITEMS or CAN_CREATE_INFORMATIONPAGE %}
 									<li role="separator" class="divider"></li>
