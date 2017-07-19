@@ -66,7 +66,7 @@ def can_create_informationpage(request):
 
 
 def can_create_minutes(request):
-	return {'CAN_CREATE_MINUTES': request.user.has_perm("minutes.add_minutesdocument")}
+	return {'CAN_CREATE_MINUTES': request.user.groups.filter(permissions__codename="add_minutesdocument")}
 
 
 def can_create_poll(request):

@@ -19,6 +19,7 @@ class PollForm(DocumentForm):
 	def __init__(self, *args, **kwargs):
 		user = kwargs.pop('user', None)
 		creation = kwargs.pop('creation', None)
+		kwargs.pop('creation_group', None)
 		super().__init__(*args, **kwargs)
 		staff = Group.objects.get(name=settings.STAFF_GROUP_NAME)
 

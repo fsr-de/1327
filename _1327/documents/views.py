@@ -51,8 +51,6 @@ def create(request, document_type):
 		}
 		if hasattr(model_class, 'author'):
 			kwargs['author'] = request.user
-		if hasattr(model_class, 'moderator'):
-			kwargs['moderator'] = request.user
 		model_class.objects.get_or_create(**kwargs)
 		new_autosaved_pages = get_new_autosaved_pages_for_user(request.user, content_type)
 		initial = {
@@ -82,7 +80,12 @@ def edit(request, title, new_autosaved_pages=None, initial=None):
 	else:
 		template_name = "documents_edit.html"
 
-	success, form = handle_edit(request, document, formset, initial)
+	try:
+		creation_group = request.user.groups.get(id=request.GET.get('group', False))
+	except Group.DoesNotExist:
+		creation_group = None
+
+	success, form = handle_edit(request, document, formset, initial, creation_group=creation_group)
 	__, attachment_form, __ = handle_attachment(request, document)
 
 	if success:

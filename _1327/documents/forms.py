@@ -23,6 +23,7 @@ class DocumentForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
 		kwargs.pop('user', None)
 		kwargs.pop('creation', None)
+		kwargs.pop('creation_group', None)
 		super().__init__(*args, **kwargs)
 
 	def clean_url_title(self):
