@@ -216,41 +216,75 @@ class TestNewMinutesDocument(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.user = mommy.make(UserProfile)
 		cls.group = mommy.make(Group)
 		cls.user.groups.add(cls.group)
 		assign_perm("minutes.add_minutesdocument", cls.group)
 
-	def test_save_new_minutes_document(self):
+		# add another user to group
+		cls.group.user_set.add(mommy.make(UserProfile))
+
+	def test_save_first_minutes_document(self):
 		# get the editor page and save the site
-		response = self.app.get(reverse('documents:create', args=['minutesdocument']), user=self.user)
+		response = self.app.get(reverse('documents:create', args=['minutesdocument']) + '?group={}'.format(self.group.id), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
 		form = response.forms[0]
 		text = "Lorem ipsum"
 		form.set('text', text)
-		form.set('title', text)
-		form.set('participants', [self.user.pk])
 		form.set('comment', text)
 		form.set('url_title', slugify(text))
-		form.set('group', self.group.pk)
 
 		response = form.submit().follow()
 		self.assertEqual(response.status_code, 200)
 
-		document = MinutesDocument.objects.get(title=text)
+		document = MinutesDocument.objects.get(url_title=slugify(text))
 
 		# check whether number of versions is correct
 		versions = Version.objects.get_for_object(document)
 		self.assertEqual(len(versions), 1)
 
 		# check whether the properties of the new document are correct
-		self.assertEqual(document.title, text)
+		self.assertEqual(document.title, MinutesDocument.generate_new_title())
+		self.assertEqual(document.author, self.user)
+		self.assertEqual(document.moderator, self.user)
 		self.assertEqual(document.text, text)
 		self.assertEqual(versions[0].revision.comment, text)
+		self.assertListEqual(list(document.participants.all()), list(self.group.user_set.all()))
+
+		checker = ObjectPermissionChecker(self.group)
+		self.assertTrue(checker.has_perm(document.edit_permission_name, document))
+
+	def test_save_another_minutes_document(self):
+		test_title = "Test title"
+		test_moderator = mommy.make(UserProfile)
+		first_document = mommy.make(MinutesDocument, title=test_title, moderator=test_moderator)
+		first_document.set_all_permissions(self.group)
+
+		# get the editor page and save the site
+		response = self.app.get(reverse('documents:create', args=['minutesdocument']) + '?group={}'.format(self.group.id), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		form = response.forms[0]
+		text = "Lorem ipsum"
+		form.set('text', text)
+		form.set('comment', text)
+		form.set('url_title', slugify(text))
+
+		response = form.submit().follow()
+		self.assertEqual(response.status_code, 200)
+
+		document = MinutesDocument.objects.get(url_title=slugify(text))
+
+		# check whether the properties of the new document are correct
+		self.assertEqual(document.title, test_title)  # should be taken from previous minutes document
+		self.assertEqual(document.moderator, test_moderator)  # should be taken from previous minutes document
+		self.assertEqual(document.author, self.user)
+		self.assertEqual(document.text, text)
+		self.assertListEqual(list(document.participants.all()), list(self.group.user_set.all()))
 
 	def test_group_field_hidden_when_user_has_one_group(self):
-		response = self.app.get(reverse('documents:create', args=['minutesdocument']), user=self.user)
+		response = self.app.get(reverse('documents:create', args=['minutesdocument']) + '?group={}'.format(self.group.id), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
 		form = response.forms[0]
@@ -260,7 +294,7 @@ class TestNewMinutesDocument(WebTest):
 		other_group = mommy.make(Group)
 		self.user.groups.add(other_group)
 		assign_perm("minutes.add_minutesdocument", other_group)
-		response = self.app.get(reverse('documents:create', args=['minutesdocument']), user=self.user)
+		response = self.app.get(reverse('documents:create', args=['minutesdocument']) + '?group={}'.format(self.group.id), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
 		form = response.forms[0]
