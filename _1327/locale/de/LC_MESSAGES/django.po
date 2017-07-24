@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-01 12:04+0200\n"
-"PO-Revision-Date: 2017-06-01 12:06+0200\n"
+"POT-Creation-Date: 2017-07-24 15:29+0200\n"
+"PO-Revision-Date: 2017-07-24 15:32+0200\n"
 "Last-Translator: Johannes Wolf <janno42@gmail.com>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -16,30 +16,30 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.0.2\n"
+"X-Generator: Poedit 2.0.3\n"
 
-#: _1327/documents/forms.py:28
+#: _1327/documents/forms.py:16
 #: _1327/shortlinks/templates/shortlinks_index.html:15
 msgid "URL"
 msgstr "URL"
 
-#: _1327/documents/forms.py:29
+#: _1327/documents/forms.py:17
 msgid "Comment"
 msgstr "Kommentar"
 
-#: _1327/documents/forms.py:30 _1327/main/forms.py:64 _1327/main/forms.py:97
+#: _1327/documents/forms.py:18 _1327/main/forms.py:64 _1327/main/forms.py:97
 msgid "Edit permissions"
 msgstr "Bearbeitungsrechte"
 
-#: _1327/documents/forms.py:62 _1327/main/forms.py:92 _1327/main/forms.py:118
+#: _1327/documents/forms.py:56 _1327/main/forms.py:92 _1327/main/forms.py:118
 msgid "You are not a member of this group!"
 msgstr "Du bist kein Mitglied dieser Gruppe!"
 
-#: _1327/documents/forms.py:96 _1327/main/forms.py:129
+#: _1327/documents/forms.py:90 _1327/main/forms.py:129
 msgid "Role"
 msgstr "Rolle"
 
-#: _1327/documents/forms.py:135
+#: _1327/documents/forms.py:129
 msgid ""
 "If you want to enable additional permissions for a group you also need to "
 "enable the view permission for that group!"
@@ -47,7 +47,7 @@ msgstr ""
 "Wenn zusätzliche Berechtigungen vergeben werden sollen, muss immer auch die "
 "\"Anzeigen\"-Berechtigung für diese Gruppe vergeben werden!"
 
-#: _1327/documents/forms.py:187
+#: _1327/documents/forms.py:181
 msgid "You must have at least {} of these."
 msgstr "Es muss mindestens {} geben."
 
@@ -55,57 +55,57 @@ msgstr "Es muss mindestens {} geben."
 msgid "[missing link]"
 msgstr "[fehlender Link]"
 
-#: _1327/documents/models.py:31 _1327/documents/models.py:200
+#: _1327/documents/models.py:32 _1327/documents/models.py:201
 msgid "Hash value"
 msgstr "Hashwert"
 
-#: _1327/documents/models.py:37 _1327/documents/models.py:197
-#: _1327/main/models.py:30 _1327/main/templates/menu_items_list.html:20
+#: _1327/documents/models.py:38 _1327/documents/models.py:198
+#: _1327/main/models.py:31 _1327/main/templates/menu_items_list.html:20
 #: _1327/shortlinks/models.py:12
 #: _1327/shortlinks/templates/shortlinks_index.html:31
 msgid "Document"
 msgstr "Dokument"
 
-#: _1327/documents/models.py:38
+#: _1327/documents/models.py:39
 #: _1327/documents/templates/documents/admin_app_name.html:2
 msgid "Documents"
 msgstr "Dokumente"
 
-#: _1327/documents/models.py:105
+#: _1327/documents/models.py:106
 msgid "New Page from {}"
 msgstr "Neue Seite vom {}"
 
-#: _1327/documents/models.py:196
+#: _1327/documents/models.py:197
 #: _1327/documents/templates/documents_attachments.html:37
 msgid "Display name"
 msgstr "Angezeigter Name"
 
-#: _1327/documents/models.py:198
+#: _1327/documents/models.py:199
 #: _1327/documents/templates/documents_attachments.html:39
 #: _1327/information_pages/templates/information_pages_meta_information.html:11
 #: _1327/shortlinks/templates/shortlinks_index.html:17
 msgid "Created"
 msgstr "Erstellt"
 
-#: _1327/documents/models.py:199
+#: _1327/documents/models.py:200
 msgid "File"
 msgstr "Datei"
 
-#: _1327/documents/models.py:202 _1327/polls/models.py:144
+#: _1327/documents/models.py:203 _1327/polls/models.py:144
 msgid "ordering index"
 msgstr "Sortierreihenfolge"
 
-#: _1327/documents/models.py:203
+#: _1327/documents/models.py:204
 msgid "Do not show as attachment (for embedded images)"
 msgstr "Nicht als Anhang anzeigen (für eingebettete Bilder)"
 
-#: _1327/documents/models.py:206
+#: _1327/documents/models.py:207
 msgid "Attachment"
 msgstr "Anhang"
 
-#: _1327/documents/models.py:207
+#: _1327/documents/models.py:208
 #: _1327/documents/templates/documents_base.html:19
-#: _1327/documents/templates/documents_base.html:59
+#: _1327/documents/templates/documents_base.html:58
 #: _1327/documents/templates/documents_base.html:88
 #: _1327/polls/templates/polls_results.html:50
 #: _1327/polls/templates/polls_vote.html:44
@@ -333,11 +333,13 @@ msgstr "Das Dokument, das du bearbeitest, existiert nicht!"
 msgid "There was an unknown error!"
 msgstr "Es gab einen unbekannten Fehler!"
 
-#: _1327/documents/templates/documents_edit.html:433
-#: _1327/documents/templates/documents_edit.html:438
-#: _1327/documents/templates/documents_edit.html:444
+#: _1327/documents/templates/documents_edit.html:434
+#: _1327/documents/templates/documents_edit.html:439
+#: _1327/documents/templates/documents_edit.html:445
 #: _1327/main/templates/menu_item_edit.html:58
 #: _1327/main/templates/menu_item_edit.html:64
+#: _1327/shortlinks/templates/shortlink_edit.html:36
+#: _1327/user_management/templates/user_impersonation.html:34
 msgid "Please select..."
 msgstr "Bitte auswählen..."
 
@@ -366,40 +368,40 @@ msgstr "von"
 msgid "Revert to this version"
 msgstr "Version wiederherstellen"
 
-#: _1327/documents/views.py:61
+#: _1327/documents/views.py:58
 msgid "Created document"
 msgstr "Dokument erstellt"
 
-#: _1327/documents/views.py:91
+#: _1327/documents/views.py:88
 msgid "Successfully saved changes"
 msgstr "Änderungen gespeichert"
 
-#: _1327/documents/views.py:136
+#: _1327/documents/views.py:133
 msgid "This Document can not be reverted!"
 msgstr "Dieses Dokument kann nicht wiederhergestellt werden!"
 
-#: _1327/documents/views.py:186
+#: _1327/documents/views.py:182
 msgid "Permissions have been changed successfully."
 msgstr "Berechtigungen wurden angepasst."
 
-#: _1327/documents/views.py:210
+#: _1327/documents/views.py:206
 msgid "Minutes document has been published."
 msgstr "Protokoll wurde veröffentlicht."
 
-#: _1327/documents/views.py:221
+#: _1327/documents/views.py:217
 msgid "File has been uploaded successfully!"
 msgstr "Datei erfolgreich hochgeladen!"
 
-#: _1327/documents/views.py:323
+#: _1327/documents/views.py:321
 #, python-brace-format
 msgid "reverted to revision \"{revision_comment}\""
 msgstr "Version \"{revision_comment}\" wiederhergestellt"
 
-#: _1327/documents/views.py:353
+#: _1327/documents/views.py:351
 msgid "Successfully deleted Attachment!"
 msgstr "Anhang gelöscht!"
 
-#: _1327/documents/views.py:439
+#: _1327/documents/views.py:437
 msgid "Successfully deleted document: {}"
 msgstr "Dokument gelöscht: {}"
 
@@ -461,13 +463,22 @@ msgstr "Argumente für Links müssen als keyword arguments übergeben werden."
 msgid "This link is not valid."
 msgstr "Dieser Link ist ungültig."
 
-#: _1327/main/forms.py:56 _1327/shortlinks/forms.py:22
+#: _1327/main/forms.py:56 _1327/shortlinks/forms.py:26
 msgid "You are only allowed to define one of document and link"
 msgstr "Du kannst nur entweder ein Dokument oder einen Link angeben"
 
-#: _1327/main/forms.py:59 _1327/shortlinks/forms.py:25
+#: _1327/main/forms.py:59 _1327/shortlinks/forms.py:29
 msgid "You must select a document or link"
 msgstr "Du musst ein Dokument auswählen oder einen Link angeben"
+
+#: _1327/main/management/commands/send_reminders.py:23
+msgid "Minutes publish reminder"
+msgstr "Protokoll-Veröffentlichungs-Erinnerung"
+
+#: _1327/main/management/commands/send_reminders.py:24
+msgid "Please remember to publish the minutes document \"{}\" from {} ({})."
+msgstr ""
+"Bitte denke daran, das Protokoll \"{}\" vom {} zu veröffentlichen ({})."
 
 #: _1327/main/models.py:23
 msgid "Main Menu"
@@ -486,24 +497,24 @@ msgstr "Titel"
 msgid "Link"
 msgstr "Link"
 
-#: _1327/main/models.py:107
+#: _1327/main/models.py:108
 msgid "view"
 msgstr "Anzeigen"
 
-#: _1327/main/models.py:108
+#: _1327/main/models.py:109
 msgid "change children"
 msgstr "Unterpunkte bearbeiten"
 
-#: _1327/main/models.py:109
+#: _1327/main/models.py:110
 msgid "edit"
 msgstr "bearbeiten"
 
-#: _1327/main/models.py:115
+#: _1327/main/models.py:116
 #: _1327/main/templates/abbreviation_explanation.html:19
 msgid "Abbreviation"
 msgstr "Abkürzung"
 
-#: _1327/main/models.py:116
+#: _1327/main/models.py:117
 #: _1327/main/templates/abbreviation_explanation.html:20
 msgid "Explanation"
 msgstr "Erklärung"
@@ -646,19 +657,19 @@ msgstr ""
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: _1327/main/utils.py:90
+#: _1327/main/utils.py:119
 msgid ""
 "Only the following characters are allowed in the URL: a-z, A-Z, 0-9, -, _, /"
 msgstr ""
 "Nur die folgenden Zeichen sind in der URL erlaubt: a-z, A-Z, 0-9, -, _, /"
 
-#: _1327/main/utils.py:94
+#: _1327/main/utils.py:123
 msgid "The URL contains parts that are not allowed in custom URLs."
 msgstr ""
 "Die URL enthält Bestandteile, die in benutzerdefinierten URLs nicht erlaubt "
 "sind."
 
-#: _1327/main/utils.py:97 _1327/main/utils.py:99
+#: _1327/main/utils.py:126 _1327/main/utils.py:128
 msgid "This URL is already taken."
 msgstr "Diese URL wird bereits verwendet."
 
@@ -916,7 +927,7 @@ msgstr "Du hast bis zu %(max_allowed_number_of_answers)s Stimmen."
 msgid "Vote"
 msgstr "Abstimmen"
 
-#: _1327/polls/views.py:61
+#: _1327/polls/views.py:57
 msgid ""
 "You can not see the results of this poll right now. You have to wait until "
 "{} to see the results of this poll."
@@ -924,23 +935,23 @@ msgstr ""
 "Du kannst die Ergebnisse dieser Abstimmung noch nicht sehen. Du muss bis zum "
 "{} warten."
 
-#: _1327/polls/views.py:95
+#: _1327/polls/views.py:90
 msgid "You must select one Choice at least!"
 msgstr "Du musst mindestens eine Antwort auswählen!"
 
-#: _1327/polls/views.py:98
+#: _1327/polls/views.py:93
 msgid "You can only select up to {} options!"
 msgstr "Du kannst maximal {} Antworten auswählen!"
 
-#: _1327/polls/views.py:106
+#: _1327/polls/views.py:101
 msgid "We've received your vote!"
 msgstr "Deine Stimme wurde festgehalten!"
 
-#: _1327/polls/views.py:108
+#: _1327/polls/views.py:103
 msgid "The results of this poll will be available as from {}"
 msgstr "Die Ergebnisse dieser Umfrage sind ab dem {} verfügbar"
 
-#: _1327/polls/views.py:138
+#: _1327/polls/views.py:132
 msgid "This poll has not yet started."
 msgstr "Diese Umfrage hat noch nicht begonnen."
 
@@ -984,15 +995,15 @@ msgstr "Neuen Kurzlink erstellen"
 msgid "Do you really want to delete the Shortlink %(name)s?"
 msgstr "Willst du den Kurzlink %(name)s wirklich löschen?"
 
-#: _1327/shortlinks/views.py:29
+#: _1327/shortlinks/views.py:30
 msgid "Successfully created shortlink."
 msgstr "Kurzlink erstellt."
 
-#: _1327/shortlinks/views.py:42
+#: _1327/shortlinks/views.py:50
 msgid "Successfully deleted Shortlink."
 msgstr "Kurzlink gelöscht."
 
-#: _1327/shortlinks/views.py:67
+#: _1327/shortlinks/views.py:75
 msgid "Successfully edited shortlink."
 msgstr "Kurzlink bearbeitet."
 
