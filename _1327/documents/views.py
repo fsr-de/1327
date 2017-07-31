@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import os
 
@@ -318,7 +319,11 @@ def revert(request):
 			getattr(reverted_document, key).add(*many_to_many_fields[key])
 		revisions.set_user(request.user)
 		revisions.set_comment(
-			_('reverted to revision \"{revision_comment}\"'.format(revision_comment=revert_version.revision.comment)))
+			_('reverted to revision \"{revision_comment}\" (at {date})'.format(
+				revision_comment=revert_version.revision.comment,
+				date=datetime.utcnow().strftime("%Y-%m-%d %H:%M"),
+			))
+		)
 
 	return HttpResponse(reverse('versions', args=[reverted_document.url_title]))
 
