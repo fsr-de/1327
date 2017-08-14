@@ -7,6 +7,11 @@
 {% endblock %}
 
 {% block content %}
+    {% if is_preview %}
+        <div class="alert alert-info" role="alert">
+            {% trans "This is a preview of the current state of the poll." %}
+        </div>
+    {% endif %}
 	{% if description != "" %}
 		<div class="panel panel-default">
 			<div class="panel-body">

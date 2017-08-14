@@ -2,6 +2,7 @@ import datetime
 
 
 from django.contrib import messages
+from django.core.exceptions import PermissionDenied
 from django.db.models import F
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -72,6 +73,30 @@ def results(request, poll, url_title):
 			'attachments': poll.attachments.filter(no_direct_download=False).order_by('index'),
 			'permission_overview': document_permission_overview(request.user, poll),
 			"has_choice_descriptions": poll.has_choice_descriptions,
+		}
+	)
+
+
+def results_for_admin(request, title):
+	if not request.user.is_superuser:
+		raise PermissionDenied
+
+	poll = get_object_or_404(Document, url_title=title)
+	description, toc = convert_markdown(poll.text)
+
+	return render(
+		request,
+		'polls_results.html',
+		{
+			"document": poll,
+			"description": description,
+			'toc': toc,
+			'active_page': 'view',
+			'view_page': True,
+			'attachments': poll.attachments.filter(no_direct_download=False).order_by('index'),
+			'permission_overview': document_permission_overview(request.user, poll),
+			"has_choice_descriptions": poll.has_choice_descriptions,
+			"is_preview": True,
 		}
 	)
 

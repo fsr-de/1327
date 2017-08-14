@@ -35,6 +35,9 @@
 								{% if "change_poll" in poll_perms %}
 									<a class="btn btn-warning btn-xs" href="{% url poll.get_edit_url_name poll.url_title %}">{% trans "Edit Poll" %}</a>
 								{% endif %}
+								{% if request.user.is_superuser %}
+									<a class="btn btn-info btn-xs" href="{% url "polls:results_for_admin" poll.url_title %}">{% trans "Preview Results" %}</a>
+								{% endif %}
 							</td>
 						</tr>
 					{% endfor %}
@@ -58,8 +61,8 @@
 				<thead>
 					<tr>
 						<th class="col-xs-7">{% trans "Poll" %}</th>
-						<th class="col-xs-4">{% trans "Voting period" %}</th>
-						<th class="col-xs-1"></th>
+						<th class="col-xs-3">{% trans "Voting period" %}</th>
+						<th class="col-xs-2"></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -68,6 +71,9 @@
 							<td><a href="{% url poll.get_view_url_name poll.url_title %}">{{ poll.title }}</a></td>
 							<td>{{ poll.start_date }} - {{ poll.end_date }}</td>
 							<td class="text-right">
+                                {% if request.user.is_superuser %}
+									<a class="btn btn-info btn-xs" href="{% url "polls:results_for_admin" poll.url_title %}"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
+								{% endif %}
 								{% get_obj_perms request.user for poll as "poll_perms" %}
 								{% if "change_poll" in poll_perms %}
 									<a class="btn btn-warning btn-xs" href="{% url poll.get_edit_url_name poll.url_title %}">{% trans "Edit Poll" %}</a>
