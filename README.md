@@ -5,7 +5,7 @@
 [![Code Health](https://landscape.io/github/fsr-itse/1327/master/landscape.svg?style=flat)](https://landscape.io/github/fsr-itse/1327/master)
 [![Coverage Status](https://coveralls.io/repos/github/fsr-itse/1327/badge.svg?branch=master)](https://coveralls.io/github/fsr-itse/1327?branch=master)
 
-A student representatives website. This is currently **work in progress** - please wait for basic functionality until the [launch](https://github.com/fsr-itse/1327/milestone/1) happened.
+A student representatives website. This is project is live! You can see a working instance of 1327 [here](https://myhpi.de/home)!
 
 ## Development
 
@@ -46,6 +46,11 @@ python manage.py migrate
 python manage.py createsuperuser --username=root
 python manage.py runserver 0.0.0.0:8000
 ```
+
+## Deployment
+
+For deploying on a single machine 1327 you'll need to install all requirements from `requirements-deploy.txt`, and you can follow these [instructions](https://github.com/fsr-itse/1327/wiki/Deployment), for setting up a webserver and starting all scripts using a Process Control System, if you like.
+
 
 ## License
 
