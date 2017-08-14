@@ -267,6 +267,28 @@ class PollViewTests(WebTest):
 		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), user=self.user)
 		self.assertIn("Description", response.body.decode('utf-8'))
 
+	def test_result_preview_button_for_superusers(self):
+		response = self.app.get(reverse('polls:index'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn("glyphicon glyphicon-eye-open", response.body.decode('utf-8'))
+
+		user = mommy.make(UserProfile)
+		assign_perm(self.poll.vote_permission_name, user, self.poll)
+		response = self.app.get(reverse('polls:index'), user=user)
+		self.assertEqual(response.status_code, 200)
+		self.assertNotIn("glyphicon glyphicon-eye-open", response.body.decode('utf-8'))
+
+	def test_result_preview_non_superuser(self):
+		user = mommy.make(UserProfile)
+		assign_perm(self.poll.vote_permission_name, user, self.poll)
+
+		response = self.app.get(reverse('polls:results_for_admin', args=[self.poll.url_title]), user=user, expect_errors=True)
+		self.assertEqual(response.status_code, 403)
+
+	def test_result_preview_superuser(self):
+		response = self.app.get(reverse('polls:results_for_admin', args=[self.poll.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
 
 class PollResultTests(WebTest):
 	csrf_checks = False
