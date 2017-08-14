@@ -210,6 +210,31 @@ class TestMinutesList(WebTest):
 		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
 		self.assertIn("glyphicon-user", response)
 
+	def test_no_minutes_available_text(self):
+		minutes = MinutesDocument.objects.all()
+		for document in minutes:
+			document.delete()
+
+		# if the user is not logged in he shall see a hint that tells him to log in
+		response = self.app.get(reverse("minutes:list", args=[self.group.id]))
+		self.assertEqual(response.status_code, 200)
+		self.assertIn('No minutes available.', response.body.decode('utf-8'))
+		self.assertIn('You might have to <a href="/login"> login </a> first.', response.body.decode('utf-8'))
+
+		# if the user is logged in there is definetely no minutes document available for him
+		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
+		self.assertIn('No minutes available.', response.body.decode('utf-8'))
+		self.assertNotIn('You might have to <a href="/login"> login </a> first.', response.body.decode('utf-8'))
+
+		document = mommy.make(MinutesDocument)
+		document.set_all_permissions(self.group)
+		document.save()
+
+		# if the user is logged in and there is a minutes document he should not see any of the hints
+		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
+		self.assertNotIn('No minutes available.', response.body.decode('utf-8'))
+		self.assertNotIn('You might have to <a href="/login"> login </a> first.', response.body.decode('utf-8'))
+
 
 class TestNewMinutesDocument(WebTest):
 	csrf_checks = False
