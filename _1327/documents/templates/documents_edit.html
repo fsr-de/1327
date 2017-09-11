@@ -9,11 +9,11 @@
 	<h2>{% trans "Edit page" %}</h2>
 
 	{% for autosave in form.autosaves %}
-		<div class="alert alert-danger alert-margin-bottom" role="alert">{% blocktrans with date=autosave.created %}This document was autosaved on {{ date }}{% endblocktrans %}, {% trans "you can restore unsaved changes:" %} <a href="{{ document.get_edit_url }}?restore={{ autosave.id }}" class="btn-sm btn-default">{% trans "Restore" %}</a></div>
+		<div class="alert alert-danger alert-margin-bottom" role="alert">{% blocktrans with date=autosave.created %}The text of this document was autosaved on {{ date }}{% endblocktrans %}, {% trans "you can restore unsaved changes:" %} <a href="{{ document.get_edit_url }}?restore={{ autosave.id }}" class="btn-sm btn-default">{% trans "Restore" %}</a></div>
 	{% endfor %}
 
 	{% for new_autosaved_page in new_autosaved_pages %}
-		<div class="alert alert-danger alert-margin-bottom" role="alert">{% blocktrans with date=new_autosaved_page.created %}There is a new document autosaved on {{ date }}{% endblocktrans %}, {% trans "you can restore this unsaved page:" %} <a href="{{ new_autosaved_page.document.get_edit_url }}?restore={{ new_autosaved_page.id }}" class="btn-sm btn-default">{% trans "Restore" %}</a></div>
+		<div class="alert alert-danger alert-margin-bottom" role="alert">{% blocktrans with date=new_autosaved_page.created %}There is an autosaved text (saved on {{ date }}){% endblocktrans %}, {% trans "you can restore this unsaved text:" %} <a href="{{ new_autosaved_page.document.get_edit_url }}?restore={{ new_autosaved_page.id }}" class="btn-sm btn-default">{% trans "Restore" %}</a></div>
 	{%  endfor %}
 
 <form action="{{ document.get_edit_url }}" method="post" class="form-horizontal" role="form" id="document-form">
