@@ -354,7 +354,7 @@ class TestAutosave(WebTest):
 
 		response = self.app.get(reverse(autosave.document.get_edit_url_name(), args=[autosave.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
-		self.assertIn("This document was autosaved on", response.body.decode('utf-8'))
+		self.assertIn("The text of this document was autosaved on", response.body.decode('utf-8'))
 
 	def test_autosave_not_possible_to_view_because_not_author(self):
 		autosave = mommy.make(TemporaryDocumentText, document=self.document)
@@ -397,7 +397,7 @@ class TestAutosave(WebTest):
 
 		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
-		self.assertIn("This document was autosaved on", response.body.decode('utf-8'))
+		self.assertIn("The text of this document was autosaved on", response.body.decode('utf-8'))
 
 	def test_restore_one_of_multiple_autosaves(self):
 		assign_perm(self.document.edit_permission_name, self.group, self.document)
