@@ -80,7 +80,15 @@ class EscapeHtml(Extension):
 
 def convert_markdown(text):
 	from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
-	md = markdown.Markdown(extensions=[EscapeHtml(), TocExtension(baselevel=2), InternalLinksMarkdownExtension(), 'markdown.extensions.abbr', 'markdown.extensions.tables'])
+	md = markdown.Markdown(
+		extensions=[
+			EscapeHtml(),
+			TocExtension(baselevel=2),
+			InternalLinksMarkdownExtension(),
+			'_1327.documents.markdown_emoji_extension',
+			'markdown.extensions.abbr',
+			'markdown.extensions.tables',
+		])
 	return md.convert(text + abbreviation_explanation_markdown()), md.toc
 
 
