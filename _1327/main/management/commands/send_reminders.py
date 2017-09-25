@@ -19,6 +19,12 @@ class Command(BaseCommand):
 		check_date = datetime.date.today() - datetime.timedelta(days=settings.MINUTES_PUBLISH_REMINDER_DAYS)
 		due_unpublished_minutes_documents = MinutesDocument.objects.filter(state=MinutesDocument.UNPUBLISHED, date=check_date)
 		for minutes_document in due_unpublished_minutes_documents:
+			if minutes_document.moderator and minutes_document.moderator.email:
+				to_email = [minutes_document.moderator.email]
+				cc_email = [minutes_document.author.email]
+			else:
+				to_email = [minutes_document.author.email]
+				cc_email = []
 			mail = EmailMessage(
 				subject=_("Minutes publish reminder"),
 				body=_('Please remember to publish the minutes document "{}" from {} ({}).'.format(
@@ -26,7 +32,8 @@ class Command(BaseCommand):
 					minutes_document.date.strftime("%d.%m.%Y"),
 					settings.PAGE_URL + minutes_document.get_view_url()
 				)),
-				to=[minutes_document.author.email],
+				to=to_email,
+				cc=cc_email,
 				bcc=[a[1] for a in settings.ADMINS]
 			)
 			try:
