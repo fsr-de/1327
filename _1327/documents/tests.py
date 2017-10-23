@@ -16,6 +16,8 @@ from model_mommy import mommy
 from reversion import revisions
 from reversion.models import Version
 
+from _1327.documents import markdown_emoji_extension
+from _1327.documents.markdown_emoji_extension import EmojifyPreprocessor
 from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
 from _1327.information_pages.models import InformationDocument
 from _1327.main.utils import EscapeHtml, slugify
@@ -1279,3 +1281,53 @@ class DocumentCreationTests(WebTest):
 		for document_type in self.document_types:
 			response = self.app.get(reverse('documents:create', args=[document_type]), user=self.user, expect_errors=True)
 			self.assertEqual(response.status_code, 403)
+
+
+class EmojiExtensionTests(TestCase):
+
+	def setUp(self):
+		self.emoji_text = "Hello, this is a nice emoji test :tada:"
+		self.non_emoji_text = "Hello, this text does not contain any emojis."
+		self.non_emoji_text_with_image = "Hello this is a text with a nice image ![test](test123)"
+		self.md = markdown.Markdown(
+			extensions=[
+				'_1327.documents.markdown_emoji_extension',
+			]
+		)
+		self.processor = EmojifyPreprocessor(self.md)
+
+	def test_emoji_processor_without_emoji(self):
+		emojified_text = self.processor.run([self.non_emoji_text])[0]
+		self.assertNotIn("(emoji)", emojified_text)
+
+	def test_emoji_processor_with_emoji(self):
+		emojified_text = self.processor.run([self.emoji_text])[0]
+		self.assertIn("![tada]", emojified_text)
+		self.assertIn("(emoji)", emojified_text)
+
+	def test_emoji_processor_without_emoji_but_with_image(self):
+		emojified_text = self.processor.run([self.non_emoji_text_with_image])[0]
+		self.assertNotIn("![tada]", emojified_text)
+		self.assertNotIn("(emoji)", emojified_text)
+
+	def test_emoji_with_non_existing_emoji_name(self):
+		non_emoji_text = "Hello, this is a non existing emoji name :non_existing_emoji:"
+		emojified_text = self.processor.run([non_emoji_text])[0]
+		self.assertNotIn("![non_existing_emoji]", emojified_text)
+		self.assertNotIn("(emoji)", emojified_text)
+
+	def test_emoji_extension_without_emoji(self):
+		converted_text = self.md.convert(self.non_emoji_text)
+		self.assertNotIn("'<img alt=", converted_text)
+
+	def test_emoji_extension_with_emoji(self):
+		converted_text = self.md.convert(self.emoji_text)
+		self.assertIn(
+			'<img alt="tada" class="emoji" src="{}'.format(markdown_emoji_extension.emojis_path),
+			converted_text
+		)
+
+	def test_emoji_extension_without_emoji_but_with_image(self):
+		converted_text = self.md.convert(self.non_emoji_text_with_image)
+		self.assertNotIn('class="emoji"', converted_text)
+		self.assertIn('<img alt="test"', converted_text)
