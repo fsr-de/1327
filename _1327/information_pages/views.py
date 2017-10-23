@@ -19,7 +19,7 @@ def unlinked_list(request):
 			for document_id in re.findall("\(document:([0-9]+)\)", menu_page.text):
 				try:
 					menu_page_document_ids.add(int(document_id))
-				except:
+				except ValueError:
 					pass
 
 		unlinked_information_pages = get_objects_for_user(request.user, permission_name, klass=InformationDocument.objects.filter(menu_items__isnull=True).exclude(id__in=menu_page_document_ids)).order_by('title')
