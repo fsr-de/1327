@@ -25,6 +25,7 @@ class UsecaseTests(WebTest):
 		mommy.make(UserProfile, username="nofirstname", last_name="Last")
 		mommy.make(UserProfile, username="nolastname", first_name="First")
 		mommy.make(UserProfile, is_superuser=True, username="admin", first_name="Admin", last_name="User")
+		mommy.make(UserProfile, username="test testman", password="pbkdf2_sha256$12000$uH9Cc7pBkaxQ$XLVGZKTbCyuDlgFQB65Mn5SAm6v/2kjpCTct1td2VTo=")
 
 	def test_login(self):
 		page = self.app.get("/login", user="")
@@ -33,7 +34,7 @@ class UsecaseTests(WebTest):
 		login_form['username'] = "user"
 		login_form['password'] = "wrong_password"
 		response = login_form.submit()
-		self.assertIn("Please enter a correct User name and password", response.body.decode('utf-8'))
+		self.assertIn("Please enter a correct username and password", response.body.decode('utf-8'))
 		self.assertNotIn('has-success', response.body.decode('utf-8'))
 		self.assertIn('has-error', response.body.decode('utf-8'))
 
@@ -42,6 +43,26 @@ class UsecaseTests(WebTest):
 		login_form['password'] = "test"
 
 		self.assertEqual(login_form.submit().status_code, 302)
+
+	def test_login_with_camel_case_name(self):
+		page = self.app.get('/login')
+
+		login_form = page.forms[0]
+		login_form['username'] = "test testman"
+		login_form['password'] = "test"
+		self.assertEqual(login_form.submit().status_code, 302)
+
+		# logout again
+		response = self.app.get('/logout')
+		self.assertEqual(response.status_code, 302)
+
+		# now try to login again, but with camel case name
+		page = self.app.get('/login')
+		login_form = page.forms[0]
+		login_form['username'] = "Test Testman"
+		login_form['password'] = "test"
+		response = login_form.submit()
+		self.assertEqual(response.status_code, 302)
 
 	def test_login_redirect_sufficient_permissions(self):
 		document = mommy.make(InformationDocument)
