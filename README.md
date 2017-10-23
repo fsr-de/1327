@@ -5,7 +5,7 @@
 [![Code Health](https://landscape.io/github/fsr-itse/1327/master/landscape.svg?style=flat)](https://landscape.io/github/fsr-itse/1327/master)
 [![Coverage Status](https://coveralls.io/repos/github/fsr-itse/1327/badge.svg?branch=master)](https://coveralls.io/github/fsr-itse/1327?branch=master)
 
-A student representatives website. This is project is live! You can see a working instance of 1327 [here](https://myhpi.de/home)!
+A student representatives website. This project is live! You can see a working instance of 1327 [here](https://myhpi.de/home)!
 
 ## Development
 
