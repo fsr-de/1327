@@ -1,13 +1,19 @@
+from unittest import TestCase
+
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.urls import reverse
 from django_webtest import WebTest
 from guardian.core import ObjectPermissionChecker
 from guardian.shortcuts import assign_perm
+import markdown
 from model_mommy import mommy
 from reversion.models import Version
 
 from _1327.main.utils import slugify
+from _1327.minutes.markdown_minutes_extensions import EnterLeavePreprocessor, QuorumPrepocessor, StartEndPreprocessor, \
+	VotePreprocessor
+
 from _1327.minutes.models import MinutesDocument
 from _1327.user_management.models import UserProfile
 
@@ -324,3 +330,58 @@ class TestNewMinutesDocument(WebTest):
 
 		form = response.forms[0]
 		self.assertFalse("Hidden" in str(form.fields['group'][0]))
+
+
+class TestMarkdownMinutesExtension(TestCase):
+	def setUp(self):
+		self.md = markdown.Markdown(
+			extensions=[
+				'_1327.minutes.markdown_minutes_extensions',
+			]
+		)
+		self.vote_preprocessor = VotePreprocessor(self.md)
+		self.start_end_preprocessor = StartEndPreprocessor(self.md)
+		self.quorum_preprocessor = QuorumPrepocessor(self.md)
+		self.enter_leave_preprocessor = EnterLeavePreprocessor(self.md)
+		self.base_text = "This is a nice template text, where we will add stuff that shall be preprocessed: {}"
+
+	def test_vote_preprocessor(self):
+		vote_text = "[1|1|3]"
+		processed_text = self.vote_preprocessor.run([self.base_text.format(vote_text)])[0]
+		self.assertIn("**{}**".format(vote_text), processed_text)
+
+	def test_start_end_preprocessor(self):
+		start_text = "|start|(15:00)"
+		processed_text = self.start_end_preprocessor.run([self.base_text.format(start_text)])[0]
+		self.assertIn("*Begin of meeting: 15:00*", processed_text)
+
+		end_text = "|end|(16:00)"
+		processed_text = self.start_end_preprocessor.run([self.base_text.format(end_text)])[0]
+		self.assertIn("*End of meeting: 16:00*", processed_text)
+
+	def test_quorum_preprocessor(self):
+		enough_quorum_text = "|quorum|(6/7)"
+		processed_text = self.quorum_preprocessor.run([self.base_text.format(enough_quorum_text)])[0]
+		self.assertIn("*6/7 present → quorate*", processed_text)
+
+		not_enough_quorum_text = "|quorum|(3/7)"
+		processed_text = self.quorum_preprocessor.run([self.base_text.format(not_enough_quorum_text)])[0]
+		self.assertIn("*3/7 present → not quorate*", processed_text)
+
+	def test_enter_leave_preprocessor(self):
+		enter_text_without_mean = "|enter|(14:30)(User)"
+		processed_text = self.enter_leave_preprocessor.run([self.base_text.format(enter_text_without_mean)])[0]
+		self.assertIn("*14:30: User enters the meeting*", processed_text)
+		self.assertNotIn("via", processed_text)
+
+		enter_text_with_mean = enter_text_without_mean + "(Hangout)"
+		processed_text = self.enter_leave_preprocessor.run([self.base_text.format(enter_text_with_mean)])[0]
+		self.assertIn("*14:30: User enters the meeting via Hangout*", processed_text)
+
+		leave_text = "|leave|(15:30)(User)"
+		processed_text = self.enter_leave_preprocessor.run([self.base_text.format(leave_text)])[0]
+		self.assertIn("*15:30: User leaves the meeting*", processed_text)
+
+		leave_text_with_space = "|leave|(15:30)(User with Spaces)"
+		processed_text = self.enter_leave_preprocessor.run([self.base_text.format(leave_text_with_space)])[0]
+		self.assertIn("*15:30: User with Spaces leaves the meeting*", processed_text)
