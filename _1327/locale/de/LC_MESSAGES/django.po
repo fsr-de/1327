@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-11-06 15:51+0100\n"
-"PO-Revision-Date: 2017-11-06 15:52+0100\n"
+"PO-Revision-Date: 2017-11-06 16:38+0100\n"
 "Last-Translator: Johannes Wolf <janno42@gmail.com>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -1157,7 +1157,7 @@ msgstr "Umfrage erstellen"
 
 #: _1327/templates/base.html:69 _1327/templates/base.html:76
 msgid "Create minutes"
-msgstr "Menüeintrag erstellen"
+msgstr "Protokoll erstellen"
 
 #: _1327/templates/base.html:82
 msgid "Manage menu items"
