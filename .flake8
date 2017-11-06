@@ -1,5 +1,5 @@
 [flake8]
-ignore = W191,E501
+ignore = W191,E501,I202
 exclude = _1327/static,_1327/staticfiles,_1327/*/migrations,_1327/localsettings.py
 
 application-import-names = _1327

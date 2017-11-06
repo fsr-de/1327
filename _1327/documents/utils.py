@@ -10,7 +10,7 @@ from django.utils import timezone
 from reversion import revisions
 from reversion.models import Version
 
-from _1327.documents.forms import AttachmentForm, DocumentForm
+from _1327.documents.forms import AttachmentForm
 from _1327.documents.models import Document, TemporaryDocumentText
 
 
@@ -102,7 +102,7 @@ def handle_edit(request, document, formset=None, initial=None, creation_group=No
 
 def handle_autosave(request, document):
 	if request.method == 'POST':
-		form = DocumentForm(request.POST, user=request.user, creation=document.is_in_creation)
+		form = document.Form(request.POST, user=request.user, creation=document.is_in_creation, instance=document)
 		form.is_valid()
 		text_strip = request.POST['text'].strip()
 		if text_strip != '':
@@ -110,10 +110,8 @@ def handle_autosave(request, document):
 
 			if document is None:
 				temporary_document_text = TemporaryDocumentText.objects.create(author=request.user)
-			elif document.text != cleaned_data['text']:
-				temporary_document_text, __ = TemporaryDocumentText.objects.get_or_create(document=document, author=request.user)
 			else:
-				return
+				temporary_document_text, __ = TemporaryDocumentText.objects.get_or_create(document=document, author=request.user)
 
 			temporary_document_text.text = cleaned_data['text']
 			temporary_document_text.save()
