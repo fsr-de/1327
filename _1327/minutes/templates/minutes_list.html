@@ -62,9 +62,7 @@
         {% url "login" as anchor_url %}
         {% if not user.is_authenticated %}
             <em>
-                {% blocktrans with anchor='<a href="'|add:anchor_url|add:'">'|safe anchor_end='</a>'|safe %}
-                        You might have to {{ anchor }} login {{ anchor_end }} first.
-                {% endblocktrans %}
+                {% blocktrans with anchor='<a href="'|add:anchor_url|add:'">'|safe anchor_end='</a>'|safe %}You might have to {{ anchor }} login {{ anchor_end }} first.{% endblocktrans %}
             </em>
         {% endif %}
 	{% endfor %}

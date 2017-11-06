@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-24 15:29+0200\n"
-"PO-Revision-Date: 2017-07-24 15:32+0200\n"
+"POT-Creation-Date: 2017-11-06 15:51+0100\n"
+"PO-Revision-Date: 2017-11-06 15:52+0100\n"
 "Last-Translator: Johannes Wolf <janno42@gmail.com>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.0.3\n"
+"X-Generator: Poedit 2.0.4\n"
 
 #: _1327/documents/forms.py:16
 #: _1327/shortlinks/templates/shortlinks_index.html:15
@@ -31,15 +31,11 @@ msgstr "Kommentar"
 msgid "Edit permissions"
 msgstr "Bearbeitungsrechte"
 
-#: _1327/documents/forms.py:56 _1327/main/forms.py:92 _1327/main/forms.py:118
-msgid "You are not a member of this group!"
-msgstr "Du bist kein Mitglied dieser Gruppe!"
-
-#: _1327/documents/forms.py:90 _1327/main/forms.py:129
+#: _1327/documents/forms.py:87 _1327/main/forms.py:129
 msgid "Role"
 msgstr "Rolle"
 
-#: _1327/documents/forms.py:129
+#: _1327/documents/forms.py:126
 msgid ""
 "If you want to enable additional permissions for a group you also need to "
 "enable the view permission for that group!"
@@ -47,7 +43,7 @@ msgstr ""
 "Wenn zusätzliche Berechtigungen vergeben werden sollen, muss immer auch die "
 "\"Anzeigen\"-Berechtigung für diese Gruppe vergeben werden!"
 
-#: _1327/documents/forms.py:181
+#: _1327/documents/forms.py:178
 msgid "You must have at least {} of these."
 msgstr "Es muss mindestens {} geben."
 
@@ -107,7 +103,7 @@ msgstr "Anhang"
 #: _1327/documents/templates/documents_base.html:19
 #: _1327/documents/templates/documents_base.html:58
 #: _1327/documents/templates/documents_base.html:88
-#: _1327/polls/templates/polls_results.html:50
+#: _1327/polls/templates/polls_results.html:55
 #: _1327/polls/templates/polls_vote.html:44
 msgid "Attachments"
 msgstr "Anhänge"
@@ -249,8 +245,8 @@ msgstr "Bearbeitungsseite"
 
 #: _1327/documents/templates/documents_edit.html:12
 #, python-format
-msgid "This document was autosaved on %(date)s"
-msgstr "Dieses Dokument wurde am %(date)s automatisch gespeichert"
+msgid "The text of this document was autosaved on %(date)s"
+msgstr "Der Inhalt dieses Dokuments wurde am %(date)s automatisch gespeichert"
 
 #: _1327/documents/templates/documents_edit.html:12
 msgid "you can restore unsaved changes:"
@@ -263,13 +259,12 @@ msgstr "Wiederherstellen"
 
 #: _1327/documents/templates/documents_edit.html:16
 #, python-format
-msgid "There is a new document autosaved on %(date)s"
-msgstr ""
-"Es gibt ein neues Dokument, das am %(date)s automatisch gespeichert wurde"
+msgid "There is an autosaved text (saved on %(date)s)"
+msgstr "Es gibt einen Text, der am %(date)s automatisch gespeichert wurde"
 
 #: _1327/documents/templates/documents_edit.html:16
-msgid "you can restore this unsaved page:"
-msgstr "du kannst diese ungespeicherte Seite wiederherstellen:"
+msgid "you can restore this unsaved text:"
+msgstr "du kannst diesen ungespeicherten Text wiederherstellen:"
 
 #: _1327/documents/templates/documents_edit.html:37
 #: _1327/documents/templates/documents_edit.html:56
@@ -368,40 +363,40 @@ msgstr "von"
 msgid "Revert to this version"
 msgstr "Version wiederherstellen"
 
-#: _1327/documents/views.py:58
+#: _1327/documents/views.py:57
 msgid "Created document"
 msgstr "Dokument erstellt"
 
-#: _1327/documents/views.py:88
+#: _1327/documents/views.py:92
 msgid "Successfully saved changes"
 msgstr "Änderungen gespeichert"
 
-#: _1327/documents/views.py:133
+#: _1327/documents/views.py:137
 msgid "This Document can not be reverted!"
 msgstr "Dieses Dokument kann nicht wiederhergestellt werden!"
 
-#: _1327/documents/views.py:182
+#: _1327/documents/views.py:186
 msgid "Permissions have been changed successfully."
 msgstr "Berechtigungen wurden angepasst."
 
-#: _1327/documents/views.py:206
+#: _1327/documents/views.py:210
 msgid "Minutes document has been published."
 msgstr "Protokoll wurde veröffentlicht."
 
-#: _1327/documents/views.py:217
+#: _1327/documents/views.py:221
 msgid "File has been uploaded successfully!"
 msgstr "Datei erfolgreich hochgeladen!"
 
-#: _1327/documents/views.py:321
+#: _1327/documents/views.py:325
 #, python-brace-format
-msgid "reverted to revision \"{revision_comment}\""
-msgstr "Version \"{revision_comment}\" wiederhergestellt"
+msgid "reverted to revision \"{revision_comment}\" (at {date})"
+msgstr "Version \"{revision_comment}\" (vom {date}) wiederhergestellt"
 
-#: _1327/documents/views.py:351
+#: _1327/documents/views.py:359
 msgid "Successfully deleted Attachment!"
 msgstr "Anhang gelöscht!"
 
-#: _1327/documents/views.py:437
+#: _1327/documents/views.py:445
 msgid "Successfully deleted document: {}"
 msgstr "Dokument gelöscht: {}"
 
@@ -471,11 +466,15 @@ msgstr "Du kannst nur entweder ein Dokument oder einen Link angeben"
 msgid "You must select a document or link"
 msgstr "Du musst ein Dokument auswählen oder einen Link angeben"
 
-#: _1327/main/management/commands/send_reminders.py:23
+#: _1327/main/forms.py:92 _1327/main/forms.py:118
+msgid "You are not a member of this group!"
+msgstr "Du bist kein Mitglied dieser Gruppe!"
+
+#: _1327/main/management/commands/send_reminders.py:29
 msgid "Minutes publish reminder"
 msgstr "Protokoll-Veröffentlichungs-Erinnerung"
 
-#: _1327/main/management/commands/send_reminders.py:24
+#: _1327/main/management/commands/send_reminders.py:30
 msgid "Please remember to publish the minutes document \"{}\" from {} ({})."
 msgstr ""
 "Bitte denke daran, das Protokoll \"{}\" vom {} zu veröffentlichen ({})."
@@ -657,19 +656,19 @@ msgstr ""
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: _1327/main/utils.py:119
+#: _1327/main/utils.py:128
 msgid ""
 "Only the following characters are allowed in the URL: a-z, A-Z, 0-9, -, _, /"
 msgstr ""
 "Nur die folgenden Zeichen sind in der URL erlaubt: a-z, A-Z, 0-9, -, _, /"
 
-#: _1327/main/utils.py:123
+#: _1327/main/utils.py:132
 msgid "The URL contains parts that are not allowed in custom URLs."
 msgstr ""
 "Die URL enthält Bestandteile, die in benutzerdefinierten URLs nicht erlaubt "
 "sind."
 
-#: _1327/main/utils.py:126 _1327/main/utils.py:128
+#: _1327/main/utils.py:135 _1327/main/utils.py:137
 msgid "This URL is already taken."
 msgstr "Diese URL wird bereits verwendet."
 
@@ -692,6 +691,45 @@ msgstr "Es muss immer mindestens einen Eintrag in der Fußzeile geben."
 #: _1327/main/views.py:169
 msgid "Successfully updated the abbreviation explanations."
 msgstr "Abkürzungserklärungen aktualisiert."
+
+#: _1327/minutes/markdown_minutes_extensions.py:50
+msgid "Begin of meeting"
+msgstr "Beginn des Meetings"
+
+#: _1327/minutes/markdown_minutes_extensions.py:53
+msgid "End of meeting"
+msgstr "Ende des Meetings"
+
+#: _1327/minutes/markdown_minutes_extensions.py:66
+msgid "quorate"
+msgstr "beschlussfähig"
+
+#: _1327/minutes/markdown_minutes_extensions.py:66
+msgid "not quorate"
+msgstr "nicht beschlussfähig"
+
+#: _1327/minutes/markdown_minutes_extensions.py:68
+#, python-brace-format
+msgid "*{num_participants}/{max_num_participants} present → {quorate}*  "
+msgstr "*{num_participants}/{max_num_participants} anwesend → {quorate}*  "
+
+#: _1327/minutes/markdown_minutes_extensions.py:89
+#, python-brace-format
+msgid "*{time}: {name} {event} the meeting*  "
+msgstr "*{time}: {name} {event} das Meeting*  "
+
+#: _1327/minutes/markdown_minutes_extensions.py:91
+#, python-brace-format
+msgid "*{time}: {name} {event} the meeting via {mean_of_participation}*  "
+msgstr "*{time}: {name} {event} das Meeting via {mean_of_participation}*  "
+
+#: _1327/minutes/markdown_minutes_extensions.py:100
+msgid "enters"
+msgstr "betritt"
+
+#: _1327/minutes/markdown_minutes_extensions.py:103
+msgid "leaves"
+msgstr "verlässt"
 
 #: _1327/minutes/models.py:46 _1327/minutes/templates/minutes_list.html:30
 #: _1327/minutes/templates/minutes_meta_information.html:30
@@ -735,16 +773,12 @@ msgid "Participants"
 msgstr "Teilnehmende"
 
 #: _1327/minutes/models.py:63 _1327/minutes/models.py:64
-#: _1327/minutes/templates/minutes_list.html:5 _1327/templates/base.html:66
-#: _1327/templates/base.html:104
+#: _1327/minutes/models.py:71 _1327/minutes/templates/minutes_list.html:5
+#: _1327/templates/base.html:112
 msgid "Minutes"
 msgid_plural "Minutes"
 msgstr[0] "Protokoll"
 msgstr[1] "Protokolle"
-
-#: _1327/minutes/models.py:71
-msgid "Staff Meeting"
-msgstr "FSR-Sitzung"
 
 #: _1327/minutes/models.py:163
 msgid "Name"
@@ -767,6 +801,15 @@ msgstr "Für Studierende veröffentlicht"
 msgid "Custom Permissions"
 msgstr "Benutzerdefinierte Berechtigungen"
 
+#: _1327/minutes/templates/minutes_list.html:61
+msgid "No minutes available."
+msgstr "Keine Protokolle verfügbar."
+
+#: _1327/minutes/templates/minutes_list.html:65
+#, python-format
+msgid "You might have to %(anchor)s login %(anchor_end)s first."
+msgstr "Vielleicht musst du dich erst %(anchor)s anmelden %(anchor_end)s."
+
 #: _1327/minutes/templates/minutes_meta_information.html:11
 msgid "Minutes taker"
 msgstr "Protokollführung"
@@ -787,11 +830,11 @@ msgstr "Keine Labels"
 msgid "Vote permissions"
 msgstr "Abstimmungs-Berechtigung"
 
-#: _1327/polls/forms.py:34
+#: _1327/polls/forms.py:35
 msgid "The start date must be before or on the end date."
 msgstr "Das Startdatum muss am oder vor dem Enddatum liegen."
 
-#: _1327/polls/forms.py:53
+#: _1327/polls/forms.py:54
 msgid "Anonymous and university network groups are not allowed to vote!"
 msgstr "Anonyme Nutzer und Nutzer aus dem Uni-Netz können nicht abstimmen!"
 
@@ -826,7 +869,7 @@ msgstr "Text"
 
 #: _1327/polls/templates/polls_create_poll.html:24
 #: _1327/polls/templates/polls_edit.html:16
-#: _1327/polls/templates/polls_results.html:26
+#: _1327/polls/templates/polls_results.html:31
 #: _1327/polls/templates/polls_vote.html:24
 msgid "Description"
 msgstr "Beschreibung"
@@ -845,37 +888,40 @@ msgid "Upcoming polls"
 msgstr "Zukünftige Umfragen"
 
 #: _1327/polls/templates/polls_index.html:23
-#: _1327/polls/templates/polls_index.html:60
-#: _1327/polls/templates/polls_index.html:97 _1327/templates/base.html:69
-#: _1327/templates/base.html:107
+#: _1327/polls/templates/polls_index.html:63
+#: _1327/polls/templates/polls_index.html:103 _1327/templates/base.html:115
 msgid "Poll"
 msgstr "Umfrage"
 
 #: _1327/polls/templates/polls_index.html:24
-#: _1327/polls/templates/polls_index.html:61
-#: _1327/polls/templates/polls_index.html:98
+#: _1327/polls/templates/polls_index.html:64
+#: _1327/polls/templates/polls_index.html:104
 msgid "Voting period"
 msgstr "Abstimmungszeitraum"
 
 #: _1327/polls/templates/polls_index.html:36
-#: _1327/polls/templates/polls_index.html:73
-#: _1327/polls/templates/polls_index.html:114
+#: _1327/polls/templates/polls_index.html:79
+#: _1327/polls/templates/polls_index.html:120
 msgid "Edit Poll"
 msgstr "Umfrage bearbeiten"
 
-#: _1327/polls/templates/polls_index.html:49
+#: _1327/polls/templates/polls_index.html:39
+msgid "Preview Results"
+msgstr "Ergebnis-Vorschau"
+
+#: _1327/polls/templates/polls_index.html:52
 msgid "Polls you can vote for"
 msgstr "Umfragen, an denen du teilnehmen kannst"
 
-#: _1327/polls/templates/polls_index.html:54
+#: _1327/polls/templates/polls_index.html:57
 msgid "There are no polls you can vote for."
 msgstr "Es gibt keine Umfragen, an denen du teilnehmen kannst."
 
-#: _1327/polls/templates/polls_index.html:86
+#: _1327/polls/templates/polls_index.html:92
 msgid "Results of polls"
 msgstr "Umfrage-Ergebnisse"
 
-#: _1327/polls/templates/polls_index.html:91
+#: _1327/polls/templates/polls_index.html:97
 msgid "There are no results you can see."
 msgstr "Es gibt keine Ergebnisse, die du sehen kannst."
 
@@ -899,22 +945,26 @@ msgstr "Anzahl Stimmen"
 msgid "Results"
 msgstr "Ergebnisse"
 
-#: _1327/polls/templates/polls_results.html:17
+#: _1327/polls/templates/polls_results.html:12
+msgid "This is a preview of the current state of the poll."
+msgstr "Dies ist eine Vorschau des aktuellen Stands der Umfrage."
+
+#: _1327/polls/templates/polls_results.html:22
 #, python-format
 msgid "Every participant had up to %(max_allowed_number_of_answers)s votes."
 msgstr ""
 "Alle Teilnehmenden hatten bis zu %(max_allowed_number_of_answers)s Stimmen."
 
-#: _1327/polls/templates/polls_results.html:25
+#: _1327/polls/templates/polls_results.html:30
 #: _1327/polls/templates/polls_vote.html:23
 msgid "Choice"
 msgstr "Antwortmöglichkeit"
 
-#: _1327/polls/templates/polls_results.html:27
+#: _1327/polls/templates/polls_results.html:32
 msgid "Votes"
 msgstr "Stimmen"
 
-#: _1327/polls/templates/polls_results.html:28
+#: _1327/polls/templates/polls_results.html:33
 msgid "Percentage"
 msgstr "Anteil"
 
@@ -927,7 +977,7 @@ msgstr "Du hast bis zu %(max_allowed_number_of_answers)s Stimmen."
 msgid "Vote"
 msgstr "Abstimmen"
 
-#: _1327/polls/views.py:57
+#: _1327/polls/views.py:58
 msgid ""
 "You can not see the results of this poll right now. You have to wait until "
 "{} to see the results of this poll."
@@ -935,23 +985,23 @@ msgstr ""
 "Du kannst die Ergebnisse dieser Abstimmung noch nicht sehen. Du muss bis zum "
 "{} warten."
 
-#: _1327/polls/views.py:90
+#: _1327/polls/views.py:115
 msgid "You must select one Choice at least!"
 msgstr "Du musst mindestens eine Antwort auswählen!"
 
-#: _1327/polls/views.py:93
+#: _1327/polls/views.py:118
 msgid "You can only select up to {} options!"
 msgstr "Du kannst maximal {} Antworten auswählen!"
 
-#: _1327/polls/views.py:101
+#: _1327/polls/views.py:126
 msgid "We've received your vote!"
 msgstr "Deine Stimme wurde festgehalten!"
 
-#: _1327/polls/views.py:103
+#: _1327/polls/views.py:128
 msgid "The results of this poll will be available as from {}"
 msgstr "Die Ergebnisse dieser Umfrage sind ab dem {} verfügbar"
 
-#: _1327/polls/views.py:132
+#: _1327/polls/views.py:157
 msgid "This poll has not yet started."
 msgstr "Diese Umfrage hat noch nicht begonnen."
 
@@ -982,7 +1032,7 @@ msgid "Create shortlink"
 msgstr "Kurzlink erstellen"
 
 #: _1327/shortlinks/templates/shortlinks_index.html:8
-#: _1327/templates/base.html:83
+#: _1327/templates/base.html:91
 msgid "Shortlinks"
 msgstr "Kurzlinks"
 
@@ -1097,56 +1147,68 @@ msgstr "Suchen"
 msgid "FSR logo"
 msgstr "FSR-Logo"
 
-#: _1327/templates/base.html:61 _1327/templates/base.html:98
-msgid "Create content"
-msgstr "Inhalt erstellen"
+#: _1327/templates/base.html:62
+msgid "Create information page"
+msgstr "Informationsseite erstellen"
 
-#: _1327/templates/base.html:63 _1327/templates/base.html:101
-msgid "Information page"
-msgstr "Informationsseite"
+#: _1327/templates/base.html:65
+msgid "Create poll"
+msgstr "Umfrage erstellen"
 
-#: _1327/templates/base.html:74
+#: _1327/templates/base.html:69 _1327/templates/base.html:76
+msgid "Create minutes"
+msgstr "Menüeintrag erstellen"
+
+#: _1327/templates/base.html:82
 msgid "Manage menu items"
 msgstr "Menüeinträge bearbeiten"
 
-#: _1327/templates/base.html:77
+#: _1327/templates/base.html:85
 msgid "Find unlinked information pages"
 msgstr "Nicht-verlinkte Informationsseiten finden"
 
-#: _1327/templates/base.html:82
+#: _1327/templates/base.html:90
 msgid "Manage abbreviation explanations"
 msgstr "Abkürzungserklärungen bearbeiten"
 
-#: _1327/templates/base.html:84
+#: _1327/templates/base.html:92
 msgid "View page as different user"
 msgstr "Seite als anderer Nutzer betrachten"
 
-#: _1327/templates/base.html:85 _1327/templates/base.html:113
+#: _1327/templates/base.html:93 _1327/templates/base.html:121
 msgid "Admin"
 msgstr "Admin"
 
-#: _1327/templates/base.html:115
+#: _1327/templates/base.html:106
+msgid "Create content"
+msgstr "Inhalt erstellen"
+
+#: _1327/templates/base.html:109
+msgid "Information page"
+msgstr "Informationsseite"
+
+#: _1327/templates/base.html:123
 msgid "Main page"
 msgstr "Startseite"
 
-#: _1327/templates/base.html:154
+#: _1327/templates/base.html:162
 msgid "Groups"
 msgstr "Gruppen"
 
-#: _1327/templates/base.html:155
+#: _1327/templates/base.html:163
 msgid "Logged in as"
 msgstr "Angemeldet als"
 
-#: _1327/templates/base.html:159
+#: _1327/templates/base.html:167
 msgid "Logout"
 msgstr "Abmelden"
 
-#: _1327/templates/base.html:159 _1327/user_management/templates/login.html:5
+#: _1327/templates/base.html:167 _1327/user_management/templates/login.html:5
 #: _1327/user_management/templates/login.html:22
 msgid "Login"
 msgstr "Anmelden"
 
-#: _1327/templates/base.html:197
+#: _1327/templates/base.html:205
 msgid "Return to the top of the page"
 msgstr "An den Seitenanfang scrollen"
 
@@ -1155,7 +1217,7 @@ msgstr "An den Seitenanfang scrollen"
 msgid "Recover deleted %(name)s"
 msgstr "%(name)s wiederherstellen"
 
-#: _1327/user_management/admin.py:14
+#: _1327/user_management/admin.py:14 _1327/user_management/forms.py:14
 msgid "Password"
 msgstr "Passwort"
 
@@ -1171,7 +1233,15 @@ msgstr "Passwörter stimmen nicht überein"
 msgid "Users"
 msgstr "Benutzer"
 
-#: _1327/user_management/forms.py:8
+#: _1327/user_management/forms.py:13
+msgid "Username"
+msgstr "Benutzername"
+
+#: _1327/user_management/forms.py:32
+msgid "Please enter a correct username and password."
+msgstr "Passwort oder Benutzername ist nicht korrekt."
+
+#: _1327/user_management/forms.py:45
 msgid "Select a user"
 msgstr "Benutzer auswählen"
 
