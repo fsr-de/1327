@@ -4,6 +4,7 @@ import tempfile
 
 from django.conf import settings
 from django.contrib.auth.models import Group
+from django.contrib.contenttypes.models import ContentType
 from django.core.files.base import ContentFile
 from django.db import transaction
 from django.test import TestCase
@@ -305,6 +306,32 @@ class TestAutosave(WebTest):
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
 		self.assertEqual(form.get('text').value, 'AUTO')
+
+	def test_create_autosave_non_superuser(self):
+		# test every document type
+		for klass in Document.__subclasses__():
+			user = mommy.make(UserProfile)
+			group = mommy.make(Group)
+			group.user_set.add(user)
+			# add the 'add' permission to the group for that document type
+			content_type = ContentType.objects.get_for_model(klass)
+			permission_name = "{}.add_{}".format(content_type.app_label, content_type.model.lower())
+			assign_perm(permission_name, group)
+			self.assertTrue(user.has_perm(permission_name))
+
+			# try to perform an autosave
+			response = self.app.get(reverse('documents:create', args=[content_type.model.lower()]), user=user)
+			self.assertEqual(response.status_code, 200)
+			form = response.forms['document-form']
+			url_title = slugify(form.get('url_title').value)
+
+			response = self.app.post(
+				reverse('documents:autosave', args=[url_title]),
+				params={'text': 'AUTO', 'title': form.get('title').value, 'comment': ''},
+				xhr=True,
+				user=user,
+			)
+			self.assertEqual(response.status_code, 200)
 
 	def test_autosave_with_different_document_types(self):
 		# create document
