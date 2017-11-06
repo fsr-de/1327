@@ -1,7 +1,7 @@
 channels >= 1.1.6
 
 Django >=1.11, <1.12
-django-static-precompiler >=1.4, <1.5
+django-static-precompiler >=1.6
 
 django-extensions >= 1.8.1
 
