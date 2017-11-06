@@ -1,3 +1,1 @@
-# asgi-ipc >= 1.2.0
-# temporary fix until asgi-ipc produces a new release
-git+https://github.com/django/asgi_ipc.git@c10f4ae459e0a1c16eb3ce7e506f3fb0e2dc9752
+asgi-ipc >= 1.4.2
