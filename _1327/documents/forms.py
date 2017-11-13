@@ -24,7 +24,7 @@ class DocumentForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
 		user = kwargs.pop('user', None)
 		creation = kwargs.pop('creation', None)
-		kwargs.pop('creation_group', None)
+		creation_group = kwargs.pop('creation_group', None)
 		staff = Group.objects.get(name=settings.STAFF_GROUP_NAME)
 		super().__init__(*args, **kwargs)
 
@@ -35,6 +35,8 @@ class DocumentForm(forms.ModelForm):
 			permitted_groups = user.groups.filter(permissions__codename=add_permission_name)
 			if creation and permitted_groups.count() == 0:  # The user should not be able to view this form
 				raise PermissionDenied
+			if creation_group and creation_group not in permitted_groups:
+				raise PermissionDenied
 
 		self.fields['group'].queryset = permitted_groups.all()
 		self.fields['group'].widget.attrs['class'] = 'select2-selection'
@@ -42,8 +44,13 @@ class DocumentForm(forms.ModelForm):
 			if len(permitted_groups.all()) == 1:
 				self.fields['group'].initial = permitted_groups.first()
 				self.fields['group'].widget = forms.HiddenInput()
-			elif staff in permitted_groups.all() and not self.fields['group'].initial:
-				self.fields['group'].initial = staff
+			elif not self.fields['group'].initial:
+				if creation_group:
+					self.fields['group'].initial = creation_group
+				elif staff in permitted_groups.all():
+					self.fields['group'].initial = staff
+				else:
+					self.fields['group'].initial = permitted_groups.first()
 		else:
 			self.fields['group'].widget = forms.HiddenInput()
 			self.fields['group'].required = False
