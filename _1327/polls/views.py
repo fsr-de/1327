@@ -55,7 +55,9 @@ def results(request, poll, url_title):
 	if not poll.show_results_immediately and poll.end_date >= datetime.date.today():
 		messages.info(
 			request,
-			_("You can not see the results of this poll right now. You have to wait until {} to see the results of this poll.").format(poll.end_date.strftime("%d. %B %Y"))
+			_("You can not see the results of this poll right now. You have to wait until {} to see the results of this poll.").format(
+				(poll.end_date + datetime.timedelta(days=1)).strftime("%d. %B %Y")
+			)
 		)
 		return HttpResponseRedirect(reverse('polls:index'))
 
