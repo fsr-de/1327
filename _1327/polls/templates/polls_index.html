@@ -111,7 +111,7 @@
 						{% if poll|can_see_results %}
 							<td><a href="{% url poll.get_view_url_name poll.url_title %}">{{ poll.title }}</a></td>
 						{% else %}
-							<td><span data-toggle="tooltip" data-placement="right" title="You can see the result of this Poll as from {{ poll.end_date|one_day_later }}.">{{ poll.title }} {% bootstrap_icon "info-sign" %}</span></td>
+							<td><span data-toggle="tooltip" data-placement="right" title="{% blocktrans with date=poll.end_date|one_day_later %}You can see the result of this Poll as from {{ date }}.{% endblocktrans %}">{{ poll.title }} {% bootstrap_icon "info-sign" %}</span></td>
 						{% endif %}
 						<td>{{ poll.start_date }} - {{ poll.end_date }}</td>
 						<td class="text-right">

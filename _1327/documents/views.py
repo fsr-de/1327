@@ -442,7 +442,7 @@ def delete_document(request, title):
 	check_permissions(document, request.user, [document.edit_permission_name])
 	document.delete()
 
-	messages.success(request, _("Successfully deleted document: {}".format(document.title)))
+	messages.success(request, _("Successfully deleted document: {}").format(document.title))
 	return HttpResponse()
 
 
