@@ -55,7 +55,7 @@ def results(request, poll, url_title):
 	if not poll.show_results_immediately and poll.end_date >= datetime.date.today():
 		messages.info(
 			request,
-			_("You can not see the results of this poll right now. You have to wait until {} to see the results of this poll.".format(poll.end_date.strftime("%d. %B %Y")))
+			_("You can not see the results of this poll right now. You have to wait until {} to see the results of this poll.").format(poll.end_date.strftime("%d. %B %Y"))
 		)
 		return HttpResponseRedirect(reverse('polls:index'))
 
@@ -125,7 +125,7 @@ def vote(request, poll, url_title):
 		poll.participants.add(request.user)
 		messages.success(request, _("We've received your vote!"))
 		if not poll.show_results_immediately:
-			messages.info(request, _("The results of this poll will be available as from {}".format((poll.end_date + datetime.timedelta(days=1)).strftime("%d. %B %Y"))))
+			messages.info(request, _("The results of this poll will be available as from {}").format((poll.end_date + datetime.timedelta(days=1)).strftime("%d. %B %Y")))
 			return HttpResponseRedirect(reverse('polls:index'))
 		return HttpResponseRedirect(reverse(poll.get_view_url_name(), args=[url_title]))
 

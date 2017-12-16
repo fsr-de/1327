@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-06 15:51+0100\n"
-"PO-Revision-Date: 2017-11-06 16:38+0100\n"
+"POT-Creation-Date: 2017-12-16 12:22+0100\n"
+"PO-Revision-Date: 2017-12-16 12:22+0100\n"
 "Last-Translator: Johannes Wolf <janno42@gmail.com>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -925,6 +925,11 @@ msgstr "Umfrage-Ergebnisse"
 msgid "There are no results you can see."
 msgstr "Es gibt keine Ergebnisse, die du sehen kannst."
 
+#: _1327/polls/templates/polls_index.html:114
+#, python-format
+msgid "You can see the result of this Poll as from %(date)s."
+msgstr "Du kannst die Ergebnisse der Umfrage ab dem %(date)s einsehen."
+
 #: _1327/polls/templates/polls_meta_information.html:4
 msgid "Start date"
 msgstr "Startdatum"
@@ -1155,7 +1160,11 @@ msgstr "Informationsseite erstellen"
 msgid "Create poll"
 msgstr "Umfrage erstellen"
 
-#: _1327/templates/base.html:69 _1327/templates/base.html:76
+#: _1327/templates/base.html:69
+msgid "Create minutes for"
+msgstr "Protokoll erstellen für"
+
+#: _1327/templates/base.html:76
 msgid "Create minutes"
 msgstr "Protokoll erstellen"
 
