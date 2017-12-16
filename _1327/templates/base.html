@@ -66,7 +66,7 @@
 								{% endif %}
 								{% if CAN_CREATE_MINUTES %}
 									{% if CAN_CREATE_MINUTES|length > 1 %}
-										<li class="disabled"><a href="#">{% trans "Create minutes" %}</a></li>
+										<li class="disabled"><a href="#">{% trans "Create minutes for" %} <span class="caret"></span></a></li>
 										<ul class="sublist">
 											{% for group in CAN_CREATE_MINUTES %}
 												<li><a href="{% url 'documents:create' 'minutesdocument' %}?group={{ group.id }}">{{ group.name }}</a></li>
