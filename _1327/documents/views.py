@@ -44,7 +44,7 @@ def create(request, document_type):
 		model_class = content_type.model_class()
 		delete_old_empty_pages()
 		title = model_class.generate_new_title()
-		url_title = model_class.generate_default_slug(title)
+		url_title = "temp_{}_{}".format(datetime.utcnow().strftime("%d%m%Y%H%M%S%f"), model_class.generate_default_slug(title))
 		kwargs = {
 			'url_title': url_title,
 			'title': title,

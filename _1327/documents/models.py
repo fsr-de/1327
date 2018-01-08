@@ -1,5 +1,7 @@
 from datetime import datetime
 import hashlib
+import re
+
 
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -107,7 +109,18 @@ class Document(PolymorphicModel):
 
 	@classmethod
 	def generate_default_slug(cls, title):
-		return slugify(title)
+		slug = slugify(title)
+		count = 2
+
+		while Document.objects.filter(url_title=slug).exists():
+			# check whether current title already ends with '_\d+' and handle this case accordingly
+			temp_suffix_match = re.search(r'_(?P<count>\d+)$', slug)
+			if temp_suffix_match:
+				slug = slug[:temp_suffix_match.start()]
+
+			slug = "{}_{}".format(slug, count)
+			count += 1
+		return slug
 
 	@property
 	def view_permission_name(self):

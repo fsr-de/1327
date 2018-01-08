@@ -1,6 +1,7 @@
 from functools import lru_cache
-
 import json
+import re
+
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
@@ -53,6 +54,15 @@ def handle_edit(request, document, formset=None, initial=None, creation_group=No
 				# handle_edit has to happen outside of create_revision, because otherwise versions will not be
 				# created correctly, if the model, that is getting saved, contains many-to-many relationships
 				document.handle_edit(cleaned_data)
+
+				# make sure to remove temp prefix of url_title
+				if document.url_title.startswith('temp_'):
+					temp_prefix_len = re.search(r'temp_\d+_', document.url_title).end()
+					document.url_title = document.url_title[temp_prefix_len:]
+				# check that there is no document that already has that url
+				if Document.objects.filter(url_title=document.url_title).exclude(id=document.id).exists():
+					document.url_title = document.generate_default_slug(document.url_title)
+
 				with revisions.create_revision():
 					document.save()
 					document.save_formset(formset)
