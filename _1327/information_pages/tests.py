@@ -203,6 +203,10 @@ class TestVersions(WebTest):
 		self.assertEqual(versions[1].revision.comment, 'test version')
 
 	def test_last_author(self):
+		# test whether last author is part of page
+		response = self.app.get(self.document.get_view_url(), user=self.user)
+		self.assertIn('<i>by</i> {}'.format(self.user.username), response.body.decode('utf-8'))
+
 		# create a second user
 		user2 = mommy.make(UserProfile, is_superuser=True)
 		user2.groups.add(self.group)
