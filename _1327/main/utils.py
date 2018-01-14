@@ -102,6 +102,16 @@ def slugify(string):
 	return slug
 
 
+class SlugWithSlashConverter:
+	regex = '[\w\-/]+'
+
+	def to_python(self, value):
+		return str(value)
+
+	def to_url(self, value):
+		return str(value)
+
+
 def find_root_menu_items(items):
 	# find root menu items by recursively traversing tree bottom-up
 	if len(items) == 0:
