@@ -17,6 +17,7 @@ from model_mommy import mommy
 from reversion import revisions
 from reversion.models import Version
 
+from _1327.documents.markdown_scaled_image_extension import ScaledImagePattern, SCALED_IMAGE_LINK_RE
 from _1327.documents import markdown_emoji_extension
 from _1327.documents.markdown_emoji_extension import EmojifyPreprocessor
 from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
@@ -1308,6 +1309,69 @@ class DocumentCreationTests(WebTest):
 		for document_type in self.document_types:
 			response = self.app.get(reverse('documents:create', args=[document_type]), user=self.user, expect_errors=True)
 			self.assertEqual(response.status_code, 403)
+
+
+class ScaledImageExtensionTests(TestCase):
+
+	def setUp(self):
+		self.md = markdown.Markdown(
+			extensions=[
+				'_1327.documents.markdown_scaled_image_extension',
+			]
+		)
+		self.pattern = ScaledImagePattern(SCALED_IMAGE_LINK_RE, self.md)
+		self.regex = self.pattern.getCompiledRegExp()
+
+		# Replace this function with a mock stub because the real implementation digs too deep into the system
+		self.pattern.unescape = lambda text: text
+
+	def test_scaled_image_regex(self):
+		self.assertEqual(None, self.regex.match('![Alt](http://example.com)'))
+		self.assertEqual(None, self.regex.match('![Alt](http://example.com 1327)'))
+		self.assertEqual(None, self.regex.match('![Alt](http://example.com =1327)'))
+		self.assertEqual(None, self.regex.match('![Alt](http://example.com 13x27)'))
+
+		m = self.regex.match('![Alt](http://example.com =13x27)')
+		self.assertTrue(m)
+		self.assertEqual('Alt', m.group(2))
+		self.assertEqual('http://example.com', m.group(9))
+		self.assertEqual('13', m.group(11))
+		self.assertEqual('27', m.group(12))
+
+		m = self.regex.match('![Alt](<http://example.com now with spaces> =13x27)')
+		self.assertTrue(m)
+		self.assertEqual('<http://example.com now with spaces>', m.group(9))
+
+		m = self.regex.match('![Alt](http://example.com "Hi I am a title" =13x27)')
+		self.assertTrue(m)
+		self.assertEqual('http://example.com "Hi I am a title"', m.group(9))
+
+		m = self.regex.match('![Alt](http://example.com =1327x)')
+		self.assertTrue(m)
+		self.assertEqual('1327', m.group(11))
+		self.assertEqual(None, m.group(12))
+
+		m = self.regex.match('![Alt](http://example.com =x1327)')
+		self.assertTrue(m)
+		self.assertEqual(None, m.group(11))
+		self.assertEqual('1327', m.group(12))
+
+	def test_scaled_image_pattern(self):
+		el = self.pattern.handleMatch(self.regex.match('![Alt](http://example.com "Hi I am a title" =13x27)'))
+		self.assertEqual('img', el.tag)
+		self.assertEqual('http://example.com', el.get('src'))
+		self.assertEqual('Alt', el.get('alt'))
+		self.assertEqual('Hi I am a title', el.get('title'))
+		self.assertEqual('13px', el.get('width'))
+		self.assertEqual('27px', el.get('height'))
+
+		el = self.pattern.handleMatch(self.regex.match('![Alt](http://example.com "Hi I am a title" =1327x)'))
+		self.assertEqual('1327px', el.get('width'))
+		self.assertEqual(None, el.get('height'))
+
+		el = self.pattern.handleMatch(self.regex.match('![Alt](http://example.com "Hi I am a title" =x1327)'))
+		self.assertEqual(None, el.get('width'))
+		self.assertEqual('1327px', el.get('height'))
 
 
 class EmojiExtensionTests(TestCase):
