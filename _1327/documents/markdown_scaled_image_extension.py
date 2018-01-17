@@ -1,7 +1,6 @@
 from markdown import Extension
-from markdown.inlinepatterns import LinkPattern, BRK, handleAttributes, dequote
+from markdown.inlinepatterns import BRK, dequote, handleAttributes, LinkPattern
 from markdown.util import etree
-import re
 
 
 # Mostly copied from default "ImagePattern"
@@ -9,14 +8,12 @@ SCALED_IMAGE_LINK_RE = r'\!' + BRK + r'\s*\(\s*(<.*?>|([^"\)\s]+\s*"[^"]*"|[^\)\
 
 
 class ScaledImageExtension(Extension):
-
 	def extendMarkdown(self, md, md_globals):
 		md.registerExtension(self)
 		md.inlinePatterns['scaled_image_link'] = ScaledImagePattern(SCALED_IMAGE_LINK_RE, md)
 
 
 class ScaledImagePattern(LinkPattern):
-
 	def handleMatch(self, m):
 		# Copied from default "ImagePattern"
 		el = etree.Element("img")

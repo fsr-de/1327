@@ -17,10 +17,10 @@ from model_mommy import mommy
 from reversion import revisions
 from reversion.models import Version
 
-from _1327.documents.markdown_scaled_image_extension import ScaledImagePattern, SCALED_IMAGE_LINK_RE
 from _1327.documents import markdown_emoji_extension
 from _1327.documents.markdown_emoji_extension import EmojifyPreprocessor
 from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
+from _1327.documents.markdown_scaled_image_extension import SCALED_IMAGE_LINK_RE, ScaledImagePattern
 from _1327.information_pages.models import InformationDocument
 from _1327.main.utils import EscapeHtml, slugify
 from _1327.minutes.models import MinutesDocument
