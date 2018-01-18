@@ -86,6 +86,7 @@ def convert_markdown(text):
 			TocExtension(baselevel=2),
 			InternalLinksMarkdownExtension(),
 			'_1327.minutes.markdown_minutes_extensions',
+			'_1327.documents.markdown_scaled_image_extension',
 			'_1327.documents.markdown_emoji_extension',
 			'markdown.extensions.abbr',
 			'markdown.extensions.tables',
