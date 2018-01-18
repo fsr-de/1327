@@ -150,6 +150,7 @@ class TestEditor(WebTest):
 
 class TestVersions(WebTest):
 	csrf_checks = False
+	extra_environ = {'HTTP_ACCEPT_LANGUAGE': 'en'}
 
 	@classmethod
 	def setUpTestData(cls):
@@ -200,6 +201,26 @@ class TestVersions(WebTest):
 		# check whether the comment of the version correct
 		self.assertEqual(versions[0].revision.comment, 'hallo Bibi Blocksberg')
 		self.assertEqual(versions[1].revision.comment, 'test version')
+
+	def test_last_author(self):
+		# test whether last author is part of page
+		response = self.app.get(self.document.get_view_url(), user=self.user)
+		self.assertIn('<i>by</i> {}'.format(self.user.username), response.body.decode('utf-8'))
+
+		# create a second user
+		user2 = mommy.make(UserProfile, is_superuser=True)
+		user2.groups.add(self.group)
+
+		# create second revision
+		self.document.text = 'christi was here'
+		with transaction.atomic(), revisions.create_revision():
+			self.document.save()
+			revisions.set_user(user2)
+			revisions.set_comment('test version 2')
+
+		# test whether last author is part of page
+		response = self.app.get(self.document.get_view_url(), user=self.user)
+		self.assertIn('<i>by</i> {}'.format(user2.username), response.body.decode('utf-8'))
 
 
 class TestPermissions(WebTest):

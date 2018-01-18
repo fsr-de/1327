@@ -159,6 +159,13 @@ class Document(PolymorphicModel):
 		return last_revision.revision.date_created
 
 	@property
+	def last_author(self):
+		last_revision = Version.objects.get_for_object(self).order_by('revision__date_created').last()
+		if last_revision is None:
+			return None
+		return last_revision.revision.user
+
+	@property
 	def is_in_creation(self):
 		return not self.has_perms()
 
