@@ -1,20 +1,21 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-Vagrant.require_version ">= 1.7.4"
+Vagrant.require_version ">= 1.8.1"
 
 Vagrant.configure("2") do |config|
-  # Base box to build off, and download URL for when it doesn't exist on the user's system already
-  config.vm.box = "puppetlabs/ubuntu-14.04-64-puppet"
-  config.vm.box_version = "= 1.0.2"
+  config.vm.box = "ubuntu/artful64"
+  config.vm.box_version = "= 20180102.0.0"
 
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine.
-  config.vm.network :forwarded_port, guest: 80, host: 8000
-  config.vm.network :forwarded_port, guest: 8000, host: 8080
+  # port forwarding
+  config.vm.network :forwarded_port, guest: 8000, host: 8000
 
-  config.vm.provision :puppet do |puppet|
-    puppet.environment_path = "deployment"
-    puppet.environment = "development"
+  config.vm.provider :virtualbox do |v, override|
+    # disable logfile
+    v.customize [ "modifyvm", :id, "--uartmode1", "disconnected" ]
+    # show virtualbox gui, uncomment this to debug startup problems
+    #v.gui = true   
   end
+
+  config.vm.provision "shell", path: "deployment/provision_vagrant_vm.sh"
 end
