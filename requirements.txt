@@ -1,4 +1,4 @@
-channels >= 1.1.6
+channels == 1.1.8
 
 Django >=1.11, <1.12
 django-static-precompiler >=1.6
