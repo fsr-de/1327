@@ -414,7 +414,7 @@ class TestNewMinutesDocument(WebTest):
 		self.assertEqual(document.moderator, self.user)
 		self.assertEqual(document.text, text)
 		self.assertEqual(versions[0].revision.comment, text)
-		self.assertListEqual(list(document.participants.all()), list(self.group.user_set.all()))
+		self.assertListEqual(list(document.participants.all().order_by('username')), list(self.group.user_set.all().order_by('username')))
 
 		checker = ObjectPermissionChecker(self.group)
 		self.assertTrue(checker.has_perm(document.edit_permission_name, document))
@@ -445,7 +445,7 @@ class TestNewMinutesDocument(WebTest):
 		self.assertEqual(document.moderator, test_moderator)  # should be taken from previous minutes document
 		self.assertEqual(document.author, self.user)
 		self.assertEqual(document.text, text)
-		self.assertListEqual(list(document.participants.all()), list(self.group.user_set.all()))
+		self.assertListEqual(list(document.participants.all().order_by('username')), list(self.group.user_set.all().order_by('username')))
 
 	def test_group_field_hidden_when_user_has_one_group(self):
 		response = self.app.get(reverse('documents:create', args=['minutesdocument']) + '?group={}'.format(self.group.id), user=self.user)

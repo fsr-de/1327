@@ -387,7 +387,7 @@ def update_attachment_order(request):
 	if data is None or not request.is_ajax():
 		raise Http404
 
-	for pk, index in data._iteritems():
+	for pk, index in data.items():
 		attachment = get_object_or_404(Attachment, pk=pk)
 		# check that user is allowed to make changes to attachment
 		document = attachment.document
