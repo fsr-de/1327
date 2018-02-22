@@ -55,6 +55,12 @@
 						{% trans "Error! Could not upload image." %}
 					</div>
 					<select class="form-control" id="attachmentModalSelect"></select>
+					<div class="editor-image-modal-scale-container pt-2">
+						<span class="editor-image-modal-scale-label pr-1">{% trans "Scale:" %}</span>
+					  <input type="text" class="form-control editor-image-modal-scale-input" id="attachmentWidthInput" placeholder="{% trans "Width (optional)" %}" />
+						<span class="editor-image-modal-scale-label px-1">and/or</span>
+					  <input type="text" class="form-control editor-image-modal-scale-input" id="attachmentHeightInput" placeholder="{% trans "Height (optional)" %}" />
+				  </div>
 					<div class="divider"></div>
 					<h2>{% trans "Preview" %}</h2>
 					<div class="preview">
@@ -164,8 +170,9 @@
 		});
 	}, 1000);
 
-	function addImageToText(editor, attachmentHash, modal) {
-		var chunk = "![Image Alt]({% url 'documents:download_attachment' %}?hash_value=" + attachmentHash + "&embed=True)";
+	function addImageToText(editor, attachmentHash, attachmentWidth, attachmentHeight, modal) {
+		var scaleText = (attachmentWidth || attachmentHeight) ? (" =" + attachmentWidth + "x" + attachmentHeight) : "";
+		var chunk = "![Image Alt]({% url 'documents:download_attachment' %}?hash_value=" + attachmentHash + "&embed=True" + scaleText + ")";
 		editor.replaceSelection(chunk);
 		var cursor = editor.getSelection();
 
@@ -235,8 +242,9 @@
 							}
 							// find the right spot to insert the text and create the correct markdown
 							var attachmentHash = select.val();
-							addImageToText(e, attachmentHash, modalItem)
-
+							var attachmentWidth = $('#attachmentWidthInput').val();
+							var attachmentHeight = $('#attachmentHeightInput').val();
+							addImageToText(e, attachmentHash, attachmentWidth, attachmentHeight, modalItem);
 						});
 
 						// enable image uploading
@@ -263,6 +271,9 @@
 							var formData = new FormData(this);
 							formData.append("document", {{ document.id }});
 
+							var attachmentWidth = $('#attachmentWidthInput').val();
+							var attachmentHeight = $('#attachmentHeightInput').val();
+
 							$.ajax({
 								url: "{% url 'documents:create_attachment' %}",
 								data: formData,
@@ -270,7 +281,7 @@
 								contentType: false,
 								type: 'POST',
 								success: function (data) {
-									addImageToText(e, data, modalItem);
+									addImageToText(e, data, attachmentWidth, attachmentHeight, modalItem);
 								},
 								error: function () {
 									$('#image-upload-error-display').removeClass('hidden');

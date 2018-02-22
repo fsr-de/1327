@@ -4,6 +4,20 @@
 @import "../bootstrap/less/mixins.less";
 @import "../bootstrap-markdown/less/bootstrap-markdown.less";
 
+// Add future Bootstrap 4 classes which are missing in Bootstrap 3
+// TODO: Remove these after update to Bootstrap 4
+.pt-2 {
+	padding-top: 2rem;
+}
+.px-1 {
+	padding-left: 1rem;
+	padding-right: 1rem;
+}
+.pr-1 {
+	padding-right: 1rem;
+}
+// End missing classes
+
 // Fix bootstrap:
 .modal-dialog {
 	z-index: @zindex-modal-background + 1;
@@ -604,6 +618,18 @@ div.radio {
 }
 #document-form #id_state {
 	padding-top: (@padding-base-vertical + 1);
+}
+
+.editor-image-modal-scale-container {
+	display: flex;
+}
+.editor-image-modal-scale-input {
+	flex: 1;
+}
+.editor-image-modal-scale-label {
+	white-space: nowrap;
+	margin-top: auto;
+	margin-bottom: auto;
 }
 
 .toc ul {
