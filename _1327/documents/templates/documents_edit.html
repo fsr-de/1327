@@ -37,7 +37,10 @@
 	<h2>{% trans "Preview" %} <a id="shareText" class="hidden">Share</a></h2>
 	<div class="divider"></div>
 	<div id="text-preview"></div>
+{% endblock %}
 
+{% block modals %}
+{{ block.super }}
 	<div class="modal fade ontop" id="selectImageAttachment" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">

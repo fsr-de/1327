@@ -27,8 +27,10 @@
 	{% endblock %}
 </head>
 <body>
+{% block modals %}
+{% endblock %}
 {% block body %}
-{% endblock body %}
+{% endblock %}
 <!-- Script that automatically adds the csrf cookie for ajax post requests -->
 <script type="text/javascript" src="{% static 'js/utils.js' %}"></script>
 {% block scripts %}
