@@ -354,6 +354,10 @@ nav li:hover > .dropdown-menu {
 .container.content {
 	padding-left: 20px;
 	margin-bottom: 30px;
+	// Wraps all overflowing text in the content section, regardless whether it's part
+	// of the main text, of the attachments list or table or any other content element
+	word-wrap: break-word;
+	word-break: break-all;
 }
 
 .content :first-child {
@@ -592,10 +596,6 @@ table.table-narrow {
 }
 table.vertically-aligned tr td {
 	vertical-align: middle;
-}
-
-table#attachment-table td {
-	word-break: break-all;
 }
 
 div.radio {
