@@ -49,3 +49,7 @@ class GuestForm(forms.ModelForm):
 
 
 Guest.Form = GuestForm
+
+
+class SearchForm(forms.Form):
+	search_phrase = forms.CharField()
