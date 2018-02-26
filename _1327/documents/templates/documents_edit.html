@@ -14,7 +14,7 @@
 
 	{% for new_autosaved_page in new_autosaved_pages %}
 		<div class="alert alert-danger alert-margin-bottom" role="alert">{% blocktrans with date=new_autosaved_page.created %}There is an autosaved text (saved on {{ date }}){% endblocktrans %}, {% trans "you can restore this unsaved text:" %} <a href="{{ new_autosaved_page.document.get_edit_url }}?restore={{ new_autosaved_page.id }}" class="btn-sm btn-default">{% trans "Restore" %}</a></div>
-	{%  endfor %}
+	{% endfor %}
 
 <form action="{{ document.get_edit_url }}" method="post" class="form-horizontal" role="form" id="document-form">
 	{% bootstrap_form form layout='horizontal' %}
@@ -57,10 +57,10 @@
 					<select class="form-control" id="attachmentModalSelect"></select>
 					<div class="editor-image-modal-scale-container pt-2">
 						<span class="editor-image-modal-scale-label pr-1">{% trans "Scale:" %}</span>
-					  <input type="text" class="form-control editor-image-modal-scale-input" id="attachmentWidthInput" placeholder="{% trans "Width (optional)" %}" />
+						<input type="text" class="form-control editor-image-modal-scale-input" id="attachmentWidthInput" placeholder="{% trans "Width (optional)" %}" />
 						<span class="editor-image-modal-scale-label px-1">and/or</span>
-					  <input type="text" class="form-control editor-image-modal-scale-input" id="attachmentHeightInput" placeholder="{% trans "Height (optional)" %}" />
-				  </div>
+						<input type="text" class="form-control editor-image-modal-scale-input" id="attachmentHeightInput" placeholder="{% trans "Height (optional)" %}" />
+					</div>
 					<div class="divider"></div>
 					<h2>{% trans "Preview" %}</h2>
 					<div class="preview">
@@ -142,7 +142,7 @@
 				<div class="modal-title">{% trans "Autosave failed" %}</div>
 			</div>
 			<div class="modal-body">
-                <span class="autosaveErrorDialogExplanation"></span>
+				<span class="autosaveErrorDialogExplanation"></span>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-primary autosaveErrorDialogClose">{% trans "Close" %}</button>
@@ -414,28 +414,28 @@
 					destinationElement.removeClass('hidden');
 				},
 				error: function(jqXHR, textStatus, errorThrown) {
-                    var reasonDisplay = $('.autosaveErrorDialogExplanation');
-                    var statusCode = jqXHR.status;
-                    var reason = "";
-                    switch (statusCode) {
-                        case 403:
-                            reason = "{% trans "Probably you are logged out!" %}";
-                            break;
-                        case 404:
-                            reason = "{% trans "The document you are editing does not exist!" %}";
-                            break;
-                        default:
-                            reason = "{% trans "There was an unknown error!" %}";
-                            break;
-                    }
-                    reasonDisplay.html(reason);
+					var reasonDisplay = $('.autosaveErrorDialogExplanation');
+					var statusCode = jqXHR.status;
+					var reason = "";
+					switch (statusCode) {
+						case 403:
+							reason = "{% trans "Probably you are logged out!" %}";
+							break;
+						case 404:
+							reason = "{% trans "The document you are editing does not exist!" %}";
+							break;
+						default:
+							reason = "{% trans "There was an unknown error!" %}";
+							break;
+					}
+					reasonDisplay.html(reason);
 
-                    var errorDisplay = $('#autosaveErrorDialog');
-                    errorDisplay.modal();
-                    $('.autosaveErrorDialogClose').on('click', function() {
-                        errorDisplay.modal('hide');
-                    });
-                }
+					var errorDisplay = $('#autosaveErrorDialog');
+					errorDisplay.modal();
+					$('.autosaveErrorDialogClose').on('click', function() {
+						errorDisplay.modal('hide');
+					});
+				}
 			});
 		}
 		setTimeout(function() { save(); }, 10000);
@@ -443,10 +443,10 @@
 	save();
 
 	// Activate Select2 if present on page
-    $(".select2-selection").select2({
-        language: "{{ LANGUAGE_CODE }}",
-        placeholder: "{% trans 'Please select...' %}"
-    });
+	$(".select2-selection").select2({
+		language: "{{ LANGUAGE_CODE }}",
+		placeholder: "{% trans 'Please select...' %}"
+	});
 
 	$(".select2-selection-clearable").select2({
 		language: "{{ LANGUAGE_CODE }}",
