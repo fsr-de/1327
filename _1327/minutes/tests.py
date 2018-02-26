@@ -48,7 +48,7 @@ class TestEditor(WebTest):
 		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		form = response.forms[0]
+		form = response.forms['document-form']
 		self.assertEqual(form.get('title').value, self.document.title)
 		self.assertEqual(form.get('text').value, self.document.text)
 		self.assertEqual(int(form.get('moderator').value), self.document.moderator.id)
@@ -260,7 +260,7 @@ class TestNewMinutesDocument(WebTest):
 		response = self.app.get(reverse('documents:create', args=['minutesdocument']) + '?group={}'.format(self.group.id), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		form = response.forms[0]
+		form = response.forms['document-form']
 		text = "Lorem ipsum"
 		form.set('text', text)
 		form.set('comment', text)
@@ -296,7 +296,7 @@ class TestNewMinutesDocument(WebTest):
 		response = self.app.get(reverse('documents:create', args=['minutesdocument']) + '?group={}'.format(self.group.id), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		form = response.forms[0]
+		form = response.forms['document-form']
 		text = "Lorem ipsum"
 		form.set('text', text)
 		form.set('comment', text)
@@ -318,7 +318,7 @@ class TestNewMinutesDocument(WebTest):
 		response = self.app.get(reverse('documents:create', args=['minutesdocument']) + '?group={}'.format(self.group.id), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		form = response.forms[0]
+		form = response.forms['document-form']
 		self.assertTrue("Hidden" in str(form.fields['group'][0]))
 
 	def test_group_field_not_hidden_when_user_has_multiple_groups(self):
@@ -328,7 +328,7 @@ class TestNewMinutesDocument(WebTest):
 		response = self.app.get(reverse('documents:create', args=['minutesdocument']) + '?group={}'.format(self.group.id), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		form = response.forms[0]
+		form = response.forms['document-form']
 		self.assertFalse("Hidden" in str(form.fields['group'][0]))
 
 

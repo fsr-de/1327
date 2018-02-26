@@ -78,7 +78,7 @@ class TestEditor(WebTest):
 		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		form = response.forms[0]
+		form = response.forms['document-form']
 		self.assertEqual(form.get('title').value, self.document.title)
 		self.assertEqual(form.get('text').value, self.document.text)
 
@@ -97,7 +97,7 @@ class TestEditor(WebTest):
 		for string in ['', ' ']:
 			response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 
-			form = response.forms[0]
+			form = response.forms['document-form']
 			form.set('title', string)
 			response = form.submit()
 			self.assertEqual(response.status_code, 200)
@@ -106,7 +106,7 @@ class TestEditor(WebTest):
 	def test_editor_slug_error(self):
 		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 
-		form = response.forms[0]
+		form = response.forms['document-form']
 		form.set('url_title', 'not_ALLOWED!')
 		response = form.submit()
 		self.assertEqual(response.status_code, 200)
@@ -186,7 +186,7 @@ class TestVersions(WebTest):
 		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		form = response.forms[0]
+		form = response.forms['document-form']
 		new_string = self.document.text + "\nHallo Bibi Blocksberg!!"
 		form.set('text', new_string)
 		form.set('comment', 'hallo Bibi Blocksberg')
@@ -359,7 +359,7 @@ class TestNewPage(WebTest):
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		form = response.forms[0]
+		form = response.forms['document-form']
 		text = "Hallo Bibi Blocksberg!"
 		form.set('text', text)
 		form.set('title', text)
@@ -386,7 +386,7 @@ class TestNewPage(WebTest):
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		form = response.forms[0]
+		form = response.forms['document-form']
 		text = "Lorem ipsum"
 		url = "some/page-with-slash"
 		form.set('text', text)
@@ -419,7 +419,7 @@ class TestNewPage(WebTest):
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		form = response.forms[0]
+		form = response.forms['document-form']
 		self.assertTrue("Hidden" in str(form.fields['group'][0]))
 
 	def test_group_field_not_hidden_when_user_has_multiple_groups(self):
@@ -429,7 +429,7 @@ class TestNewPage(WebTest):
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		form = response.forms[0]
+		form = response.forms['document-form']
 		self.assertFalse("Hidden" in str(form.fields['group'][0]))
 
 
