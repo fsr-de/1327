@@ -38,8 +38,8 @@ At that point, one created a vagrant box, running a [PostgreSQL](https://www.pos
 Another way of executing this django application is the use of a virtual python environment. This way bypasses the needs for a virtual machine and simplifies the life with multiple python versions installed:
 
 ```bash
-virtualenv -p /usr/bin/python3 env
-source env/bin/activate
+virtualenv -p /usr/bin/python3 virtualenv
+source virtualenv/bin/activate
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py createsuperuser --username=root
