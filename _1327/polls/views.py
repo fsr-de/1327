@@ -24,7 +24,7 @@ def index(request):
 		if request.user.has_perm(Poll.get_view_permission(), obj=poll) and poll.start_date <= datetime.date.today():
 			if datetime.date.today() <= poll.end_date \
 						and not poll.participants.filter(id=request.user.pk).exists() \
-						and request.user.has_perm(Poll.VOTE_PERMISSION_NAME, poll):
+						and request.user.has_perm(Poll.get_vote_permission(), poll):
 				running_polls.append(poll)
 			else:
 				finished_polls.append(poll)

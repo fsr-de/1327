@@ -7,6 +7,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django_webtest import WebTest
 from guardian.shortcuts import assign_perm, get_perms
+from guardian.utils import get_anonymous_user
 from model_mommy import mommy
 from reversion import revisions
 from reversion.models import Version
@@ -288,6 +289,30 @@ class PollViewTests(WebTest):
 	def test_result_preview_superuser(self):
 		response = self.app.get(reverse('polls:results_for_admin', args=[self.poll.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
+
+	def test_view_poll_list_as_student_without_vote_permission_but_view_permission_by_anonymous(self):
+		# 1. create a new poll and give anonymous view permission
+		poll = mommy.make(
+			Poll,
+			start_date=datetime.date.today(),
+			end_date=datetime.date.today() + datetime.timedelta(days=3),
+		)
+		mommy.make(
+			Choice,
+			poll=poll,
+			_quantity=3,
+		)
+
+		assign_perm(poll.view_permission_name, get_anonymous_user(), poll)
+
+		# 2. create a student, add him to the student group and let him have a look at the polls index page
+		student = mommy.make(UserProfile)
+		student_group = Group.objects.get(name='Student')
+		student.groups.add(student_group)
+
+		response = self.app.get(reverse('polls:index'), user=student)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn(poll.title, response.body.decode('utf-8'))
 
 
 class PollResultTests(WebTest):
