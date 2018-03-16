@@ -8,6 +8,10 @@
 {% block sidebar %}
 	<div class="toc hidden-print">
 		<ul>
+			<form class="pb-2" action="{% url 'minutes:search' group_id %}" method="post" id="text_search">
+				{% csrf_token %}
+			   	{{ search_form }}
+			</form>
 			{% for year, minutes in minutes_list %}
 				<li><a href="#year{{ year }}">{{ year }}</a></li>
 			{% endfor %}
@@ -19,7 +23,7 @@
 	{% for year, minutes in minutes_list %}
 		<h3 id="year{{ year }}">{{ year }}</h3>
 		<table class="table table-striped">
-			{% for minute in minutes %}
+			{% for minute, lines in minutes %}
 				<tr>
 					<td style="width: 15%;">
 						<a href="{{ minute.get_view_url }}">{{ minute.date | date:"d.m.Y" }}</a>
@@ -46,6 +50,8 @@
 					</td>
 					<td style="width: 55%;">
 						<a href="{{ minute.get_view_url }}">{{ minute.title }}</a>
+						{% block linepreview %} 
+						{% endblock %}
 					</td>
 					<td style="width: 5%; text-align: center;">
 						{% if minute.attachments.count > 0 %}
@@ -58,12 +64,14 @@
 			{% endfor %}
 		</table>
     {% empty %}
-        <em>{% trans "No minutes available." %}</em>
-        {% url "login" as anchor_url %}
-        {% if not user.is_authenticated %}
-            <em>
-                {% blocktrans with anchor='<a href="'|add:anchor_url|add:'">'|safe anchor_end='</a>'|safe %}You might have to {{ anchor }} login {{ anchor_end }} first.{% endblocktrans %}
-            </em>
-        {% endif %}
+    	{% block minutesempty %}
+	        <em>{% trans "No minutes available." %}</em>
+	        {% url "login" as anchor_url %}
+	        {% if not user.is_authenticated %}
+	            <em>
+	                {% blocktrans with anchor='<a href="'|add:anchor_url|add:'">'|safe anchor_end='</a>'|safe %}You might have to {{ anchor }} login {{ anchor_end }} first.{% endblocktrans %}
+	            </em>
+	        {% endif %}
+	    {% endblock %}
 	{% endfor %}
 {% endblock %}

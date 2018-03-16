@@ -1,0 +1,16 @@
+{% extends 'minutes_list.html' %}
+{% load i18n %}
+
+{% block linepreview %}
+	<ul class="minutes-lines">
+		{% for line in lines %}
+			<li>{{ line }}</li>
+		{% endfor %}
+	</ul>
+{% endblock %}
+
+{% block minutesempty %}
+	<em>
+		{% blocktrans %}No documents containing "{{ phrase }}" found.{% endblocktrans %}
+	</em>
+{% endblock %}

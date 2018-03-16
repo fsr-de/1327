@@ -48,7 +48,7 @@ class TestEditor(WebTest):
 		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		form = response.forms[0]
+		form = response.forms['document-form']
 		self.assertEqual(form.get('title').value, self.document.title)
 		self.assertEqual(form.get('text').value, self.document.text)
 		self.assertEqual(int(form.get('moderator').value), self.document.moderator.id)
@@ -242,6 +242,139 @@ class TestMinutesList(WebTest):
 		self.assertNotIn('You might have to <a href="/login"> login </a> first.', response.body.decode('utf-8'))
 
 
+class TestSearchMinutes(WebTest):
+	csrf_checks = False
+
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = mommy.make(UserProfile, is_superuser=True)
+
+		text1 = "both notO \n Case notB notO \n two notB notO \n two lines notB notO"
+		text2 = "in both minutes notO \n one notB \n substring notB notO"
+		text3 = "this will never show up notB notO"
+		text4 = "<script>alert(Hello);</script> something else"
+
+		cls.minutes_document1 = mommy.make(MinutesDocument, text=text1, title="MinutesOne")
+		cls.minutes_document2 = mommy.make(MinutesDocument, text=text2, title="MinutesTwo")
+		cls.minutes_document3 = mommy.make(MinutesDocument, text=text3, title="MinutesThree")
+		cls.minutes_document4 = mommy.make(MinutesDocument, text=text4, title="MinutesFour")
+		cls.group = mommy.make(Group)
+		cls.minutes_document1.set_all_permissions(cls.group)
+		cls.minutes_document2.set_all_permissions(cls.group)
+		cls.minutes_document3.set_all_permissions(cls.group)
+		cls.minutes_document4.set_all_permissions(cls.group)
+
+	def test_two_minutes_results(self):
+		search_string = "both"
+
+		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
+
+		form = response.forms[0]
+		form.set('search_phrase', search_string)
+
+		response = form.submit()
+
+		self.assertIn('MinutesOne', response)
+		self.assertIn('MinutesTwo', response)
+		self.assertNotIn('MinutesThree', response)
+
+		self.assertIn('<b>both</b> notO', response)
+		self.assertIn('in <b>both</b> minutes notO', response)
+		self.assertNotIn('notB', response.body.decode('utf-8'))
+
+	def test_one_minute_results(self):
+		search_string = "one"
+
+		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
+
+		form = response.forms[0]
+		form.set('search_phrase', search_string)
+
+		response = form.submit()
+
+		self.assertIn('MinutesTwo', response)
+		self.assertNotIn('MinutesOne', response)
+		self.assertNotIn('MinutesThree', response)
+
+		self.assertIn('<b>one</b> notB', response)
+		self.assertNotIn('notO', response)
+
+	def test_two_line_results(self):
+		search_string = "two"
+
+		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
+
+		form = response.forms[0]
+		form.set('search_phrase', search_string)
+
+		response = form.submit()
+
+		self.assertIn('MinutesOne', response)
+		self.assertNotIn('MinutesTwo', response)
+		self.assertNotIn('MinutesThree', response)
+
+		self.assertIn('<b>two</b> notB notO', response)
+		self.assertIn('<b>two</b> lines notB notO', response)
+
+	def test_case_insensitive_result(self):
+		search_string = "case"
+
+		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
+
+		form = response.forms[0]
+		form.set('search_phrase', search_string)
+
+		response = form.submit()
+
+		self.assertIn('MinutesOne', response)
+		self.assertNotIn('MinutesTwo', response)
+		self.assertNotIn('MinutesThree', response)
+
+		self.assertIn('<b>Case</b> notB notO', response)
+
+	def test_substring_result(self):
+		search_string = "bstrin"
+
+		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
+
+		form = response.forms[0]
+		form.set('search_phrase', search_string)
+
+		response = form.submit()
+
+		self.assertIn('MinutesTwo', response)
+		self.assertNotIn('MinutesOne', response)
+		self.assertNotIn('MinutesThree', response)
+
+		self.assertIn('su<b>bstrin</b>g notB notO', response)
+
+	def test_nothing_found_message(self):
+		search_string = "not in the minutes"
+
+		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
+
+		form = response.forms[0]
+		form.set('search_phrase', search_string)
+
+		response = form.submit()
+
+		self.assertIn('No documents containing "not in the minutes" found.', response.body.decode('utf-8'))
+		self.assertNotIn('notB', response)
+		self.assertNotIn('notO', response)
+
+	def test_correct_escaping(self):
+		search_string = "<script>alert(Hello);</script>"
+
+		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
+
+		form = response.forms[0]
+		form.set('search_phrase', search_string)
+
+		response = form.submit()
+
+		self.assertIn('<b>&lt;script&gt;alert(Hello);&lt;/script&gt;</b> something else', response.body.decode('utf-8'))
+
+
 class TestNewMinutesDocument(WebTest):
 	csrf_checks = False
 
@@ -260,7 +393,7 @@ class TestNewMinutesDocument(WebTest):
 		response = self.app.get(reverse('documents:create', args=['minutesdocument']) + '?group={}'.format(self.group.id), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		form = response.forms[0]
+		form = response.forms['document-form']
 		text = "Lorem ipsum"
 		form.set('text', text)
 		form.set('comment', text)
@@ -296,7 +429,7 @@ class TestNewMinutesDocument(WebTest):
 		response = self.app.get(reverse('documents:create', args=['minutesdocument']) + '?group={}'.format(self.group.id), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		form = response.forms[0]
+		form = response.forms['document-form']
 		text = "Lorem ipsum"
 		form.set('text', text)
 		form.set('comment', text)
@@ -318,7 +451,7 @@ class TestNewMinutesDocument(WebTest):
 		response = self.app.get(reverse('documents:create', args=['minutesdocument']) + '?group={}'.format(self.group.id), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		form = response.forms[0]
+		form = response.forms['document-form']
 		self.assertTrue("Hidden" in str(form.fields['group'][0]))
 
 	def test_group_field_not_hidden_when_user_has_multiple_groups(self):
@@ -328,7 +461,7 @@ class TestNewMinutesDocument(WebTest):
 		response = self.app.get(reverse('documents:create', args=['minutesdocument']) + '?group={}'.format(self.group.id), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		form = response.forms[0]
+		form = response.forms['document-form']
 		self.assertFalse("Hidden" in str(form.fields['group'][0]))
 
 

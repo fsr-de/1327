@@ -9,6 +9,7 @@ app_name = 'minutes'
 urlpatterns = [
 	url(r"list/(?P<groupid>[\d]+)$", views.list, name='list'),
 	url(r"(?P<title>[\w\-/]+)/edit$", document_views.edit, name='edit'),
+	url(r"search/(?P<groupid>[\d]+)$", views.search, name='search'),
 ]
 urlpatterns.extend(document_urls.document_urlpatterns)
 urlpatterns.extend([
