@@ -154,6 +154,50 @@ class TestRevertion(WebTest):
 		self.assertEqual(response.status_code, 200)
 		self.assertIn(reverse('versions', args=[old_url]), response.body.decode('utf-8'))
 
+	def test_version_creation(self):
+		Document.objects.all().delete()
+		self.assertEqual(Document.objects.count(), 0)
+
+		def submit_form(text, form, group, sub_class):
+			for field_name in form.fields.keys():
+				if field_name is not None and 'text' in field_name:
+					form.set(field_name, text)
+			form.set('comment', text)
+			form.set('group', group.pk)
+			if sub_class == MinutesDocument:
+				participants_field = form.get('participants')
+				participants_field.select_multiple([participants_field.options[0][0]])
+			response = form.submit().follow()
+			self.assertEqual(response.status_code, 200)
+
+		group = mommy.make(Group)
+		assign_perm("minutes.add_minutesdocument", group)
+		assign_perm("information_pages.add_informationdocument", group)
+		assign_perm("polls.add_poll", group)
+
+		for expected_count, sub_class in enumerate(Document.__subclasses__(), start=1):
+			response = self.app.get(reverse('documents:create', args=[sub_class.__name__.lower()]), user=self.user)
+			self.assertEqual(response.status_code, 200)
+			form = response.forms['document-form']
+
+			url_title = form.get('url_title').value
+			text_1 = 'something'
+			submit_form(text_1, form, group, sub_class)
+
+			self.assertEqual(Document.objects.count(), expected_count)
+			document = Document.objects.get(url_title=url_title)
+			response = self.app.get(reverse('edit', args=[document.url_title]), user=self.user)
+
+			form = response.forms['document-form']
+
+			text_2 = 'something else'
+			submit_form(text_2, form, group, sub_class)
+
+			versions = Version.objects.get_for_object(document).reverse()
+			self.assertEqual(len(versions), 2)
+			for version, text in zip(versions, [text_1, text_2]):
+				self.assertEqual(version.field_dict['text'], text)
+
 
 class TestAutosave(WebTest):
 	csrf_checks = False
