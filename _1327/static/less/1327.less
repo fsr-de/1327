@@ -368,6 +368,11 @@ nav li:hover > .dropdown-menu {
 .container.content {
 	padding-left: 20px;
 	margin-bottom: 30px;
+	// Wraps all overflowing text in the content section, regardless whether it's part
+	// of the main text or any other content element.
+	// Note that this doesn't work for the attachments table.
+	// See the attachments table CSS below (#attachment-table) for details.
+	overflow-wrap: break-word;
 }
 
 .content :first-child {
@@ -609,6 +614,14 @@ table.vertically-aligned tr td {
 }
 
 table#attachment-table td {
+	// The global content word wrapping doesn't work for tables since
+	// "overflow-wrap: break-word" doesn't wrap in flexible containers like table
+	// columns. Adding "table-layout: fixed" would fix that, but screws up the
+	// attachments table's layout. Thus, we resort to this CSS property which works
+	// with flexible containers, but doesn't wrap words as nicely as "break-word".
+	// Note that a "word-break: break-word" property could solve this whole
+	// situation, but isn't yet supported in any browser and probably won't be
+	// for some time.
 	word-break: break-all;
 }
 
@@ -685,7 +698,7 @@ div.radio {
 }
 
 .md-editor.md-fullscreen-mode {
-	z-index: 999999;
+	z-index: 9998;
 }
 
 .input-group[class*="inlineformset"] {
