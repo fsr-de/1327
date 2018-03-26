@@ -1,5 +1,6 @@
 from datetime import datetime
 import json
+import re
 import tempfile
 
 from django.conf import settings
@@ -290,7 +291,8 @@ class TestAutosave(WebTest):
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
-		url_title = slugify(form.get('title').value)
+		# we need to scrape the url_title from the action as we can not get it from the url_title field in the form
+		url_title = re.search(r'^/(?P<url_title>temp_.+)/', form.action).group('url_title')
 
 		# autosave AUTO
 		response = self.app.post(
@@ -319,7 +321,8 @@ class TestAutosave(WebTest):
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
-		url_title2 = slugify(form.get('title').value)
+		# we need to scrape the url_title from the action as we can not get it from the url_title field in the form
+		url_title2 = re.search(r'^/(?P<url_title>temp_.+)/', form.action).group('url_title')
 
 		# autosave second document AUTO
 		response = self.app.post(
@@ -368,7 +371,8 @@ class TestAutosave(WebTest):
 			response = self.app.get(reverse('documents:create', args=[content_type.model.lower()]), user=user)
 			self.assertEqual(response.status_code, 200)
 			form = response.forms['document-form']
-			url_title = slugify(form.get('url_title').value)
+			# we need to scrape the url_title from the action as we can not get it from the url_title field in the form
+			url_title = re.search(r'/(?P<url_title>temp_.+)/', form.action).group('url_title')
 
 			response = self.app.post(
 				reverse('documents:autosave', args=[url_title]),
@@ -384,7 +388,8 @@ class TestAutosave(WebTest):
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
-		url_title = slugify(form.get('title').value)
+		# we need to scrape the url_title from the action as we can not get it from the url_title field in the form
+		url_title = re.search(r'^/(?P<url_title>temp_.+)/', form.action).group('url_title')
 
 		# autosave AUTO
 		response = self.app.post(
@@ -516,6 +521,84 @@ class TestAutosave(WebTest):
 		response = form.submit().follow()
 		self.assertEqual(response.status_code, 200)
 		self.assertEqual(TemporaryDocumentText.objects.count(), 0)
+
+	def test_autosave_url_title_prefix_exists(self):
+		for sub_class in Document.__subclasses__():
+			response = self.app.get(reverse('documents:create', args=[sub_class.__name__.lower()]), user=self.user)
+			self.assertEqual(response.status_code, 200)
+
+			form = response.forms['document-form']
+			# we need to scrape the url_title from the action as we can not get it from the url_title field in the form
+			url_title = re.search(r'/(?P<url_title>temp_.+)/', form.action).group('url_title')
+
+			# autosave AUTO
+			response = self.app.post(
+				reverse('documents:autosave', args=[url_title]),
+				params={'text': 'AUTO', 'title': form.get('title').value, 'comment': '', 'group': mommy.make(Group)},
+				xhr=True
+			)
+			self.assertEqual(response.status_code, 200)
+			self.assertEqual(TemporaryDocumentText.objects.count(), 1)
+			temporary_document_text = TemporaryDocumentText.objects.get()
+			self.assertIn('temp_', temporary_document_text.document.url_title)
+			temporary_document_text.delete()
+
+	def test_autosave_url_title_prefix_removed_on_save(self):
+		assign_perm("information_pages.add_informationdocument", self.group)
+		assign_perm("minutes.add_minutesdocument", self.group)
+		assign_perm("polls.add_poll", self.group)
+
+		for sub_class in Document.__subclasses__():
+			response = self.app.get(reverse('documents:create', args=[sub_class.__name__.lower()]), user=self.user)
+			self.assertEqual(response.status_code, 200)
+			form = response.forms['document-form']
+			# we need to scrape the url_title from the action as we can not get it from the url_title field in the form
+			url_title = re.search(r'/(?P<url_title>temp_.+)/', form.action).group('url_title')
+
+			# autosave AUTO
+			response = self.app.post(
+				reverse('documents:autosave', args=[url_title]),
+				params={'text': 'AUTO', 'title': form.get('title').value, 'comment': ''},
+				xhr=True
+			)
+			self.assertEqual(response.status_code, 200)
+
+			self.assertEqual(TemporaryDocumentText.objects.count(), 1)
+			temporary_document_text = TemporaryDocumentText.objects.get()
+			self.assertIn('temp_', temporary_document_text.document.url_title)
+
+			self.submit_document_form(form, sub_class)
+
+			self.assertEqual(TemporaryDocumentText.objects.count(), 0)
+			temp_prefix_len = re.search(r'temp_\d+_', url_title).end()
+			self.assertNotIn('temp_', Document.objects.get(url_title=url_title[temp_prefix_len:]).url_title)
+
+	def submit_document_form(self, form, sub_class):
+		text = 'Lorem Ipsum'
+		for field_name in form.fields.keys():
+			if field_name is not None and 'text' in field_name:
+				form.set(field_name, text)
+		form.set('comment', text)
+		form.set('group', self.group.pk)
+		if sub_class == MinutesDocument:
+			participants_field = form.get('participants')
+			participants_field.select_multiple([participants_field.options[0][0]])
+		response = form.submit().follow()
+		self.assertEqual(response.status_code, 200)
+
+	def test_autosave_url_title_correct_count_on_save(self):
+		assign_perm("information_pages.add_informationdocument", self.group)
+		assign_perm("minutes.add_minutesdocument", self.group)
+		assign_perm("polls.add_poll", self.group)
+
+		# create document with appended '_\d+' for testing a special case of url_title handling
+		mommy.make(InformationDocument, url_title=InformationDocument.__name__.lower())
+		test_document = mommy.make(InformationDocument, url_title="{}_2".format(InformationDocument.__name__.lower()))
+
+		self.assertEqual(
+			test_document.generate_default_slug(test_document.url_title),
+			"{}_3".format(InformationDocument.__name__.lower()),
+		)
 
 
 class TestMarkdownRendering(WebTest):

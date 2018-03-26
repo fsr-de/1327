@@ -1,8 +1,10 @@
+import re
+
 from django import forms
 from django.conf import settings
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.forms import BaseInlineFormSet
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -55,9 +57,17 @@ class DocumentForm(forms.ModelForm):
 			self.fields['group'].widget = forms.HiddenInput()
 			self.fields['group'].required = False
 
+		# remove temp prefix from url title in initial data if there is one
+		if self.initial['url_title'].startswith('temp_'):
+			temp_prefix_len = re.search(r'temp_\d+_', self.initial['url_title']).end()
+			self.initial['url_title'] = self.initial['url_title'][temp_prefix_len:]
+
 	def clean_url_title(self):
 		super().clean()
 		url_title = self.cleaned_data['url_title'].lower()
+		if url_title.startswith('temp_'):
+			# the url_title must not start with temp anymore!
+			raise ValidationError(_("You are not allowed to use `temp_` as prefix for the URL"))
 		return slugify_and_clean_url_title(self.instance, url_title)
 
 	@classmethod
