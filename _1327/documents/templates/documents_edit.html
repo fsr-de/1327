@@ -5,6 +5,11 @@
 {% load bootstrap3 %}
 {% load num_revisions %}
 
+{% block css %}
+	{{ block.super }}
+	<link rel="stylesheet" href="{% static 'emojionearea/css/emojionearea.min.css' %}"/>
+{% endblock %}
+
 {% block document_content %}
 	<h2>{% trans "Edit page" %}</h2>
 
@@ -158,6 +163,8 @@
 <script type="text/javascript" src="{% static 'js/jquery.hotkeys.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/jquery.formset.js' %}"></script>
 <script type="text/javascript" src="{% static 'bootstrap-markdown/js/bootstrap-markdown.js' %}"></script>
+<script type="text/javascript" src="{% static 'emojionearea/js/emojionearea.min.js' %}"></script>
+
 <script>
 	var efficient_render = debounce(function render() {
 		$.ajax({
@@ -165,6 +172,7 @@
 			type: "post",
 			data: {'text': $('#id_text').val()},
 			success: function(data, status, jqxhr) {
+				data = emojione.toImage(data);
 				$('#text-preview').html(data);
 			}
 		});
@@ -322,6 +330,7 @@
 									e.replaceSelection(selected.text);
 									e.setSelection(cursor + 1, cursor + selected.length + 1);
 								}
+								$("#id_text").trigger("change");
 								$("#id_text").focus();
 							}
 						});
@@ -329,6 +338,22 @@
 				}]
 			}]
 		]
+	});
+
+	// init emoji stuff
+	$('#id_text').emojioneArea({
+		shortnames: true,
+		saveEmojisAs: 'unicode',
+		useInternalCDN: false,
+		pickerPosition: 'bottom',
+		autocomplete: false,
+		events: {
+			keyup: function () {
+				var markdownEditor = $('#id_text');
+				markdownEditor.val(this.getText());
+				efficient_render();
+			}
+		}
 	});
 
 	// handler to update the preview in the modal
