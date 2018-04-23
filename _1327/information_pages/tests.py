@@ -202,11 +202,6 @@ class TestVersions(WebTest):
 		self.assertEqual(versions[1].revision.comment, 'test version')
 
 
-import types
-
-def mtrue(self):
-	return False
-
 class TestAuthorDisplay(WebTest):
 	csrf_checks = False
 	extra_environ = {'HTTP_ACCEPT_LANGUAGE': 'en'}
