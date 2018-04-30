@@ -95,6 +95,18 @@
 							</ul>
 						</li>
 					{% endif %}
+					{# Search form #}
+					<li class ="pull-right">
+						<a href="#" id="popover" data-placement="bottom">
+							<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+						</a>
+							<div id="popover-content" class="hide">
+							  	<form action='/search' method='post'>
+									{% csrf_token %}
+								  	<input type='text' name='search_phrase'>
+								</form>
+							</div>
+					</li>
 				</ul>
 			</nav>
 
@@ -243,6 +255,18 @@
 			}).on('mouseout', function(){
 				$(this).parent().removeClass('menu-hover');
 			});
+		});
+
+		// initialize popovers 
+		$(function () {
+		  $('[data-toggle="popover"]').popover()
+		});
+
+		$('#popover').popover({ 
+		    html : true,
+		    content: function() {
+		      return $("#popover-content").html();
+		    }
 		});
 	</script>
 {% endblock %}

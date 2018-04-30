@@ -1,0 +1,55 @@
+{% extends 'base_with_sidebar.html' %}
+{% load i18n %}
+
+{% block title %}
+	{% blocktrans count counter=2 %}Documents{% plural %}Documents{% endblocktrans %}
+{% endblock %}
+
+{% block sidebar %}
+	<div class="toc hidden-print">
+		<ul>
+			{% for type, documents in searched_documents %}
+				<li><a href="#type{{ type }}">{{ type }}</a></li>
+			{% endfor %}
+		</ul>
+	</div>
+{% endblock %}
+
+{% block content %}
+	{% for type, documents in searched_documents %}
+		<h3 id="type{{ type }}">{{ type }}</h3>
+		<table class="table table-striped">
+			{% for document, lines in documents %}
+				<tr>
+					<td style="width: 55%;">
+						<a href="{{ document.get_view_url }}">{{ document.title}} {{ document.date| date:"d.m.Y" }}</a>
+						<ul class="minutes-lines">
+							{% for line in lines %}
+								<li>{{ line }}</li>
+							{% endfor %}
+						</ul>
+					</td>
+					<td style="width: 5%; text-align: center;">
+						{% if document.attachments.count > 0 %}
+							<span class="text-gray" data-toggle="tooltip" data-placement="left" data-container="body" title="{{ document.attachments.all|join:', ' }}">
+								<span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+							</span>
+						{% endif %}
+					</td>
+				</tr>
+			{% endfor %}
+		</table>
+    {% empty %}
+    	{% block searched_documentsempty %}
+	        <em>
+				{% blocktrans %}No documents containing "{{ phrase }}" found.{% endblocktrans %}
+			</em>
+	        {% url "login" as anchor_url %}
+	        {% if not user.is_authenticated %}
+	            <em>
+	                {% blocktrans with anchor='<a href="'|add:anchor_url|add:'">'|safe anchor_end='</a>'|safe %}You might have to {{ anchor }} login {{ anchor_end }} first.{% endblocktrans %}
+	            </em>
+	        {% endif %}
+	    {% endblock %}
+	{% endfor %}
+{% endblock %}

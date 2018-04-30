@@ -27,6 +27,8 @@ urlpatterns = [
 	url(r"^menu_item_delete$", main_views.menu_item_delete, name="menu_item_delete"),
 	url(r"^menu_item/update_order$", main_views.menu_items_update_order, name="menu_items_update_order"),
 
+	url(r"search$", main_views.search, name='search'),
+
 	url(r'^shortlinks$', shortlinks_views.shortlinks_index, name='shortlinks_index'),
 	url(r'^shortlink/create$', shortlinks_views.shortlink_create, name='shortlink_create'),
 	url(r'^shortlink/delete$', shortlinks_views.shortlink_delete, name='shortlink_delete'),

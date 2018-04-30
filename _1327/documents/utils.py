@@ -4,10 +4,14 @@ import re
 
 
 from django.conf import settings
+from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import SuspiciousOperation
 from django.db import transaction
+from django.shortcuts import Http404
 from django.utils import timezone
+from guardian.core import ObjectPermissionChecker
 from reversion import revisions
 from reversion.models import Version
 
@@ -174,3 +178,40 @@ def delete_cascade_to_json(cascade):
 				"name": str(cascade_item),
 			})
 	return items
+
+
+def get_permitted_documents(documents, request, groupid):
+	groupid = int(groupid)
+	try:
+		group = Group.objects.get(id=groupid)
+	except ObjectDoesNotExist:
+		raise Http404
+
+	own_group = request.user.is_superuser or group in request.user.groups.all()
+
+	# Prefetch group permissions
+	group_checker = ObjectPermissionChecker(group)
+	group_checker.prefetch_perms(documents)
+
+	# Prefetch user permissions
+	user_checker = ObjectPermissionChecker(request.user)
+	user_checker.prefetch_perms(documents)
+
+	# Prefetch ip group permissions
+	ip_range_group_name = request.user._ip_range_group_name if hasattr(request.user, '_ip_range_group_name') else None
+	if ip_range_group_name:
+		ip_range_group = Group.objects.get(name=ip_range_group_name)
+		ip_range_group_checker = ObjectPermissionChecker(ip_range_group)
+
+	permitted_documents = []
+	for d in documents:
+		# we show all documents for which the requested group has edit permissions
+		# e.g. if you request FSR documents, all documents for which the FSR group has edit rights will be shown
+		if not group_checker.has_perm(d.edit_permission_name, d):
+			continue
+		# we only show documents for which the user has view permissions
+		if not user_checker.has_perm(Document.get_view_permission(), d) and (not ip_range_group_name or not ip_range_group_checker.has_perm(Document.get_view_permission(), d)):
+			continue
+		permitted_documents.append(d)
+
+	return permitted_documents, own_group
