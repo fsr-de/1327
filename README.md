@@ -9,7 +9,7 @@ A student representatives website. This project is live! You can see a working i
 
 ## Development
 
-To be able to contribute to 1327, one needs to get the source code with all dependencies. Please note, that submodules for *bootstrap*, *font-awesome*, *bootstrap-markdown* and various *puppet* modules are in use:
+To be able to contribute to 1327, one needs to get the source code with all dependencies. Please note, that submodules for *bootstrap*, *font-awesome* and *bootstrap-markdown* are in use:
 
 ```bash
 git clone https://github.com/fsr-itse/1327.git
