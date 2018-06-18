@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
@@ -16,6 +17,7 @@ def shortlinks_index(request):
 
 	return render(request, 'shortlinks_index.html', {
 		'shortlinks': Shortlink.objects.all(),
+		'page_url': settings.PAGE_URL,
 	})
 
 
