@@ -15,16 +15,20 @@
 				<th class="col-xs-2">{% trans "URL" %}</th>
 				<th class="col-xs-3">{% trans "Link" %}</th>
 				<th class="col-xs-2">{% trans "Created" %}</th>
-				<th class="col-xs-2">{% trans "Visit count" %}</th>
+				<th class="col-xs-1">{% trans "Visitors" %}</th>
 				<th class="col-xs-2">{% trans "Last access" %}</th>
-				<th class="col-xs-1"></th>
+				<th class="col-xs-2"></th>
 			</tr>
 		</thead>
 		{% for shortlink in shortlinks %}
 			<tr>
 				<td>
 					<input type="hidden" class="shortlinkinput" name="shortlink" value="{{ shortlink.id }}">
-					{{ shortlink.url_title }}
+					<span class="shortlink-urltitle">{{ shortlink.url_title }}</span>
+					<input type="text" class="shortlink-full-url out-of-display" name="shortlink-full-url" value="{{ page_url }}/{{ shortlink.url_title }}">
+					<div class="btn btn-sm btn-default shortlink-copy pull-right">
+						<span class="glyphicon glyphicon-copy"></span>
+					</div>
 				</td>
 				<td>
 					{% if shortlink.link %} {{ shortlink.link }}{% endif %}
@@ -77,6 +81,28 @@
 					location.reload();
 				});
 			});
+		});
+
+		var shortlinkURLButton = $('.shortlink-copy');
+
+		shortlinkURLButton.popover({
+			content: '{% trans "Copied to clipboard." %}',
+			placement: 'top',
+			trigger: 'focus'
+		});
+
+		shortlinkURLButton.on('click', function (event) {
+			var urlHolder = $(this).parent().find("input.shortlink-full-url")[0];
+			urlHolder.select();
+			document.execCommand('copy');
+
+			// show a confirmation to the user that dissappears automatically
+			$(this).popover('show');
+			var that = this;
+			setTimeout(function () {
+				$(that).popover('hide');
+			}, 1500);
+			event.preventDefault();
 		});
 	</script>
 {% endblock %}
