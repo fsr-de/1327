@@ -9,7 +9,6 @@ install:
   - pip install -r requirements-test.txt
 script:
   - python manage.py lint
-  - bash -c "! python manage.py makemigrations -e --dry-run"
   - coverage run manage.py test
 after_success:
   - coveralls

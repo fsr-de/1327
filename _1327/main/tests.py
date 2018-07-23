@@ -1,11 +1,12 @@
 import datetime
+from io import StringIO
 import json
-
 import re
 
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core import mail, management
+from django.core.management import call_command
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 from django_webtest import WebTest
@@ -522,3 +523,12 @@ class TestSendRemindersCommand(TestCase):
 
 		management.call_command('send_reminders')
 		self.assertEqual(len(mail.outbox), 2)
+
+
+class TestMissingMigrations(TestCase):
+	def test_for_missing_migrations(self):
+		output = StringIO()
+		try:
+			call_command('makemigrations', dry_run=True, check=True, stdout=output)
+		except SystemExit:
+			self.fail("There are model changes not reflected in migrations, please run makemigrations.")
