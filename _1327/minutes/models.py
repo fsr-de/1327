@@ -113,9 +113,9 @@ class MinutesDocument(Document):
 	def show_publish_button(self):
 		return not self.is_in_creation and self.state == MinutesDocument.UNPUBLISHED
 
-	def publish(self, state_id):
-		if state_id not in (MinutesDocument.PUBLISHED, MinutesDocument.PUBLISHED_STUDENT):
-			self.state = int(state_id)
+	def publish(self, next_state_id):
+		if next_state_id in (MinutesDocument.PUBLISHED, MinutesDocument.PUBLISHED_STUDENT):
+			self.state = int(next_state_id)
 			self.save()
 		else:
 			raise SuspiciousOperation

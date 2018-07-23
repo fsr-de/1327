@@ -23,7 +23,7 @@ urlpatterns = [
 
 	path("<slugwithslash:title>/autosave", views.autosave, name="autosave"),
 	path("<slugwithslash:title>/autosave/delete", views.delete_autosave, name="delete_autosave"),
-	path("<slugwithslash:title>/publish/<int:state_id>", views.publish, name="publish"),
+	path("<slugwithslash:title>/publish/<int:next_state_id>", views.publish, name="publish"),
 	path("<slugwithslash:title>/render", views.render_text, name="render"),
 	path("<slugwithslash:title>/delete-cascade", views.get_delete_cascade, name="get_delete_cascade"),
 	path("<slugwithslash:title>/delete", views.delete_document, name="delete_document"),
