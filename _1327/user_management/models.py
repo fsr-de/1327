@@ -43,6 +43,7 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
 	last_name = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Last name"))
 	created = models.DateTimeField(default=timezone.now)
 	is_active = models.BooleanField(default=True)
+	language = models.CharField(max_length=8, blank=True, null=True, verbose_name=_("language"))
 
 	USERNAME_FIELD = 'username'
 	REQUIRED_FIELDS = []

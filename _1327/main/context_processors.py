@@ -6,13 +6,6 @@ from _1327.main.models import MenuItem
 from . import models
 
 
-def set_language(request):
-	user_language = settings.ACTIVE_LANGUAGE  # always set to German
-	translation.activate(user_language)
-	request.session[translation.LANGUAGE_SESSION_KEY] = user_language
-	return {'LANGUAGE_CODE': user_language}
-
-
 def menu(request):
 	menu_items = models.MenuItem.objects.filter(menu_type=models.MenuItem.MAIN_MENU, parent=None)
 	menu_items = [menu_item for menu_item in menu_items if menu_item.can_view(request.user)]
