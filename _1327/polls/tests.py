@@ -582,7 +582,7 @@ class PollVoteTests(WebTest):
 		self.assertEqual(response.status_code, 200)
 		self.assertTemplateUsed(response, 'polls_vote.html')
 
-		form = response.form
+		form = response.forms['polls_vote']
 		form['choice'] = self.poll.choices.first().pk
 
 		response = form.submit()

@@ -16,6 +16,7 @@ from model_mommy import mommy
 from _1327.information_pages.models import InformationDocument
 from _1327.main.utils import find_root_menu_items
 from _1327.minutes.models import MinutesDocument
+from _1327.polls.models import Poll
 from _1327.user_management.models import UserProfile
 from .context_processors import mark_selected
 from .models import MenuItem
@@ -105,7 +106,7 @@ class MenuItemTests(WebTest):
 		self.assertEqual(response.status_code, 200)
 		self.assertIn("Link", response.body.decode('utf-8'))
 
-		form = response.form
+		form = response.forms['menu_item_edit']
 		form['group'].select(text=self.staff_group.name)
 
 		response = form.submit()
@@ -118,7 +119,7 @@ class MenuItemTests(WebTest):
 		document = mommy.make(InformationDocument)
 
 		response = self.app.get(reverse('menu_item_create'), user=self.root_user)
-		form = response.form
+		form = response.forms['menu_item_edit']
 		form['link'] = 'polls:index'
 		form['document'].select(text=document.title)
 		form['group'].select(text=self.staff_group.name)
@@ -132,7 +133,7 @@ class MenuItemTests(WebTest):
 		menu_item_count = MenuItem.objects.count()
 
 		response = self.app.get(reverse('menu_item_create'), user=self.root_user)
-		form = response.form
+		form = response.forms['menu_item_edit']
 		form['title'] = 'test title'
 		form['link'] = 'polls:index'
 		form['group'].select(text=self.staff_group.name)
@@ -146,7 +147,7 @@ class MenuItemTests(WebTest):
 		menu_item_count = MenuItem.objects.count()
 
 		response = self.app.get(reverse('menu_item_create'), user=self.root_user)
-		form = response.form
+		form = response.forms['menu_item_edit']
 		form['title'] = 'test title'
 		form['link'] = 'minutes:list?groupid={}'.format(self.staff_group.id)
 		form['group'].select(text=self.staff_group.name)
@@ -160,7 +161,7 @@ class MenuItemTests(WebTest):
 		menu_item_count = MenuItem.objects.count()
 
 		response = self.app.get(reverse('menu_item_create'), user=self.root_user)
-		form = response.form
+		form = response.forms['menu_item_edit']
 		form['title'] = 'test title'
 		form['link'] = 'polls:index?kekse?kekse2'
 		form['group'].select(text=self.staff_group.name)
@@ -174,7 +175,7 @@ class MenuItemTests(WebTest):
 		menu_item_count = MenuItem.objects.count()
 
 		response = self.app.get(reverse('menu_item_create'), user=self.root_user)
-		form = response.form
+		form = response.forms['menu_item_edit']
 		form['title'] = 'test title'
 		form['link'] = 'www.example.com'
 		form['group'].select(text=self.staff_group.name)
@@ -189,7 +190,7 @@ class MenuItemTests(WebTest):
 		document = mommy.make(InformationDocument)
 
 		response = self.app.get(reverse('menu_item_create'), user=self.root_user)
-		form = response.form
+		form = response.forms['menu_item_edit']
 		form['title'] = 'test title'
 		form['document'].select(text=document.title)
 		form['group'].select(text=self.staff_group.name)
@@ -208,7 +209,7 @@ class MenuItemTests(WebTest):
 		menu_item_count = MenuItem.objects.count()
 
 		response = self.app.get(reverse('menu_item_create'), user=self.user)
-		form = response.form
+		form = response.forms['menu_item_edit']
 		form['group'].select(text=self.staff_group.name)
 
 		response = form.submit()
@@ -221,7 +222,7 @@ class MenuItemTests(WebTest):
 		document = mommy.make(InformationDocument)
 
 		response = self.app.get(reverse('menu_item_create'), user=self.user)
-		form = response.form
+		form = response.forms['menu_item_edit']
 		form['title'] = 'test title'
 		form['document'].select(text=document.title)
 		form['group'].select(text=self.staff_group.name)
@@ -237,7 +238,7 @@ class MenuItemTests(WebTest):
 		document = mommy.make(InformationDocument)
 
 		response = self.app.get(reverse('menu_item_create'), user=self.user)
-		form = response.form
+		form = response.forms['menu_item_edit']
 		form['title'] = 'test title'
 		form['document'].select(text=document.title)
 		form['group'].select(text=self.staff_group.name)
@@ -253,7 +254,7 @@ class MenuItemTests(WebTest):
 		group = mommy.make(Group)
 
 		response = self.app.get(reverse('menu_item_create'), user=self.user)
-		form = response.form
+		form = response.forms['menu_item_edit']
 		form['title'] = 'test title'
 		form['document'].select(text=document.title)
 		form['group'].force_value(group.id)
@@ -401,7 +402,7 @@ class MenuItemTests(WebTest):
 
 		original_menu_item = self.sub_item
 
-		form = response.form
+		form = response.forms['menu_item_edit']
 		form['title'] = 'Lorem Ipsum'
 		form['document'] = document.pk
 
@@ -522,3 +523,103 @@ class TestSendRemindersCommand(TestCase):
 
 		management.call_command('send_reminders')
 		self.assertEqual(len(mail.outbox), 2)
+
+
+class TestSearch(WebTest):
+	csrf_checks = False
+
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = mommy.make(UserProfile, is_superuser=True)
+
+		text1 = "both notO \n Case notB notO \n two notB notO \n two lines notB notO \n all three notB notO"
+		text2 = "in both minutes notO \n one notB \n substring notB notO \n all three notB notO"
+		text3 = "all three notB notO"
+		text4 = "<script>alert(Hello);</script> something else"
+		text5 = "this will never show up notB notO"
+
+		cls.minutes_document = mommy.make(MinutesDocument, text=text1, title="TestMinute")
+		cls.poll = mommy.make(Poll, text=text2, title="TestPoll")
+		cls.information_document = mommy.make(InformationDocument, text=text3, title="TestInformationDocument")
+		cls.minutes_document_w_script = mommy.make(MinutesDocument, text=text4, title="TestMinuteWithScript")
+		cls.information_document_never = mommy.make(InformationDocument, text=text5, title="TestInformationDocumentNever")
+		cls.group = mommy.make(Group)
+		cls.minutes_document.set_all_permissions(cls.group)
+		cls.poll.set_all_permissions(cls.group)
+		cls.information_document.set_all_permissions(cls.group)
+		cls.minutes_document_w_script.set_all_permissions(cls.group)
+
+	def test_all_types_of_documents(self):
+		search_string = "all three"
+
+		response = self.app.get(reverse('index'), user=self.user)
+
+		form = response.forms["general_search"]
+		form.set('search_phrase', search_string)
+
+		response = form.submit()
+
+		self.assertIn('TestMinute', response)
+		self.assertIn('TestPoll', response)
+		self.assertIn('TestInformationDocument', response)
+		self.assertNotIn('TestInformationDocumentNever', response)
+
+	def test_case_insensitive_result(self):
+		search_string = "case"
+
+		response = self.app.get(reverse('index'), user=self.user)
+
+		form = response.forms["general_search"]
+		form.set('search_phrase', search_string)
+
+		response = form.submit()
+
+		self.assertIn('TestMinute', response)
+		self.assertNotIn('TestPoll', response)
+		self.assertNotIn('TestInformationDocument', response)
+		self.assertNotIn('TestInformationDocumentNever', response)
+
+		self.assertIn('<b>Case</b> notB notO', response)
+
+	def test_substring_result(self):
+		search_string = "bstrin"
+
+		response = self.app.get(reverse('index'), user=self.user)
+
+		form = response.forms["general_search"]
+		form.set('search_phrase', search_string)
+
+		response = form.submit()
+
+		self.assertIn('TestPoll', response)
+		self.assertNotIn('TestMinute', response)
+		self.assertNotIn('TestInformationDocument', response)
+		self.assertNotIn('TestInformationDocumentNever', response)
+
+		self.assertIn('su<b>bstrin</b>g notB notO', response)
+
+	def test_nothing_found_message(self):
+		search_string = "not in the minutes"
+
+		response = self.app.get(reverse('index'), user=self.user)
+
+		form = response.forms["general_search"]
+		form.set('search_phrase', search_string)
+
+		response = form.submit()
+
+		self.assertIn('No documents containing "not in the minutes" found.', response.body.decode('utf-8'))
+		self.assertNotIn('notB', response)
+		self.assertNotIn('notO', response)
+
+	def test_correct_escaping(self):
+		search_string = "<script>alert(Hello);</script>"
+
+		response = self.app.get(reverse('index'), user=self.user)
+
+		form = response.forms["general_search"]
+		form.set('search_phrase', search_string)
+
+		response = form.submit()
+
+		self.assertIn('<b>&lt;script&gt;alert(Hello);&lt;/script&gt;</b> something else', response.body.decode('utf-8'))

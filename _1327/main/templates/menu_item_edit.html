@@ -13,7 +13,7 @@
 {% endblock %}
 
 {% block content %}
-	<form method="post" class="form-horizontal" role="form" enctype="multipart/form-data">
+	<form method="post" class="form-horizontal" role="form" enctype="multipart/form-data" id="menu_item_edit">
 		{% bootstrap_form form layout='horizontal' %}
 		{% csrf_token %}
 		{% if formset %}

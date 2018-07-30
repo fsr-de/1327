@@ -101,7 +101,7 @@
 							<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
 						</a>
 							<div id="popover-content" class="hide">
-							  	<form action='/search' method='post'>
+							  	<form action='/search' method='post' id='general_search'>
 									{% csrf_token %}
 								  	<input type='text' name='search_phrase'>
 								</form>
