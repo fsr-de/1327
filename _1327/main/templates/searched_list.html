@@ -17,12 +17,12 @@
 
 {% block content %}
 	{% for type, documents in searched_documents %}
-		<h3 id="type{{ type }}">{{ type }}</h3>
+		<h3 name="type{{ type }}">{{ type }}</h3>
 		<table class="table table-striped">
 			{% for document, lines in documents %}
 				<tr>
-					<td style="width: 55%;">
-						<a href="{{ document.get_view_url }}">{{ document.title}} {{ document.date| date:"d.m.Y" }}</a>
+					<td class="width: 95%;">
+						<a href="{{ document.get_view_url }}">{{ document.title}} {% if document.date %}({{ document.date| date:"d.m.Y" }}){% endif %}</a>
 						<ul class="minutes-lines">
 							{% for line in lines %}
 								<li>{{ line }}</li>

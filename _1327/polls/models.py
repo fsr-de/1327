@@ -40,6 +40,9 @@ class Poll(Document):
 	POLLS_LINK_REGEX = r'\[(?P<title>[^\[]+)\]\(poll:(?P<id>\d+)\)'
 
 	class Meta:
+
+		verbose_name = _("Poll")
+		verbose_name_plural = _("Polls")
 		permissions = (
 			(POLL_VIEW_PERMISSION_NAME, 'User/Group is allowed to view that poll'),
 			(POLL_VOTE_PERMISSION_NAME, 'User/Group is allowed to participate (vote) in that poll'),

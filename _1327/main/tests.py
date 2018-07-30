@@ -548,6 +548,35 @@ class TestSearch(WebTest):
 		cls.poll.set_all_permissions(cls.group)
 		cls.information_document.set_all_permissions(cls.group)
 		cls.minutes_document_w_script.set_all_permissions(cls.group)
+		cls.information_document_never.set_all_permissions(cls.group)
+
+	def test_no_permission(self):
+		user = mommy.make(UserProfile)
+		search_string = "both"
+
+		response = self.app.get(reverse('index'), user=user)
+		form = response.forms["general_search"]
+		form.set('search_phrase', search_string)
+
+		response = form.submit()
+
+		self.assertIn('No documents containing "both" found.', response)
+		self.assertNotIn('TestMinute', response)
+		self.assertNotIn('TestPoll', response)
+
+	def test_some_permissions(self):
+		user = mommy.make(UserProfile)
+		self.minutes_document.set_all_permissions(user)
+		search_string = "both"
+
+		response = self.app.get(reverse('index'), user=user)
+		form = response.forms["general_search"]
+		form.set('search_phrase', search_string)
+
+		response = form.submit()
+
+		self.assertIn('TestMinute', response)
+		self.assertNotIn('TestPoll', response)
 
 	def test_all_types_of_documents(self):
 		search_string = "all three"

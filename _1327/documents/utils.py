@@ -197,21 +197,21 @@ def get_permitted_documents(documents, request, groupid):
 	user_checker = ObjectPermissionChecker(request.user)
 	user_checker.prefetch_perms(documents)
 
-	# Prefetch ip group permissions
-	ip_range_group_name = request.user._ip_range_group_name if hasattr(request.user, '_ip_range_group_name') else None
+	# Prefetch ip-range group permissions
+	ip_range_group_name = getattr(request.user, '_ip_range_group_name', None)
 	if ip_range_group_name:
 		ip_range_group = Group.objects.get(name=ip_range_group_name)
 		ip_range_group_checker = ObjectPermissionChecker(ip_range_group)
 
 	permitted_documents = []
-	for d in documents:
+	for document in documents:
 		# we show all documents for which the requested group has edit permissions
 		# e.g. if you request FSR documents, all documents for which the FSR group has edit rights will be shown
-		if not group_checker.has_perm(d.edit_permission_name, d):
+		if not group_checker.has_perm(document.edit_permission_name, document):
 			continue
 		# we only show documents for which the user has view permissions
-		if not user_checker.has_perm(Document.get_view_permission(), d) and (not ip_range_group_name or not ip_range_group_checker.has_perm(Document.get_view_permission(), d)):
+		if not user_checker.has_perm(Document.get_view_permission(), document) and (not ip_range_group_name or not ip_range_group_checker.has_perm(Document.get_view_permission(), document)):
 			continue
-		permitted_documents.append(d)
+		permitted_documents.append(document)
 
 	return permitted_documents, own_group

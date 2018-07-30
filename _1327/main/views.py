@@ -1,5 +1,4 @@
 import json
-
 import re
 
 from django.conf import settings
@@ -208,7 +207,7 @@ def search(request):
 			)
 			for line in lines if (line.casefold().find(search_text.casefold()) != -1)
 		]
-		content_type = d.plural_content_type()
+		content_type = ContentType.objects.get_for_model(d)
 
 		if content_type not in result:
 			result[content_type] = []

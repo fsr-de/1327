@@ -30,7 +30,7 @@ class UsecaseTests(WebTest):
 	def test_login(self):
 		page = self.app.get("/login", user="")
 
-		login_form = page.forms[1]
+		login_form = page.forms['login_form']
 		login_form['username'] = "user"
 		login_form['password'] = "wrong_password"
 		response = login_form.submit()
@@ -38,7 +38,7 @@ class UsecaseTests(WebTest):
 		self.assertNotIn('has-success', response.body.decode('utf-8'))
 		self.assertIn('has-error', response.body.decode('utf-8'))
 
-		login_form = page.forms[1]
+		login_form = page.forms['login_form']
 		login_form['username'] = "user"
 		login_form['password'] = "test"
 
@@ -47,7 +47,7 @@ class UsecaseTests(WebTest):
 	def test_login_with_camel_case_name(self):
 		page = self.app.get('/login')
 
-		login_form = page.forms[1]
+		login_form = page.forms['login_form']
 		login_form['username'] = "test testman"
 		login_form['password'] = "test"
 		self.assertEqual(login_form.submit().status_code, 302)
@@ -58,7 +58,7 @@ class UsecaseTests(WebTest):
 
 		# now try to login again, but with camel case name
 		page = self.app.get('/login')
-		login_form = page.forms[1]
+		login_form = page.forms['login_form']
 		login_form['username'] = "Test Testman"
 		login_form['password'] = "test"
 		response = login_form.submit()
@@ -73,7 +73,7 @@ class UsecaseTests(WebTest):
 		self.assertRedirects(response, redirect_url)
 		response = response.follow()
 
-		login_form = response.forms['login']
+		login_form = response.forms['login_form']
 		login_form['username'] = "user"
 		login_form['password'] = "test"
 
@@ -90,7 +90,7 @@ class UsecaseTests(WebTest):
 		self.assertRedirects(response, redirect_url)
 		response = response.follow()
 
-		login_form = response.forms['login']
+		login_form = response.forms['login_form']
 		login_form['username'] = "user"
 		login_form['password'] = "test"
 

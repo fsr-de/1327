@@ -35,11 +35,6 @@ class Document(PolymorphicModel):
 
 	DOCUMENT_LINK_REGEX = r'\[(?P<title>[^\[]+)\]\(document:(?P<id>\d+)\)'
 	VIEW_PERMISSION_NAME = DOCUMENT_VIEW_PERMISSION_NAME
-	PLURAL_CONTENT_TYPE_NAME = {
-		'Information document': _('Information documents'),
-		'Minutes': _('Minutes'),
-		'poll': _('Polls')
-	}
 
 	class Meta:
 		verbose_name = _("Document")
@@ -107,10 +102,6 @@ class Document(PolymorphicModel):
 		for version in versions:
 			authors.add(version.revision.user)
 		return authors
-
-	def plural_content_type(self):
-		content_type = ContentType.objects.get_for_model(self)
-		return Document.PLURAL_CONTENT_TYPE_NAME[str(content_type)]
 
 	@classmethod
 	def generate_new_title(cls):
