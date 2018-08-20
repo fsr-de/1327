@@ -35,6 +35,11 @@
 				{% trans 'Delete' %}
 			</button>
 		{% endif %}
+		{% if form.autosave_id %}
+			<button type="button" class="btn btn-danger" id="deleteAutosaveButton">
+				{% trans 'Delete Autosave' %}
+			</button>
+		{% endif %}
 	</div>
 	{% endbuttons %}
 </form>
@@ -112,6 +117,30 @@
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-danger" id="deleteDocumentConfirmationButton">{% trans "Delete" %}</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endif %}
+
+	{% if form.autosave_id %}
+		<div class="modal fade ontop" id="deleteAutosaveModal" tabindex="-1" role="dialog" aria-labelledby="deleteAutosaveHeader">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						<h4 class="modal-title" id="deleteAutosaveHeader">{% trans "Do you really want to delete this autosave?" %}</h4>
+					</div>
+					<div class="modal-footer">
+						<form action="{% url 'documents:delete_autosave' document.url_title %}" method="post">
+							{% csrf_token %}
+							<input type="hidden" name="autosave_id" value="{{ form.autosave_id }}" />
+							<button type="submit" class="btn btn-danger">
+								{% trans "Delete" %}
+							</button>
+						</form>
 					</div>
 				</div>
 			</div>
@@ -422,6 +451,16 @@
 					window.location.replace("/");
 				}
 			);
+		});
+	{% endif %}
+
+	{% if form.autosave_id %}
+		var deleteAutosaveModal = $('#deleteAutosaveModal');
+		deleteAutosaveModal.modal({
+			show: false
+		});
+		$('#deleteAutosaveButton').on('click', function (event) {
+			deleteAutosaveModal.modal('show');
 		});
 	{% endif %}
 

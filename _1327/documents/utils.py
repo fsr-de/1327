@@ -86,8 +86,8 @@ def handle_edit(request, document, formset=None, initial=None, creation_group=No
 		autosaves = TemporaryDocumentText.objects.filter(document=document, author=request.user)
 		autosaved = autosaves.count() > 0
 
+		autosave_to_restore = None
 		if 'restore' in request.GET and autosaved:
-			autosave_to_restore = None
 			for autosave in autosaves:
 				if int(request.GET['restore']) == autosave.id:
 					autosave_to_restore = autosave
@@ -105,6 +105,9 @@ def handle_edit(request, document, formset=None, initial=None, creation_group=No
 			autosaved = False
 
 		form = document.Form(initial=initial, instance=document, user=request.user, creation=document.is_in_creation, creation_group=creation_group)
+
+		if autosave_to_restore is not None:
+			form.autosave_id = autosave_to_restore.id
 
 		form.autosaved = autosaved
 		if autosaved:
