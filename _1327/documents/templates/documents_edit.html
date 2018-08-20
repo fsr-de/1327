@@ -356,6 +356,12 @@
 		}
 	});
 
+	// hotfix emojionearea picker positioning in fullscreen mode
+	$('.emojionearea.md-input').on('keyup', function (event) {
+		var margin = $('.emojionearea-button').css('margin-right');
+		$('.emojionearea-picker').css("right", margin);
+	});
+
 	// handler to update the preview in the modal
 	$('#attachmentModalSelect').on('change', function (event) {
 		var attachmentHash = $(this).val();
