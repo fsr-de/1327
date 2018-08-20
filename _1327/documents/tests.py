@@ -598,6 +598,94 @@ class TestAutosave(WebTest):
 			"{}_3".format(InformationDocument.__name__.lower()),
 		)
 
+	def test_autosave_delete_no_post_request(self):
+		mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
+		response = self.app.get(
+			reverse("documents:delete_autosave", args=[self.document.url_title]),
+			user=self.user,
+			expect_errors=True
+		)
+		self.assertEqual(response.status_code, 404)
+
+	def test_autosave_delete_non_existing_document(self):
+		autosave = mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
+		response = self.app.post(
+			reverse("documents:delete_autosave", args=["non_existing_document"]),
+			user=self.user,
+			expect_errors=True,
+			params={"autosave_id": autosave.id}
+		)
+		self.assertEqual(response.status_code, 404)
+
+	def test_autosave_delete_user_different_user(self):
+		autosave = mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
+		user = mommy.make(UserProfile)
+		response = self.app.post(
+			reverse("documents:delete_autosave", args=[self.document.url_title]),
+			user=user,
+			expect_errors=True,
+			params={"autosave_id": autosave.id}
+		)
+		self.assertEqual(response.status_code, 403)
+
+	def test_autosave_delete_user_insufficient_permissions(self):
+		user = mommy.make(UserProfile)
+		autosave = mommy.make(TemporaryDocumentText, document=self.document, author=user)
+		response = self.app.post(
+			reverse("documents:delete_autosave", args=[self.document.url_title]),
+			user=user,
+			expect_errors=True,
+			params={"autosave_id": autosave.id}
+		)
+		self.assertEqual(response.status_code, 403)
+
+	def test_autosave_delete_not_existing_autosave_id(self):
+		mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
+		response = self.app.post(
+			reverse("documents:delete_autosave", args=[self.document.url_title]),
+			user=self.user,
+			expect_errors=True,
+			params={"autosave_id": 400}
+		)
+		self.assertEqual(response.status_code, 404)
+
+	def test_autosave_delete_autosave_not_created_by_user(self):
+		autosave = mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
+		user = mommy.make(UserProfile)
+		assign_perm(self.document.edit_permission_name, user, self.document)
+		response = self.app.post(
+			reverse("documents:delete_autosave", args=[self.document.url_title]),
+			user=user,
+			expect_errors=True,
+			params={"autosave_id": autosave.id}
+		)
+		self.assertEqual(response.status_code, 400)
+
+	def test_autosave_delete_document_is_in_creation(self):
+		autosave = mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
+		response = self.app.post(
+			reverse("documents:delete_autosave", args=[self.document.url_title]),
+			user=self.user,
+			params={"autosave_id": autosave.id}
+		)
+		self.assertEqual(response.status_code, 302)
+		self.assertRedirects(response, reverse("index"))
+		self.assertEqual(TemporaryDocumentText.objects.count(), 0)
+		self.assertEqual(Document.objects.count(), 0)
+
+	def test_autosave_delete_document_not_in_creation(self):
+		autosave = mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
+		assign_perm(self.document.edit_permission_name, self.group, self.document)
+		response = self.app.post(
+			reverse("documents:delete_autosave", args=[self.document.url_title]),
+			user=self.user,
+			params={"autosave_id": autosave.id}
+		)
+		self.assertEqual(response.status_code, 302)
+		self.assertRedirects(response, reverse("edit", args=[self.document.url_title]))
+		self.assertEqual(TemporaryDocumentText.objects.count(), 0)
+		self.assertEqual(Document.objects.count(), 1)
+
 
 class TestMarkdownRendering(WebTest):
 	csrf_checks = False
