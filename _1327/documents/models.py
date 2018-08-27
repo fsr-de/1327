@@ -14,6 +14,7 @@ from reversion import revisions
 from reversion.models import Version
 
 from _1327.documents.markdown_internal_link_pattern import InternalLinkPattern
+from _1327.main.meta import Translate, LocalizeModelBase
 from _1327.main.utils import slugify
 from _1327.user_management.models import UserProfile
 
@@ -28,9 +29,13 @@ class Document(PolymorphicModel):
 		return '{}_{}'.format(hashlib.md5(str(datetime.now()).encode()).hexdigest(), int(max_id) + 1)
 
 	created = models.DateTimeField(default=timezone.now)
-	title = models.CharField(max_length=255)
+	title = Translate
+	title_de = models.CharField(max_length=255, null=True, blank=True)
+	title_en = models.CharField(max_length=255, null=True, blank=True)
 	url_title = models.CharField(unique=True, max_length=255, verbose_name='url_title')
-	text = models.TextField()
+	text = Translate
+	text_de = models.TextField(null=True, blank=True)
+	text_en = models.TextField(null=True, blank=True)
 	hash_value = models.CharField(max_length=40, unique=True, default=get_hash, verbose_name=_("Hash value"))
 
 	DOCUMENT_LINK_REGEX = r'\[(?P<title>[^\[]+)\]\(document:(?P<id>\d+)\)'

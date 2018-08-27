@@ -21,7 +21,7 @@ class DocumentForm(forms.ModelForm):
 
 	class Meta:
 		model = Document
-		fields = ['title', 'text', 'url_title', 'group', 'comment']
+		fields = ['title_de', 'title_en', 'text_de', 'text_en', 'url_title', 'group', 'comment']
 
 	def __init__(self, *args, **kwargs):
 		user = kwargs.pop('user', None)

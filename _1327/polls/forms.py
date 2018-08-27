@@ -14,7 +14,7 @@ class PollForm(DocumentForm):
 
 	class Meta:
 		model = Poll
-		fields = ['title', 'url_title', 'text', 'start_date', 'end_date', 'max_allowed_number_of_answers', 'show_results_immediately', 'comment', 'group', 'vote_groups']
+		fields = ['title_de', 'title_en', 'url_title', 'text_de', 'text_en', 'start_date', 'end_date', 'max_allowed_number_of_answers', 'show_results_immediately', 'comment', 'group', 'vote_groups']
 
 	def __init__(self, *args, **kwargs):
 		creation = kwargs.get('creation', None)
