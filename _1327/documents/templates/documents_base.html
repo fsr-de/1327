@@ -3,6 +3,7 @@
 {% load bootstrap3 %}
 {% load document_perms %}
 {% load morefilters %}
+{% load staticfiles %}
 
 {% block title %}
 	{{ document.title }}
@@ -82,7 +83,7 @@
 
 {% block content %}
 	{% block document_content %}
-		<div>{{ text|safe }}</div>
+		<div class="document-content">{{ text|safe }}</div>
 		{% if attachments %}
 			<div class="divider"></div>
 			<h2 id="attachments">{% trans "Attachments" %}</h2>
@@ -100,12 +101,23 @@
 
 {% block scripts %}
 	{{ block.super }}
+	<script type="text/javascript" src="{% static 'emojione/js/emojione.min.js' %}"></script>
 	<script type="text/javascript">
+		// set the correct emojipath for emojionearea library
+		emojione.imagePathPNG = emojione.imagePathPNG + emojione.emojiSize + '/';
 		$(document).ready(function() {
 			// add link text to title of all elements in toc to enable tooltips with full text
 			$('.toc a').each(function() {
 				this.title = this.text;
 			});
+
+			var domElement = $('.document-content');
+			domElement.html() && domElement.html(emojione.toImage(domElement.html()))
 		});
 	</script>
+{% endblock %}
+
+{% block css %}
+	{{ block.super }}
+	<link rel="stylesheet" href="{% static 'emojione/css/emojione.min.css' %}"/>
 {% endblock %}
