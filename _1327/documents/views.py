@@ -25,7 +25,7 @@ from sendfile import sendfile
 from _1327 import settings
 from _1327.documents.consumers import get_group_name
 from _1327.documents.forms import get_permission_form
-from _1327.documents.models import Attachment, Document
+from _1327.documents.models import Attachment, Document, TemporaryDocumentText
 from _1327.documents.utils import delete_cascade_to_json, delete_old_empty_pages, get_model_function, get_new_autosaved_pages_for_user, \
 	handle_attachment, handle_autosave, handle_edit, prepare_versions
 from _1327.information_pages.models import InformationDocument
@@ -483,3 +483,32 @@ def preview(request):
 			'hash_value': hash_value,
 		}
 	)
+
+
+def delete_autosave(request, title):
+	if request.method != 'POST':
+		raise Http404
+
+	# first check that the user actually may change this document
+	document = get_object_or_404(Document, url_title=title)
+	check_permissions(document, request.user, [document.edit_permission_name])
+
+	# second check that the supplied autosave id matches to the document and has been created by the user
+	autosave_id = request.POST['autosave_id']
+	autosave = get_object_or_404(TemporaryDocumentText, id=autosave_id)
+	autosaves_for_object_and_user = TemporaryDocumentText.objects.filter(document=document, author=request.user)
+	if autosave not in autosaves_for_object_and_user:
+		raise SuspiciousOperation
+
+	if document.is_in_creation:
+		# this is a new document that only has this autosave right now and nothing else, we can safely delete this document
+		document.delete()
+		messages.success(request, _("Successfully deleted document: {}").format(document.title))
+		response = HttpResponseRedirect(reverse("index"))
+	else:
+		# everything seems to be alright, we can delete the autosave and leave the document as such intact
+		autosave.delete()
+		messages.success(request, _("Successfully deleted autosave"))
+		response = HttpResponseRedirect(reverse("edit", args=[document.url_title]))
+
+	return response

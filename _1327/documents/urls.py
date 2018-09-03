@@ -4,6 +4,7 @@ from . import views
 
 app_name = 'documents'
 
+
 urlpatterns = [
 	url(r"revert$", views.revert, name='revert'),
 	url(r"search$", views.search, name='search'),
@@ -18,6 +19,7 @@ urlpatterns = [
 	url(r"(?P<document_type>[\w-]+)/create$", views.create, name='create'),
 
 	url(r"(?P<title>[\w\-/]+)/autosave$", views.autosave, name='autosave'),
+	url(r"(?P<title>[\w\-/]+)/autosave/delete$", views.delete_autosave, name="delete_autosave"),
 	url(r"(?P<title>[\w\-/]+)/publish/(?P<state_id>[\d]+)$", views.publish, name='publish'),
 	url(r"(?P<title>[\w\-/]+)/render$", views.render_text, name="render"),
 	url(r"(?P<title>[\w\-/]+)/delete-cascade$", views.get_delete_cascade, name="get_delete_cascade"),
