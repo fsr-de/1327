@@ -6,7 +6,7 @@
 {% block content %}
 	{{ block.super }}
 
-	{% if next %}
+	{% if next and not request.GET.user_initiated %}
 		<div class="alert alert-danger alert-dismissable">
 			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
 			{% trans "Please login to see this page." %}

@@ -44,6 +44,16 @@ class UsecaseTests(WebTest):
 
 		self.assertEqual(login_form.submit().status_code, 302)
 
+	def test_login_with_next_parameter(self):
+		response = self.app.get("{}?next=/foo".format(reverse("login")))
+		self.assertEqual(response.status_code, 200)
+		self.assertIn("Please login to see this page.", response.body.decode('utf-8'))
+
+	def test_login_wth_next_and_user_initiated_parameter(self):
+		response = self.app.get("{}?next=/foo&user_initiated=true".format(reverse("login")))
+		self.assertEqual(response.status_code, 200)
+		self.assertNotIn("Please login to see this page.", response.body.decode('utf-8'))
+
 	def test_login_with_camel_case_name(self):
 		page = self.app.get('/login')
 
