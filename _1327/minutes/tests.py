@@ -269,7 +269,7 @@ class TestSearchMinutes(WebTest):
 
 		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
 
-		form = response.forms[0]
+		form = response.forms["minutes_search"]
 		form.set('search_phrase', search_string)
 
 		response = form.submit()
@@ -287,7 +287,7 @@ class TestSearchMinutes(WebTest):
 
 		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
 
-		form = response.forms[0]
+		form = response.forms["minutes_search"]
 		form.set('search_phrase', search_string)
 
 		response = form.submit()
@@ -304,7 +304,7 @@ class TestSearchMinutes(WebTest):
 
 		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
 
-		form = response.forms[0]
+		form = response.forms["minutes_search"]
 		form.set('search_phrase', search_string)
 
 		response = form.submit()
@@ -321,7 +321,7 @@ class TestSearchMinutes(WebTest):
 
 		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
 
-		form = response.forms[0]
+		form = response.forms["minutes_search"]
 		form.set('search_phrase', search_string)
 
 		response = form.submit()
@@ -337,7 +337,7 @@ class TestSearchMinutes(WebTest):
 
 		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
 
-		form = response.forms[0]
+		form = response.forms["minutes_search"]
 		form.set('search_phrase', search_string)
 
 		response = form.submit()
@@ -353,7 +353,7 @@ class TestSearchMinutes(WebTest):
 
 		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
 
-		form = response.forms[0]
+		form = response.forms["minutes_search"]
 		form.set('search_phrase', search_string)
 
 		response = form.submit()
@@ -367,7 +367,7 @@ class TestSearchMinutes(WebTest):
 
 		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
 
-		form = response.forms[0]
+		form = response.forms["minutes_search"]
 		form.set('search_phrase', search_string)
 
 		response = form.submit()

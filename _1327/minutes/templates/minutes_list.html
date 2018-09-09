@@ -8,7 +8,7 @@
 {% block sidebar %}
 	<div class="toc hidden-print">
 		<ul>
-			<form class="pb-2" action="{% url 'minutes:search' group_id %}" method="post" id="text_search">
+			<form class="pb-2" action="{% url 'minutes:search' group_id %}" method="post" id="minutes_search">
 				{% csrf_token %}
 			   	{{ search_form }}
 			</form>

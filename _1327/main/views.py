@@ -1,4 +1,5 @@
 import json
+import re
 
 from django.conf import settings
 from django.contrib import messages
@@ -9,6 +10,8 @@ from django.forms import formset_factory, modelformset_factory
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, Http404, redirect, render
 from django.urls import reverse
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_POST
 from guardian.shortcuts import get_objects_for_user
@@ -170,3 +173,50 @@ def abbreviation_explanation_edit(request):
 		return redirect('abbreviation_explanation')
 	else:
 		return render(request, "abbreviation_explanation.html", dict(formset=formset))
+
+
+def search(request):
+	search_text = None
+	if request.method == 'POST':
+		search_text = request.POST.get('search_phrase')
+
+	if not search_text:
+		return render(request, "searched_list.html", {
+			'searched_documents': [],
+			'phrase': "",
+		})
+
+	# filter for documents that contain the searched for string
+	documents = Document.objects.filter(text__icontains=search_text)
+
+	# find documents and lines containing the searched for string
+	result = {}
+	for d in documents:
+		# check if the user has permission to view the document
+		if not (request.user.has_perm(d.view_permission_name) or request.user.has_perm(d.view_permission_name, d)):
+			continue
+		# find lines with the searched for string and mark it as bold
+		lines = d.text.splitlines()
+		lines = [
+			mark_safe(
+				re.sub(
+					r'(' + re.escape(escape(search_text)) + ')',
+					r'<b>\1</b>', escape(line),
+					flags=re.IGNORECASE
+				)
+			)
+			for line in lines if (line.casefold().find(search_text.casefold()) != -1)
+		]
+		content_type = ContentType.objects.get_for_model(d)
+
+		if content_type not in result:
+			result[content_type] = []
+
+		result[content_type].append((d, lines))
+
+	if 'Minutes' in result:
+		result['Minutes'].sort(key=lambda minute: minute[0].date, reverse=True)
+	return render(request, "searched_list.html", {
+		'searched_documents': result.items(),
+		'phrase': search_text,
+	})
