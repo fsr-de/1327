@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from reversion import revisions
 
 from _1327.documents.models import Document
-from _1327.main.meta import Translate
+from _1327.main.tools import translate
 
 INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME = 'show_informationdocument'
 
@@ -14,7 +14,6 @@ class InformationDocument(Document):
 	VIEW_PERMISSION_NAME = INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME
 
 	is_menu_page = models.BooleanField(default=False, verbose_name=_("Is menu page"), help_text=_("Select this if the page is used mainly for navigation purposes and if all documents linked on the page should be removed from the 'unlinked information pages' list."))
-	title = Translate
 
 	class Meta(Document.Meta):
 

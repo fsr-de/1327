@@ -1,3 +1,4 @@
+import gettext
 from datetime import datetime
 import hashlib
 import re
@@ -7,14 +8,16 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
+from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import get_language
 from guardian.shortcuts import assign_perm, get_groups_with_perms, get_users_with_perms, remove_perm
 from polymorphic.models import PolymorphicModel
 from reversion import revisions
 from reversion.models import Version
 
 from _1327.documents.markdown_internal_link_pattern import InternalLinkPattern
-from _1327.main.meta import Translate, LocalizeModelBase
+from _1327.main.tools import translate
 from _1327.main.utils import slugify
 from _1327.user_management.models import UserProfile
 
@@ -29,13 +32,13 @@ class Document(PolymorphicModel):
 		return '{}_{}'.format(hashlib.md5(str(datetime.now()).encode()).hexdigest(), int(max_id) + 1)
 
 	created = models.DateTimeField(default=timezone.now)
-	title = Translate
-	title_de = models.CharField(max_length=255, null=True, blank=True)
-	title_en = models.CharField(max_length=255, null=True, blank=True)
+	title_de = models.CharField(max_length=255, null=True, blank=True, verbose_name=_("title (german)"))
+	title_en = models.CharField(max_length=255, null=True, blank=True, verbose_name=_("title (english)"))
+	title = translate(en='title_en', de='title_de')
 	url_title = models.CharField(unique=True, max_length=255, verbose_name='url_title')
-	text = Translate
-	text_de = models.TextField(null=True, blank=True)
-	text_en = models.TextField(null=True, blank=True)
+	text_de = models.TextField(null=True, blank=True, verbose_name=_("text (german)"))
+	text_en = models.TextField(null=True, blank=True, verbose_name=_("text (english)"))
+	text = translate(en='text_en', de='text_de')
 	hash_value = models.CharField(max_length=40, unique=True, default=get_hash, verbose_name=_("Hash value"))
 
 	DOCUMENT_LINK_REGEX = r'\[(?P<title>[^\[]+)\]\(document:(?P<id>\d+)\)'
@@ -110,7 +113,10 @@ class Document(PolymorphicModel):
 
 	@classmethod
 	def generate_new_title(cls):
-		return _("New Page from {}").format(str(datetime.now()))
+		now = str(datetime.now())
+		title_en = "New Page from {}".format(now)
+		title_de = "Neue Seite vom {}".format(now)
+		return title_en, title_de
 
 	@classmethod
 	def generate_default_slug(cls, title):

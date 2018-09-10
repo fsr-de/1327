@@ -43,11 +43,12 @@ def create(request, document_type):
 	if request.user.has_perm("{app}.add_{model}".format(app=content_type.app_label, model=content_type.model)):
 		model_class = content_type.model_class()
 		delete_old_empty_pages()
-		title = model_class.generate_new_title()
-		url_title = "temp_{}_{}".format(datetime.utcnow().strftime("%d%m%Y%H%M%S%f"), model_class.generate_default_slug(title))
+		title_en, title_de = model_class.generate_new_title()
+		url_title = "temp_{}_{}".format(datetime.utcnow().strftime("%d%m%Y%H%M%S%f"), model_class.generate_default_slug(title_en))
 		kwargs = {
 			'url_title': url_title,
-			'title': title,
+			'title_en': title_en,
+			'title_de': title_de,
 		}
 		if hasattr(model_class, 'author'):
 			kwargs['author'] = request.user
