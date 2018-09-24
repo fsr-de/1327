@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
             name='Poll',
             fields=[
                 ('id', models.AutoField(auto_created=True, serialize=False, verbose_name='ID', primary_key=True)),
-                ('title', models.CharField(max_length=255)),
+                ('title', models.CharField(max_length=255, default='')),
                 ('description', models.TextField(blank=True, default='')),
                 ('start_date', models.DateField()),
                 ('end_date', models.DateField()),
