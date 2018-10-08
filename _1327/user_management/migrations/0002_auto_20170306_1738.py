@@ -3,7 +3,6 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
-from django.contrib.auth.models import Group
 from django.db import migrations
 from guardian.utils import get_anonymous_user
 
@@ -12,6 +11,7 @@ def add_initial_groups(apps, schema_editor):
 	initial_group_names = list(filter(lambda x: 'GROUP_NAME' in x and not 'DEFAULT' in x, dir(settings)))
 
 	for group_name in initial_group_names:
+		Group = apps.get_model("auth", "Group")
 		group, created = Group.objects.get_or_create(name=getattr(settings, group_name))
 
 		if 'ANONYMOUS' in group_name:
@@ -22,6 +22,7 @@ def add_initial_groups(apps, schema_editor):
 def reverse_add_initial_groups(apps, schema_editor):
 	initial_group_names = [getattr(settings, group_name) for group_name in filter(lambda x: 'GROUP_NAME' in x, dir(settings))]
 
+	Group = apps.get_model("auth", "Group")
 	for group in Group.objects.filter(name__in=initial_group_names):
 		group.delete()
 
