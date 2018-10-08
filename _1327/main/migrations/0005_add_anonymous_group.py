@@ -16,7 +16,6 @@ class Migration(migrations.Migration):
 
 	dependencies = [
 		('main', '0004_add_university_network_group'),
-		('user_management', '0003_userprofile_language'),
 	]
 
 	operations = [
