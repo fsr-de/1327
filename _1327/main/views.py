@@ -187,7 +187,6 @@ def set_lang(request):
 		user = request.user
 		user.language = request.POST['language']
 		user.save()
-		print("Lang saved:", user.language)
 
 	return set_language(request)
 

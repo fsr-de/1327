@@ -1,8 +1,8 @@
 import re
 
 from django.shortcuts import render
-
 from guardian.shortcuts import get_objects_for_user
+from django.utils.translation import get_language
 
 from _1327.information_pages.models import InformationDocument
 
@@ -22,8 +22,8 @@ def unlinked_list(request):
 				except ValueError:
 					pass
 
-		unlinked_information_pages = get_objects_for_user(request.user, permission_name, klass=InformationDocument.objects.filter(menu_items__isnull=True).exclude(id__in=menu_page_document_ids)).order_by('title')
-
+		title_string = "title_de" if get_language() == "de" else "title_en"
+		unlinked_information_pages = get_objects_for_user(request.user, permission_name, klass=InformationDocument.objects.filter(menu_items__isnull=True).exclude(id__in=menu_page_document_ids)).order_by(title_string)
 	else:
 		unlinked_information_pages = []
 

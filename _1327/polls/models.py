@@ -55,7 +55,8 @@ class Poll(Document):
 
 	@classmethod
 	def generate_new_title(cls):
-		return _("New Poll")
+		return "New Poll", "Neue Umfrage"
+
 
 	@classmethod
 	def get_vote_permission(klass):
