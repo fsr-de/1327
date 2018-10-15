@@ -5,7 +5,6 @@ from django.utils.translation import ugettext_lazy as _
 from reversion import revisions
 
 from _1327.documents.models import Document
-from _1327.main.tools import translate
 
 INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME = 'show_informationdocument'
 

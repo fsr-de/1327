@@ -1,8 +1,8 @@
 import re
 
 from django.shortcuts import render
-from guardian.shortcuts import get_objects_for_user
 from django.utils.translation import get_language
+from guardian.shortcuts import get_objects_for_user
 
 from _1327.information_pages.models import InformationDocument
 

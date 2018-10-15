@@ -189,4 +189,3 @@ def set_lang(request):
 		user.save()
 
 	return set_language(request)
-

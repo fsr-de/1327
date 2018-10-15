@@ -1,5 +1,3 @@
-from django.conf import settings
-from django.utils import translation
 from guardian.shortcuts import get_objects_for_user
 
 from _1327.main.models import MenuItem

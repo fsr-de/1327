@@ -57,7 +57,6 @@ class Poll(Document):
 	def generate_new_title(cls):
 		return "New Poll", "Neue Umfrage"
 
-
 	@classmethod
 	def get_vote_permission(klass):
 		content_type = ContentType.objects.get_for_model(klass)

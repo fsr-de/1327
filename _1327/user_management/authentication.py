@@ -1,9 +1,9 @@
-from django.contrib.auth.models import Group
 from django.contrib.auth import user_logged_in
-from django.dispatch import receiver
-from django.utils.translation import LANGUAGE_SESSION_KEY, get_language
-from django.utils import translation
+from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
+from django.dispatch import receiver
+from django.utils import translation
+from django.utils.translation import get_language, LANGUAGE_SESSION_KEY
 from guardian.core import ObjectPermissionChecker
 from guardian.utils import get_anonymous_user
 

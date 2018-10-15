@@ -11,15 +11,6 @@ class Migration(migrations.Migration):
 	]
 
 	operations = [
-		# migrations.RemoveField(
-		#     model_name='document',
-		#     name='text',
-		# ),
-		# migrations.AddField(
-		#     model_name='document',
-		#     name='text_de',
-		#     field=models.TextField(blank=True, null=True),
-		# ),
 		migrations.AlterField(
 			model_name='document',
 			name='text',
@@ -30,15 +21,6 @@ class Migration(migrations.Migration):
 			old_name='text',
 			new_name='text_de',
 		),
-		# migrations.RemoveField(
-		#     model_name='document',
-		#     name='title',
-		# ),
-		# migrations.AddField(
-		#     model_name='document',
-		#     name='title_de',
-		#     field=models.CharField(blank=True, max_length=255, null=True),
-		# ),
 		migrations.AlterField(
 			model_name='document',
 			name='title',
