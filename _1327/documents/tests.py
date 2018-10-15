@@ -1305,6 +1305,10 @@ class TestAttachments(WebTest):
 		self.assertEqual(self.document.attachments.count(), 2)
 		self.assertEqual(self.document.attachments.last().index, 2)
 
+	def test_attachments_download_without_parameter(self):
+		response = self.app.get(reverse("documents:download_attachment"), user=self.user, expect_errors=True)
+		self.assertEqual(response.status_code, 404)
+
 
 class TestDeletion(WebTest):
 	csrf_checks = False

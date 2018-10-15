@@ -365,7 +365,7 @@ def download_attachment(request):
 	if not request.method == "GET":
 		raise SuspiciousOperation
 
-	attachment = get_object_or_404(Attachment, hash_value=request.GET['hash_value'])
+	attachment = get_object_or_404(Attachment, hash_value=request.GET.get('hash_value', None))
 	# check whether user is allowed to see that document and thus download the attachment
 	document = attachment.document
 	if not request.user.has_perm(document.view_permission_name, document):
