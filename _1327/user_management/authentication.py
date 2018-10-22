@@ -42,10 +42,8 @@ class _1327AuthorizationBackend:
 @receiver(user_logged_in)
 def set_or_get_language(user, request, **kwargs):
 	if user.language:
-		print("Lang found:", user.language)
 		request.session[LANGUAGE_SESSION_KEY] = user.language
 		translation.activate(user.language)
 	else:
 		user.language = get_language()
-		print("No lang found:", user.language)
 		user.save()
