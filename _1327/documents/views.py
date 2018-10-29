@@ -2,7 +2,8 @@ from datetime import datetime
 import json
 import os
 
-from channels import Group as WebsocketGroup
+from asgiref.sync import async_to_sync
+import channels.layers
 
 from django.contrib import messages
 from django.contrib.admin.utils import NestedObjects
@@ -24,7 +25,6 @@ from reversion.models import Version
 from sendfile import sendfile
 
 from _1327 import settings
-from _1327.documents.consumers import get_group_name
 from _1327.documents.forms import get_permission_form
 from _1327.documents.models import Attachment, Document, TemporaryDocumentText
 from _1327.documents.utils import delete_cascade_to_json, delete_old_empty_pages, get_model_function, get_new_autosaved_pages_for_user, \
@@ -247,9 +247,14 @@ def render_text(request, title):
 
 	text, __ = convert_markdown(request.POST['text'])
 
-	WebsocketGroup(get_group_name(document.hash_value)).send({
-		'text': text
-	})
+	channel_layer = channels.layers.get_channel_layer()
+	async_to_sync(channel_layer.group_send)(
+		document.hash_value,
+		{
+			'type': 'update_preview',
+			'message': text,
+		}
+	)
 
 	return HttpResponse(text, content_type='text/plain')
 
@@ -502,10 +507,11 @@ def preview(request):
 		request,
 		'documents_preview.html',
 		{
-			'title': document.title,
+			'document': document,
 			'text': text,
 			'preview_url': settings.PREVIEW_URL,
 			'hash_value': hash_value,
+			'view_page': True,
 		}
 	)
 

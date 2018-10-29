@@ -17,3 +17,5 @@ script:
   - coverage run manage.py test
 after_success:
   - coveralls
+services:
+  - redis-server

@@ -1,26 +1,23 @@
-{% extends "base_without_sidebar.html" %}
+{% extends 'documents_base.html' %}
+
 {% load i18n %}
 {% load bootstrap3 %}
 
-{% block title %}
-	{{ title }}
-{% endblock %}
-
-{% block content %}
-	<div class="content">{{ text|safe }}</div>
-{% endblock %}
+{% block sidebar %}{% endblock %}
 
 {% block scripts %}
 	{{ block.super }}
 
 	<script>
-		var websocketMethod = location.protocol == 'http:' ? 'ws://' : 'wss://';
+		var websocketMethod = location.protocol === 'http:' ? 'ws://' : 'wss://';
 		var socket = new WebSocket(websocketMethod + window.location.host + '{{ preview_url }}/{{ hash_value }}');
 		socket.onmessage = function(e) {
-			$('.content').html(e.data);
+			var documentText = $('.content');
+			documentText.html(emojione.toImage(e.data));
+
 		};
 		// Call onopen directly if socket is already open
-		if (socket.readyState == WebSocket.OPEN) socket.onopen();
+		if (socket.readyState === WebSocket.OPEN) socket.onopen();
 
 	</script>
 

@@ -152,7 +152,7 @@ DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer
 ROOT_URLCONF = '_1327.urls'
 APPEND_SLASH = False
 
-WSGI_APPLICATION = '_1327.wsgi.application'
+ASGI_APPLICATION = '_1327.routing.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
@@ -165,9 +165,11 @@ DATABASES = {
 }
 
 CHANNEL_LAYERS = {
-	"default": {
-		"BACKEND": "asgiref.inmemory.ChannelLayer",
-		"ROUTING": "_1327.routing.channel_routing",
+	'default': {
+		'BACKEND': 'channels_redis.core.RedisChannelLayer',
+		'CONFIG': {
+			"hosts": [('127.0.0.1', 6379)],
+		},
 	},
 }
 PREVIEW_URL = '/ws/preview'
