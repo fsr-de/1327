@@ -23,22 +23,32 @@ class Migration(migrations.Migration):
 		),
 		migrations.AlterField(
 			model_name='document',
+			name='text_de',
+			field=models.TextField(blank=True, null=True, verbose_name='text (german)'),
+		),
+		migrations.AlterField(
+			model_name='document',
 			name='title',
-			field=models.CharField(blank=True, max_length=255, null=True),
+			field=models.CharField(blank=True, max_length=255, null=False),
 		),
 		migrations.RenameField(
 			model_name='document',
 			old_name='title',
 			new_name='title_de',
 		),
+		migrations.AlterField(
+			model_name='document',
+			name='title_de',
+			field=models.CharField(blank=True, max_length=255, null=True, verbose_name='title (german)'),
+		),
 		migrations.AddField(
 			model_name='document',
 			name='text_en',
-			field=models.TextField(blank=True, null=True),
+			field=models.TextField(blank=True, null=True, verbose_name='text (english)'),
 		),
 		migrations.AddField(
 			model_name='document',
 			name='title_en',
-			field=models.CharField(blank=True, max_length=255, null=True),
+			field=models.CharField(blank=True, max_length=255, null=True, verbose_name='title (english)'),
 		),
 	]

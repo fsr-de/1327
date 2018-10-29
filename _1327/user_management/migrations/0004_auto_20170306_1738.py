@@ -14,7 +14,7 @@ def add_initial_groups(apps, schema_editor):
 		Group = apps.get_model("auth", "Group")
 		group, created = Group.objects.get_or_create(name=getattr(settings, group_name))
 
-		if 'ANONYMOUS' in group_name:
+		if 'ANONYMOUS' in group_name and created:
 			get_anonymous_user().groups.add(group)
 		group.save()
 
@@ -30,7 +30,8 @@ def reverse_add_initial_groups(apps, schema_editor):
 class Migration(migrations.Migration):
 
 	dependencies = [
-		('user_management', '0001_initial'),
+		# ('user_management', '0001_initial'),
+		('user_management', '0003_userprofile_language'),
 	]
 
 	operations = [
