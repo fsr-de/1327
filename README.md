@@ -2,14 +2,15 @@
 ====
 
 [![Build Status](https://travis-ci.org/fsr-itse/1327.svg?branch=master)](https://travis-ci.org/fsr-itse/1327)
-[![Code Health](https://landscape.io/github/fsr-itse/1327/master/landscape.svg?style=flat)](https://landscape.io/github/fsr-itse/1327/master)
+[![Requirements Status](https://requires.io/github/fsr-itse/1327/requirements.svg?branch=master)](https://requires.io/github/fsr-itse/1327/requirements/?branch=master)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/dbb7db2d1306434e92a947a9214671ba)](https://www.codacy.com/app/fsr-itse/1327)
 [![Coverage Status](https://coveralls.io/repos/github/fsr-itse/1327/badge.svg?branch=master)](https://coveralls.io/github/fsr-itse/1327?branch=master)
 
 A student representatives website. This project is live! You can see a working instance of 1327 [here](https://myhpi.de/home)!
 
 ## Development
 
-To be able to contribute to 1327, one needs to get the source code with all dependencies. Please note, that submodules for *bootstrap*, *font-awesome*, *bootstrap-markdown* and various *puppet* modules are in use:
+To be able to contribute to 1327, one needs to get the source code with all dependencies. Please note, that submodules for *bootstrap*, *font-awesome* and *bootstrap-markdown* are in use:
 
 ```bash
 git clone https://github.com/fsr-itse/1327.git

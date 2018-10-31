@@ -25,7 +25,7 @@ from sendfile import sendfile
 from _1327 import settings
 from _1327.documents.consumers import get_group_name
 from _1327.documents.forms import get_permission_form
-from _1327.documents.models import Attachment, Document
+from _1327.documents.models import Attachment, Document, TemporaryDocumentText
 from _1327.documents.utils import delete_cascade_to_json, delete_old_empty_pages, get_model_function, get_new_autosaved_pages_for_user, \
 	handle_attachment, handle_autosave, handle_edit, prepare_versions
 from _1327.information_pages.models import InformationDocument
@@ -44,7 +44,7 @@ def create(request, document_type):
 		model_class = content_type.model_class()
 		delete_old_empty_pages()
 		title = model_class.generate_new_title()
-		url_title = model_class.generate_default_slug(title)
+		url_title = "temp_{}_{}".format(datetime.utcnow().strftime("%d%m%Y%H%M%S%f"), model_class.generate_default_slug(title))
 		kwargs = {
 			'url_title': url_title,
 			'title': title,
@@ -200,13 +200,13 @@ def permissions(request, title):
 	})
 
 
-def publish(request, title, state_id):
+def publish(request, title, next_state_id):
 	document = get_object_or_404(Document, url_title=title)
 	check_permissions(document, request.user, [document.edit_permission_name])
 	if not document.show_publish_button():
 		raise PermissionDenied()
 
-	document.publish(state_id)
+	document.publish(next_state_id)
 	messages.success(request, _("Minutes document has been published."))
 
 	return HttpResponseRedirect(reverse(document.get_view_url_name(), args=[document.url_title]))
@@ -365,7 +365,7 @@ def download_attachment(request):
 	if not request.method == "GET":
 		raise SuspiciousOperation
 
-	attachment = get_object_or_404(Attachment, hash_value=request.GET['hash_value'])
+	attachment = get_object_or_404(Attachment, hash_value=request.GET.get('hash_value', None))
 	# check whether user is allowed to see that document and thus download the attachment
 	document = attachment.document
 	if not request.user.has_perm(document.view_permission_name, document):
@@ -387,7 +387,7 @@ def update_attachment_order(request):
 	if data is None or not request.is_ajax():
 		raise Http404
 
-	for pk, index in data._iteritems():
+	for pk, index in data.items():
 		attachment = get_object_or_404(Attachment, pk=pk)
 		# check that user is allowed to make changes to attachment
 		document = attachment.document
@@ -483,3 +483,32 @@ def preview(request):
 			'hash_value': hash_value,
 		}
 	)
+
+
+def delete_autosave(request, title):
+	if request.method != 'POST':
+		raise Http404
+
+	# first check that the user actually may change this document
+	document = get_object_or_404(Document, url_title=title)
+	check_permissions(document, request.user, [document.edit_permission_name])
+
+	# second check that the supplied autosave id matches to the document and has been created by the user
+	autosave_id = request.POST['autosave_id']
+	autosave = get_object_or_404(TemporaryDocumentText, id=autosave_id)
+	autosaves_for_object_and_user = TemporaryDocumentText.objects.filter(document=document, author=request.user)
+	if autosave not in autosaves_for_object_and_user:
+		raise SuspiciousOperation
+
+	if document.is_in_creation:
+		# this is a new document that only has this autosave right now and nothing else, we can safely delete this document
+		document.delete()
+		messages.success(request, _("Successfully deleted document: {}").format(document.title))
+		response = HttpResponseRedirect(reverse("index"))
+	else:
+		# everything seems to be alright, we can delete the autosave and leave the document as such intact
+		autosave.delete()
+		messages.success(request, _("Successfully deleted autosave"))
+		response = HttpResponseRedirect(reverse("edit", args=[document.url_title]))
+
+	return response

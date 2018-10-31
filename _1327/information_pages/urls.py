@@ -1,9 +1,9 @@
-from django.conf.urls import url
+from django.urls import path
 
 from . import views
 
-app_name = 'information_pages'
+app_name = "information_pages"
 
 urlpatterns = [
-	url(r"unlinked$", views.unlinked_list, name='unlinked_list'),
+	path("unlinked", views.unlinked_list, name="unlinked_list"),
 ]

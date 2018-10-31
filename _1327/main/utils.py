@@ -87,7 +87,6 @@ def convert_markdown(text):
 			InternalLinksMarkdownExtension(),
 			'_1327.minutes.markdown_minutes_extensions',
 			'_1327.documents.markdown_scaled_image_extension',
-			'_1327.documents.markdown_emoji_extension',
 			'markdown.extensions.abbr',
 			'markdown.extensions.tables',
 		])
@@ -101,6 +100,16 @@ def slugify(string):
 	while '//' in slug:
 		slug = slug.replace('//', '/')
 	return slug
+
+
+class SlugWithSlashConverter:
+	regex = '[\w\-/]+'
+
+	def to_python(self, value):
+		return str(value)
+
+	def to_url(self, value):
+		return str(value)
 
 
 def find_root_menu_items(items):

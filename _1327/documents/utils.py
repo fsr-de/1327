@@ -1,6 +1,7 @@
 from functools import lru_cache
-
 import json
+import re
+
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
@@ -53,6 +54,15 @@ def handle_edit(request, document, formset=None, initial=None, creation_group=No
 				# handle_edit has to happen outside of create_revision, because otherwise versions will not be
 				# created correctly, if the model, that is getting saved, contains many-to-many relationships
 				document.handle_edit(cleaned_data)
+
+				# make sure to remove temp prefix of url_title
+				if document.url_title.startswith('temp_'):
+					temp_prefix_len = re.search(r'temp_\d+_', document.url_title).end()
+					document.url_title = document.url_title[temp_prefix_len:]
+				# check that there is no document that already has that url
+				if Document.objects.filter(url_title=document.url_title).exclude(id=document.id).exists():
+					document.url_title = document.generate_default_slug(document.url_title)
+
 				with revisions.create_revision():
 					document.save()
 					document.save_formset(formset)
@@ -76,8 +86,8 @@ def handle_edit(request, document, formset=None, initial=None, creation_group=No
 		autosaves = TemporaryDocumentText.objects.filter(document=document, author=request.user)
 		autosaved = autosaves.count() > 0
 
+		autosave_to_restore = None
 		if 'restore' in request.GET and autosaved:
-			autosave_to_restore = None
 			for autosave in autosaves:
 				if int(request.GET['restore']) == autosave.id:
 					autosave_to_restore = autosave
@@ -95,6 +105,9 @@ def handle_edit(request, document, formset=None, initial=None, creation_group=No
 			autosaved = False
 
 		form = document.Form(initial=initial, instance=document, user=request.user, creation=document.is_in_creation, creation_group=creation_group)
+
+		if autosave_to_restore is not None:
+			form.autosave_id = autosave_to_restore.id
 
 		form.autosaved = autosaved
 		if autosaved:

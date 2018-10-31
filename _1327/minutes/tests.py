@@ -225,12 +225,12 @@ class TestMinutesList(WebTest):
 		response = self.app.get(reverse("minutes:list", args=[self.group.id]))
 		self.assertEqual(response.status_code, 200)
 		self.assertIn('No minutes available.', response.body.decode('utf-8'))
-		self.assertIn('You might have to <a href="/login"> login </a> first.', response.body.decode('utf-8'))
+		self.assertIn('You might have to', response.body.decode('utf-8'))
 
 		# if the user is logged in there is definetely no minutes document available for him
 		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
 		self.assertIn('No minutes available.', response.body.decode('utf-8'))
-		self.assertNotIn('You might have to <a href="/login"> login </a> first.', response.body.decode('utf-8'))
+		self.assertNotIn('You might have to', response.body.decode('utf-8'))
 
 		document = mommy.make(MinutesDocument)
 		document.set_all_permissions(self.group)
@@ -239,7 +239,7 @@ class TestMinutesList(WebTest):
 		# if the user is logged in and there is a minutes document he should not see any of the hints
 		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
 		self.assertNotIn('No minutes available.', response.body.decode('utf-8'))
-		self.assertNotIn('You might have to <a href="/login"> login </a> first.', response.body.decode('utf-8'))
+		self.assertNotIn('You might have to', response.body.decode('utf-8'))
 
 
 class TestSearchMinutes(WebTest):
@@ -414,7 +414,7 @@ class TestNewMinutesDocument(WebTest):
 		self.assertEqual(document.moderator, self.user)
 		self.assertEqual(document.text, text)
 		self.assertEqual(versions[0].revision.comment, text)
-		self.assertListEqual(list(document.participants.all()), list(self.group.user_set.all()))
+		self.assertListEqual(list(document.participants.all().order_by('username')), list(self.group.user_set.all().order_by('username')))
 
 		checker = ObjectPermissionChecker(self.group)
 		self.assertTrue(checker.has_perm(document.edit_permission_name, document))
@@ -445,7 +445,7 @@ class TestNewMinutesDocument(WebTest):
 		self.assertEqual(document.moderator, test_moderator)  # should be taken from previous minutes document
 		self.assertEqual(document.author, self.user)
 		self.assertEqual(document.text, text)
-		self.assertListEqual(list(document.participants.all()), list(self.group.user_set.all()))
+		self.assertListEqual(list(document.participants.all().order_by('username')), list(self.group.user_set.all().order_by('username')))
 
 	def test_group_field_hidden_when_user_has_one_group(self):
 		response = self.app.get(reverse('documents:create', args=['minutesdocument']) + '?group={}'.format(self.group.id), user=self.user)

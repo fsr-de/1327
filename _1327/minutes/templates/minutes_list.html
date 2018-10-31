@@ -1,5 +1,6 @@
 {% extends 'base_with_sidebar.html' %}
 {% load i18n %}
+{% load redirect_login_tags %}
 
 {% block title %}
 	{% blocktrans count counter=2 %}Minutes{% plural %}Minutes{% endblocktrans %}
@@ -10,7 +11,7 @@
 		<ul>
 			<form class="pb-2" action="{% url 'minutes:search' group_id %}" method="post" id="text_search">
 				{% csrf_token %}
-			   	{{ search_form }}
+				{{ search_form }}
 			</form>
 			{% for year, minutes in minutes_list %}
 				<li><a href="#year{{ year }}">{{ year }}</a></li>
@@ -50,7 +51,7 @@
 					</td>
 					<td style="width: 55%;">
 						<a href="{{ minute.get_view_url }}">{{ minute.title }}</a>
-						{% block linepreview %} 
+						{% block linepreview %}
 						{% endblock %}
 					</td>
 					<td style="width: 5%; text-align: center;">
@@ -63,15 +64,16 @@
 				</tr>
 			{% endfor %}
 		</table>
-    {% empty %}
-    	{% block minutesempty %}
-	        <em>{% trans "No minutes available." %}</em>
-	        {% url "login" as anchor_url %}
-	        {% if not user.is_authenticated %}
-	            <em>
-	                {% blocktrans with anchor='<a href="'|add:anchor_url|add:'">'|safe anchor_end='</a>'|safe %}You might have to {{ anchor }} login {{ anchor_end }} first.{% endblocktrans %}
-	            </em>
-	        {% endif %}
-	    {% endblock %}
+	{% empty %}
+		{% block minutesempty %}
+			<em>{% trans "No minutes available." %}</em>
+			{% url "login" as anchor_url %}
+			{% redirect_login as redirect_params %}
+			{% if not user.is_authenticated %}
+				<em>
+					{% blocktrans with anchor='<a href="'|add:anchor_url|add:redirect_params|add:'">'|safe anchor_end='</a>'|safe %}You might have to {{ anchor }} login {{ anchor_end }} first.{% endblocktrans %}
+				</em>
+			{% endif %}
+		{% endblock %}
 	{% endfor %}
 {% endblock %}

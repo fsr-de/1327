@@ -113,13 +113,13 @@ class GroupAdminForm(forms.ModelForm):
 		group = super(GroupAdminForm, self).save(commit=commit)
 
 		if commit:
-			group.user_set = self.cleaned_data['users']
+			group.user_set.set(self.cleaned_data['users'])
 		else:
 			old_save_m2m = self.save_m2m
 
 			def new_save_m2m():
 				old_save_m2m()
-				group.user_set = self.cleaned_data['users']
+				group.user_set.set(self.cleaned_data['users'])
 
 			self.save_m2m = new_save_m2m
 		return group

@@ -99,7 +99,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
 	'_1327.main.middleware.RedirectToNoSlash',
 	'django.contrib.sessions.middleware.SessionMiddleware',
-	'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
 	'django.middleware.common.CommonMiddleware',
 	'django.middleware.csrf.CsrfViewMiddleware',
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -127,6 +126,10 @@ HIJACK_URL_ALLOWED_ATTRIBUTES = ('user_id', )
 BOOTSTRAP3 = {
 	'horizontal_label_class': 'col-md-2',
 	'horizontal_field_class': 'col-md-9',
+	# Explicitly unset urls to external CDNs. We don't want to include
+	# any external assets for privacy reasons.
+	'jquery_url': None,
+	'base_url': None,
 }
 
 DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'

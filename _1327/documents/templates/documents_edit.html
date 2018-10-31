@@ -5,6 +5,11 @@
 {% load bootstrap3 %}
 {% load num_revisions %}
 
+{% block css %}
+	{{ block.super }}
+	<link rel="stylesheet" href="{% static 'emojionearea/css/emojionearea.min.css' %}"/>
+{% endblock %}
+
 {% block document_content %}
 	<h2>{% trans "Edit page" %}</h2>
 
@@ -28,6 +33,11 @@
 		{% if document|num_revisions > 0 %}
 			<button type="button" class="btn btn-danger" id="deleteDocumentButton">
 				{% trans 'Delete' %}
+			</button>
+		{% endif %}
+		{% if form.autosave_id %}
+			<button type="button" class="btn btn-danger" id="deleteAutosaveButton">
+				{% trans 'Delete Autosave' %}
 			</button>
 		{% endif %}
 	</div>
@@ -113,6 +123,30 @@
 		</div>
 	{% endif %}
 
+	{% if form.autosave_id %}
+		<div class="modal fade ontop" id="deleteAutosaveModal" tabindex="-1" role="dialog" aria-labelledby="deleteAutosaveHeader">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						<h4 class="modal-title" id="deleteAutosaveHeader">{% trans "Do you really want to delete this autosave?" %}</h4>
+					</div>
+					<div class="modal-footer">
+						<form action="{% url 'documents:delete_autosave' document.url_title %}" method="post">
+							{% csrf_token %}
+							<input type="hidden" name="autosave_id" value="{{ form.autosave_id }}" />
+							<button type="submit" class="btn btn-danger">
+								{% trans "Delete" %}
+							</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endif %}
+
 <div class="modal fade ontop" id="selectInternalLinkDestination" role="dialog" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -158,6 +192,8 @@
 <script type="text/javascript" src="{% static 'js/jquery.hotkeys.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/jquery.formset.js' %}"></script>
 <script type="text/javascript" src="{% static 'bootstrap-markdown/js/bootstrap-markdown.js' %}"></script>
+<script type="text/javascript" src="{% static 'emojionearea/js/emojionearea.min.js' %}"></script>
+
 <script>
 	var efficient_render = debounce(function render() {
 		$.ajax({
@@ -165,6 +201,7 @@
 			type: "post",
 			data: {'text': $('#id_text').val()},
 			success: function(data, status, jqxhr) {
+				data = emojione.toImage(data);
 				$('#text-preview').html(data);
 			}
 		});
@@ -322,6 +359,7 @@
 									e.replaceSelection(selected.text);
 									e.setSelection(cursor + 1, cursor + selected.length + 1);
 								}
+								$("#id_text").trigger("change");
 								$("#id_text").focus();
 							}
 						});
@@ -329,6 +367,28 @@
 				}]
 			}]
 		]
+	});
+
+	// init emoji stuff
+	$('#id_text').emojioneArea({
+		shortnames: true,
+		saveEmojisAs: 'unicode',
+		useInternalCDN: false,
+		pickerPosition: 'bottom',
+		autocomplete: false,
+		events: {
+			keyup: function () {
+				var markdownEditor = $('#id_text');
+				markdownEditor.val(this.getText());
+				efficient_render();
+			}
+		}
+	});
+
+	// hotfix emojionearea picker positioning in fullscreen mode
+	$('.emojionearea.md-input').on('keyup', function (event) {
+		var margin = $('.emojionearea-button').css('margin-right');
+		$('.emojionearea-picker').css("right", margin);
 	});
 
 	// handler to update the preview in the modal
@@ -391,6 +451,16 @@
 					window.location.replace("/");
 				}
 			);
+		});
+	{% endif %}
+
+	{% if form.autosave_id %}
+		var deleteAutosaveModal = $('#deleteAutosaveModal');
+		deleteAutosaveModal.modal({
+			show: false
+		});
+		$('#deleteAutosaveButton').on('click', function (event) {
+			deleteAutosaveModal.modal('show');
 		});
 	{% endif %}
 

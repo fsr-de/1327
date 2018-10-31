@@ -1,5 +1,6 @@
 from datetime import datetime
 import json
+import re
 import tempfile
 
 from django.conf import settings
@@ -17,8 +18,6 @@ from model_mommy import mommy
 from reversion import revisions
 from reversion.models import Version
 
-from _1327.documents import markdown_emoji_extension
-from _1327.documents.markdown_emoji_extension import EmojifyPreprocessor
 from _1327.documents.markdown_internal_link_extension import InternalLinksMarkdownExtension
 from _1327.documents.markdown_scaled_image_extension import SCALED_IMAGE_LINK_RE, ScaledImagePattern
 from _1327.information_pages.models import InformationDocument
@@ -290,7 +289,8 @@ class TestAutosave(WebTest):
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
-		url_title = slugify(form.get('title').value)
+		# we need to scrape the url_title from the action as we can not get it from the url_title field in the form
+		url_title = re.search(r'^/(?P<url_title>temp_.+)/', form.action).group('url_title')
 
 		# autosave AUTO
 		response = self.app.post(
@@ -319,7 +319,8 @@ class TestAutosave(WebTest):
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
-		url_title2 = slugify(form.get('title').value)
+		# we need to scrape the url_title from the action as we can not get it from the url_title field in the form
+		url_title2 = re.search(r'^/(?P<url_title>temp_.+)/', form.action).group('url_title')
 
 		# autosave second document AUTO
 		response = self.app.post(
@@ -368,7 +369,8 @@ class TestAutosave(WebTest):
 			response = self.app.get(reverse('documents:create', args=[content_type.model.lower()]), user=user)
 			self.assertEqual(response.status_code, 200)
 			form = response.forms['document-form']
-			url_title = slugify(form.get('url_title').value)
+			# we need to scrape the url_title from the action as we can not get it from the url_title field in the form
+			url_title = re.search(r'/(?P<url_title>temp_.+)/', form.action).group('url_title')
 
 			response = self.app.post(
 				reverse('documents:autosave', args=[url_title]),
@@ -384,7 +386,8 @@ class TestAutosave(WebTest):
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
-		url_title = slugify(form.get('title').value)
+		# we need to scrape the url_title from the action as we can not get it from the url_title field in the form
+		url_title = re.search(r'^/(?P<url_title>temp_.+)/', form.action).group('url_title')
 
 		# autosave AUTO
 		response = self.app.post(
@@ -516,6 +519,172 @@ class TestAutosave(WebTest):
 		response = form.submit().follow()
 		self.assertEqual(response.status_code, 200)
 		self.assertEqual(TemporaryDocumentText.objects.count(), 0)
+
+	def test_autosave_url_title_prefix_exists(self):
+		for sub_class in Document.__subclasses__():
+			response = self.app.get(reverse('documents:create', args=[sub_class.__name__.lower()]), user=self.user)
+			self.assertEqual(response.status_code, 200)
+
+			form = response.forms['document-form']
+			# we need to scrape the url_title from the action as we can not get it from the url_title field in the form
+			url_title = re.search(r'/(?P<url_title>temp_.+)/', form.action).group('url_title')
+
+			# autosave AUTO
+			response = self.app.post(
+				reverse('documents:autosave', args=[url_title]),
+				params={'text': 'AUTO', 'title': form.get('title').value, 'comment': '', 'group': mommy.make(Group)},
+				xhr=True
+			)
+			self.assertEqual(response.status_code, 200)
+			self.assertEqual(TemporaryDocumentText.objects.count(), 1)
+			temporary_document_text = TemporaryDocumentText.objects.get()
+			self.assertIn('temp_', temporary_document_text.document.url_title)
+			temporary_document_text.delete()
+
+	def test_autosave_url_title_prefix_removed_on_save(self):
+		assign_perm("information_pages.add_informationdocument", self.group)
+		assign_perm("minutes.add_minutesdocument", self.group)
+		assign_perm("polls.add_poll", self.group)
+
+		for sub_class in Document.__subclasses__():
+			response = self.app.get(reverse('documents:create', args=[sub_class.__name__.lower()]), user=self.user)
+			self.assertEqual(response.status_code, 200)
+			form = response.forms['document-form']
+			# we need to scrape the url_title from the action as we can not get it from the url_title field in the form
+			url_title = re.search(r'/(?P<url_title>temp_.+)/', form.action).group('url_title')
+
+			# autosave AUTO
+			response = self.app.post(
+				reverse('documents:autosave', args=[url_title]),
+				params={'text': 'AUTO', 'title': form.get('title').value, 'comment': ''},
+				xhr=True
+			)
+			self.assertEqual(response.status_code, 200)
+
+			self.assertEqual(TemporaryDocumentText.objects.count(), 1)
+			temporary_document_text = TemporaryDocumentText.objects.get()
+			self.assertIn('temp_', temporary_document_text.document.url_title)
+
+			self.submit_document_form(form, sub_class)
+
+			self.assertEqual(TemporaryDocumentText.objects.count(), 0)
+			temp_prefix_len = re.search(r'temp_\d+_', url_title).end()
+			self.assertNotIn('temp_', Document.objects.get(url_title=url_title[temp_prefix_len:]).url_title)
+
+	def submit_document_form(self, form, sub_class):
+		text = 'Lorem Ipsum'
+		for field_name in form.fields.keys():
+			if field_name is not None and 'text' in field_name:
+				form.set(field_name, text)
+		form.set('comment', text)
+		form.set('group', self.group.pk)
+		if sub_class == MinutesDocument:
+			participants_field = form.get('participants')
+			participants_field.select_multiple([participants_field.options[0][0]])
+		response = form.submit().follow()
+		self.assertEqual(response.status_code, 200)
+
+	def test_autosave_url_title_correct_count_on_save(self):
+		assign_perm("information_pages.add_informationdocument", self.group)
+		assign_perm("minutes.add_minutesdocument", self.group)
+		assign_perm("polls.add_poll", self.group)
+
+		# create document with appended '_\d+' for testing a special case of url_title handling
+		mommy.make(InformationDocument, url_title=InformationDocument.__name__.lower())
+		test_document = mommy.make(InformationDocument, url_title="{}_2".format(InformationDocument.__name__.lower()))
+
+		self.assertEqual(
+			test_document.generate_default_slug(test_document.url_title),
+			"{}_3".format(InformationDocument.__name__.lower()),
+		)
+
+	def test_autosave_delete_no_post_request(self):
+		mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
+		response = self.app.get(
+			reverse("documents:delete_autosave", args=[self.document.url_title]),
+			user=self.user,
+			expect_errors=True
+		)
+		self.assertEqual(response.status_code, 404)
+
+	def test_autosave_delete_non_existing_document(self):
+		autosave = mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
+		response = self.app.post(
+			reverse("documents:delete_autosave", args=["non_existing_document"]),
+			user=self.user,
+			expect_errors=True,
+			params={"autosave_id": autosave.id}
+		)
+		self.assertEqual(response.status_code, 404)
+
+	def test_autosave_delete_user_different_user(self):
+		autosave = mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
+		user = mommy.make(UserProfile)
+		response = self.app.post(
+			reverse("documents:delete_autosave", args=[self.document.url_title]),
+			user=user,
+			expect_errors=True,
+			params={"autosave_id": autosave.id}
+		)
+		self.assertEqual(response.status_code, 403)
+
+	def test_autosave_delete_user_insufficient_permissions(self):
+		user = mommy.make(UserProfile)
+		autosave = mommy.make(TemporaryDocumentText, document=self.document, author=user)
+		response = self.app.post(
+			reverse("documents:delete_autosave", args=[self.document.url_title]),
+			user=user,
+			expect_errors=True,
+			params={"autosave_id": autosave.id}
+		)
+		self.assertEqual(response.status_code, 403)
+
+	def test_autosave_delete_not_existing_autosave_id(self):
+		mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
+		response = self.app.post(
+			reverse("documents:delete_autosave", args=[self.document.url_title]),
+			user=self.user,
+			expect_errors=True,
+			params={"autosave_id": 400}
+		)
+		self.assertEqual(response.status_code, 404)
+
+	def test_autosave_delete_autosave_not_created_by_user(self):
+		autosave = mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
+		user = mommy.make(UserProfile)
+		assign_perm(self.document.edit_permission_name, user, self.document)
+		response = self.app.post(
+			reverse("documents:delete_autosave", args=[self.document.url_title]),
+			user=user,
+			expect_errors=True,
+			params={"autosave_id": autosave.id}
+		)
+		self.assertEqual(response.status_code, 400)
+
+	def test_autosave_delete_document_is_in_creation(self):
+		autosave = mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
+		response = self.app.post(
+			reverse("documents:delete_autosave", args=[self.document.url_title]),
+			user=self.user,
+			params={"autosave_id": autosave.id}
+		)
+		self.assertEqual(response.status_code, 302)
+		self.assertRedirects(response, reverse("index"))
+		self.assertEqual(TemporaryDocumentText.objects.count(), 0)
+		self.assertEqual(Document.objects.count(), 0)
+
+	def test_autosave_delete_document_not_in_creation(self):
+		autosave = mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
+		assign_perm(self.document.edit_permission_name, self.group, self.document)
+		response = self.app.post(
+			reverse("documents:delete_autosave", args=[self.document.url_title]),
+			user=self.user,
+			params={"autosave_id": autosave.id}
+		)
+		self.assertEqual(response.status_code, 302)
+		self.assertRedirects(response, reverse("edit", args=[self.document.url_title]))
+		self.assertEqual(TemporaryDocumentText.objects.count(), 0)
+		self.assertEqual(Document.objects.count(), 1)
 
 
 class TestMarkdownRendering(WebTest):
@@ -1136,6 +1305,10 @@ class TestAttachments(WebTest):
 		self.assertEqual(self.document.attachments.count(), 2)
 		self.assertEqual(self.document.attachments.last().index, 2)
 
+	def test_attachments_download_without_parameter(self):
+		response = self.app.get(reverse("documents:download_attachment"), user=self.user, expect_errors=True)
+		self.assertEqual(response.status_code, 404)
+
 
 class TestDeletion(WebTest):
 	csrf_checks = False
@@ -1416,53 +1589,3 @@ class ScaledImageExtensionTests(TestCase):
 		el = self.pattern.handleMatch(self.regex.match('![Alt](http://example.com "Hi I am a title" =x1327)'))
 		self.assertEqual(None, el.get('width'))
 		self.assertEqual('1327px', el.get('height'))
-
-
-class EmojiExtensionTests(TestCase):
-
-	def setUp(self):
-		self.emoji_text = "Hello, this is a nice emoji test :tada:"
-		self.non_emoji_text = "Hello, this text does not contain any emojis."
-		self.non_emoji_text_with_image = "Hello this is a text with a nice image ![test](test123)"
-		self.md = markdown.Markdown(
-			extensions=[
-				'_1327.documents.markdown_emoji_extension',
-			]
-		)
-		self.processor = EmojifyPreprocessor(self.md)
-
-	def test_emoji_processor_without_emoji(self):
-		emojified_text = self.processor.run([self.non_emoji_text])[0]
-		self.assertNotIn("(emoji)", emojified_text)
-
-	def test_emoji_processor_with_emoji(self):
-		emojified_text = self.processor.run([self.emoji_text])[0]
-		self.assertIn("![tada]", emojified_text)
-		self.assertIn("(emoji)", emojified_text)
-
-	def test_emoji_processor_without_emoji_but_with_image(self):
-		emojified_text = self.processor.run([self.non_emoji_text_with_image])[0]
-		self.assertNotIn("![tada]", emojified_text)
-		self.assertNotIn("(emoji)", emojified_text)
-
-	def test_emoji_with_non_existing_emoji_name(self):
-		non_emoji_text = "Hello, this is a non existing emoji name :non_existing_emoji:"
-		emojified_text = self.processor.run([non_emoji_text])[0]
-		self.assertNotIn("![non_existing_emoji]", emojified_text)
-		self.assertNotIn("(emoji)", emojified_text)
-
-	def test_emoji_extension_without_emoji(self):
-		converted_text = self.md.convert(self.non_emoji_text)
-		self.assertNotIn("'<img alt=", converted_text)
-
-	def test_emoji_extension_with_emoji(self):
-		converted_text = self.md.convert(self.emoji_text)
-		self.assertIn(
-			'<img alt="tada" class="emoji" src="{}'.format(markdown_emoji_extension.emojis_path),
-			converted_text
-		)
-
-	def test_emoji_extension_without_emoji_but_with_image(self):
-		converted_text = self.md.convert(self.non_emoji_text_with_image)
-		self.assertNotIn('class="emoji"', converted_text)
-		self.assertIn('<img alt="test"', converted_text)

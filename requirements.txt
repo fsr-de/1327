@@ -1,16 +1,16 @@
 channels == 1.1.8
 
-Django >=1.11, <1.12
-django-static-precompiler >=1.6
+Django >= 2.0, < 2.1
+django-static-precompiler == 1.8.2
 
-django-extensions >= 1.8.1
+django-extensions == 2.1.0
 
-django-bootstrap3 >= 8.2.3
-django-admin-bootstrapped >= 2.5.7
-django-reversion >= 2.0.9
-django-guardian >= 1.4.9
-django-hijack >= 2.1.4
-django-polymorphic >= 1.2
-django-sendfile >= 0.3.11
+django-bootstrap3 == 10.0.1
+django-admin-bootstrapped == 2.5.7
+django-reversion == 2.0.13
+django-guardian == 1.4.9
+django-hijack == 2.1.9
+django-polymorphic == 2.0.2
+django-sendfile == 0.3.11
 
-Markdown >= 2.6.8
+Markdown == 2.6.11
