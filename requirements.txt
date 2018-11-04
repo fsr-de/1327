@@ -9,7 +9,8 @@ django-bootstrap3 == 10.0.1
 django-admin-bootstrapped == 2.5.7
 django-reversion == 2.0.13
 django-guardian == 1.4.9
-django-hijack == 2.1.9
+django-hijack == 2.1.10
+django-compat == 1.0.15
 django-polymorphic == 2.0.2
 django-sendfile == 0.3.11
 
