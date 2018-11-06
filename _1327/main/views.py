@@ -63,10 +63,18 @@ def menu_items_index(request):
 	items = sorted(items, key=lambda x: x.order)
 
 	for item in items:
-		subitems = MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU, parent=item).order_by('order')
+		subitems = [
+			subitem for subitem in
+			MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU, parent=item).order_by('order')
+			if subitem.can_view_in_list(request.user)
+		]
 		if subitems:
 			for subitem in subitems:
-				subsubitems = MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU, parent=subitem).order_by('order')
+				subsubitems = [
+					subsubitem for subsubitem in
+					MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU, parent=subitem).order_by('order')
+					if subsubitem.can_view_in_list(request.user)
+				]
 				if subsubitems:
 					subitem.subitems = subsubitems
 			item.subitems = subitems
