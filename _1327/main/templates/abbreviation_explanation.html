@@ -49,7 +49,7 @@
 {% block scripts %}
 	{{ block.super }}
 	<!-- mandatory script include -->
-	<script type="text/javascript" src="{% static 'js/jquery.formset.js' %}"></script>
+	<script type="text/javascript" src="{% static 'node_modules/jquery.formset/src/jquery.formset.js' %}"></script>
 	<script type="text/javascript">
 	    // enable formset functionality
 	    $('.abbreviation-explanation-row').formset({
