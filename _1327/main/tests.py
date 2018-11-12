@@ -498,6 +498,15 @@ class MenuItemTests(WebTest):
 		self.assertEqual(MenuItem.objects.filter(parent_id=root_menu_children[0].id).count(), 1)
 		test_root_menu_order(root_menu_items)
 
+	def test_only_subitems_with_change_children_permission_are_visible(self):
+		other_sub_item = mommy.make(MenuItem, parent=self.root_menu_item)
+		response = self.app.get(reverse('menu_items_index'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn(self.sub_item.title, response.body.decode('utf-8'))
+		self.assertIn(self.root_menu_item.title, response.body.decode('utf-8'))
+		self.assertIn(self.sub_sub_item.title, response.body.decode('utf-8'))
+		self.assertNotIn(other_sub_item.title, response.body.decode('utf-8'))
+
 
 class TestSendRemindersCommand(TestCase):
 
