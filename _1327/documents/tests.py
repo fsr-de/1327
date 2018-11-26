@@ -36,7 +36,7 @@ class TestInternalLinkMarkDown(TestCase):
 
 		cls.md = markdown.Markdown(extensions=[EscapeHtml(), InternalLinksMarkdownExtension(), 'markdown.extensions.tables'])
 
-		cls.document = mommy.prepare(InformationDocument, text="text")
+		cls.document = mommy.prepare(InformationDocument, text_de="text")
 		with transaction.atomic(), revisions.create_revision():
 				cls.document.save()
 				revisions.set_user(cls.user)
@@ -61,14 +61,14 @@ class TestRevertion(WebTest):
 	def setUpTestData(cls):
 		cls.user = mommy.make(UserProfile, is_superuser=True)
 
-		cls.document = mommy.prepare(Document, text="text")
+		cls.document = mommy.prepare(Document, text_de="text")
 		with transaction.atomic(), revisions.create_revision():
 				cls.document.save()
 				revisions.set_user(cls.user)
 				revisions.set_comment('test version')
 
 		# create a second version
-		cls.document.text += '\nmore text'
+		cls.document.text_de += '\nmore text'
 		with transaction.atomic(), revisions.create_revision():
 				cls.document.save()
 				revisions.set_user(cls.user)
@@ -127,7 +127,7 @@ class TestRevertion(WebTest):
 
 		versions = Version.objects.get_for_object(self.document)
 		self.assertEqual(len(versions), 3)
-		self.assertEqual(versions[0].object.text, "text")
+		self.assertEqual(versions[0].object.text_de, "text")
 		self.assertEqual(versions[0].revision.get_comment(), 'reverted to revision "test version" (at {date})'.format(
 			date=datetime.utcnow().strftime("%Y-%m-%d %H:%M"),
 		))
@@ -195,7 +195,7 @@ class TestRevertion(WebTest):
 			versions = Version.objects.get_for_object(document).reverse()
 			self.assertEqual(len(versions), 2)
 			for version, text in zip(versions, [text_1, text_2]):
-				self.assertEqual(version.field_dict['text'], text)
+				self.assertEqual(version.field_dict['text_de'], text)
 
 
 class TestAutosave(WebTest):
@@ -208,7 +208,7 @@ class TestAutosave(WebTest):
 		cls.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
 		cls.group = mommy.make(Group)
 
-		cls.document = mommy.prepare(InformationDocument, text="text")
+		cls.document = mommy.prepare(InformationDocument, text_de="text")
 		with transaction.atomic(), revisions.create_revision():
 				cls.document.save()
 				revisions.set_user(cls.user)
@@ -219,12 +219,12 @@ class TestAutosave(WebTest):
 		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
-		self.assertEqual(form.get('text').value, 'text')
+		self.assertEqual(form.get('text_de').value, 'text')
 
 		# autosave AUTO
 		response = self.app.post(
 			reverse('documents:autosave', args=[self.document.url_title]),
-			params={'text': 'AUTO', 'title': form.get('title').value, 'comment': ''},
+			params={'text': 'AUTO', 'title': form.get('title_de').value, 'comment': ''},
 			user=self.user,
 			xhr=True
 		)
@@ -234,7 +234,7 @@ class TestAutosave(WebTest):
 		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
-		self.assertEqual(form.get('text').value, 'text')
+		self.assertEqual(form.get('text_de').value, 'text')
 
 		# if loading autosave text should be AUTO
 		autosave = TemporaryDocumentText.objects.get()
@@ -245,12 +245,12 @@ class TestAutosave(WebTest):
 		)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
-		self.assertEqual(form.get('text').value, 'AUTO')
+		self.assertEqual(form.get('text_de').value, 'AUTO')
 
 		# second autosave AUTO2
 		response = self.app.post(
 			reverse('documents:autosave', args=[self.document.url_title]),
-			params={'text': 'AUTO2', 'title': form.get('title').value, 'comment': ''},
+			params={'text': 'AUTO2', 'title': form.get('title_de').value, 'comment': ''},
 			user=self.user,
 			xhr=True
 		)
@@ -265,7 +265,7 @@ class TestAutosave(WebTest):
 		)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
-		self.assertEqual(form.get('text').value, 'AUTO2')
+		self.assertEqual(form.get('text_de').value, 'AUTO2')
 
 	def test_autosave_not_logged_in(self):
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
@@ -444,7 +444,7 @@ class TestAutosave(WebTest):
 	def test_can_not_restore_autosave_of_different_user(self):
 		mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
 		second_user = mommy.make(UserProfile)
-		second_document = mommy.prepare(InformationDocument, text="text")
+		second_document = mommy.prepare(InformationDocument, text_de="text")
 
 		with transaction.atomic(), revisions.create_revision():
 			second_document.save()
@@ -694,7 +694,7 @@ class TestMarkdownRendering(WebTest):
 	def setUpTestData(cls):
 		cls.user = mommy.make(UserProfile, is_superuser=True)
 		cls.document_text = 'test'
-		cls.document = mommy.make(InformationDocument, text=cls.document_text)
+		cls.document = mommy.make(InformationDocument, text_de=cls.document_text)
 		cls.document.set_all_permissions(mommy.make(Group))
 
 	def test_render_text_no_permission(self):
@@ -738,7 +738,7 @@ class TestSignals(TestCase):
 		# create a new document for every subclass of document
 		# and see whether the url_title is automatically created
 		for obj_id, subclass in enumerate(Document.__subclasses__()):
-			new_document = mommy.make(subclass, title="test_{}".format(obj_id), url_title="")
+			new_document = mommy.make(subclass, title_en="test_{}".format(obj_id), url_title="")
 			self.assertEqual(new_document.url_title, "test_{}".format(obj_id))
 
 	def test_group_permission_hook(self):
@@ -755,7 +755,7 @@ class TestSignals(TestCase):
 				assign_perm(permission_name, group)
 
 			# test whether the permission hook works
-			test_object = mommy.make(subclass, title="test")
+			test_object = mommy.make(subclass, title_de="test")
 			user_permissions = get_perms(group, test_object)
 			self.assertNotEqual(len(user_permissions), 0)
 

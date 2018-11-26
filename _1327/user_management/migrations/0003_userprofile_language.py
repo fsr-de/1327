@@ -10,11 +10,10 @@ class Migration(migrations.Migration):
     dependencies = [
         ('user_management', '0002_auto_20170306_1738'),
     ]
-
-    operations = [
-        migrations.AddField(
-            model_name='userprofile',
-            name='language',
-            field=models.CharField(blank=True, max_length=8, null=True, verbose_name='language'),
-        ),
-    ]
+	operations = [
+		migrations.AddField(
+			model_name='userprofile',
+			name='language',
+			field=models.CharField(blank=True, max_length=8, null=True, verbose_name='language'),
+		),
+	]

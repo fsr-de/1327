@@ -58,7 +58,7 @@ def search(request, groupid):
 		return redirect("minutes:list", groupid=groupid)
 
 	# filter for documents that contain the searched for string
-	minutes = MinutesDocument.objects.filter(text__icontains=search_text).prefetch_related('labels').order_by('-date')
+	minutes = MinutesDocument.objects.filter(text_de__icontains=search_text).prefetch_related('labels').order_by('-date')
 
 	# only show permitted documents
 	minutes, own_group = get_permitted_minutes(minutes, request, groupid)

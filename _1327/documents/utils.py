@@ -129,7 +129,7 @@ def handle_autosave(request, document):
 			else:
 				temporary_document_text, __ = TemporaryDocumentText.objects.get_or_create(document=document, author=request.user)
 
-			temporary_document_text.text = cleaned_data['text']
+			temporary_document_text.text_de = cleaned_data['text_de']
 			temporary_document_text.save()
 
 
@@ -139,7 +139,7 @@ def prepare_versions(document):
 	# prepare data for the template
 	version_list = []
 	for id, version in enumerate(versions):
-		version_list.append((id, version, json.dumps(version.field_dict['text']).strip('"')))
+		version_list.append((id, version, json.dumps(version.field_dict['text_de']).strip('"')))
 
 	return version_list
 
