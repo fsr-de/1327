@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.db import migrations
-from guardian.utils import get_anonymous_user
+from guardian.conf import settings as guardian_settings
 
 
 def add_initial_groups(apps, schema_editor):
@@ -15,7 +15,9 @@ def add_initial_groups(apps, schema_editor):
 		group, created = Group.objects.get_or_create(name=getattr(settings, group_name))
 
 		if 'ANONYMOUS' in group_name and created:
-			get_anonymous_user().groups.add(group)
+			UserProfile = apps.get_model("user_management", "UserProfile")
+			anonymous = UserProfile.objects.get(username=guardian_settings.ANONYMOUS_USER_NAME)
+			anonymous.groups.add(group)
 		group.save()
 
 
@@ -30,7 +32,7 @@ def reverse_add_initial_groups(apps, schema_editor):
 class Migration(migrations.Migration):
 
 	dependencies = [
-		('user_management', '0003_userprofile_language'),
+		('user_management', '0001_initial'),
 	]
 
 	operations = [
