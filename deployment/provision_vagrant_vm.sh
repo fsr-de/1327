@@ -4,9 +4,15 @@ set -x # print executed commands
 apt-get -q update
 apt-get -q install -y python3-dev python3-pip gettext
 
+# setup Yarn
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+
+apt-get update
+apt-get -q install -y yarn
+
 # install less, coffeescript
-apt-get -q install -y nodejs npm
-npm install -g less coffee-script
+yarn global add less coffeescript
 
 # setup postgres
 apt-get -q install -y postgresql
@@ -28,9 +34,12 @@ sudo -H -u vagrant pip3 install --user psycopg2==2.7.3.1
 cp /vagrant/deployment/localsettings.template.py /vagrant/_1327/localsettings.py
 sed -i -e "s/\${SECRET_KEY}/`sudo head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32`/" /vagrant/_1327/localsettings.py
 
+# setup static files
+cd /vagrant/_1327/static
+sudo -H -u vagrant yarn --no-bin-links
+
 # setup 1327
 cd /vagrant
-git submodule update --init
 sudo -H -u vagrant python3 manage.py migrate --noinput
 sudo -H -u vagrant python3 manage.py collectstatic --noinput
 sudo -H -u vagrant python3 manage.py compilemessages
