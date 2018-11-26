@@ -30,7 +30,6 @@ def reverse_add_initial_groups(apps, schema_editor):
 class Migration(migrations.Migration):
 
 	dependencies = [
-		# ('user_management', '0001_initial'),
 		('user_management', '0003_userprofile_language'),
 	]
 
