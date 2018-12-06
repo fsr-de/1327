@@ -1,5 +1,6 @@
 import email
 from email import policy
+from html import unescape
 from typing import Dict, List, Tuple
 
 import bleach
@@ -24,8 +25,10 @@ def get_content_as_safe_html(message) -> str:
 def get_content_as_unsafe_text(message):
 	content, content_type = find_content(message)
 
-	# TODO: Only strip HTML tags, don't convert stuff to HTML entities
-	return bleach.clean(content, tags=[], attributes={}, styles=[], strip=True).strip()
+	# We first remove all HTML tags and encode all special characters (i.e. ">" -> "&gt;").
+	# Then be unescape the decoded special characters. This results in a version with all
+	# HTML tags stripped but the special characters not HTML encoded.
+	return unescape(bleach.clean(content, tags=[], attributes={}, styles=[], strip=True).strip())
 
 
 def find_content(message: email.message.MIMEPart) -> Tuple[str, str]:
