@@ -87,9 +87,11 @@ INSTALLED_APPS = [
 	'hijack',
 	'compat',
 	'channels',
+	'mptt',
 	'_1327.main',
 	'_1327.user_management',
 	'_1327.documents',
+	'_1327.emails',
 	'_1327.information_pages',
 	'_1327.minutes',
 	'_1327.polls',
@@ -261,6 +263,10 @@ STATIC_PRECOMPILER_COMPILERS = [
 
 # Set this to the ID of the document that shall be shown as Main Page
 MAIN_PAGE_ID = -1
+
+EMAILS_POP3_HOST = ''
+EMAILS_POP3_USER = ''
+EMAILS_POP3_PASS = ''
 
 TESTING = 'test' in sys.argv
 

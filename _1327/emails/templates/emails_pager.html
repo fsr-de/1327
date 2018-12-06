@@ -1,0 +1,14 @@
+<nav>
+	<ul class="pager">
+		<li class="previous">
+			<a href="{% url 'emails:archive' previous_month.year previous_month.month %}">
+				<span aria-hidden="true">&larr;</span> {{ previous_month|date:'YEAR_MONTH_FORMAT' }}
+			</a>
+		</li>
+		<li class="next">
+			<a href="{% url 'emails:archive' next_month.year next_month.month %}">
+				{{ next_month|date:'YEAR_MONTH_FORMAT' }} <span aria-hidden="true">&rarr;</span>
+			</a>
+		</li>
+	</ul>
+</nav>

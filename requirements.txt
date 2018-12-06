@@ -13,5 +13,7 @@ django-hijack == 2.1.10
 django-compat == 1.0.15
 django-polymorphic == 2.0.2
 django-sendfile == 0.3.11
+django-mptt == 0.9.1
 
 Markdown == 2.6.11
+bleach == 3.0.2

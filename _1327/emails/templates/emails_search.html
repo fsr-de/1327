@@ -1,0 +1,22 @@
+{% extends "base_without_sidebar.html" %}
+{% load i18n %}
+{% load mptt_tags %}
+{% load bootstrap3 %}
+
+{% block title %}{% trans 'Search emails' %}{% endblock title %}
+{% block content %}
+	{{ block.super }}
+
+	<form method="get" class="form">
+		{% bootstrap_form search_form %}
+		{% buttons %}
+			<button type="submit" class="btn btn-primary">{% trans 'Search' %}</button>
+		{% endbuttons %}
+	</form>
+
+	{% if emails|length == 0 %}
+		<div class="alert alert-warning">{% trans 'No emails found for the given search query.' %}</div>
+	{% else %}
+		{% include 'emails_tree.html' %}
+	{% endif %}
+{% endblock %}

@@ -1,0 +1,18 @@
+{% load mptt_tags %}
+
+<ul>
+	{% recursetree emails %}
+		<li>
+			{% if node.id == email.id %}
+				<strong>{{ node.subject }}</strong>
+			{% else %}
+				<a href="{% url 'emails:view' node.id %}">{{ node.subject }}</a>
+			{% endif %}
+			{% if not node.is_leaf_node %}
+				<ul>
+					{{ children }}
+				</ul>
+			{% endif %}
+		</li>
+	{% endrecursetree %}
+</ul>

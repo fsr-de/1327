@@ -1,0 +1,47 @@
+{% extends "base_with_sidebar.html" %}
+{% load i18n %}
+{% load mptt_tags %}
+
+{% block title %}{{ email.subject }}{% endblock title %}
+{% block content %}
+	{{ block.super }}
+
+	{% include 'emails_tree.html' %}
+
+	{{ content }}
+{% endblock %}
+
+{% block sidebar %}
+	{{ block.super }}
+
+	<dl>
+		<dt>{% trans "From" %}</dt>
+		<dd>{{ email.from_name|default:email.from_address }}</dd>
+		<dt>{% trans "To" %}</dt>
+		<dd>
+			{% for recipient in email.to %}
+				{{ recipient.0|default:recipient.1 }}<br />
+			{% endfor %}
+		</dd>
+		<dt>{% trans "CC" %}</dt>
+		<dd>
+			{% for recipient in email.cc %}
+				{{ recipient.0|default:recipient.1 }}<br />
+			{% endfor %}
+		</dd>
+		<dt>{% trans "Sent at" %}</dt>
+		<dd>{{ email.date|date:"d.m.Y, H:i" }}</dd>
+
+		{% if attachment_info is not empty %}
+			<dt>{% trans "Attachments" %}</dt>
+			<dd>
+				{% for attachment in attachment_info %}
+					<a href="{% url 'emails:download_attachment' email.id forloop.counter0 %}">{{ attachment.filename }}</a>
+					<br />
+				{% endfor %}
+			</dd>
+		{% endif %}
+		<dt>{% trans "Download email" %}</dt>
+		<dd><a href="{% url 'emails:download' email.id %}">{{ email.envelope.name }}</a></dd>
+	</dl>
+{% endblock %}
