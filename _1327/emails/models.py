@@ -8,6 +8,12 @@ from mptt.models import MPTTModel
 MAX_MESSAGE_ID_LEN = 512
 
 
+def upload_path(email, filename):
+	assert email.id
+	assert email.date
+	return f'emails/{email.date.year}/{email.date.month}/{email.id}.eml'
+
+
 class Email(MPTTModel):
 	parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
 
@@ -38,7 +44,7 @@ class Email(MPTTModel):
 	# become to large.
 	references = postgres_fields.ArrayField(models.CharField(max_length=MAX_MESSAGE_ID_LEN, null=False), null=False)
 
-	envelope = models.FileField(null=False)
+	envelope = models.FileField(upload_to=upload_path)
 
 	trello_card_id = models.CharField(max_length=255, null=True)
 	archived = models.BooleanField(null=False, default=False)

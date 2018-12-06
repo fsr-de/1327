@@ -1,5 +1,5 @@
-import sys
 from email import message_from_bytes, policy, utils
+import sys
 import poplib
 import re
 from typing import List
