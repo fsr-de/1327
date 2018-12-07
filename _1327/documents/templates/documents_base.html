@@ -104,7 +104,7 @@
 	<script type="text/javascript" src="{% static 'node_modules/emojione/lib/js/emojione.min.js' %}"></script>
 	<script type="text/javascript">
 		// set the correct emojipath for emojionearea library
-		emojione.imagePathPNG = emojione.imagePathPNG + emojione.emojiSize + '/';
+		emojione.imagePathPNG = "{% static 'node_modules/emojione-assets/png/' %}" + emojione.emojiSize + "/";
 		$(document).ready(function() {
 			// add link text to title of all elements in toc to enable tooltips with full text
 			$('.toc a').each(function() {

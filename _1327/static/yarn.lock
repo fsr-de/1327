@@ -178,6 +178,11 @@ detect-file@^1.0.0:
   resolved "https://registry.yarnpkg.com/detect-file/-/detect-file-1.0.0.tgz#f0d66d03672a825cb1b73bdb3fe62310c8e552b7"
   integrity sha1-8NZtA2cqglyxtzvbP+YjEMjlUrc=
 
+emojione-assets@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/emojione-assets/-/emojione-assets-4.0.0.tgz#9a9a41b9fd72d44e2d4eed8342ef5444f6aa183d"
+  integrity sha512-34VkgTycKP9OsHHl6HMSWfgFWTuTI7DxrmrN4IhFRUdbR3TXJPyHwUZAGEe+XqQ1o5x0mXoWJ+SCkWbI0CvxVQ==
+
 emojione@>=2.0.1, emojione@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/emojione/-/emojione-4.0.0.tgz#bbe117a1d24d18d3a62b18ef6d42725a59ded258"

@@ -11,6 +11,7 @@
     "bootstrap-editable": "^1.0.1",
     "bootstrap-markdown": "^2.10.0",
     "emojione": "^4.0.0",
+    "emojione-assets": "^4.0.0",
     "emojionearea": "^3.4.1",
     "font-awesome": "^4.7.0",
     "jquery": "^2.1.1",
