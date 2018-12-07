@@ -44,13 +44,16 @@ class Email(MPTTModel):
 	# become to large.
 	references = postgres_fields.ArrayField(models.CharField(max_length=MAX_MESSAGE_ID_LEN, null=False), null=False)
 
+	# The raw email file as received from the server
 	envelope = models.FileField(upload_to=upload_path)
-
-	trello_card_id = models.CharField(max_length=255, null=True)
-	archived = models.BooleanField(null=False, default=False)
 
 	def to(self) -> List[Tuple[str, str]]:
 		return list(zip(self.to_names, self.to_addresses))
 
 	def cc(self) -> List[Tuple[str, str]]:
 		return list(zip(self.cc_names, self.cc_addresses))
+
+	class Meta:
+		indexes = [
+			models.Index(fields=['date'])
+		]
