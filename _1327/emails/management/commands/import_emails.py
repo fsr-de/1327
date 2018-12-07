@@ -1,7 +1,7 @@
 from email import message_from_bytes, policy, utils
-import sys
 import poplib
 import re
+import sys
 from typing import List
 
 from django.conf import settings

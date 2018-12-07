@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-31 15:23+0100\n"
-"PO-Revision-Date: 2018-10-31 15:25+0100\n"
+"POT-Creation-Date: 2018-12-07 15:32+0100\n"
+"PO-Revision-Date: 2018-12-07 15:32+0100\n"
 "Last-Translator: Johannes Wolf <johannes-wolf@posteo.de>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -27,7 +27,8 @@ msgstr "URL"
 msgid "Comment"
 msgstr "Kommentar"
 
-#: _1327/documents/forms.py:20 _1327/main/forms.py:64 _1327/main/forms.py:97
+#: _1327/documents/forms.py:20 _1327/main/forms.py:64
+#: _1327/main/forms.py:97
 msgid "Edit permissions"
 msgstr "Bearbeitungsrechte"
 
@@ -107,6 +108,7 @@ msgstr "Anhang"
 #: _1327/documents/templates/documents_base.html:20
 #: _1327/documents/templates/documents_base.html:59
 #: _1327/documents/templates/documents_base.html:89
+#: _1327/emails/templates/emails_view.html:36
 #: _1327/polls/templates/polls_results.html:55
 #: _1327/polls/templates/polls_vote.html:44
 msgid "Attachments"
@@ -430,6 +432,77 @@ msgstr "Dokument gelöscht: {}"
 msgid "Successfully deleted autosave"
 msgstr "Autosave erfolgreich gelöscht"
 
+#: _1327/emails/forms.py:6 _1327/emails/forms.py:10
+msgid "Fulltext search"
+msgstr "Volltextsuche"
+
+#: _1327/emails/forms.py:11
+msgid "From address"
+msgstr "Absenderadresse"
+
+#: _1327/emails/forms.py:12
+msgid "To / CC address"
+msgstr "Empfänger- / CC-Adresse"
+
+#: _1327/emails/forms.py:13
+msgid "Received before"
+msgstr "Empfangen vor"
+
+#: _1327/emails/forms.py:14
+msgid "Received after"
+msgstr "Empfangen nach"
+
+#: _1327/emails/forms.py:15
+msgid "Has attachments"
+msgstr "Mit Anhang"
+
+#: _1327/emails/templates/emails_archive.html:7
+#, python-format
+msgid "Email archive of %(month)s"
+msgstr "E-Mail Archiv – %(month)s"
+
+#: _1327/emails/templates/emails_archive.html:17
+#: _1327/emails/templates/emails_search.html:13
+#: _1327/templates/admin/search_form.html:13
+msgid "Search"
+msgstr "Suchen"
+
+#: _1327/emails/templates/emails_archive.html:21
+msgid "Statistics"
+msgstr "Statistik"
+
+#: _1327/emails/templates/emails_archive.html:35
+msgid "No emails found for the given year and month."
+msgstr "Im angegebenen Monat gibt es keine E-Mails."
+
+#: _1327/emails/templates/emails_search.html:6
+msgid "Search emails"
+msgstr "E-Mails durchsuchen"
+
+#: _1327/emails/templates/emails_search.html:18
+msgid "No emails found for the given search query."
+msgstr "Es gibt keine den Suchkriterien entsprechenden E-Mails."
+
+#: _1327/emails/templates/emails_view.html:18
+msgid "From"
+msgstr "Absender"
+
+#: _1327/emails/templates/emails_view.html:20
+msgid "To"
+msgstr "Empfänger"
+
+#: _1327/emails/templates/emails_view.html:26
+msgid "CC"
+msgstr "CC Empfänger"
+
+#: _1327/emails/templates/emails_view.html:32
+msgid "Sent at"
+msgstr "Gesendet am"
+
+#: _1327/emails/templates/emails_view.html:44
+msgid "Download email"
+msgstr "E-Mail herunterladen"
+
 #: _1327/information_pages/models.py:15
 msgid "Is menu page"
 msgstr "Ist Menü-Seite"
@@ -702,23 +775,23 @@ msgstr ""
 msgid "This URL is already taken."
 msgstr "Diese URL wird bereits verwendet."
 
-#: _1327/main/views.py:94
+#: _1327/main/views.py:102
 msgid "Successfully created menu item."
 msgstr "Menüeintrag erstellt."
 
-#: _1327/main/views.py:120
+#: _1327/main/views.py:128
 msgid "Successfully edited menu item."
 msgstr "Menüeintrag bearbeitet."
 
-#: _1327/main/views.py:147
+#: _1327/main/views.py:155
 msgid "There must always be at least one item in the main menu."
 msgstr "Es muss immer mindestens einen Eintrag im Hauptmenü geben."
 
-#: _1327/main/views.py:149
+#: _1327/main/views.py:157
 msgid "There must always be at least one item in the footer menu."
 msgstr "Es muss immer mindestens einen Eintrag in der Fußzeile geben."
 
-#: _1327/main/views.py:169
+#: _1327/main/views.py:177
 msgid "Successfully updated the abbreviation explanations."
 msgstr "Abkürzungserklärungen aktualisiert."
 
@@ -1107,7 +1180,8 @@ msgstr "Kurzlink bearbeitet."
 #: _1327/templates/admin/app_index.html:7
 #: _1327/templates/admin/base_bootstrap-admin.html:18
 #: _1327/templates/admin/change_form.html:19
-#: _1327/templates/admin/change_list.html:36 _1327/templates/admin/index.html:8
+#: _1327/templates/admin/change_list.html:36
+#: _1327/templates/admin/index.html:8
 msgid "Home"
 msgstr "Startseite"
 
@@ -1186,10 +1260,6 @@ msgstr[1] "%(counter)s Ergebnisse"
 msgid "%(full_result_count)s total"
 msgstr "%(full_result_count)s insgesamt"
 
-#: _1327/templates/admin/search_form.html:13
-msgid "Search"
-msgstr "Suchen"
-
 #: _1327/templates/base.html:16 _1327/templates/base.html:29
 msgid "FSR logo"
 msgstr "FSR-Logo"
@@ -1254,7 +1324,8 @@ msgstr "Angemeldet als"
 msgid "Logout"
 msgstr "Abmelden"
 
-#: _1327/templates/base.html:168 _1327/user_management/templates/login.html:5
+#: _1327/templates/base.html:168
+#: _1327/user_management/templates/login.html:5
 #: _1327/user_management/templates/login.html:22
 msgid "Login"
 msgstr "Anmelden"
