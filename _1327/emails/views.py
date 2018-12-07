@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from django.db.models import Max, Q
+from django.db.models import Count, Max, Q
+from django.db.models.functions import TruncMonth, TruncYear
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from sendfile import sendfile
@@ -26,12 +27,19 @@ def emails_archive(request, year, month):
 	next_month = datetime(year if month < 12 else year + 1, month + 1 if month < 12 else 1, 1)
 	previous_month = datetime(year if month > 1 else year - 1, month - 1 if month > 1 else 12, 1)
 
+	statistics = Email.objects\
+		.annotate(year=TruncYear('date'), month=TruncMonth('date'))\
+		.values('year', 'month')\
+		.annotate(count=Count('*'))\
+		.order_by('-year', '-month')
+
 	return render(request, "emails_archive.html", {
 		'emails': emails,
 		'current_month': current_month,
 		'next_month': next_month,
 		'previous_month': previous_month,
-		'search_form': QuickSearchForm()
+		'search_form': QuickSearchForm(),
+		'statistics': statistics
 	})
 
 

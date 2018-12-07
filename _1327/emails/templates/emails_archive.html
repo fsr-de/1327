@@ -18,6 +18,14 @@
 		{% endbuttons %}
 	</form>
 
+	<h4>{% trans 'Statistics' %}</h4>
+	<ul class="list-unstyled">
+		{% for stat in statistics %}
+			<li>
+				<a href="{% url 'emails:archive' stat.year.year stat.month.month %}">{{ stat.month|date:'YEAR_MONTH_FORMAT' }}</a>: {{ stat.count }}
+			</li>
+		{% endfor %}
+	</ul>
 {% endblock %}
 
 {% block content %}
