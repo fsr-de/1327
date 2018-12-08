@@ -20,12 +20,21 @@ def get_message_for_email_entity(email_entity):
 
 
 def get_content_as_safe_html(message) -> str:
-	content, content_type = find_content(message)
-	return content_to_safe_string(content, content_type)
+	content, content_type = _find_content(message)
+
+	if content_type == 'text/plain':
+		content = mark_safe(escape(content).replace('\n', '<br />'))
+	elif content_type == 'text/html':
+		allowed_tags = bleach.sanitizer.ALLOWED_TAGS
+		allowed_tags.extend(['p', 'br', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
+		content = mark_safe(bleach.clean(content, tags=allowed_tags, strip=True).strip())
+	else:
+		raise Exception('Invalid content type: {}'.format(content_type))
+	return content
 
 
 def get_words_as_unsafe_text(message):
-	content, content_type = find_content(message)
+	content, content_type = _find_content(message)
 
 	# We first remove all HTML tags and encode all special characters (i.e. ">" -> "&gt;").
 	# Then be unescape the decoded special characters. This results in a version with all
@@ -37,25 +46,9 @@ def get_words_as_unsafe_text(message):
 	return " ".join(content.split())
 
 
-def find_content(message):
-	body = message.get_body(('html', 'plain'))
-	content_type = body.get_content_type()
-	content = body.get_content()
-
-	return content, content_type
-
-
-def get_attachment(message, index):
-	parts = get_attachment_parts(message)
-	assert(index < len(parts))
-	part = parts[index]
-	filename = get_attachment_info(message)[index]['filename']
-	return part.get_payload(decode=True), part.get_content_type(), filename
-
-
 def get_attachment_info(message):
 	attachments = []
-	for part in get_attachment_parts(message):
+	for part in _get_attachment_parts(message):
 		content_type = part.get_content_type()
 		filename = part.get_filename("unknown name")
 		if content_type == 'message/rfc822':
@@ -66,17 +59,21 @@ def get_attachment_info(message):
 	return attachments
 
 
-def get_attachment_parts(message):
+def get_attachment(message, index):
+	parts = _get_attachment_parts(message)
+	part = parts[index]
+	filename = get_attachment_info(message)[index]['filename']
+	return part.get_payload(decode=True), part.get_content_type(), filename
+
+
+def _find_content(message):
+	body = message.get_body(('html', 'plain'))
+	content_type = body.get_content_type()
+	content = body.get_content()
+
+	return content, content_type
+
+
+def _get_attachment_parts(message):
 	return [part for part in message.walk() if part.is_attachment() or part.get_content_type() == 'message/rfc822']
 
-
-def content_to_safe_string(content, content_type):
-	if content_type == 'text/plain':
-		content = mark_safe(escape(content).replace('\n', '<br />'))
-	elif content_type == 'text/html':
-		allowed_tags = bleach.sanitizer.ALLOWED_TAGS
-		allowed_tags.extend(['p', 'br', 'div'])
-		content = mark_safe(bleach.clean(content, tags=allowed_tags, strip=True))
-	else:
-		raise Exception('Invalid content type: {}'.format(content_type))
-	return content
