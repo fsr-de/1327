@@ -12,21 +12,21 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>myHPI – {% block title %}{% endblock %}</title>
 		<link rel="stylesheet" href="{% static 'less/bootstrap.less'|compile %}" />
-		<link rel="stylesheet" href="{% static 'font-awesome/less/font-awesome.less'|compile %}" />
+		<link rel="stylesheet" href="{% static 'node_modules/font-awesome/less/font-awesome.less'|compile %}" />
 		<link rel="stylesheet" href="{% static 'less/1327.less'|compile %}" />
 		<link rel="shortcut icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}"/>
-		<link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}">
-		<link rel="stylesheet" href="{% static 'css/select2.min.css' %}" />
+		<link rel="stylesheet" href="{% static 'node_modules/jquery-ui-bundle/jquery-ui.css' %}">
+		<link rel="stylesheet" href="{% static 'node_modules/select2/dist/css/select2.min.css' %}" />
 		{% if request and request|is_hijacked %}
 			<link rel="stylesheet" type="text/css" href="{% static 'hijack/hijack-styles.css' %}" />
 		{% endif %}
 		{% block css %}{% endblock %}
 
-		<script src="{% static 'js/jquery.min.js' %}"></script>
-		<script type="text/javascript" src="{% static 'js/jquery-ui.js' %}"></script>
-		<script type="text/javascript" src="{% static 'js/jquery-ui-i18n.min.js' %}"></script>
-		<script type="text/javascript" src="{% static 'js/select2.min.js' %}"></script>
-		<script type="text/javascript" src="{% static 'bootstrap/dist/js/bootstrap.min.js' %}"></script>
+		<script src="{% static 'node_modules/jquery/dist/jquery.min.js' %}"></script>
+		<script type="text/javascript" src="{% static 'node_modules/jquery-ui-bundle/jquery-ui.js' %}"></script>
+		<script type="text/javascript" src="{% static 'node_modules/jquery-ui-datepicker-with-i18n/ui/jquery.ui.datepicker.js' %}"></script>
+		<script type="text/javascript" src="{% static 'node_modules/select2/dist/js/select2.min.js' %}"></script>
+		<script type="text/javascript" src="{% static 'node_modules/bootstrap/dist/js/bootstrap.min.js' %}"></script>
 	{% endblock %}
 </head>
 <body>
