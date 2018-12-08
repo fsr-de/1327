@@ -2,11 +2,16 @@ language: python
 sudo: false
 python:
   - "3.4"
-cache: pip
+before_install:
+  - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.12.3
+  - export PATH=$HOME/.yarn/bin:$PATH
+cache:
+  - pip
+  - yarn
 install:
-  - npm install -g less coffee-script
-  - pip install -r requirements.txt
+  - yarn global add less coffeescript
   - pip install -r requirements-test.txt
+  - yarn install --cwd _1327/static
 script:
   - python manage.py lint
   - coverage run manage.py test

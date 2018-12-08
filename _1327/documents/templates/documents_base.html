@@ -101,10 +101,10 @@
 
 {% block scripts %}
 	{{ block.super }}
-	<script type="text/javascript" src="{% static 'emojione/js/emojione.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'node_modules/emojione/lib/js/emojione.min.js' %}"></script>
 	<script type="text/javascript">
 		// set the correct emojipath for emojionearea library
-		emojione.imagePathPNG = emojione.imagePathPNG + emojione.emojiSize + '/';
+		emojione.imagePathPNG = "{% static 'node_modules/emojione-assets/png/' %}" + emojione.emojiSize + "/";
 		$(document).ready(function() {
 			// add link text to title of all elements in toc to enable tooltips with full text
 			$('.toc a').each(function() {
@@ -119,5 +119,5 @@
 
 {% block css %}
 	{{ block.super }}
-	<link rel="stylesheet" href="{% static 'emojione/css/emojione.min.css' %}"/>
+	<link rel="stylesheet" href="{% static 'node_modules/emojione/extras/css/emojione.min.css' %}"/>
 {% endblock %}

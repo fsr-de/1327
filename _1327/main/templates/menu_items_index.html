@@ -48,7 +48,7 @@
 
 {% block scripts %}
 	{{ block.super }}
-	<script type="text/javascript" src="{% static 'js/jquery.nestable.js' %}"></script>
+	<script type="text/javascript" src="{% static 'node_modules/jquery-nestable/jquery.nestable.js' %}"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
 			$('#main-menu-items').nestable({
@@ -77,7 +77,7 @@
 				success: function(){ location.reload(); }
 			});
 		};
-		
+
 		function show_delete_modal(item_id) {
 			$('#confirmMenuItemDeleteModal #btn-delete').unbind().click(function(){ delete_modal_action(item_id); });
 			$('#confirmMenuItemDeleteModal').modal();

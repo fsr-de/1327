@@ -20,8 +20,8 @@
 	</div>
 </div>
 
-<script type="text/javascript" src="{% static 'js/difflib.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/diffview.js' %}"></script>
+<script type="text/javascript" src="{% static 'node_modules/jsdifflib-dist/difflib.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'node_modules/jsdifflib-dist/diffview.min.js' %}"></script>
 <script>
 	{% inlinecompile "coffeescript" %}
 		versions = [];

@@ -11,7 +11,7 @@
 
 {% block css %}
 	{{ block.super }}
-	<link href="{% static 'bootstrap-editable/css/bootstrap-editable.css' %}" rel="stylesheet">
+	<link href="{% static 'node_modules/bootstrap-editable/css/bootstrap-editable.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block document_content %}
@@ -90,7 +90,7 @@
 		</div>
 	</div>
 
-	<script src="{% static 'bootstrap-editable/js/bootstrap-editable.js' %}"></script>
+	<script src="{% static 'node_modules/bootstrap-editable/js/index.js' %}"></script>
 	<script>
 		$('#confirmAttachmentDeleteModal').on('show.bs.modal', function (event){
 			var button = $(event.relatedTarget);

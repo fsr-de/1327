@@ -14,8 +14,6 @@ To be able to contribute to 1327, one needs to get the source code with all depe
 
 ```bash
 git clone https://github.com/fsr-itse/1327.git
-cd 1327
-git submodule update --init
 ```
 
 Freshly created code needs to be tested - besides our use of unit tests, linting and continous integration, it is possible to run the application in a non-production environment using *Vagrant* or a *Virtual Environment*.
@@ -47,9 +45,16 @@ python manage.py createsuperuser --username=root
 python manage.py runserver 0.0.0.0:8000
 ```
 
+After you're done with these steps, you'll need to install all static dependencies
+via [Yarn](https://yarnpkg.com/lang/en/).
+1. Install Yarn
+2. go into the directory `static`
+3. run the command `yarn`
+
 ## Deployment
 
 For deploying on a single machine 1327 you'll need to install all requirements from `requirements-deploy.txt`, and you can follow these [instructions](https://github.com/fsr-itse/1327/wiki/Deployment), for setting up a webserver and starting all scripts using a Process Control System, if you like.
+You'll also need to setup yarn, as indicated in the last section.
 
 
 ## License
