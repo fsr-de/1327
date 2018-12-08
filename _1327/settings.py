@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 from datetime import timedelta
 import logging
 import os
+from poplib import POP3_SSL_PORT
 import sys
 
 BASE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "_1327")
@@ -264,6 +265,8 @@ STATIC_PRECOMPILER_COMPILERS = [
 MAIN_PAGE_ID = -1
 
 EMAILS_POP3_HOST = ''
+EMAILS_POP3_PORT = POP3_SSL_PORT
+EMAILS_POP3_USE_SSL = True
 EMAILS_POP3_USER = ''
 EMAILS_POP3_PASS = ''
 

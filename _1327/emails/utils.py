@@ -1,11 +1,13 @@
-import email
-from email import policy
+from email import message_from_bytes, policy
 from html import unescape
-from typing import Dict, List, Tuple
 
 import bleach
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
+
+
+def email_from_bytes(email_bytes):
+	return message_from_bytes(email_bytes, policy=policy.default)
 
 
 def get_raw_email_for_email_entity(email_entity):
@@ -13,8 +15,8 @@ def get_raw_email_for_email_entity(email_entity):
 		return envelope.read()
 
 
-def get_message_for_email_entity(email_entity) -> email.message.Message:
-	return email.message_from_bytes(get_raw_email_for_email_entity(email_entity), policy=policy.default)
+def get_message_for_email_entity(email_entity):
+	return email_from_bytes(get_raw_email_for_email_entity(email_entity))
 
 
 def get_content_as_safe_html(message) -> str:
@@ -22,16 +24,20 @@ def get_content_as_safe_html(message) -> str:
 	return content_to_safe_string(content, content_type)
 
 
-def get_content_as_unsafe_text(message):
+def get_words_as_unsafe_text(message):
 	content, content_type = find_content(message)
 
 	# We first remove all HTML tags and encode all special characters (i.e. ">" -> "&gt;").
 	# Then be unescape the decoded special characters. This results in a version with all
 	# HTML tags stripped but the special characters not HTML encoded.
-	return unescape(bleach.clean(content, tags=[], attributes={}, styles=[], strip=True).strip())
+	content = unescape(bleach.clean(content, tags=[], attributes={}, styles=[], strip=True))
+
+	# This replaces all occurrences of multiple whitespace characters by a single space.
+	# Newline characters are replaced as well.
+	return " ".join(content.split())
 
 
-def find_content(message: email.message.MIMEPart) -> Tuple[str, str]:
+def find_content(message):
 	body = message.get_body(('html', 'plain'))
 	content_type = body.get_content_type()
 	content = body.get_content()
@@ -39,7 +45,7 @@ def find_content(message: email.message.MIMEPart) -> Tuple[str, str]:
 	return content, content_type
 
 
-def get_attachment(message: email.message.MIMEPart, index: int) -> Tuple[bytes, str, str]:
+def get_attachment(message, index):
 	parts = get_attachment_parts(message)
 	assert(index < len(parts))
 	part = parts[index]
@@ -47,7 +53,7 @@ def get_attachment(message: email.message.MIMEPart, index: int) -> Tuple[bytes, 
 	return part.get_payload(decode=True), part.get_content_type(), filename
 
 
-def get_attachment_info(message: email.message.MIMEPart) -> List[Dict]:
+def get_attachment_info(message):
 	attachments = []
 	for part in get_attachment_parts(message):
 		content_type = part.get_content_type()
@@ -60,11 +66,11 @@ def get_attachment_info(message: email.message.MIMEPart) -> List[Dict]:
 	return attachments
 
 
-def get_attachment_parts(message: email.message.EmailMessage) -> List[email.message.Message]:
+def get_attachment_parts(message):
 	return [part for part in message.walk() if part.is_attachment() or part.get_content_type() == 'message/rfc822']
 
 
-def content_to_safe_string(content, content_type) -> str:
+def content_to_safe_string(content, content_type):
 	if content_type == 'text/plain':
 		content = mark_safe(escape(content).replace('\n', '<br />'))
 	elif content_type == 'text/html':

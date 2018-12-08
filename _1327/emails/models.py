@@ -10,8 +10,8 @@ MAX_MESSAGE_ID_LEN = 512
 
 
 def upload_path(email, filename):
-	assert email.id
-	assert email.date
+	if not email.id or not email.date:
+		raise Exception("id and date must be set before uploading the email's envelope.")
 	return f'emails/{email.date.year}/{email.date.month}/{email.id}.eml'
 
 
@@ -27,6 +27,10 @@ class Email(MPTTModel):
 
 	subject = models.CharField(max_length=512, null=False)
 	date = models.DateTimeField(null=False)
+
+	# The text is just a basic representation of the email's main content. All HTML tags are stripped,
+	# all runs whitespace characters are replaced by single spaces. This column should only be used for searching.
+	# If you want to display the real email content, use the original email file saved through the envelope property.
 	text = models.TextField(null=False)
 
 	num_attachments = models.IntegerField(default=0, null=False)
