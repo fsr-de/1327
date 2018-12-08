@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-07 15:32+0100\n"
-"PO-Revision-Date: 2018-12-07 15:32+0100\n"
+"POT-Creation-Date: 2018-12-08 23:23+0100\n"
+"PO-Revision-Date: 2018-12-08 23:24+0100\n"
 "Last-Translator: Johannes Wolf <johannes-wolf@posteo.de>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -133,17 +133,17 @@ msgstr "Wiederherzustellende Version:"
 msgid "Revert"
 msgstr "Wiederherstellen"
 
-#: _1327/documents/templates/diffviewer_scripts.html:47
+#: _1327/documents/templates/diffviewer_scripts.html:51
 msgid "An error occurred. The revision could not be reverted."
 msgstr ""
 "Ein Fehler ist aufgetreten. Die Version konnte nicht wiederhergestellt "
 "werden."
 
-#: _1327/documents/templates/diffviewer_scripts.html:75
+#: _1327/documents/templates/diffviewer_scripts.html:80
 msgid "Version A"
 msgstr "Version A"
 
-#: _1327/documents/templates/diffviewer_scripts.html:76
+#: _1327/documents/templates/diffviewer_scripts.html:81
 msgid "Version B"
 msgstr "Version B"
 
@@ -369,25 +369,25 @@ msgstr "Bitte auswählen..."
 msgid "Edit Permissions"
 msgstr "Berechtigungen bearbeiten"
 
-#: _1327/documents/templates/documents_versions.html:17
+#: _1327/documents/templates/documents_versions.html:18
 msgid "Diff page versions"
 msgstr "Versions-Unterschiede"
 
-#: _1327/documents/templates/documents_versions.html:22
+#: _1327/documents/templates/documents_versions.html:23
 msgid "Revision"
 msgstr "Revision"
 
-#: _1327/documents/templates/documents_versions.html:23
+#: _1327/documents/templates/documents_versions.html:24
 msgid "Compare"
 msgstr "Vergleichen"
 
-#: _1327/documents/templates/documents_versions.html:31
-#: _1327/documents/templates/documents_versions.html:36
+#: _1327/documents/templates/documents_versions.html:32
+#: _1327/documents/templates/documents_versions.html:37
 #: _1327/information_pages/templates/information_pages_meta_information.html:11
 msgid "by"
 msgstr "von"
 
-#: _1327/documents/templates/documents_versions.html:36
+#: _1327/documents/templates/documents_versions.html:37
 msgid "Revert to this version"
 msgstr "Version wiederherstellen"
 
@@ -456,6 +456,10 @@ msgstr "Empfangen nach"
 msgid "Has attachments"
 msgstr "Mit Anhang"
 
+#: _1327/emails/models.py:62
+msgid "<No Subject>"
+msgstr "<Kein Betreff>"
+
 #: _1327/emails/templates/emails_archive.html:7
 #, python-format
 msgid "Email archive of %(month)s"
@@ -471,7 +475,7 @@ msgstr "Suchen"
 msgid "Statistics"
 msgstr "Statistik"
 
-#: _1327/emails/templates/emails_archive.html:35
+#: _1327/emails/templates/emails_archive.html:37
 msgid "No emails found for the given year and month."
 msgstr "Im angegebenen Monat gibt es keine E-Mails."
 

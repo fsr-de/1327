@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load mptt_tags %}
 
-{% block title %}{{ email.subject }}{% endblock title %}
+{% block title %}{{ email.subject_nonempty }}{% endblock title %}
 {% block content %}
 	{{ block.super }}
 

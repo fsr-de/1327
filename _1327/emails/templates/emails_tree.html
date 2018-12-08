@@ -4,9 +4,9 @@
 	{% recursetree emails %}
 		<li>
 			{% if node.id == email.id %}
-				<strong>{{ node.subject }}</strong>
+				<strong>{{ node.subject_nonempty }}</strong>
 			{% else %}
-				<a href="{% url 'emails:view' node.id %}">{{ node.subject }}</a>
+				<a href="{% url 'emails:view' node.id %}">{{ node.subject_nonempty }}</a>
 			{% endif %}
 			{% if not node.is_leaf_node %}
 				<ul>

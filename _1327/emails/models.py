@@ -2,6 +2,7 @@ from typing import List, Tuple
 
 import django.contrib.postgres.fields as postgres_fields
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
 
@@ -52,6 +53,9 @@ class Email(MPTTModel):
 
 	def cc(self) -> List[Tuple[str, str]]:
 		return list(zip(self.cc_names, self.cc_addresses))
+
+	def subject_nonempty(self):
+		return self.subject if self.subject else _('<No Subject>')
 
 	class Meta:
 		indexes = [
