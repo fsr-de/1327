@@ -7,7 +7,7 @@
 
 {% block css %}
 	{{ block.super }}
-	<link rel="stylesheet" href="{% static 'emojionearea/css/emojionearea.min.css' %}"/>
+	<link rel="stylesheet" href="{% static 'node_modules/emojionearea/dist/emojionearea.min.css' %}"/>
 {% endblock %}
 
 {% block document_content %}
@@ -189,10 +189,10 @@
 {% block scripts %}
 {{ block.super }}
 <!-- mandatory script include -->
-<script type="text/javascript" src="{% static 'js/jquery.hotkeys.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/jquery.formset.js' %}"></script>
-<script type="text/javascript" src="{% static 'bootstrap-markdown/js/bootstrap-markdown.js' %}"></script>
-<script type="text/javascript" src="{% static 'emojionearea/js/emojionearea.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'node_modules/jquery-hotkeys/jquery-hotkeys.js' %}"></script>
+<script type="text/javascript" src="{% static 'node_modules/jquery.formset/src/jquery.formset.js' %}"></script>
+<script type="text/javascript" src="{% static 'node_modules/bootstrap-markdown/js/bootstrap-markdown.js' %}"></script>
+<script type="text/javascript" src="{% static 'node_modules/emojionearea/dist/emojionearea.min.js' %}"></script>
 
 <script>
 	var efficient_render = debounce(function render() {

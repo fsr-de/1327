@@ -257,7 +257,6 @@ TEMPLATES = [
 ]
 
 STATIC_PRECOMPILER_COMPILERS = [
-	'static_precompiler.compilers.CoffeeScript',
 	'static_precompiler.compilers.LESS',
 ]
 

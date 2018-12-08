@@ -20,62 +20,68 @@
 	</div>
 </div>
 
-<script type="text/javascript" src="{% static 'js/difflib.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/diffview.js' %}"></script>
+<script type="text/javascript" src="{% static 'node_modules/jsdifflib-dist/difflib.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'node_modules/jsdifflib-dist/diffview.min.js' %}"></script>
 <script>
-	{% inlinecompile "coffeescript" %}
-		versions = [];
-		{% for id, version, text in versions %}
-		versions.push([{{ version.pk }}, "{{ text }}"])
-		{% endfor %}
+	var versions = [];
 
-		versionIDToRevert = null;
-		$('.version-revert-button').on 'click', (event) ->
-			button = $(event.target)
-			versionIDToRevert = button.data 'revision-id'
-			$('#version-to-revert-display').text button.data 'revision-name'
+	{% for id, version, text in versions %}
+		versions.push([{{ version.pk }}, "{{ text }}"]);
+	{% endfor %}
 
-		$('#revert-button').on 'click', (event) ->
-			# tell the server to revert the version of the current document to the selected version
-			data =
-				id: versionIDToRevert
-				url_title: '{{ document.url_title }}'
-			$.post '{% url "documents:revert" %}', data, (data, textStatus, jqXHR) ->
-				location.replace(data)
-			.fail (error) ->
-				console.log(error)
-				alert('{% trans "An error occurred. The revision could not be reverted." %}')
-				$('#confirmation-modal').modal 'toggle'
+	var versionIDToRevert = null;
+	$('.version-revert-button').on('click', function(event) {
+		var button;
+		button = $(event.target);
+		versionIDToRevert = button.data('revision-id');
+		return $('#version-to-revert-display').text(button.data('revision-name'));
+	});
 
-		$('.version-control').change (event) ->
-			createDiff()
+	$('#revert-button').on('click', function(event) {
+		var data;
+		// tell the server to revert the version of the current document to the selected version
+		data = {
+			id: versionIDToRevert,
+			url_title: '{{ document.url_title }}'
+		};
+		return $.post('{% url "documents:revert" %}', data, function(data, textStatus, jqXHR) {
+			return location.replace(data);
+		}).fail(function(error) {
+			console.log(error);
+			alert('{% trans "An error occurred. The revision could not be reverted." %}');
+			return $('#confirmation-modal').modal('toggle');
+		});
+	});
 
-		# Select the last and second to last revision.
-		$($('input[name="compare-a"]').get(-2)).attr('checked', true)
-		$('input[name="compare-b"]').last().attr('checked', true)
+	$('.version-control').change(function(event) {
+		return createDiff();
+	});
 
-		createDiff = ->
-			# Get the versions in the correct format.
-			versionA = difflib.stringAsLines(versions[$('input[name="compare-a"]:checked').val()][1])
-			versionB = difflib.stringAsLines(versions[$('input[name="compare-b"]:checked').val()][1])
+	// Select the last and second to last revision.
+	$($('input[name="compare-a"]').get(-2)).attr('checked', true);
+	$('input[name="compare-b"]').last().attr('checked', true);
 
-			# Clear the diff view.
-			display = $ '#diffDisplay'
-			display.empty()
+	var createDiff = function() {
+		var display, opcodes, sequenceMatcher, versionA, versionB;
+		// Get the versions in the correct format.
+		versionA = difflib.stringAsLines(versions[$('input[name="compare-a"]:checked').val()][1]);
+		versionB = difflib.stringAsLines(versions[$('input[name="compare-b"]:checked').val()][1]);
+		// Clear the diff view.
+		display = $('#diffDisplay');
+		display.empty();
+		// Create the diff.
+		sequenceMatcher = new difflib.SequenceMatcher(versionA, versionB);
+		opcodes = sequenceMatcher.get_opcodes();
+		// Show it to the user.
+		return display.append(diffview.buildView({
+			baseTextLines: versionA,
+			newTextLines: versionB,
+			opcodes: opcodes,
+			baseTextName: '{% trans "Version A" %}',
+			newTextName: '{% trans "Version B" %}',
+			viewType: 0
+		}));
+	};
 
-			# Create the diff.
-			sequenceMatcher = new difflib.SequenceMatcher(versionA, versionB)
-			opcodes = sequenceMatcher.get_opcodes()
-
-			# Show it to the user.
-			display.append diffview.buildView
-				baseTextLines: versionA
-				newTextLines: versionB
-				opcodes: opcodes
-				baseTextName: "{% trans "Version A" %}"
-				newTextName: "{% trans "Version B" %}"
-				viewType: 0
-
-		createDiff()
-	{% endinlinecompile %}
+	createDiff();
 </script>

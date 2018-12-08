@@ -36,3 +36,7 @@ docs/_build/
 /_1327/staticfiles/
 /_1327/db.sqlite3
 /_1327/localsettings.py
+
+# ignore all files added by yarn
+node_modules
+yarn*.log
