@@ -11,8 +11,7 @@ echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/source
 apt-get update
 apt-get -q install -y yarn
 
-# install less, coffeescript
-yarn global add less coffeescript
+yarn global add less
 
 # setup postgres
 apt-get -q install -y postgresql
