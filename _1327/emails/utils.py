@@ -76,4 +76,3 @@ def _find_content(message):
 
 def _get_attachment_parts(message):
 	return [part for part in message.walk() if part.is_attachment() or part.get_content_type() == 'message/rfc822']
-
