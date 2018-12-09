@@ -1,9 +1,17 @@
 {% extends "base_without_sidebar.html" %}
 {% load i18n %}
+{% load static %}
+{% load compile_static %}
 {% load mptt_tags %}
 {% load bootstrap3 %}
 
+{% block css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'less/emails.less'|compile %}" />
+{% endblock %}
+
 {% block title %}{% trans 'Search emails' %}{% endblock title %}
+
 {% block content %}
 	{{ block.super }}
 
@@ -17,7 +25,7 @@
 	{% if emails|length == 0 %}
 		<div class="alert alert-warning">{% trans 'No emails found for the given search query.' %}</div>
 	{% else %}
-		<ul>
+		<ul class="email-tree">
 		{% for email in emails %}
 			<li>
 				<a href="{% url 'emails:view' email.id %}">{{ email.subject_nonempty }}</a>

@@ -1,7 +1,14 @@
 {% extends "base_with_sidebar_narrow.html" %}
 {% load i18n %}
+{% load static %}
+{% load compile_static %}
 {% load mptt_tags %}
 {% load bootstrap3 %}
+
+{% block css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'less/emails.less'|compile %}" />
+{% endblock %}
 
 {% block title %}
 	{% blocktrans with month=current_month|date:'YEAR_MONTH_FORMAT' %}Email archive of {{ month }}{% endblocktrans %}

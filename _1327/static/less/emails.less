@@ -1,0 +1,21 @@
+@import "variables.less";
+
+.email-tree {
+  list-style: none;
+  padding-left: 0;
+}
+
+.email-tree ul {
+  padding-left: 2.5rem;
+  list-style: disc;
+}
+
+.email-tree > li {
+  background-color: @gray-lighter;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  transition: background-color .05s ease-in;
+}
+.email-tree > li:hover {
+  background-color: darken(@gray-lighter, 2%);
+}

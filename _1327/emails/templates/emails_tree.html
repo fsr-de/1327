@@ -1,6 +1,6 @@
 {% load mptt_tags %}
 
-<ul>
+<ul class="email-tree">
 	{% recursetree emails %}
 		<li>
 			{% if node.id == email.id %}
