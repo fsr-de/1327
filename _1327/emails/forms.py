@@ -15,6 +15,9 @@ class SearchForm(forms.Form):
 	has_attachments = forms.BooleanField(label=_('Has attachments'), required=False)
 
 	def clean(self):
+		if not self.is_valid():
+			return self.cleaned_data
+
 		if len(self.cleaned_data['text']) == 0 and len(self.cleaned_data['sender']) == 0 and \
 			len(self.cleaned_data['receiver']) == 0 and not self.cleaned_data['received_before'] \
 			and not self.cleaned_data['received_after'] and not self.cleaned_data['has_attachments']:

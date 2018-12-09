@@ -17,6 +17,12 @@
 	{% if emails|length == 0 %}
 		<div class="alert alert-warning">{% trans 'No emails found for the given search query.' %}</div>
 	{% else %}
-		{% include 'emails_tree.html' %}
+		<ul>
+		{% for email in emails %}
+			<li>
+				<a href="{% url 'emails:view' email.id %}">{{ email.subject_nonempty }}</a>
+			</li>
+		{% endfor %}
+		</ul>
 	{% endif %}
 {% endblock %}

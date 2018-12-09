@@ -18,10 +18,14 @@ def emails_index(request):
 
 
 def emails_archive(request, year, month):
-	emails = Email.objects.filter(
+	# First get all email tree ids with at least one message for the given year and month.
+	tree_ids = Email.objects.filter(
 		date__year__exact=year,
 		date__month__exact=month
-	).order_by(f"-{Email.objects.tree_id_attr}", Email.objects.left_attr)
+	).values('tree_id')
+	# Now fetch all emails in any of the matching trees.
+	emails = Email.objects.filter(tree_id__in=tree_ids)\
+		.order_by(f"-{Email.objects.tree_id_attr}", Email.objects.left_attr)
 
 	current_month = datetime(year, month, 1)
 	next_month = datetime(year if month < 12 else year + 1, month + 1 if month < 12 else 1, 1)
@@ -73,6 +77,7 @@ def emails_search(request):
 
 		emails = emails.order_by(f"-{Email.objects.tree_id_attr}", Email.objects.left_attr)
 	else:
+		form = SearchForm()
 		emails = []
 
 	return render(request, "emails_search.html", {
@@ -88,7 +93,7 @@ def emails_view(request, email_id):
 
 	return render(request, "emails_view.html", {
 		'email': email_entity,
-		'emails': email_entity.get_family,
+		'emails': email_entity.get_root().get_family(),
 		'content': content,
 		'attachment_info': utils.get_attachment_info(message)
 	})

@@ -1,6 +1,8 @@
 from datetime import datetime
 from email.message import EmailMessage
+from email.utils import make_msgid
 from io import StringIO
+from random import random
 import tempfile
 from threading import Thread
 from unittest.mock import MagicMock, mock_open, patch
@@ -285,6 +287,49 @@ Orange Sheep
 			self.assertContains(response, "Hello fellow sheep!")
 			self.assertContains(response, "grass.png")
 
+	def test_emails_view_shows_whole_tree(self):
+		storage = FileSystemStorage(tempfile.gettempdir())
+		with patch("_1327.emails.models.Email.envelope.field.storage", new=storage):
+			email1 = mommy.make(
+				Email,
+				id=1,
+				subject="Message 1",
+				envelope=ContentFile(self.sample_message.as_bytes(), name="email.eml"),
+				lft=None,
+				rght=None,
+				_save_kwargs={'force_insert': True},
+			)
+			mommy.make(
+				Email,
+				id=2,
+				subject="Message 2",
+				envelope=ContentFile(self.sample_message.as_bytes(), name="email.eml"),
+				lft=None,
+				rght=None,
+				parent=email1,
+				_save_kwargs={'force_insert': True},
+			)
+			mommy.make(
+				Email,
+				id=3,
+				subject="Message 3",
+				envelope=ContentFile(self.sample_message.as_bytes(), name="email.eml"),
+				lft=None,
+				rght=None,
+				parent=email1,
+				_save_kwargs={'force_insert': True},
+			)
+
+			response = self.app.get(reverse('emails:view', args=(1,)))
+			self.assertContains(response, "Message 1")
+			self.assertContains(response, "Message 2")
+			self.assertContains(response, "Message 3")
+
+			response = self.app.get(reverse('emails:view', args=(2,)))
+			self.assertContains(response, "Message 1")
+			self.assertContains(response, "Message 2")
+			self.assertContains(response, "Message 3")
+
 	def test_emails_download(self):
 		storage = FileSystemStorage(tempfile.gettempdir())
 		with patch("_1327.emails.models.Email.envelope.field.storage", new=storage):
@@ -422,7 +467,31 @@ class ImportEmailsTest(TestCase):
 	@override_settings(EMAILS_POP3_USER='1327')
 	@override_settings(EMAILS_POP3_PASS='1327')
 	def test_import_emails(self):
-		reactor, mailbox = pop3_test_server.get_reactor(10, 5)
+		messages = []
+		for i in range(15):
+			msg = EmailMessage()
+			msg['Subject'] = f'Test Message {i + 1}'
+			msg['From'] = 'Orange Sheep <orange@sheep>'
+			msg['To'] = 'Yellow Sheep <yellow@sheep>'
+			msg['CC'] = 'Blue Sheept <blue@sheep>'
+			msg['Message-Id'] = make_msgid(domain='sheep')
+			msg['Date'] = datetime.now()
+			msg.set_content("""\
+Hello fellow sheep!
+
+This morning, I found the location of some really tasty grass I want to share with you.
+
+Mäh
+Orange Sheep
+""")
+			if i >= 10:
+				if random() > 0.5:
+					msg['X-Spam-Flag'] = "YES"
+				else:
+					msg['X-Spam-Flag2'] = "YES"
+			messages.append(msg)
+
+		reactor, mailbox = pop3_test_server.get_reactor(messages)
 		thread = Thread(target=reactor.run, args=(False,))
 		thread.start()
 
