@@ -1,19 +1,22 @@
 from datetime import datetime
 from email.message import EmailMessage
+from io import StringIO
 import tempfile
+from threading import Thread
 from unittest.mock import MagicMock, mock_open, patch
 
 from bs4 import BeautifulSoup
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
-from django.test import TestCase
+from django.core.management import call_command
+from django.test import override_settings, TestCase
 from django.urls import reverse
 from django.utils.timezone import make_aware
 from django_webtest import WebTest
 from freezegun import freeze_time
 from model_mommy import mommy
 
-from _1327.emails import utils
+from _1327.emails import pop3_test_server, utils
 from _1327.emails.forms import QuickSearchForm, SearchForm
 from _1327.emails.models import Email
 
@@ -409,3 +412,34 @@ class EmailViewSearchTests(WebTest):
 		response = self.app.get(reverse('emails:search'), params={'has_attachments': 'yes'})
 		self.assertContains(response, self.SUBJECT1)
 		self.assertNotContains(response, self.SUBJECT2)
+
+
+class ImportEmailsTest(TestCase):
+
+	@override_settings(EMAILS_POP3_HOST='localhost')
+	@override_settings(EMAILS_POP3_PORT=1327)
+	@override_settings(EMAILS_POP3_USE_SSL=False)
+	@override_settings(EMAILS_POP3_USER='1327')
+	@override_settings(EMAILS_POP3_PASS='1327')
+	def test_import_emails(self):
+		reactor, mailbox = pop3_test_server.get_reactor(10, 5)
+		thread = Thread(target=reactor.run, args=(False,))
+		thread.start()
+
+		out = StringIO()
+		call_command('import_emails', stdout=out)
+		out.seek(0)
+		out = out.read()
+
+		reactor.stop()
+
+		self.assertTrue("15 messages in total" in out)
+		self.assertTrue("Connection closed and emails deleted from server." in out)
+		self.assertEqual(len(mailbox.messages), 0)
+
+		emails = list(Email.objects.all())
+
+		self.assertEqual(len(emails), 10)
+		self.assertEqual([f"Test Message {i + 1}" for i in range(10)], list(map(lambda email: email.subject, emails)))
+		self.assertEqual(["Orange Sheep" for i in range(10)], list(map(lambda email: email.from_name, emails)))
+		self.assertEqual(["orange@sheep" for i in range(10)], list(map(lambda email: email.from_address, emails)))

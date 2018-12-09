@@ -7,6 +7,7 @@ from typing import List
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.management import BaseCommand
+from django.utils.timezone import is_naive, make_aware
 
 from _1327.emails.models import Email
 from _1327.emails.utils import email_from_bytes, get_attachment_info, get_words_as_unsafe_text
@@ -34,18 +35,18 @@ class Command(BaseCommand):
 		self.conn.pass_(settings.EMAILS_POP3_PASS)
 
 		total_messages = self.get_num_messages()
-		print(f"{total_messages} messages in total.")
+		self.stdout.write(f"{total_messages} messages in total.")
 
 		message_numbers = self.get_message_numbers()
 		non_spam_numbers, spam_numbers = self.partition_by_spam(message_numbers)
-		print(f"{len(non_spam_numbers)} non-spam emails, {len(spam_numbers)} spam emails.")
+		self.stdout.write(f"{len(non_spam_numbers)} non-spam emails, {len(spam_numbers)} spam emails.")
 
 		non_spam_messages = [self.retrieve_message(num) for num in non_spam_numbers]
-		print("Non-spam emails retrieved.")
+		self.stdout.write("Non-spam emails retrieved.")
 
 		for num in message_numbers:
 			self.verify_response_ok(self.conn.dele(num))
-		print("All emails marked for deletion.")
+		self.stdout.write("All emails marked for deletion.")
 
 		for raw_message in non_spam_messages:
 			message = email_from_bytes(raw_message)
@@ -57,6 +58,10 @@ class Command(BaseCommand):
 			cc = list(zip(*utils.getaddresses(message.get_all('CC', []))))
 			if len(cc) == 0:
 				cc = [[], []]
+
+			date = utils.parsedate_to_datetime(message.get('Date'))
+			if is_naive(date):
+				date = make_aware(date)
 
 			references = message.get('References')
 			if references is not None:
@@ -73,7 +78,7 @@ class Command(BaseCommand):
 				cc_addresses=cc[1],
 				subject=message.get('subject', '').strip(),
 				text=get_words_as_unsafe_text(message),
-				date=utils.parsedate_to_datetime(message.get('Date')),
+				date=date,
 				message_id=utils.unquote(message.get('Message-Id')),
 				in_reply_to=utils.unquote(message.get('In-Reply-To', '')),
 				references=references,
@@ -101,7 +106,7 @@ class Command(BaseCommand):
 			self.verify_response_ok(self.conn.noop())
 
 		self.verify_response_ok(self.conn.quit())
-		print("Connection closed and emails deleted from server.")
+		self.stdout.write("Connection closed and emails deleted from server.")
 
 	def is_spam(self, message_number: str):
 		response = self.conn.top(message_number, 0)

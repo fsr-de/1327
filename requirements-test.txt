@@ -11,3 +11,6 @@ coveralls
 # Lint
 flake8 == 3.5.0
 flake8-import-order == 0.17
+
+# POP3 test server
+twisted == 18.9.0
