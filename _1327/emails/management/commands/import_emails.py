@@ -1,3 +1,4 @@
+import traceback
 from email import message_from_bytes, policy, utils
 import poplib
 import re
@@ -22,17 +23,7 @@ class Command(BaseCommand):
 		parser.add_argument('--delete', action='store_true', help='Delete emails from server')
 
 	def handle(self, *args, **options):
-		if len(settings.EMAILS_POP3_HOST) == 0 or len(settings.EMAILS_POP3_USER) == 0 or len(settings.EMAILS_POP3_PASS) == 0:
-			self.stdout.write("Please specify EMAILS_POP3_HOST, EMAILS_POP3_USER and EMAILS_POP3_PASS in your settings.")
-			sys.exit(1)
-
-		if settings.EMAILS_POP3_USE_SSL:
-			self.conn = poplib.POP3_SSL(settings.EMAILS_POP3_HOST, port=settings.EMAILS_POP3_PORT)
-		else:
-			self.conn = poplib.POP3(settings.EMAILS_POP3_HOST, port=settings.EMAILS_POP3_PORT)
-
-		self.conn.user(settings.EMAILS_POP3_USER)
-		self.conn.pass_(settings.EMAILS_POP3_PASS)
+		self.connect_to_pop3_server()
 
 		total_messages = self.get_num_messages()
 		self.stdout.write(f"{total_messages} messages in total.")
@@ -41,54 +32,32 @@ class Command(BaseCommand):
 		non_spam_numbers, spam_numbers = self.partition_by_spam(message_numbers)
 		self.stdout.write(f"{len(non_spam_numbers)} non-spam emails, {len(spam_numbers)} spam emails.")
 
-		non_spam_messages = [self.retrieve_message(num) for num in non_spam_numbers]
-		self.stdout.write("Non-spam emails retrieved.")
-
-		for num in message_numbers:
+		for num in spam_numbers:
 			self.verify_response_ok(self.conn.dele(num))
-		self.stdout.write("All emails marked for deletion.")
+		self.stdout.write("All spam emails marked for deletion.")
 
-		for raw_message in non_spam_messages:
-			message = email_from_bytes(raw_message)
+		for num in non_spam_numbers:
+			raw_message = self.retrieve_message(num)
+			try:
+				email = self.convert_to_email(raw_message)
+				email.save()
+				email.envelope.save("", ContentFile(raw_message))
+			except Exception as e:
+				self.stderr.write(f"Failed to import email {num}.")
+				self.stderr.write(traceback.format_exc())
 
-			sender = utils.parseaddr(message.get('From', []))
-			to = list(zip(*utils.getaddresses(message.get_all('To', []))))
-			if len(to) == 0:
-				to = [[], []]
-			cc = list(zip(*utils.getaddresses(message.get_all('CC', []))))
-			if len(cc) == 0:
-				cc = [[], []]
+				# The import failed, therefore we only send a NOOP and continue with the next message.
+				self.verify_response_ok(self.conn.noop())
+				continue
 
-			date = utils.parsedate_to_datetime(message.get('Date'))
-			if is_naive(date):
-				date = make_aware(date)
+			# The import succeeded: Delete the message from the server.
+			self.verify_response_ok(self.conn.dele(num))
 
-			references = message.get('References')
-			if references is not None:
-				references = [utils.unquote(ref.strip()) for ref in re.split("[ ,]", references)]
-			else:
-				references = []
-
-			email = Email(
-				from_name=sender[0],
-				from_address=sender[1],
-				to_names=to[0],
-				to_addresses=to[1],
-				cc_names=cc[0],
-				cc_addresses=cc[1],
-				subject=message.get('subject', '').strip(),
-				text=get_words_as_unsafe_text(message),
-				date=date,
-				message_id=utils.unquote(message.get('Message-Id')),
-				in_reply_to=utils.unquote(message.get('In-Reply-To', '')),
-				references=references,
-				num_attachments=len(get_attachment_info(message))
-			)
-
-			email.save()
-			email.envelope.save(str(email.id) + ".eml", ContentFile(raw_message))
-
-			self.verify_response_ok(self.conn.noop())
+		# Now close the connection and therefore flush all emails marked for deletion.
+		# At this point, every non-spam email we marked for deletion has successfully been saved to the filesystem
+		# as well as the database.
+		self.verify_response_ok(self.conn.quit())
+		self.stdout.write("Connection closed and emails deleted from server.")
 
 		# Now create the parent-child relationship.
 		# We can't do it while inserting the emails in the for-loop above, because the emails may be retrieved
@@ -99,14 +68,59 @@ class Command(BaseCommand):
 			if len(possible_parents) >= 1:
 				parent = possible_parents[0]
 				if len(possible_parents) >= 2:
-					print("Ambiguous In-Reply-To header")
+					self.stderr.write("Ambiguous In-Reply-To header")
 				email.parent = parent
 				email.save()
 
-			self.verify_response_ok(self.conn.noop())
+		self.stdout.write("Parent-child relationships updated.")
 
-		self.verify_response_ok(self.conn.quit())
-		self.stdout.write("Connection closed and emails deleted from server.")
+	def connect_to_pop3_server(self):
+		if len(settings.EMAILS_POP3_HOST) == 0 or len(settings.EMAILS_POP3_USER) == 0 or len(
+			settings.EMAILS_POP3_PASS) == 0:
+			self.stdout.write(
+				"Please specify EMAILS_POP3_HOST, EMAILS_POP3_USER and EMAILS_POP3_PASS in your settings.")
+			sys.exit(1)
+		if settings.EMAILS_POP3_USE_SSL:
+			self.conn = poplib.POP3_SSL(settings.EMAILS_POP3_HOST, port=settings.EMAILS_POP3_PORT)
+		else:
+			self.conn = poplib.POP3(settings.EMAILS_POP3_HOST, port=settings.EMAILS_POP3_PORT)
+
+		self.verify_response_ok(self.conn.user(settings.EMAILS_POP3_USER))
+		self.verify_response_ok(self.conn.pass_(settings.EMAILS_POP3_PASS))
+
+	def convert_to_email(self, raw_message):
+		message = email_from_bytes(raw_message)
+		sender = utils.parseaddr(message.get('From', []))
+		to = list(zip(*utils.getaddresses(message.get_all('To', []))))
+		if len(to) == 0:
+			to = [[], []]
+		cc = list(zip(*utils.getaddresses(message.get_all('CC', []))))
+		if len(cc) == 0:
+			cc = [[], []]
+		date = utils.parsedate_to_datetime(message.get('Date'))
+		if is_naive(date):
+			date = make_aware(date)
+		references = message.get('References')
+		if references is not None:
+			references = [utils.unquote(ref.strip()) for ref in re.split("[ ,]", references)]
+		else:
+			references = []
+		email = Email(
+			from_name=sender[0],
+			from_address=sender[1],
+			to_names=to[0],
+			to_addresses=to[1],
+			cc_names=cc[0],
+			cc_addresses=cc[1],
+			subject=message.get('subject', '').strip(),
+			text=get_words_as_unsafe_text(message),
+			date=date,
+			message_id=utils.unquote(message.get('Message-Id')),
+			in_reply_to=utils.unquote(message.get('In-Reply-To', '')),
+			references=references,
+			num_attachments=len(get_attachment_info(message))
+		)
+		return email
 
 	def is_spam(self, message_number: str):
 		response = self.conn.top(message_number, 0)
