@@ -1,8 +1,8 @@
-import traceback
 from email import message_from_bytes, policy, utils
 import poplib
 import re
 import sys
+import traceback
 from typing import List
 
 from django.conf import settings

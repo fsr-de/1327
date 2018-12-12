@@ -4,6 +4,7 @@ from hashlib import md5
 from io import BytesIO
 import json
 from random import randrange
+from threading import Thread
 
 from faker import Faker
 from twisted.cred.checkers import InMemoryUsernamePasswordDatabaseDontUse
@@ -17,11 +18,21 @@ from zope.interface import implementer
 
 # Based on the example provided by Pepijn de Vos
 # at http://pepijndevos.nl/twisted-pop3-example-server/index.html
-def get_reactor(messages):
+#
+# Returns a triple consisting of
+# - a load_messages function
+# - a stop function
+# - a mailbox object
+#
+# Important: The reactor is automatically started and listening on port 1327.
+# You can only call stop() ONCE. A reactor is NOT restartable after calling stop()
+# To cleanup the state without stopping the reactor, use the load_messages() function and pass an empty list.
+#
+def start_reactor():
 	@implementer(IMailbox)
 	class SimpleMailbox:
 		def __init__(self):
-			self.messages = messages
+			self.messages = []
 			self.marked_for_deletion = []
 
 		def listMessages(self, index=None):
@@ -74,8 +85,17 @@ def get_reactor(messages):
 	f.protocol.portal = portal
 
 	reactor.listenTCP(1327, f)
+	thread = Thread(target=reactor.run, args=(False,))
+	thread.start()
 
-	return reactor, mailbox
+	def load_messages(messages):
+		mailbox.messages = messages
+		mailbox.marked_for_deletion = []
+
+	def stop():
+		reactor.stop()
+
+	return load_messages, stop, mailbox
 
 
 if __name__ == "__main__":
@@ -109,5 +129,6 @@ if __name__ == "__main__":
 
 		messages.append(message)
 
-	app, mailbox = get_reactor(messages)
-	app.run()
+	load_messages, stop, mailbox = start_reactor()
+	load_messages(messages)
+	print("Server running...")

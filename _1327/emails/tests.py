@@ -4,7 +4,6 @@ from email.utils import make_msgid
 from io import StringIO
 from random import random
 import tempfile
-from threading import Thread
 from unittest.mock import MagicMock, mock_open, patch
 
 from bs4 import BeautifulSoup
@@ -459,13 +458,34 @@ class EmailViewSearchTests(WebTest):
 		self.assertNotContains(response, self.SUBJECT2)
 
 
+@override_settings(EMAILS_POP3_HOST='localhost')
+@override_settings(EMAILS_POP3_PORT=1327)
+@override_settings(EMAILS_POP3_USE_SSL=False)
+@override_settings(EMAILS_POP3_USER='1327')
+@override_settings(EMAILS_POP3_PASS='1327')
 class ImportEmailsTest(TestCase):
 
-	@override_settings(EMAILS_POP3_HOST='localhost')
-	@override_settings(EMAILS_POP3_PORT=1327)
-	@override_settings(EMAILS_POP3_USE_SSL=False)
-	@override_settings(EMAILS_POP3_USER='1327')
-	@override_settings(EMAILS_POP3_PASS='1327')
+	@classmethod
+	def setUpClass(cls):
+		super().setUpClass()
+		cls.server_load_messages, cls.stop_server, cls.mailbox = pop3_test_server.start_reactor()
+
+	@classmethod
+	def tearDownClass(cls):
+		super().tearDownClass()
+		cls.stop_server()
+
+	def test_deletes_spam_always(self):
+		invalid_non_spam_msg = EmailMessage()
+		spam_msg = EmailMessage()
+		spam_msg['X-Spam-Flag'] = 'YES'
+		messages = [invalid_non_spam_msg, spam_msg]
+
+		out, err = self.execute_command(messages)
+		self.assertTrue("Failed to import email 1" in err)
+		self.assertEqual(len(self.mailbox.messages), 1)
+		self.assertEqual(self.mailbox.messages[0], invalid_non_spam_msg)
+
 	def test_import_emails(self):
 		messages = []
 		for i in range(15):
@@ -491,20 +511,12 @@ Orange Sheep
 					msg['X-Spam-Flag2'] = "YES"
 			messages.append(msg)
 
-		reactor, mailbox = pop3_test_server.get_reactor(messages)
-		thread = Thread(target=reactor.run, args=(False,))
-		thread.start()
-
-		out = StringIO()
-		call_command('import_emails', stdout=out)
-		out.seek(0)
-		out = out.read()
-
-		reactor.stop()
+		out, err = self.execute_command(messages)
+		self.assertEqual(err, "")
 
 		self.assertTrue("15 messages in total" in out)
 		self.assertTrue("Connection closed and emails deleted from server." in out)
-		self.assertEqual(len(mailbox.messages), 0)
+		self.assertEqual(len(self.mailbox.messages), 0)
 
 		emails = list(Email.objects.all())
 
@@ -512,3 +524,14 @@ Orange Sheep
 		self.assertEqual([f"Test Message {i + 1}" for i in range(10)], list(map(lambda email: email.subject, emails)))
 		self.assertEqual(["Orange Sheep" for i in range(10)], list(map(lambda email: email.from_name, emails)))
 		self.assertEqual(["orange@sheep" for i in range(10)], list(map(lambda email: email.from_address, emails)))
+
+	@staticmethod
+	def execute_command(messages):
+		ImportEmailsTest.server_load_messages(messages)
+
+		stdout = StringIO()
+		stderr = StringIO()
+		call_command('import_emails', stdout=stdout, stderr=stderr)
+		stdout.seek(0)
+		stderr.seek(0)
+		return stdout.read(), stderr.read()
