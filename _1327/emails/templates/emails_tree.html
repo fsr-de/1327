@@ -3,16 +3,25 @@
 <ul class="email-tree">
 	{% recursetree emails %}
 		<li>
-			{% if node.id == email.id %}
-				<strong>{{ node.subject_nonempty }}</strong>
-			{% else %}
-				<a href="{% url 'emails:view' node.id %}">{{ node.subject_nonempty }}</a>
-			{% endif %}
-			{% if not node.is_leaf_node %}
-				<ul>
-					{{ children }}
-				</ul>
-			{% endif %}
+			<div class="row">
+				<div class="col-xs-12 col-sm-4 col-md-3 col-lg-2">
+					{{ node.from_name|default:node.from_address }}
+				</div>
+				<div class="col-xs-12 col-sm-8 col-md-9 col-lg-10">
+					{% if node.id == email.id %}
+						<strong>{{ node.subject_nonempty }}</strong>
+					{% else %}
+						<a href="{% url 'emails:view' node.id %}">{{ node.subject_nonempty }}</a>
+					{% endif %}
+				</div>
+				<div class="col-xs-12">
+					{% if not node.is_leaf_node %}
+						<ul>
+							{{ children }}
+						</ul>
+					{% endif %}
+				</div>
+			</div>
 		</li>
 	{% endrecursetree %}
 </ul>
