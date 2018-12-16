@@ -48,7 +48,8 @@ def emails_archive(request, year, month):
 
 
 def emails_search(request):
-	form = SearchForm(request.GET)
+	emails = []
+	form = SearchForm(request.POST if request.POST else None)
 	if form.is_valid():
 		text = form.cleaned_data['text']
 		sender = form.cleaned_data['sender']
@@ -76,9 +77,6 @@ def emails_search(request):
 			emails = emails.filter(num_attachments__gt=0)
 
 		emails = emails.order_by(f"-{Email.objects.tree_id_attr}", Email.objects.left_attr)
-	else:
-		form = SearchForm()
-		emails = []
 
 	return render(request, "emails_search.html", {
 		'emails': emails,

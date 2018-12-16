@@ -18,8 +18,12 @@
 {% block sidebar %}
 	{{ block.super }}
 
-	<form method="get" class="form" action="{% url 'emails:search' %}">
+	<form method="post" class="form" action="{% url 'emails:search' %}#results">
 		{% bootstrap_form search_form %}
+	 	{% csrf_token %}
+		<div class="form-group">
+			<a href="{% url 'emails:search' %}">{% trans 'Advanced search' %}</a>
+		</div>
 		{% buttons %}
 			<button type="submit" class="btn btn-block btn-sm btn-primary">{% trans 'Search' %}</button>
 		{% endbuttons %}

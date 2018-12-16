@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-08 23:23+0100\n"
-"PO-Revision-Date: 2018-12-08 23:24+0100\n"
+"POT-Creation-Date: 2018-12-16 10:15+0100\n"
+"PO-Revision-Date: 2018-12-16 10:15+0100\n"
 "Last-Translator: Johannes Wolf <johannes-wolf@posteo.de>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -108,7 +108,7 @@ msgstr "Anhang"
 #: _1327/documents/templates/documents_base.html:20
 #: _1327/documents/templates/documents_base.html:59
 #: _1327/documents/templates/documents_base.html:89
-#: _1327/emails/templates/emails_view.html:36
+#: _1327/emails/templates/emails_view.html:44
 #: _1327/polls/templates/polls_results.html:55
 #: _1327/polls/templates/polls_vote.html:44
 msgid "Attachments"
@@ -460,50 +460,58 @@ msgstr "Mit Anhang"
 msgid "<No Subject>"
 msgstr "<Kein Betreff>"
 
-#: _1327/emails/templates/emails_archive.html:7
+#: _1327/emails/templates/emails_archive.html:14
 #, python-format
 msgid "Email archive of %(month)s"
 msgstr "E-Mail Archiv – %(month)s"
 
-#: _1327/emails/templates/emails_archive.html:17
-#: _1327/emails/templates/emails_search.html:13
+#: _1327/emails/templates/emails_archive.html:25
+msgid "Advanced search"
+msgstr "Erweiterte Suche"
+
+#: _1327/emails/templates/emails_archive.html:28
+#: _1327/emails/templates/emails_search.html:22
 #: _1327/templates/admin/search_form.html:13
 msgid "Search"
 msgstr "Suchen"
 
-#: _1327/emails/templates/emails_archive.html:21
+#: _1327/emails/templates/emails_archive.html:32
 msgid "Statistics"
 msgstr "Statistik"
 
-#: _1327/emails/templates/emails_archive.html:37
+#: _1327/emails/templates/emails_archive.html:48
 msgid "No emails found for the given year and month."
 msgstr "Im angegebenen Monat gibt es keine E-Mails."
 
-#: _1327/emails/templates/emails_search.html:6
+#: _1327/emails/templates/emails_search.html:13
 msgid "Search emails"
 msgstr "E-Mails durchsuchen"
 
-#: _1327/emails/templates/emails_search.html:18
+#: _1327/emails/templates/emails_search.html:26
+msgid "Search results"
+msgstr "Suchergebnisse"
+
+#: _1327/emails/templates/emails_search.html:28
 msgid "No emails found for the given search query."
 msgstr "Es gibt keine den Suchkriterien entsprechenden E-Mails."
 
-#: _1327/emails/templates/emails_view.html:18
+#: _1327/emails/templates/emails_view.html:26
 msgid "From"
 msgstr "Absender"
 
-#: _1327/emails/templates/emails_view.html:20
+#: _1327/emails/templates/emails_view.html:28
 msgid "To"
 msgstr "Empfänger"
 
-#: _1327/emails/templates/emails_view.html:26
+#: _1327/emails/templates/emails_view.html:34
 msgid "CC"
 msgstr "CC Empfänger"
 
-#: _1327/emails/templates/emails_view.html:32
+#: _1327/emails/templates/emails_view.html:40
 msgid "Sent at"
 msgstr "Gesendet am"
 
-#: _1327/emails/templates/emails_view.html:44
+#: _1327/emails/templates/emails_view.html:52
 msgid "Download email"
 msgstr "E-Mail herunterladen"
 

@@ -15,13 +15,15 @@
 {% block content %}
 	{{ block.super }}
 
-	<form method="get" class="form">
+	<form method="post" action="#results" class="form">
 		{% bootstrap_form search_form %}
+		{% csrf_token %}
 		{% buttons %}
 			<button type="submit" class="btn btn-primary">{% trans 'Search' %}</button>
 		{% endbuttons %}
 	</form>
 
+	<h2 id="results">{% trans 'Search results' %}</h2>
 	{% if emails|length == 0 %}
 		<div class="alert alert-warning">{% trans 'No emails found for the given search query.' %}</div>
 	{% else %}

@@ -370,6 +370,8 @@ Orange Sheep
 
 
 class EmailViewSearchTests(WebTest):
+	csrf_checks = False
+
 	@classmethod
 	def setUpTestData(cls):
 		cls.SUBJECT1 = 'I like oranges'
@@ -399,61 +401,61 @@ class EmailViewSearchTests(WebTest):
 		)
 
 	def test_emails_search_empty_query(self):
-		response = self.app.get(reverse('emails:search'))
+		response = self.app.post(reverse('emails:search'))
 		self.assertContains(response, 'No emails found for the given search query.')
 
 	def test_emails_search_subject(self):
-		response = self.app.get(reverse('emails:search'), params={'text': 'oranges'})
+		response = self.app.post(reverse('emails:search'), params={'text': 'oranges'})
 		self.assertContains(response, self.SUBJECT1)
 		self.assertNotContains(response, self.SUBJECT2)
 
 	def test_emails_search_body(self):
-		response = self.app.get(reverse('emails:search'), params={'text': ':('})
+		response = self.app.post(reverse('emails:search'), params={'text': ':('})
 		self.assertNotContains(response, self.SUBJECT1)
 		self.assertContains(response, self.SUBJECT2)
 
 	def test_emails_search_from_name(self):
-		response = self.app.get(reverse('emails:search'), params={'sender': 'Mr.'})
+		response = self.app.post(reverse('emails:search'), params={'sender': 'Mr.'})
 		self.assertContains(response, self.SUBJECT1)
 		self.assertNotContains(response, self.SUBJECT2)
 
 	def test_emails_search_from_address(self):
-		response = self.app.get(reverse('emails:search'), params={'sender': 'blue'})
+		response = self.app.post(reverse('emails:search'), params={'sender': 'blue'})
 		self.assertNotContains(response, self.SUBJECT1)
 		self.assertContains(response, self.SUBJECT2)
 
 	def test_emails_search_to_name(self):
-		response = self.app.get(reverse('emails:search'), params={'receiver': 'yellow'})
+		response = self.app.post(reverse('emails:search'), params={'receiver': 'yellow'})
 		self.assertContains(response, self.SUBJECT1)
 		self.assertNotContains(response, self.SUBJECT2)
 
 	def test_emails_search_to_address(self):
-		response = self.app.get(reverse('emails:search'), params={'receiver': 'YELLOW@'})
+		response = self.app.post(reverse('emails:search'), params={'receiver': 'YELLOW@'})
 		self.assertContains(response, self.SUBJECT1)
 		self.assertNotContains(response, self.SUBJECT2)
 
 	def test_emails_search_cc_name(self):
-		response = self.app.get(reverse('emails:search'), params={'receiver': 'green'})
+		response = self.app.post(reverse('emails:search'), params={'receiver': 'green'})
 		self.assertNotContains(response, self.SUBJECT1)
 		self.assertContains(response, self.SUBJECT2)
 
 	def test_emails_search_cc_address(self):
-		response = self.app.get(reverse('emails:search'), params={'receiver': 'GREEN@'})
+		response = self.app.post(reverse('emails:search'), params={'receiver': 'GREEN@'})
 		self.assertNotContains(response, self.SUBJECT1)
 		self.assertContains(response, self.SUBJECT2)
 
 	def test_emails_search_received_after(self):
-		response = self.app.get(reverse('emails:search'), params={'received_after': '2013-03-07'})
+		response = self.app.post(reverse('emails:search'), params={'received_after': '2013-03-07'})
 		self.assertNotContains(response, self.SUBJECT1)
 		self.assertContains(response, self.SUBJECT2)
 
 	def test_emails_search_received_before(self):
-		response = self.app.get(reverse('emails:search'), params={'received_before': '2013-03-07'})
+		response = self.app.post(reverse('emails:search'), params={'received_before': '2013-03-07'})
 		self.assertContains(response, self.SUBJECT1)
 		self.assertNotContains(response, self.SUBJECT2)
 
 	def test_emails_search_attachments(self):
-		response = self.app.get(reverse('emails:search'), params={'has_attachments': 'yes'})
+		response = self.app.post(reverse('emails:search'), params={'has_attachments': 'yes'})
 		self.assertContains(response, self.SUBJECT1)
 		self.assertNotContains(response, self.SUBJECT2)
 
