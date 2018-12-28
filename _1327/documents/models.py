@@ -210,7 +210,8 @@ class Document(PolymorphicModel):
 
 
 class TemporaryDocumentText(models.Model):
-	text = models.TextField()
+	text_de = models.TextField(blank=True)
+	text_en = models.TextField(blank=True)
 	document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name='document')
 	created = models.DateTimeField(auto_now=True)
 	author = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='temporary_documents')

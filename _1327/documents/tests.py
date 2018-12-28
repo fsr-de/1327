@@ -208,7 +208,7 @@ class TestAutosave(WebTest):
 		cls.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
 		cls.group = mommy.make(Group)
 
-		cls.document = mommy.prepare(InformationDocument, text_de="text")
+		cls.document = mommy.prepare(InformationDocument, text_de="text_de", title_de="title_de", text_en="text_en")
 		with transaction.atomic(), revisions.create_revision():
 				cls.document.save()
 				revisions.set_user(cls.user)
@@ -219,22 +219,25 @@ class TestAutosave(WebTest):
 		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
-		self.assertEqual(form.get('text_de').value, 'text')
+		self.assertEqual(form.get('text_de').value, 'text_de')
+		self.assertEqual(form.get('text_en').value, 'text_en')
 
 		# autosave AUTO
 		response = self.app.post(
 			reverse('documents:autosave', args=[self.document.url_title]),
-			params={'text': 'AUTO', 'title': form.get('title_de').value, 'comment': ''},
+			params={'text_de': 'AUTO_de', 'text_en': 'AUTO_en', 'title_de': form.get('title_de').value, 'comment': ''},
 			user=self.user,
 			xhr=True
 		)
 		self.assertEqual(response.status_code, 200)
+		autosave1 = TemporaryDocumentText.objects.get()
 
 		# if not loading autosave text should be still text
 		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
-		self.assertEqual(form.get('text_de').value, 'text')
+		self.assertEqual(form.get('text_de').value, 'text_de')
+		self.assertEqual(form.get('text_en').value, 'text_en')
 
 		# if loading autosave text should be AUTO
 		autosave = TemporaryDocumentText.objects.get()
@@ -245,12 +248,13 @@ class TestAutosave(WebTest):
 		)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
-		self.assertEqual(form.get('text_de').value, 'AUTO')
+		self.assertEqual(form.get('text_de').value, 'AUTO_de')
+		self.assertEqual(form.get('text_en').value, 'AUTO_en')
 
 		# second autosave AUTO2
 		response = self.app.post(
 			reverse('documents:autosave', args=[self.document.url_title]),
-			params={'text': 'AUTO2', 'title': form.get('title_de').value, 'comment': ''},
+			params={'text_de': 'AUTO2_de', 'text_en': 'AUTO2_en', 'title_de': form.get('title_de').value, 'comment': ''},
 			user=self.user,
 			xhr=True
 		)
@@ -265,19 +269,20 @@ class TestAutosave(WebTest):
 		)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
-		self.assertEqual(form.get('text_de').value, 'AUTO2')
+		self.assertEqual(form.get('text_de').value, 'AUTO2_de')
+		self.assertEqual(form.get('text_en').value, 'AUTO2_en')
 
 	def test_autosave_not_logged_in(self):
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
 		form = response.forms['document-form']
-		url_title = slugify(form.get('title').value)
+		url_title = slugify(form.get('title_de').value)
 
 		# autosave AUTO
 		response = self.app.post(
 			reverse('documents:autosave', args=[url_title]),
-			params={'text': 'AUTO', 'title': form.get('title').value, 'comment': ''},
+			params={'text_de': 'AUTO', 'title_de': form.get('title_de').value, 'comment': ''},
 			xhr=True,
 			user=get_anonymous_user(),
 			expect_errors=True,
@@ -295,7 +300,7 @@ class TestAutosave(WebTest):
 		# autosave AUTO
 		response = self.app.post(
 			reverse('documents:autosave', args=[url_title]),
-			params={'text': 'AUTO', 'title': form.get('title').value, 'comment': ''},
+			params={'text_de': 'AUTO', 'title_de': form.get('title_de').value, 'comment': ''},
 			xhr=True
 		)
 		self.assertEqual(response.status_code, 200)
@@ -325,7 +330,7 @@ class TestAutosave(WebTest):
 		# autosave second document AUTO
 		response = self.app.post(
 			reverse('documents:autosave', args=[url_title2]),
-			params={'text': 'AUTO', 'title': form.get('title').value, 'comment': ''},
+			params={'text_de': 'AUTO', 'title_de': form.get('title_de').value, 'comment': ''},
 			user=self.user,
 			xhr=True
 		)
@@ -340,7 +345,7 @@ class TestAutosave(WebTest):
 		response = self.app.get(reverse('edit', args=[url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
-		self.assertEqual(form.get('text').value, '')
+		self.assertEqual(form.get('text_de').value, '')
 
 		# if loading autosave text should be AUTO
 		autosave = TemporaryDocumentText.objects.first()
@@ -351,7 +356,7 @@ class TestAutosave(WebTest):
 		)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
-		self.assertEqual(form.get('text').value, 'AUTO')
+		self.assertEqual(form.get('text_de').value, 'AUTO')
 
 	def test_create_autosave_non_superuser(self):
 		# test every document type
@@ -374,7 +379,7 @@ class TestAutosave(WebTest):
 
 			response = self.app.post(
 				reverse('documents:autosave', args=[url_title]),
-				params={'text': 'AUTO', 'title': form.get('title').value, 'comment': ''},
+				params={'text_de': 'AUTO', 'title_de': form.get('title_de').value, 'comment': ''},
 				xhr=True,
 				user=user,
 			)
@@ -392,7 +397,7 @@ class TestAutosave(WebTest):
 		# autosave AUTO
 		response = self.app.post(
 			reverse('documents:autosave', args=[url_title]),
-			params={'text': 'AUTO', 'title': form.get('title').value, 'comment': '', 'group': mommy.make(Group)},
+			params={'text_de': 'AUTO', 'title_de': form.get('title_de').value, 'comment': '', 'group': mommy.make(Group)},
 			xhr=True
 		)
 		self.assertEqual(response.status_code, 200)
@@ -444,7 +449,7 @@ class TestAutosave(WebTest):
 	def test_can_not_restore_autosave_of_different_user(self):
 		mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
 		second_user = mommy.make(UserProfile)
-		second_document = mommy.prepare(InformationDocument, text_de="text")
+		second_document = mommy.prepare(InformationDocument, text_de="text_de")
 
 		with transaction.atomic(), revisions.create_revision():
 			second_document.save()
@@ -487,7 +492,7 @@ class TestAutosave(WebTest):
 			user=self.user
 		)
 		self.assertEqual(response.status_code, 200)
-		self.assertIn(autosave.text, response.body.decode('utf-8'))
+		self.assertIn(autosave.text_de, response.body.decode('utf-8'))
 
 	def test_autosave_with_multiple_autosaves(self):
 		assign_perm(self.document.edit_permission_name, self.group, self.document)
@@ -497,14 +502,14 @@ class TestAutosave(WebTest):
 
 		response = self.app.post(
 			reverse('documents:autosave', args=[self.document.url_title]),
-			params={'text': 'AUTO', 'title': self.document.title, 'comment': ''},
+			params={'text_de': 'AUTO', 'title_de': self.document.title_de, 'comment': ''},
 			user=self.user,
 			xhr=True,
 		)
 
 		latest_autosave = TemporaryDocumentText.objects.filter(document=self.document).latest('created')
 		self.assertEqual(response.status_code, 200)
-		self.assertEqual(latest_autosave.text, 'AUTO')
+		self.assertEqual(latest_autosave.text_de, 'AUTO')
 
 	def test_autosaves_removed_after_successful_edit(self):
 		assign_perm(self.document.edit_permission_name, self.group, self.document)
@@ -514,7 +519,7 @@ class TestAutosave(WebTest):
 
 		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 		form = response.forms['document-form']
-		form['title'] = 'new title'
+		form['title_de'] = 'new title'
 
 		response = form.submit().follow()
 		self.assertEqual(response.status_code, 200)
@@ -532,7 +537,7 @@ class TestAutosave(WebTest):
 			# autosave AUTO
 			response = self.app.post(
 				reverse('documents:autosave', args=[url_title]),
-				params={'text': 'AUTO', 'title': form.get('title').value, 'comment': '', 'group': mommy.make(Group)},
+				params={'text_de': 'AUTO', 'title_de': form.get('title_de').value, 'comment': '', 'group': mommy.make(Group)},
 				xhr=True
 			)
 			self.assertEqual(response.status_code, 200)
@@ -556,7 +561,7 @@ class TestAutosave(WebTest):
 			# autosave AUTO
 			response = self.app.post(
 				reverse('documents:autosave', args=[url_title]),
-				params={'text': 'AUTO', 'title': form.get('title').value, 'comment': ''},
+				params={'text_de': 'AUTO', 'title_de': form.get('title_de').value, 'comment': ''},
 				xhr=True
 			)
 			self.assertEqual(response.status_code, 200)

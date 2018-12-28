@@ -96,7 +96,8 @@ def handle_edit(request, document, formset=None, initial=None, creation_group=No
 				raise SuspiciousOperation
 
 			form_data = {
-				'text': autosave_to_restore.text,
+				'text_de': autosave_to_restore.text_de,
+				'text_en': autosave_to_restore.text_en,
 				'url_title': document.url_title,
 			}
 			if initial is None:
@@ -120,8 +121,9 @@ def handle_autosave(request, document):
 	if request.method == 'POST':
 		form = document.Form(request.POST, user=request.user, creation=document.is_in_creation, instance=document)
 		form.is_valid()
-		text_strip = request.POST['text'].strip()
-		if text_strip != '':
+		text_de_strip = request.POST.get('text_de', default='').strip()
+		text_en_strip = request.POST.get('text_en', default='').strip()
+		if text_de_strip != '' or text_en_strip != '':
 			cleaned_data = form.cleaned_data
 
 			if document is None:
@@ -130,6 +132,7 @@ def handle_autosave(request, document):
 				temporary_document_text, __ = TemporaryDocumentText.objects.get_or_create(document=document, author=request.user)
 
 			temporary_document_text.text_de = cleaned_data['text_de']
+			temporary_document_text.text_en = cleaned_data['text_en']
 			temporary_document_text.save()
 
 
