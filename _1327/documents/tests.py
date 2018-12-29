@@ -230,7 +230,6 @@ class TestAutosave(WebTest):
 			xhr=True
 		)
 		self.assertEqual(response.status_code, 200)
-		autosave1 = TemporaryDocumentText.objects.get()
 
 		# if not loading autosave text should be still text
 		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
