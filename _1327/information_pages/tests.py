@@ -41,7 +41,7 @@ class TestDocumentWeb(WebTest):
 
 	def test_url_shows_document(self):
 		title = "Document title"
-		document = mommy.make(InformationDocument, title_de=title)
+		document = mommy.make(InformationDocument, title_en=title)
 
 		assign_perm(InformationDocument.VIEW_PERMISSION_NAME, self.user, document)
 		self.assertTrue(self.user.has_perm(InformationDocument.VIEW_PERMISSION_NAME, document))

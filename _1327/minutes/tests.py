@@ -254,10 +254,10 @@ class TestSearchMinutes(WebTest):
 		text3 = "this will never show up notB notO"
 		text4 = "<script>alert(Hello);</script> something else"
 
-		cls.minutes_document1 = mommy.make(MinutesDocument, text_de=text1, title_de="MinutesOne")
-		cls.minutes_document2 = mommy.make(MinutesDocument, text_de=text2, title_de="MinutesTwo")
-		cls.minutes_document3 = mommy.make(MinutesDocument, text_de=text3, title_de="MinutesThree")
-		cls.minutes_document4 = mommy.make(MinutesDocument, text_de=text4, title_de="MinutesFour")
+		cls.minutes_document1 = mommy.make(MinutesDocument, text_de=text1, title_en="MinutesOne", title_de="MinutesOne")
+		cls.minutes_document2 = mommy.make(MinutesDocument, text_de=text2, title_en="MinutesTwo", title_de="MinutesTwo")
+		cls.minutes_document3 = mommy.make(MinutesDocument, text_de=text3, title_en="MinutesThree", title_de="MinutesThree")
+		cls.minutes_document4 = mommy.make(MinutesDocument, text_de=text4, title_en="MinutesFour", title_de="MinutesFour")
 		cls.group = mommy.make(Group)
 		cls.minutes_document1.set_all_permissions(cls.group)
 		cls.minutes_document2.set_all_permissions(cls.group)
