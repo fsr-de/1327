@@ -350,10 +350,10 @@
 							// find the right spot to insert the text and create the correct markdown
 							var markdown = $('#selectInternalLinkModal').val();
 							if (markdown !== null) {
-								linkText = markdown.match(/\[(.*?)\]/)[1]; // we want the text inside the [ ]
-								selected = e.getSelection();
+								var linkText = markdown.match(/\[(.*?)\]/)[1]; // we want the text inside the [ ]
+								var selected = e.getSelection();
 								e.replaceSelection(markdown);
-								cursor = selected.start;
+								var cursor = selected.start;
 								e.setSelection(cursor + 1, cursor + linkText.length + 1); // +1 because we do not want to select the starting [
 								if(selected.length > 0) { // if there was selected text, we want to use this a link text
 									e.replaceSelection(selected.text);
