@@ -15,7 +15,6 @@ from guardian.shortcuts import assign_perm, get_perms, get_perms_for_model, remo
 from guardian.utils import get_anonymous_user
 import markdown
 from model_mommy import mommy
-from model_mommy.recipe import Recipe
 from reversion import revisions
 from reversion.models import Version
 
@@ -28,8 +27,6 @@ from _1327.polls.models import Poll
 from _1327.user_management.models import UserProfile
 
 from .models import Attachment, Document, TemporaryDocumentText
-
-
 
 
 class TestInternalLinkMarkDown(TestCase):

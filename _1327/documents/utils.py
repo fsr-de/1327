@@ -2,7 +2,6 @@ from functools import lru_cache
 import json
 import re
 
-
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation

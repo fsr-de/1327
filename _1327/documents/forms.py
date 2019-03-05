@@ -163,12 +163,10 @@ class PermissionBaseForm(forms.BaseForm):
 			if obj is not None:
 				group_permissions = get_perms(group, obj)
 			else:
-				group_permissions = [permission.codename for permission in
-									 group.permissions.filter(content_type=content_type)]
+				group_permissions = [permission.codename for permission in group.permissions.filter(content_type=content_type)]
 			group_permissions = filter(lambda x: 'add' not in x, group_permissions)
 			content_type = ContentType.objects.get_for_model(obj)
-			group_permissions = ["{app}.{codename}".format(app=content_type.app_label, codename=codename) for codename
-								 in group_permissions]
+			group_permissions = ["{app}.{codename}".format(app=content_type.app_label, codename=codename) for codename in group_permissions]
 
 			data = {permission: True for permission in group_permissions}
 			data["group_name"] = group.name

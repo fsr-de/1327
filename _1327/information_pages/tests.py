@@ -440,7 +440,7 @@ class TestUnlinkedList(WebTest):
 	@classmethod
 	def setUpTestData(cls):
 		cls.user = mommy.make(UserProfile, is_superuser=True)
-		cls.informationdocument1 = mommy.make(InformationDocument, title_de='title_de',	title_en='title_en')
+		cls.informationdocument1 = mommy.make(InformationDocument, title_de='title_de', title_en='title_en')
 		cls.informationdocument2 = mommy.make(InformationDocument, text_en="Lorem ipsum [link](document:{}).".format(cls.informationdocument1.id))
 		cls.menu_item = mommy.make(MenuItem, document=cls.informationdocument2)
 
