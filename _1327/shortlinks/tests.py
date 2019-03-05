@@ -25,7 +25,7 @@ class TestShortlinkWeb(WebTest):
 	@classmethod
 	def setUpTestData(cls):
 		cls.user = mommy.make(UserProfile)
-		cls.document = mommy.make(InformationDocument, text_de="Internal shortlink example")
+		cls.document = mommy.make(InformationDocument, text_en="Internal shortlink example")
 		assign_perm(InformationDocument.VIEW_PERMISSION_NAME, cls.user, cls.document)
 
 	def test_follow_shortlink_external(self):

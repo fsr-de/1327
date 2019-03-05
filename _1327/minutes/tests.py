@@ -49,8 +49,8 @@ class TestEditor(WebTest):
 		self.assertEqual(response.status_code, 200)
 
 		form = response.forms['document-form']
-		self.assertEqual(form.get('title_de').value, self.document.title_de)
-		self.assertEqual(form.get('text_de').value, self.document.text_de)
+		self.assertEqual(form.get('title_en').value, self.document.title_en)
+		self.assertEqual(form.get('text_en').value, self.document.text_en)
 		self.assertEqual(int(form.get('moderator').value), self.document.moderator.id)
 		self.assertEqual(sorted([int(id) for id in form.get('participants').value]), sorted([participant.id for participant in self.document.participants.all()]))
 		self.assertTrue("Hidden" in str(form.fields['group'][0]))
@@ -395,7 +395,7 @@ class TestNewMinutesDocument(WebTest):
 
 		form = response.forms['document-form']
 		text = "Lorem ipsum"
-		form.set('text_de', text)
+		form.set('text_en', text)
 		form.set('comment', text)
 		form.set('url_title', slugify(text))
 
@@ -412,7 +412,7 @@ class TestNewMinutesDocument(WebTest):
 		self.assertEqual((document.title_en, document.title_de), MinutesDocument.generate_new_title())
 		self.assertEqual(document.author, self.user)
 		self.assertEqual(document.moderator, self.user)
-		self.assertEqual(document.text_de, text)
+		self.assertEqual(document.text_en, text)
 		self.assertEqual(versions[0].revision.get_comment(), text)
 		self.assertListEqual(list(document.participants.all().order_by('username')), list(self.group.user_set.all().order_by('username')))
 
@@ -422,7 +422,7 @@ class TestNewMinutesDocument(WebTest):
 	def test_save_another_minutes_document(self):
 		test_title = "Test title"
 		test_moderator = mommy.make(UserProfile)
-		first_document = mommy.make(MinutesDocument, title_de=test_title, moderator=test_moderator)
+		first_document = mommy.make(MinutesDocument, title_en=test_title, moderator=test_moderator)
 		first_document.set_all_permissions(self.group)
 
 		# get the editor page and save the site
@@ -431,7 +431,7 @@ class TestNewMinutesDocument(WebTest):
 
 		form = response.forms['document-form']
 		text = "Lorem ipsum"
-		form.set('text_de', text)
+		form.set('text_en', text)
 		form.set('comment', text)
 		form.set('url_title', slugify(text))
 
@@ -441,10 +441,10 @@ class TestNewMinutesDocument(WebTest):
 		document = MinutesDocument.objects.get(url_title=slugify(text))
 
 		# check whether the properties of the new document are correct
-		self.assertEqual(document.title_de, test_title)  # should be taken from previous minutes document
+		self.assertEqual(document.title_en, test_title)  # should be taken from previous minutes document
 		self.assertEqual(document.moderator, test_moderator)  # should be taken from previous minutes document
 		self.assertEqual(document.author, self.user)
-		self.assertEqual(document.text_de, text)
+		self.assertEqual(document.text_en, text)
 		self.assertListEqual(list(document.participants.all().order_by('username')), list(self.group.user_set.all().order_by('username')))
 
 	def test_group_field_hidden_when_user_has_one_group(self):

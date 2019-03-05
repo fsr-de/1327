@@ -23,7 +23,7 @@ class TestDocument(TestCase):
 		cls.user = mommy.make(UserProfile)
 
 	def test_slugification(self):
-		document = InformationDocument(title_en="titlea", text_de="text")
+		document = InformationDocument(title_en="titlea", text_en="text")
 		self.assertEqual(document.url_title, '')
 		document.save()
 		self.assertEqual(document.url_title, "titlea")
@@ -80,12 +80,12 @@ class TestEditor(WebTest):
 
 		form = response.forms['document-form']
 		self.assertEqual(form.get('title_de').value, self.document.title_de)
-		self.assertEqual(form.get('text_de').value, self.document.text_de)
+		self.assertEqual(form.get('text_en').value, self.document.text_en)
 
 		self.assertTrue("Hidden" in str(form.fields['group'][0]))
 
 		form.set('comment', 'changed title')
-		form.set('title_de', 'new-title')
+		form.set('title_en', 'new-title')
 		form.set('url_title', 'new-url-title')
 		response = form.submit('submit')
 		self.assertRedirects(response, reverse(self.document.get_view_url_name(), args=['new-url-title']))
@@ -98,7 +98,7 @@ class TestEditor(WebTest):
 			response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 
 			form = response.forms['document-form']
-			form.set('title_de', string)
+			form.set('title_en', string)
 			response = form.submit()
 			self.assertEqual(response.status_code, 200)
 			self.assertIn('has-error', str(response.body))
@@ -188,10 +188,12 @@ class TestVersions(WebTest):
 
 		form = response.forms['document-form']
 		new_string = self.document.text + "\nHallo Bibi Blocksberg!!"
-		form.set('text_de', new_string)
+		form.set('title_en', 'Bibi Blocksberg')
+		form.set('text_en', new_string)
 		form.set('comment', 'hallo Bibi Blocksberg')
 		form.set('url_title', 'bibi-blocksberg')
 		response = form.submit().follow()
+
 		self.assertEqual(response.status_code, 200)
 
 		# check whether number of versions increased
@@ -212,7 +214,7 @@ class TestVersions(WebTest):
 		user2.groups.add(self.group)
 
 		# create second revision
-		self.document.text_de = 'christi was here'
+		self.document.text_en = 'christi was here'
 		with transaction.atomic(), revisions.create_revision():
 			self.document.save()
 			revisions.set_user(user2)
@@ -361,8 +363,8 @@ class TestNewPage(WebTest):
 
 		form = response.forms['document-form']
 		text = "Hallo Bibi Blocksberg!"
-		form.set('text_de', text)
-		form.set('title_de', text)
+		form.set('text_en', text)
+		form.set('title_en', text)
 		form.set('comment', text)
 		form.set('url_title', slugify(text))
 		form.set('group', self.group.pk)
@@ -370,15 +372,15 @@ class TestNewPage(WebTest):
 		response = form.submit().follow()
 		self.assertEqual(response.status_code, 200)
 
-		document = InformationDocument.objects.get(title_de=text)
+		document = InformationDocument.objects.get(title_en=text)
 
 		# check whether number of versions is correct
 		versions = Version.objects.get_for_object(document)
 		self.assertEqual(len(versions), 1)
 
 		# check whether the properties of the new document are correct
-		self.assertEqual(document.title_de, text)
-		self.assertEqual(document.text_de, text)
+		self.assertEqual(document.title_en, text)
+		self.assertEqual(document.text_en, text)
 		self.assertEqual(versions[0].revision.get_comment(), text)
 
 	def test_save_new_page_with_slash_url(self):
@@ -389,8 +391,8 @@ class TestNewPage(WebTest):
 		form = response.forms['document-form']
 		text = "Lorem ipsum"
 		url = "some/page-with-slash"
-		form.set('text_de', text)
-		form.set('title_de', text)
+		form.set('text_en', text)
+		form.set('title_en', text)
 		form.set('comment', text)
 		form.set('url_title', url)
 		form.set('group', self.group.pk)
@@ -398,7 +400,7 @@ class TestNewPage(WebTest):
 		response = form.submit().follow()
 		self.assertEqual(response.status_code, 200)
 
-		document = InformationDocument.objects.get(title_de=text)
+		document = InformationDocument.objects.get(title_en=text)
 		self.assertEqual(document.url_title, url)
 
 		response = self.app.get('/' + url + '/', user=self.user)
@@ -438,8 +440,8 @@ class TestUnlinkedList(WebTest):
 	@classmethod
 	def setUpTestData(cls):
 		cls.user = mommy.make(UserProfile, is_superuser=True)
-		cls.informationdocument1 = mommy.make(InformationDocument)
-		cls.informationdocument2 = mommy.make(InformationDocument, text_de="Lorem ipsum [link](document:{}).".format(cls.informationdocument1.id))
+		cls.informationdocument1 = mommy.make(InformationDocument, title_de='title_de',	title_en='title_en')
+		cls.informationdocument2 = mommy.make(InformationDocument, text_en="Lorem ipsum [link](document:{}).".format(cls.informationdocument1.id))
 		cls.menu_item = mommy.make(MenuItem, document=cls.informationdocument2)
 
 	def test_url_shows_document(self):
@@ -453,4 +455,7 @@ class TestUnlinkedList(WebTest):
 		self.informationdocument2.save()
 
 		response = self.app.get(reverse('information_pages:unlinked_list'), user=self.user)
+		# TODO: title currently returns ""
+		with open("tmp.html", "wb") as f:
+			f.write(response.body)
 		self.assertNotIn(self.informationdocument1.title.encode("utf-8"), response.body, msg="The displayed page should not contain the document's title")

@@ -62,6 +62,18 @@ class DocumentForm(forms.ModelForm):
 			temp_prefix_len = re.search(r'temp_\d+_', self.initial['url_title']).end()
 			self.initial['url_title'] = self.initial['url_title'][temp_prefix_len:]
 
+	def clean(self):
+		super().clean()
+		cleaned_data = self.cleaned_data
+
+		title_de = self.cleaned_data['title_de'].lower().strip()
+		title_en = self.cleaned_data['title_en'].lower().strip()
+		if title_de == "" and title_en == "":
+			self.add_error("title_de", ValidationError(_("Both title fields can't be empty at the same time")))
+			self.add_error("title_en", ValidationError(_("Both title fields can't be empty at the same time")))
+
+		return cleaned_data
+
 	def clean_url_title(self):
 		super().clean()
 		url_title = self.cleaned_data['url_title'].lower()
@@ -91,7 +103,8 @@ class PermissionBaseForm(forms.BaseForm):
 			if field_name == 'group_name':
 				continue
 			if value:
-				if (group.name == settings.ANONYMOUS_GROUP_NAME or group.name == settings.UNIVERSITY_GROUP_NAME) and field_name != model.view_permission_name:
+				if (
+					group.name == settings.ANONYMOUS_GROUP_NAME or group.name == settings.UNIVERSITY_GROUP_NAME) and field_name != model.view_permission_name:
 					continue
 				assign_perm(field_name, group, model)
 			else:
@@ -119,7 +132,8 @@ class PermissionBaseForm(forms.BaseForm):
 		for name in sorted(self.fields.keys()):
 			if name == "group_name":
 				continue
-			if (self['group_name'].value() == settings.ANONYMOUS_GROUP_NAME or self['group_name'].value() == settings.UNIVERSITY_GROUP_NAME) and name != self.obj.view_permission_name:
+			if (self['group_name'].value() == settings.ANONYMOUS_GROUP_NAME or self[
+				'group_name'].value() == settings.UNIVERSITY_GROUP_NAME) and name != self.obj.view_permission_name:
 				output.append('<td class="text-center"><input type="checkbox" disabled="disabled" /></td>')
 				continue
 			output.append('<td class="text-center"> {} </td>'.format(self[name]))
@@ -149,10 +163,12 @@ class PermissionBaseForm(forms.BaseForm):
 			if obj is not None:
 				group_permissions = get_perms(group, obj)
 			else:
-				group_permissions = [permission.codename for permission in group.permissions.filter(content_type=content_type)]
+				group_permissions = [permission.codename for permission in
+									 group.permissions.filter(content_type=content_type)]
 			group_permissions = filter(lambda x: 'add' not in x, group_permissions)
 			content_type = ContentType.objects.get_for_model(obj)
-			group_permissions = ["{app}.{codename}".format(app=content_type.app_label, codename=codename) for codename in group_permissions]
+			group_permissions = ["{app}.{codename}".format(app=content_type.app_label, codename=codename) for codename
+								 in group_permissions]
 
 			data = {permission: True for permission in group_permissions}
 			data["group_name"] = group.name
@@ -163,7 +179,8 @@ class PermissionBaseForm(forms.BaseForm):
 def get_permission_form(document):
 	content_type = ContentType.objects.get_for_model(document)
 	fields = {
-		"{app}.{codename}".format(app=content_type.app_label, codename=permission.codename): forms.BooleanField(required=False)
+		"{app}.{codename}".format(app=content_type.app_label, codename=permission.codename): forms.BooleanField(
+			required=False)
 		for permission in
 		filter(lambda x: 'add' not in x.codename and 'view' not in x.codename, Permission.objects.filter(content_type=content_type))
 	}

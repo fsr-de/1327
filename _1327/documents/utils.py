@@ -39,6 +39,11 @@ def delete_old_empty_pages():
 def handle_edit(request, document, formset=None, initial=None, creation_group=None):
 	if request.method == 'POST':
 		creation = document.is_in_creation
+
+		# document.Form changes the document instance so that url_title is changed from the temp_url_title to the
+		# new url_title. We have to save and reset the url_title because otherwise multiple attempts to save invalid
+		# forms will result in a 404.
+		old_url_tile = document.url_title
 		form = document.Form(request.POST, instance=document, initial=initial, user=request.user, creation=creation, creation_group=creation_group)
 		if form.is_valid() and (formset is None or formset.is_valid()):
 			cleaned_data = form.cleaned_data
@@ -81,6 +86,8 @@ def handle_edit(request, document, formset=None, initial=None, creation_group=No
 				pass
 
 			return True, form
+		else:
+			document.url_title = old_url_tile
 	else:
 		# load Autosave
 		autosaves = TemporaryDocumentText.objects.filter(document=document, author=request.user)
