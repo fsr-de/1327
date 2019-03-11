@@ -148,7 +148,7 @@ def prepare_versions(document):
 	# prepare data for the template
 	version_list = []
 	for id, version in enumerate(versions):
-		version_list.append((id, version, json.dumps(version.field_dict['text_de']).strip('"')))
+		version_list.append((id, version, json.dumps(version.field_dict['text_de']).strip('"'), json.dumps(version.field_dict['text_en']).strip('"')))
 
 	return version_list
 

@@ -26,7 +26,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for id, version, data in versions %}
+            {% for id, version, text_de, text_en in versions %}
             <tr>
                 <td>{{ id }}</td>
                 <td>{{ version.revision.date_created|date:'d.m.Y, H:i' }}, {{ version.revision.get_comment }} {% trans 'by' %} {{ version.revision.user }}</td>
@@ -42,9 +42,15 @@
         </tbody>
     </table>
 
+	<h3>{% trans "German Diff" %}</h3>
     <div class="row">
-        <div class="col-sm-12 diffview" id="diffDisplay"></div>
+        <div class="col-sm-12 diffview" id="diffDisplayDE"></div>
     </div>
+
+	<h3>{% trans "English Diff" %}</h3>
+	<div class="row">
+		<div class="col-sm-12 diffview" id="diffDisplayEN"></div>
+	</div>
 {% endblock %}
 
 {% block scripts %}
