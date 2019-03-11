@@ -62,18 +62,6 @@ class DocumentForm(forms.ModelForm):
 			temp_prefix_len = re.search(r'temp_\d+_', self.initial['url_title']).end()
 			self.initial['url_title'] = self.initial['url_title'][temp_prefix_len:]
 
-	def clean(self):
-		super().clean()
-		cleaned_data = self.cleaned_data
-
-		title_de = self.cleaned_data['title_de'].lower().strip()
-		title_en = self.cleaned_data['title_en'].lower().strip()
-		if title_de == "" and title_en == "":
-			self.add_error("title_de", ValidationError(_("Both title fields can't be empty at the same time")))
-			self.add_error("title_en", ValidationError(_("Both title fields can't be empty at the same time")))
-
-		return cleaned_data
-
 	def clean_url_title(self):
 		super().clean()
 		url_title = self.cleaned_data['url_title'].lower()

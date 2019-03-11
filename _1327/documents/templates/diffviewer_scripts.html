@@ -28,7 +28,6 @@
 	{% for id, version, text_de, text_en in versions %}
 		versions.push([{{ version.pk }}, {DE: '{{ text_de }}', EN: '{{ text_en }}'}]);
 	{% endfor %}
-	console.log(versions); // TODO: remove
 
 	let versionIDToRevert = null;
 	$('.version-revert-button').on('click', function(event) {
