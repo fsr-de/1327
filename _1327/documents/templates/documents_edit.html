@@ -350,10 +350,10 @@
 							// find the right spot to insert the text and create the correct markdown
 							var markdown = $('#selectInternalLinkModal').val();
 							if (markdown !== null) {
-								linkText = markdown.match(/\[(.*?)\]/)[1]; // we want the text inside the [ ]
-								selected = e.getSelection();
+								var linkText = markdown.match(/\[(.*?)\]/)[1]; // we want the text inside the [ ]
+								var selected = e.getSelection();
 								e.replaceSelection(markdown);
-								cursor = selected.start;
+								var cursor = selected.start;
 								e.setSelection(cursor + 1, cursor + linkText.length + 1); // +1 because we do not want to select the starting [
 								if(selected.length > 0) { // if there was selected text, we want to use this a link text
 									e.replaceSelection(selected.text);
@@ -365,30 +365,69 @@
 						});
 					}
 				}]
+			},
+			{
+				name: "EmojiGroup",
+				data: [{
+					name: "cmdAddEmoji",
+					toggle: false,
+					title: "Add Emoji",
+					icon: "glyphicon glyphicon-thumbs-up emojiparent",
+					callback: function(e) {
+						// check if we already created an emojionearea object
+						var emojiHolder = $('.emojioneholder');
+						if (emojiHolder.length) {
+							if ($(".emojionearea-picker").hasClass('hidden')) {
+								emojiHolder.data("emojioneArea").showPicker();
+							} else {
+								emojiHolder.data("emojioneArea").hidePicker();
+							}
+							return;
+						}
+
+						$(".btn-toolbar").append("<div class='emojioneholder'></div>");
+						emojiHolder = $('.emojioneholder');
+						var emojiArea = emojiHolder.emojioneArea({
+							standalone: true,
+							shortnames: true,
+							saveEmojisAs: 'shortname',
+							emojiPlaceholder: ":wink:",
+							useInternalCDN: false,
+							pickerPosition: 'bottom',
+							autocomplete: false,
+							events: {
+								'picker.hide': function () {
+									// add the selected emoji to the correct place in our editor
+									var markdownEditor = $('#id_text');
+									var markdownText = markdownEditor.val();
+									var cursorPosition = markdownEditor[0].selectionStart;
+									var textWithEmoji = markdownText.splice(cursorPosition, 0, this.getText());
+									markdownEditor.val(textWithEmoji);
+
+									// set the cursor to the correct position, because we automatically set it to
+									// the end
+									var emojiLength = this.getText().length;
+									markdownEditor[0].selectionStart = cursorPosition + emojiLength;
+									markdownEditor[0].selectionEnd = cursorPosition + emojiLength;
+
+									// rerender the preview
+									efficient_render();
+									this.setText('');
+								},
+								'picker.show': function () {
+									var focusElement = $('.emojionearea-picker').find('.emojionearea-search').find('input');
+									setTimeout(function () {
+										focusElement.focus();
+										focusElement.prop('autofocus');
+									}, 250);
+								}
+							}
+						});
+						emojiArea.data("emojioneArea").showPicker();
+					}
+				}]
 			}]
 		]
-	});
-
-	// init emoji stuff
-	$('#id_text').emojioneArea({
-		shortnames: true,
-		saveEmojisAs: 'unicode',
-		useInternalCDN: false,
-		pickerPosition: 'bottom',
-		autocomplete: false,
-		events: {
-			keyup: function () {
-				var markdownEditor = $('#id_text');
-				markdownEditor.val(this.getText());
-				efficient_render();
-			}
-		}
-	});
-
-	// hotfix emojionearea picker positioning in fullscreen mode
-	$('.emojionearea.md-input').on('keyup', function (event) {
-		var margin = $('.emojionearea-button').css('margin-right');
-		$('.emojionearea-picker').css("right", margin);
 	});
 
 	// handler to update the preview in the modal
