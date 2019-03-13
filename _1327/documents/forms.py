@@ -91,8 +91,8 @@ class PermissionBaseForm(forms.BaseForm):
 			if field_name == 'group_name':
 				continue
 			if value:
-				if (
-					group.name == settings.ANONYMOUS_GROUP_NAME or group.name == settings.UNIVERSITY_GROUP_NAME) and field_name != model.view_permission_name:
+				if (group.name == settings.ANONYMOUS_GROUP_NAME or group.name == settings.UNIVERSITY_GROUP_NAME) and \
+					field_name != model.view_permission_name:
 					continue
 				assign_perm(field_name, group, model)
 			else:
@@ -120,8 +120,8 @@ class PermissionBaseForm(forms.BaseForm):
 		for name in sorted(self.fields.keys()):
 			if name == "group_name":
 				continue
-			if (self['group_name'].value() == settings.ANONYMOUS_GROUP_NAME or self[
-				'group_name'].value() == settings.UNIVERSITY_GROUP_NAME) and name != self.obj.view_permission_name:
+			if (self['group_name'].value() == settings.ANONYMOUS_GROUP_NAME or
+				self['group_name'].value() == settings.UNIVERSITY_GROUP_NAME) and name != self.obj.view_permission_name:
 				output.append('<td class="text-center"><input type="checkbox" disabled="disabled" /></td>')
 				continue
 			output.append('<td class="text-center"> {} </td>'.format(self[name]))

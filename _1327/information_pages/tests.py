@@ -455,7 +455,4 @@ class TestUnlinkedList(WebTest):
 		self.informationdocument2.save()
 
 		response = self.app.get(reverse('information_pages:unlinked_list'), user=self.user)
-		# TODO: title currently returns ""
-		with open("tmp.html", "wb") as f:
-			f.write(response.body)
 		self.assertNotIn(self.informationdocument1.title.encode("utf-8"), response.body, msg="The displayed page should not contain the document's title")

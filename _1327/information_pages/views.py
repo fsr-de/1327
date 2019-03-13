@@ -23,7 +23,8 @@ def unlinked_list(request):
 					pass
 
 		title_string = "title_de" if get_language() == "de" else "title_en"
-		unlinked_information_pages = get_objects_for_user(request.user, permission_name, klass=InformationDocument.objects.filter(menu_items__isnull=True).exclude(id__in=menu_page_document_ids)).order_by(title_string)
+		non_menu_item_documents = InformationDocument.objects.filter(menu_items__isnull=True).exclude(id__in=menu_page_document_ids)
+		unlinked_information_pages = get_objects_for_user(request.user, permission_name, klass=non_menu_item_documents).order_by(title_string)
 	else:
 		unlinked_information_pages = []
 

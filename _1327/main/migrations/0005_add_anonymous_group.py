@@ -15,11 +15,8 @@ def add_anonymous_group(apps, schema_editor):
 	anonymous_user.password = make_password(None)
 	anonymous_user.save()
 
-	# create_anonymous_user(None)
 	Group = apps.get_model("auth", "Group")
 	group = Group.objects.create(name="Anonymous")
-	# user = get_anonymous_user()
-	# user.groups.add(group)
 	anonymous_user.groups.add(group)
 
 
