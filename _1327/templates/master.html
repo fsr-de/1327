@@ -14,7 +14,7 @@
 		<link rel="stylesheet" href="{% static 'less/bootstrap.less'|compile %}" />
 		<link rel="stylesheet" href="{% static 'node_modules/font-awesome/less/font-awesome.less'|compile %}" />
 		<link rel="stylesheet" href="{% static 'less/1327.less'|compile %}" />
-		<link rel="shortcut icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}"/>
+		<link rel="shortcut icon" type="image/x-icon" href="{{ FAVICON_FILE }}"/>
 		<link rel="stylesheet" href="{% static 'node_modules/jquery-ui-bundle/jquery-ui.css' %}">
 		<link rel="stylesheet" href="{% static 'node_modules/select2/dist/css/select2.min.css' %}" />
 		{% if request and request|is_hijacked %}
