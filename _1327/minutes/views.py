@@ -84,6 +84,8 @@ def search(request, groupid):
 				for line in lines_lang if (line.casefold().find(search_text.casefold()) != -1)
 			]
 
+			# We're searching the string on all possible languages but if there's a match in a different language
+			# than the one selected it is highlighted in italics.
 			if not get_language().startswith(language):
 				lines_lang = [mark_safe('<i>' + line + '</i>') for line in lines_lang]
 

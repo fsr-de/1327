@@ -120,8 +120,8 @@ class PermissionBaseForm(forms.BaseForm):
 		for name in sorted(self.fields.keys()):
 			if name == "group_name":
 				continue
-			if (self['group_name'].value() == settings.ANONYMOUS_GROUP_NAME or
-				self['group_name'].value() == settings.UNIVERSITY_GROUP_NAME) and name != self.obj.view_permission_name:
+			if self['group_name'].value() in (settings.ANONYMOUS_GROUP_NAME, settings.UNIVERSITY_GROUP_NAME) and \
+				name != self.obj.view_permission_name:
 				output.append('<td class="text-center"><input type="checkbox" disabled="disabled" /></td>')
 				continue
 			output.append('<td class="text-center"> {} </td>'.format(self[name]))

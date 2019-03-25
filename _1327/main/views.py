@@ -10,6 +10,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, Http404, redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 from django.views.i18n import set_language
 from guardian.shortcuts import get_objects_for_user
@@ -26,6 +27,7 @@ from .models import MenuItem
 from .utils import save_footer_item_order, save_main_menu_item_order
 
 
+@ensure_csrf_cookie
 def index(request):
 	try:
 		document = Document.objects.get(id=settings.MAIN_PAGE_ID)
