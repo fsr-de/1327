@@ -434,6 +434,18 @@ class TestNewPage(WebTest):
 		form = response.forms['document-form']
 		self.assertFalse("Hidden" in str(form.fields['group'][0]))
 
+	def test_save_erroneous_page(self):
+		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
+		self.assertEqual(response.status_code, 200)
+
+		form = response.forms['document-form']
+		form.set('title_en', '')
+		form.set('title_de', '')
+
+		response = form.submit()
+		self.assertEqual(response.status_code, 200)
+		self.assertIn('This field is required.', response.body.decode('utf-8'))
+
 
 class TestUnlinkedList(WebTest):
 
