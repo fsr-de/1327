@@ -50,7 +50,7 @@
 		<li role="presentation" class="active"><a href="#text-preview-de" aria-controls="german" role="tab" data-toggle="tab">{% trans "German" %}</a></li>
 		<li role="presentation"><a href="#text-preview-en" aria-controls="english" role="tab" data-toggle="tab">{% trans "English" %}</a></li>
 	  </ul>
-		
+
 	  <div class="tab-content">
 		<div role="tabpanel" class="tab-pane preview-tab active" id="text-preview-de">Deutsch</div>
 		<div role="tabpanel" class="tab-pane preview-tab " id="text-preview-en">Englisch</div>
@@ -403,7 +403,10 @@
 			delay: 250,
 			dataType: 'json'
 		},
-		minimumInputLength: 1
+		minimumInputLength: 1,
+		templateResult: (documentInfo) => {
+			{% include "select2_result_template.js" %}
+		}
 	});
 
 	{% block additional_scripts %}{% endblock %}

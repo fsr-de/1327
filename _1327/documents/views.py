@@ -10,6 +10,7 @@ from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied, SuspiciousOperation
 from django.db import DEFAULT_DB_ALIAS, models, transaction
+from django.db.models import Q
 from django.forms import formset_factory
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, Http404, render
@@ -255,9 +256,31 @@ def search(request):
 
 	id_only = request.GET.get('id_only', False)
 
-	minutes = get_objects_for_user(request.user, MinutesDocument.VIEW_PERMISSION_NAME, klass=MinutesDocument.objects.filter(title__icontains=request.GET['q']))
-	information_documents = get_objects_for_user(request.user, InformationDocument.VIEW_PERMISSION_NAME, klass=InformationDocument.objects.filter(title__icontains=request.GET['q']))
-	polls = get_objects_for_user(request.user, Poll.VIEW_PERMISSION_NAME, klass=Poll.objects.filter(title__icontains=request.GET['q']))
+	query = request.GET['q']
+	minutes = get_objects_for_user(
+		request.user,
+		MinutesDocument.VIEW_PERMISSION_NAME,
+		klass=MinutesDocument.objects.filter(
+			Q(title_de__icontains=query) |
+			Q(title_en__icontains=query)
+		)
+	)
+	information_documents = get_objects_for_user(
+		request.user,
+		InformationDocument.VIEW_PERMISSION_NAME,
+		klass=InformationDocument.objects.filter(
+			Q(title_de__icontains=query) |
+			Q(title_en__icontains=query)
+		)
+	)
+	polls = get_objects_for_user(
+		request.user,
+		Poll.VIEW_PERMISSION_NAME,
+		klass=Poll.objects.filter(
+			Q(title_de__icontains=query) |
+			Q(title_en__icontains=query)
+		)
+	)
 
 	return render(request, "ajax_search_api.json", {
 		'minutes': minutes,

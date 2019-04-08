@@ -68,7 +68,10 @@
 					delay: 250,
 					dataType: 'json'
 				},
-				minimumInputLength: 1
+				minimumInputLength: 1,
+				templateResult: (documentInfo) => {
+					{% include "select2_result_template.js" %}
+				}
 			});
 		});
 	</script>
