@@ -520,7 +520,7 @@ class MenuItemTests(WebTest):
 		self.user.refresh_from_db()
 		self.assertEqual(self.user.language, 'en')
 
-	def test_language_change_for_authenticated_user(self):
+	def test_language_change_for_unauthenticated_user(self):
 		response = self.app.post(reverse('set_lang'), params={'language': 'de'}, user=None)
 		self.assertEqual(response.status_code, 302)
 		self.assertIn("Anmelden", response.follow().body.decode('utf-8'))
