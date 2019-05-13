@@ -9,12 +9,14 @@ from django.core import mail, management
 from django.core.management import call_command
 from django.test import override_settings, RequestFactory, TestCase
 from django.urls import reverse
+from django.utils import translation
 from django_webtest import WebTest
 from guardian.shortcuts import assign_perm
 from guardian.utils import get_anonymous_user
 from model_mommy import mommy
 
 from _1327.information_pages.models import InformationDocument
+from _1327.main.tools import translate
 from _1327.main.utils import find_root_menu_items
 from _1327.minutes.models import MinutesDocument
 from _1327.user_management.models import UserProfile
@@ -507,6 +509,26 @@ class MenuItemTests(WebTest):
 		self.assertIn(self.sub_sub_item.title, response.body.decode('utf-8'))
 		self.assertNotIn(other_sub_item.title, response.body.decode('utf-8'))
 
+	def test_language_change_for_authenticated_user(self):
+		response = self.app.post(reverse('set_lang'), params={'language': 'de'}, user=self.user)
+		self.assertEqual(response.status_code, 302)
+		self.user.refresh_from_db()
+		self.assertEqual(self.user.language, 'de')
+
+		response = self.app.post(reverse('set_lang'), params={'language': 'en'}, user=self.user)
+		self.assertEqual(response.status_code, 302)
+		self.user.refresh_from_db()
+		self.assertEqual(self.user.language, 'en')
+
+	def test_language_change_for_authenticated_user(self):
+		response = self.app.post(reverse('set_lang'), params={'language': 'de'}, user=None)
+		self.assertEqual(response.status_code, 302)
+		self.assertIn("Anmelden", response.follow().body.decode('utf-8'))
+
+		response = self.app.post(reverse('set_lang'), params={'language': 'en'}, user=None)
+		self.assertEqual(response.status_code, 302)
+		self.assertIn("Login", response.follow().body.decode('utf-8'))
+
 
 class TestSendRemindersCommand(TestCase):
 
@@ -541,6 +563,26 @@ class TestMissingMigrations(TestCase):
 			call_command('makemigrations', dry_run=True, check=True, stdout=output)
 		except SystemExit:
 			self.fail("There are model changes not reflected in migrations, please run makemigrations.")
+
+
+class TestTools(TestCase):
+	class DummyClass():
+		title_de = "deutsch"
+		title_en = "english"
+		title = translate(en='title_en', de='title_de')
+
+	def test_language_code_handling(self):
+		with translation.override('fr'):
+			dc = self.DummyClass()
+			self.assertEqual('english', dc.title)
+
+		with translation.override('de'):
+			dc = self.DummyClass()
+			self.assertEqual('deutsch', dc.title)
+
+		with translation.override('en'):
+			dc = self.DummyClass()
+			self.assertEqual('english', dc.title)
 
 
 @override_settings(LOGO_FILE="/static/images/logo.png")
