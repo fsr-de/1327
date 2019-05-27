@@ -254,7 +254,9 @@ class TestSearchMinutes(WebTest):
 		text3 = "this will never show up notB notO"
 		text4 = "<script>alert(Hello);</script> something else"
 
-		cls.minutes_document1 = mommy.make(MinutesDocument, text_de=text1, title_en="MinutesOne", title_de="MinutesOne")
+		text_en = "This is the English Case"
+
+		cls.minutes_document1 = mommy.make(MinutesDocument, text_en=text_en, text_de=text1, title_en="MinutesOne", title_de="MinutesOne")
 		cls.minutes_document2 = mommy.make(MinutesDocument, text_de=text2, title_en="MinutesTwo", title_de="MinutesTwo")
 		cls.minutes_document3 = mommy.make(MinutesDocument, text_de=text3, title_en="MinutesThree", title_de="MinutesThree")
 		cls.minutes_document4 = mommy.make(MinutesDocument, text_de=text4, title_en="MinutesFour", title_de="MinutesFour")
@@ -263,6 +265,27 @@ class TestSearchMinutes(WebTest):
 		cls.minutes_document2.set_all_permissions(cls.group)
 		cls.minutes_document3.set_all_permissions(cls.group)
 		cls.minutes_document4.set_all_permissions(cls.group)
+
+	def test_multiple_languages(self):
+		response = self.app.post(reverse('set_lang'), params={'language': 'de'}, user=self.user)
+		self.assertEqual(response.status_code, 302)
+
+		search_string = 'Case'
+		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
+
+		form = response.forms[0]
+		form.set('search_phrase', search_string)
+
+		response = form.submit()
+
+		self.assertIn('MinutesOne', response)
+		self.assertNotIn('MinutesTwo', response)
+		self.assertNotIn('MinutesThree', response)
+
+		self.assertContains(response, search_string, count=2)
+
+		self.assertIn("<li><i>This is the English <b>Case</b></i></li>", response)
+		self.assertIn("<li> <b>Case</b> notB notO </li>", response)
 
 	def test_two_minutes_results(self):
 		search_string = "both"
