@@ -28,7 +28,6 @@ echo "cd /vagrant" >> /home/vagrant/.bashrc
 # install requirements
 sudo -H -u vagrant pip3 install --user -r /vagrant/requirements-test.txt
 sudo -H -u vagrant pip3 install --user psycopg2==2.7.3.1
-sudo -H -u vagrant pip3 install --user service_identity==18.1.0
 
 # deploy localsettings and insert random key
 cp /vagrant/deployment/localsettings.template.py /vagrant/_1327/localsettings.py
