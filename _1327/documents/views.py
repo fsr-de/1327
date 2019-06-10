@@ -158,7 +158,11 @@ def view(request, title):
 	except (ImportError, AttributeError):
 		pass
 
-	text, toc = convert_markdown(document.text)
+	if document.text is "" and (document.text_en is not "" or document.text_de is not ""):
+		messages.warning(request, _('The requested document is not available in the selected language.'))
+		text, toc = convert_markdown(next((text for text in (document.text_de, document.text_en) if text is not ""), ""))
+	else:
+		text, toc = convert_markdown(document.text)
 
 	return render(request, 'documents_base.html', {
 		'document': document,

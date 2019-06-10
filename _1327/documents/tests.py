@@ -733,6 +733,49 @@ class TestMarkdownRendering(WebTest):
 		self.assertEqual('<p>' + self.document_text + '</p>', response.body.decode('utf-8'))
 
 
+class TestLanguage(WebTest):
+	csrf_checks = False
+
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.document_text = 'test'
+		cls.document = mommy.make(InformationDocument, text_de=cls.document_text)
+		cls.document.set_all_permissions(mommy.make(Group))
+
+		cls.empty_document = mommy.make(InformationDocument)
+		cls.empty_document.set_all_permissions(mommy.make(Group))
+
+	# Test that alert is there if only one language available
+	# Test no alert if both languages missing
+	def test_not_available_alert(self):
+		response = self.app.post(reverse('set_lang'), params={'language': 'en'}, user=self.user)
+		self.assertEqual(response.status_code, 302)
+
+		response = self.app.get(reverse('view', args=[self.document.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		messages = list(response.context['messages'])
+		self.assertEqual(len(messages), 1)
+		self.assertEqual(str(messages[0]), 'The requested document is not available in the selected language.')
+
+		response = self.app.post(reverse('set_lang'), params={'language': 'de'}, user=self.user)
+		self.assertEqual(response.status_code, 302)
+
+		response = self.app.get(reverse('view', args=[self.document.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		messages = list(response.context['messages'])
+		self.assertEqual(len(messages), 0)
+
+	def test_no_not_available_alert_on_empty_document(self):
+		response = self.app.post(reverse('set_lang'), params={'language': 'en'}, user=self.user)
+		self.assertEqual(response.status_code, 302)
+
+		response = self.app.get(reverse('view', args=[self.empty_document.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		messages = list(response.context['messages'])
+		self.assertEqual(len(messages), 0)
+
+
 class TestSignals(TestCase):
 	@classmethod
 	def setUpTestData(cls):
