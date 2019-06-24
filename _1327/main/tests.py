@@ -572,17 +572,15 @@ class TestTools(TestCase):
 		title = translate(en='title_en', de='title_de')
 
 	def test_language_code_handling(self):
-		with translation.override('fr'):
-			dc = self.DummyClass()
-			self.assertEqual('english', dc.title)
+		for language_code in ['de', 'de-DE', 'de-CH']:
+			with translation.override(language_code):
+				dc = self.DummyClass()
+				self.assertEqual('deutsch', dc.title)
 
-		with translation.override('de'):
-			dc = self.DummyClass()
-			self.assertEqual('deutsch', dc.title)
-
-		with translation.override('en'):
-			dc = self.DummyClass()
-			self.assertEqual('english', dc.title)
+		for language_code in ['en', 'en-US', 'en-AU', 'fr', 'fr-FR']:
+			with translation.override(language_code):
+				dc = self.DummyClass()
+				self.assertEqual('english', dc.title)
 
 
 @override_settings(LOGO_FILE="/static/images/logo.png")
