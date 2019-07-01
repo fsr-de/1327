@@ -523,11 +523,11 @@ class MenuItemTests(WebTest):
 	def test_language_change_for_unauthenticated_user(self):
 		response = self.app.post(reverse('set_lang'), params={'language': 'de'}, user=None)
 		self.assertEqual(response.status_code, 302)
-		self.assertIn("Anmelden", response.follow().body.decode('utf-8'))
+		self.assertIn("setLanguage(\'en\');", response.follow().body.decode('utf-8'))
 
 		response = self.app.post(reverse('set_lang'), params={'language': 'en'}, user=None)
 		self.assertEqual(response.status_code, 302)
-		self.assertIn("Login", response.follow().body.decode('utf-8'))
+		self.assertIn("setLanguage(\'de\');", response.follow().body.decode('utf-8'))
 
 
 class TestSendRemindersCommand(TestCase):
