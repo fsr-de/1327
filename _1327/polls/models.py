@@ -12,6 +12,7 @@ from reversion import revisions
 
 from _1327.documents.markdown_internal_link_pattern import InternalLinkPattern
 from _1327.documents.models import Document
+from _1327.main.tools import translate
 from _1327.user_management.models import UserProfile
 
 
@@ -137,8 +138,12 @@ revisions.register(Poll, follow=["document_ptr"])
 
 class Choice(models.Model):
 	poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name="choices")
-	text = models.CharField(max_length=255)
-	description = models.TextField(default="", blank=True)
+	text_de = models.CharField(max_length=255, verbose_name=_("text (german)"))
+	text_en = models.CharField(max_length=255, verbose_name=_("text (english)"))
+	text = translate(en='text_en', de='text_de')
+	description_de = models.TextField(default="", blank=True, verbose_name=_("description (german)"))
+	description_en = models.TextField(default="", blank=True, verbose_name=_("description (english)"))
+	description = translate(en='description_en', de='description_de')
 	votes = models.IntegerField(default=0)
 
 	index = models.IntegerField(verbose_name=_("ordering index"), default=0)
@@ -147,7 +152,7 @@ class Choice(models.Model):
 		ordering = ['index']
 
 	def __str__(self):
-		return self.text
+		return self.text_en
 
 	def percentage(self):
 		participant_count = self.poll.participants.count()
