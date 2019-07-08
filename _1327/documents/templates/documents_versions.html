@@ -9,13 +9,13 @@
 {% endblock %}
 
 {% block css %}
-    {{ block.super }}
-    <link rel="stylesheet" href="{% static 'node_modules/jsdifflib-dist/diffview.min.css' %}" />
-    <link rel="stylesheet" href="{% static 'less/diffview.less'|compile %}" />
+	{{ block.super }}
+	<link rel="stylesheet" href="{% static 'node_modules/jsdifflib-dist/diffview.min.css' %}"/>
+	<link rel="stylesheet" href="{% static 'less/diffview.less'|compile %}"/>
 {% endblock %}
 
 {% block document_content %}
-    <h2>{% trans "Diff page versions" %}</h2>
+	<h2>{% trans "Diff page versions" %}</h2>
 
     <table class="table table-striped">
         <thead>
@@ -43,9 +43,9 @@
     </table>
 
 	<h3>{% trans "German Diff" %}</h3>
-    <div class="row">
-        <div class="col-sm-12 diffview" id="diffDisplayDE"></div>
-    </div>
+	<div class="row">
+		<div class="col-sm-12 diffview" id="diffDisplayDE"></div>
+	</div>
 
 	<h3>{% trans "English Diff" %}</h3>
 	<div class="row">
@@ -54,6 +54,6 @@
 {% endblock %}
 
 {% block scripts %}
-{{ block.super }}
-{% include 'diffviewer_scripts.html' %}
+	{{ block.super }}
+	{% include 'diffviewer_scripts.html' %}
 {% endblock %}

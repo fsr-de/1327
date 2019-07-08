@@ -22,7 +22,7 @@ def unlinked_list(request):
 				except ValueError:
 					pass
 
-		title_string = "title_de" if get_language() == "de" else "title_en"
+		title_string = "title_" + ("de" if (get_language() or "en").split('-')[0] == "de" else "en")
 		non_menu_item_documents = InformationDocument.objects.filter(menu_items__isnull=True).exclude(id__in=menu_page_document_ids)
 		unlinked_information_pages = get_objects_for_user(request.user, permission_name, klass=non_menu_item_documents).order_by(title_string)
 	else:
