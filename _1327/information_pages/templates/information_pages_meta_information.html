@@ -8,8 +8,8 @@
 	{% endif %}
 	<dt>{% trans "Last change" %}</dt>
 	<dd>{{ document.last_change|date:"d.m.Y, H:i" }}
-		{% if document.last_author and document|can_user_see_author:request.user %}
-			<i>{% trans "by" %}</i> {{ document.last_author }}
-		{% endif %}
+	{% if document.last_author and document|can_user_see_author:request.user %}
+		<i>{% trans "by" %}</i> {{ document.last_author }}
+	{% endif %}
 	</dd>
 </dl>

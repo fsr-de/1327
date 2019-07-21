@@ -253,26 +253,29 @@ class TestAuthorDisplay(WebTest):
 			revisions.set_user(self.user)
 			revisions.set_comment('test version 2')
 		self.assertIn(author_str, self.app.get(self.document.get_view_url(), user=self.user).body.decode('utf-8'))
-		self.assertIn(author_str, self.app.get(self.document.get_view_url(), user=self.unauthenticated_user).body.decode('utf-8'))
+		self.app.reset()
+		self.assertIn(author_str, self.app.get(self.document.get_view_url()).body.decode('utf-8'))
 
 		# The following part of the test is currently disables as the anonymous user's is_authenticated() method evaluates to true
 		# and I haven't found a way to create a user who isn't authenticated, even after over 8 hours of trial and error.
 
-		# self.document.show_author_to = InformationDocument.SHOW_AUTHOR_TO_LOGGED_IN_USERS
-		# with transaction.atomic(), revisions.create_revision():
-		# 	self.document.save()
-		# 	revisions.set_user(self.user)
-		# 	revisions.set_comment('test version 3')
-		# self.assertIn(author_str, self.app.get(self.document.get_view_url(), user=self.user).body.decode('utf-8'))
-		# self.assertNotIn(author_str, self.app.get(self.document.get_view_url(), user=self.unauthenticated_user).body.decode('utf-8'))
+		self.document.show_author_to = InformationDocument.SHOW_AUTHOR_TO_LOGGED_IN_USERS
+		with transaction.atomic(), revisions.create_revision():
+			self.document.save()
+			revisions.set_user(self.user)
+			revisions.set_comment('test version 3')
+		self.assertIn(author_str, self.app.get(self.document.get_view_url(), user=self.user).body.decode('utf-8'))
+		self.app.reset()
+		self.assertNotIn(author_str, self.app.get(self.document.get_view_url()).body.decode('utf-8'))
 
-		# self.document.show_author_to = InformationDocument.SHOW_AUTHOR_TO_NO_ONE
-		# with transaction.atomic(), revisions.create_revision():
-		# 	self.document.save()
-		# 	revisions.set_user(self.user)
-		# 	revisions.set_comment('test version 4')
-		# self.assertNotIn(author_str, self.app.get(self.document.get_view_url(), user=self.user).body.decode('utf-8'))
-		# self.assertNotIn(author_str, self.app.get(self.document.get_view_url(), user=self.unauthenticated_user).body.decode('utf-8'))
+		self.document.show_author_to = InformationDocument.SHOW_AUTHOR_TO_NO_ONE
+		with transaction.atomic(), revisions.create_revision():
+			self.document.save()
+			revisions.set_user(self.user)
+			revisions.set_comment('test version 4')
+		self.assertNotIn(author_str, self.app.get(self.document.get_view_url(), user=self.user).body.decode('utf-8'))
+		self.app.reset()
+		self.assertNotIn(author_str, self.app.get(self.document.get_view_url()).body.decode('utf-8'))
 
 
 class TestPermissions(WebTest):
