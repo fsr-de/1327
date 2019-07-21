@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core import mail, management
 from django.core.management import call_command
-from django.test import RequestFactory, TestCase
+from django.test import override_settings, RequestFactory, TestCase
 from django.urls import reverse
 from django_webtest import WebTest
 from guardian.shortcuts import assign_perm
@@ -541,3 +541,11 @@ class TestMissingMigrations(TestCase):
 			call_command('makemigrations', dry_run=True, check=True, stdout=output)
 		except SystemExit:
 			self.fail("There are model changes not reflected in migrations, please run makemigrations.")
+
+
+@override_settings(LOGO_FILE="/static/images/logo.png")
+class TestLogo(WebTest):
+	def test_logo_is_shown(self):
+		response = self.app.get(reverse('index'))
+		self.assertEqual(response.status_code, 200)
+		self.assertIn('<img src="/static/images/logo.png"', response.body.decode("utf-8"))

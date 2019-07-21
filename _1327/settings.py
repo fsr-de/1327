@@ -193,6 +193,9 @@ LOGOUT_REDIRECT_URL = '/'
 
 STATIC_URL = '/static/'
 
+LOGO_FILE = ""
+FAVICON_FILE = STATIC_URL + "images/favicon.ico"
+
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
@@ -249,6 +252,7 @@ TEMPLATES = [
 				'_1327.main.context_processors.can_create_minutes',
 				'_1327.main.context_processors.can_create_poll',
 				'_1327.main.context_processors.can_change_menu_items',
+				'_1327.main.context_processors.image_paths',
 			],
 		},
 	},
