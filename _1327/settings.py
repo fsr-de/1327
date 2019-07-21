@@ -27,6 +27,8 @@ SECRET_KEY = 'usba$w)n_sr3u(u1os05!8t6)m(w0skpx&%n@wwpgi_bzdxt-e'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+TESTING = 'test' in sys.argv
+
 ALLOWED_HOSTS = []
 
 # The page URL that is used in email templates
@@ -138,7 +140,6 @@ ROOT_URLCONF = '_1327.urls'
 APPEND_SLASH = False
 
 WSGI_APPLICATION = '_1327.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
@@ -265,13 +266,10 @@ STATIC_PRECOMPILER_COMPILERS = [
 # Set this to the ID of the document that shall be shown as Main Page
 MAIN_PAGE_ID = -1
 
-TESTING = 'test' in sys.argv
-
 if TESTING:
 	DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3'}  # use sqlite to speed tests up
 	logging.disable(logging.CRITICAL)  # disable logging, primarily to prevent console spam
 	LANGUAGE_CODE = 'en-US'  # force language to be English while testing
-
 
 # Create a localsettings.py to override settings per machine or user, e.g. for
 # development or different settings in deployments using multiple servers.
