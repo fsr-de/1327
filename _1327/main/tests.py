@@ -31,12 +31,18 @@ class NavbarCacheTest(WebTest):
 		self.staff_group = Group.objects.get(name=settings.STAFF_GROUP_NAME)
 		self.user.groups.add(self.staff_group)
 
-	def test_group_change(self):
+	def test_group_user_change_invalidates_cache(self):
 		user2 = mommy.make(UserProfile, username='user2')
 		self.staff_group.user_set.add(user2)
 
 		self.app.get("/", user=self.user)
 		self.app.get("/", user=user2)
+
+		cache_key = make_template_fragment_key('navbar', [self.user.username, 'en'])
+		self.assertIsNotNone(cache.get(cache_key))
+		cache_key = make_template_fragment_key('navbar', [user2.username, 'en'])
+		self.assertIsNotNone(cache.get(cache_key))
+
 		self.staff_group.user_set.remove(self.user)
 		self.staff_group.save()
 
@@ -45,11 +51,19 @@ class NavbarCacheTest(WebTest):
 		cache_key = make_template_fragment_key('navbar', [user2.username, 'en'])
 		self.assertIsNotNone(cache.get(cache_key))
 
-	def test_user_change(self):
+	def test_user_group_change_invalidates_cache(self):
 		self.app.get("/", user=self.user)
+		cache_key = make_template_fragment_key('navbar', [self.user.username, 'en'])
+		self.assertIsNotNone(cache.get(cache_key))
 		self.user.groups.remove(self.staff_group)
 		self.user.save()
+		self.assertIsNone(cache.get(cache_key))
+
+	def test_group_permission_change_invalidates_cache(self):
+		self.app.get("/", user=self.user)
 		cache_key = make_template_fragment_key('navbar', [self.user.username, 'en'])
+		self.assertIsNotNone(cache.get(cache_key))
+		self.staff_group.permissions.clear()
 		self.assertIsNone(cache.get(cache_key))
 
 	def test_navbar_cache_deletion_for_users(self):
@@ -426,8 +440,7 @@ class MenuItemTests(WebTest):
 		self.sub_sub_item.save()
 		assign_perm(self.sub_sub_item.view_permission_name, self.user, self.sub_sub_item)
 
-		# TODO: Still missing a cache clear when group permissions change via django-guardian
-		# delete_navbar_cache_for_users([self.user])
+		delete_navbar_cache_for_users([self.user])
 
 		response = self.app.get(reverse('index'), user=self.user)
 		self.assertEqual(response.status_code, 200)

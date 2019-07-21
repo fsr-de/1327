@@ -85,10 +85,19 @@ def add_to_default_group(sender, **kwargs):
 
 
 @receiver(m2m_changed, sender=UserProfile.groups.through)
-def group_changed(instance, action, reverse, pk_set, **kwargs):
+def group_user_changed(instance, action, reverse, pk_set, **kwargs):
 	if 'post' in action:
 		if not reverse:  # A user's groups were changed
 			delete_navbar_cache_for_users([instance])
 		else:  # A group's users were changed
 			delete_navbar_cache_for_users(UserProfile.objects.filter(pk__in=pk_set))
 		
+
+@receiver(m2m_changed, sender=Group.permissions.through)
+def group_permission_changed(instance, action, reverse, pk_set, **kwargs):
+	if 'post' in action:
+		if not reverse:  # group permissions were changed
+			delete_navbar_cache_for_users(instance.user_set.all())
+		else:  # A permissions's groups were changed
+			for group in Group.objects.filter(pk__in=pk_set):
+				delete_navbar_cache_for_users(group.user_set)
