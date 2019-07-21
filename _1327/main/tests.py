@@ -6,6 +6,8 @@ import re
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core import mail, management
+from django.core.cache import cache
+from django.core.cache.utils import make_template_fragment_key
 from django.core.management import call_command
 from django.test import override_settings, RequestFactory, TestCase
 from django.urls import reverse
@@ -15,11 +17,63 @@ from guardian.utils import get_anonymous_user
 from model_mommy import mommy
 
 from _1327.information_pages.models import InformationDocument
-from _1327.main.utils import find_root_menu_items
+from _1327.main.utils import find_root_menu_items, delete_navbar_cache_for_users
 from _1327.minutes.models import MinutesDocument
 from _1327.user_management.models import UserProfile
 from .context_processors import mark_selected
 from .models import MenuItem
+
+
+class NavbarCacheTest(WebTest):
+
+	def setUp(self):
+		self.user = mommy.make(UserProfile, username='user')
+		self.staff_group = Group.objects.get(name=settings.STAFF_GROUP_NAME)
+		self.user.groups.add(self.staff_group)
+
+	def test_group_change(self):
+		user2 = mommy.make(UserProfile, username='user2')
+		self.staff_group.user_set.add(user2)
+
+		self.app.get("/", user=self.user)
+		self.app.get("/", user=user2)
+		self.staff_group.user_set.remove(self.user)
+		self.staff_group.save()
+
+		cache_key = make_template_fragment_key('navbar', [self.user.username, 'en'])
+		self.assertIsNone(cache.get(cache_key))
+		cache_key = make_template_fragment_key('navbar', [user2.username, 'en'])
+		self.assertIsNotNone(cache.get(cache_key))
+
+	def test_user_change(self):
+		self.app.get("/", user=self.user)
+		self.user.groups.remove(self.staff_group)
+		self.user.save()
+		cache_key = make_template_fragment_key('navbar', [self.user.username, 'en'])
+		self.assertIsNone(cache.get(cache_key))
+
+	def test_navbar_cache_deletion_for_users(self):
+		user1 = self.user
+		user2 = mommy.make(UserProfile, username='user2')
+
+		# create navbar caches for anonymous user, user1 and user2
+		self.app.get("/")
+		self.app.get("/", user=user1)
+		self.app.get("/", user=user2)
+
+		cache_key1 = make_template_fragment_key('navbar', [user1.username, 'en'])
+		cache_key2 = make_template_fragment_key('navbar', [user2.username, 'en'])
+		cache_key_anonymous = make_template_fragment_key('navbar', ['', 'en'])
+
+		self.assertIsNotNone(cache.get(cache_key1))
+		self.assertIsNotNone(cache.get(cache_key2))
+		self.assertIsNotNone(cache.get(cache_key_anonymous))
+
+		delete_navbar_cache_for_users([user2])
+
+		self.assertIsNotNone(cache.get(cache_key1))
+		self.assertIsNone(cache.get(cache_key2))
+		self.assertIsNotNone(cache.get(cache_key_anonymous))
 
 
 class TestMenuProcessor(TestCase):
@@ -371,6 +425,9 @@ class MenuItemTests(WebTest):
 		self.sub_sub_item.document = document2
 		self.sub_sub_item.save()
 		assign_perm(self.sub_sub_item.view_permission_name, self.user, self.sub_sub_item)
+
+		# TODO: Still missing a cache clear when group permissions change via django-guardian
+		# delete_navbar_cache_for_users([self.user])
 
 		response = self.app.get(reverse('index'), user=self.user)
 		self.assertEqual(response.status_code, 200)

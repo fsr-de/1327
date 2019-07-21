@@ -1,7 +1,10 @@
 import re
 
+from django.db.utils import OperationalError
 from django.conf import settings
 from django.contrib.auth.models import Group
+from django.core.cache import cache
+from django.core.cache.utils import make_template_fragment_key
 from django.core.exceptions import ValidationError
 from django.utils.text import slugify as django_slugify
 from django.utils.translation import ugettext_lazy as _
@@ -14,6 +17,19 @@ from markdown.extensions.toc import TocExtension
 
 
 URL_TITLE_REGEX = re.compile(r'^[a-zA-Z0-9-_\/]*$')
+
+
+def delete_navbar_cache_for_users(users):
+	try:
+		for user in users:
+			key = make_template_fragment_key('navbar', [user.username, 'de'])
+			cache.delete(key)
+			key = make_template_fragment_key('navbar', [user.username, 'en'])
+			cache.delete(key)
+	except OperationalError:  # During migration for the test db, the cache table might not exist yet
+		from _1327.settings import TESTING
+		if not TESTING:
+			raise
 
 
 def save_main_menu_item_order(main_menu_items, user, parent_id=None):

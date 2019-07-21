@@ -17,7 +17,8 @@ from _1327.documents.models import Document
 from _1327.documents.views import edit as document_edit, view as document_view
 from _1327.main.forms import AbbreviationExplanationForm, get_permission_form
 from _1327.main.models import AbbreviationExplanation
-from _1327.main.utils import find_root_menu_items
+from _1327.user_management.models import UserProfile
+from _1327.main.utils import find_root_menu_items, delete_navbar_cache_for_users
 from _1327.shortlinks.models import Shortlink
 from _1327.shortlinks.views import edit as shortlink_edit, view as shortlink_view
 from .forms import MenuItemAdminForm, MenuItemCreationAdminForm, MenuItemCreationForm, MenuItemForm
@@ -99,6 +100,7 @@ def menu_item_create(request):
 	if form.is_valid():
 		menu_item = form.save()
 		menu_item.set_all_permissions(form.cleaned_data['group'])
+		delete_navbar_cache_for_users(UserProfile.objects.all())
 		messages.success(request, _("Successfully created menu item."))
 		return redirect('menu_items_index')
 	else:
@@ -125,6 +127,7 @@ def menu_item_edit(request, menu_item_pk):
 		form.save()
 		for permission_form in formset:
 			permission_form.save(menu_item)
+		delete_navbar_cache_for_users(UserProfile.objects.all())
 		messages.success(request, _("Successfully edited menu item."))
 		return redirect('menu_items_index')
 	return render(request, 'menu_item_edit.html', {
@@ -141,6 +144,7 @@ def menu_item_delete(request):
 	if not menu_item.can_delete(request.user):
 		raise PermissionDenied
 	menu_item.delete()
+	delete_navbar_cache_for_users(UserProfile.objects.all())
 	return HttpResponse()
 
 
@@ -160,6 +164,7 @@ def menu_items_update_order(request):
 			save_footer_item_order(footer_items, request.user)
 	else:
 		save_main_menu_item_order(main_menu_items, request.user)
+	delete_navbar_cache_for_users(UserProfile.objects.all())
 	return HttpResponse()
 
 
