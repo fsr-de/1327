@@ -1,12 +1,13 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Group, PermissionsMixin
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
+from _1327.main.utils import delete_navbar_cache_for_users
 
 class UserManager(BaseUserManager):
 	def create_user(self, username, password=None, email=None, first_name=None, last_name=None):
@@ -81,3 +82,13 @@ def add_to_default_group(sender, **kwargs):
 		user = kwargs.get('instance')
 		group, __ = Group.objects.get_or_create(name=settings.DEFAULT_USER_GROUP_NAME)
 		user.groups.add(group)
+
+
+@receiver(m2m_changed, sender=UserProfile.groups.through)
+def group_changed(instance, action, reverse, pk_set, **kwargs):
+	if 'post' in action:
+		if not reverse:  # A user's groups were changed
+			delete_navbar_cache_for_users([instance])
+		else:  # A group's users were changed
+			delete_navbar_cache_for_users(UserProfile.objects.filter(pk__in=pk_set))
+		
