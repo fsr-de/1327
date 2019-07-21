@@ -1,12 +1,12 @@
 -r requirements.txt
 
 # Unit tests
-django-webtest == 1.9.2
-model_mommy == 1.5.1
+django-webtest == 1.9.7
+model_mommy == 1.6.0
 
 # Coverage
 coveralls
 
 # Lint
-flake8 == 3.5.0
-flake8-import-order == 0.17
+flake8 == 3.7.8
+flake8-import-order == 0.18.1
