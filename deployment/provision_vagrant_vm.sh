@@ -1,5 +1,7 @@
 set -x # print executed commands
 
+export DEBIAN_FRONTEND=noninteractive
+
 # install python stuff
 apt-get -q update
 apt-get -q install -y python3-dev python3-pip gettext
