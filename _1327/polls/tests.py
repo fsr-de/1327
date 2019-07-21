@@ -182,7 +182,7 @@ class PollViewTests(WebTest):
 		poll = Poll.objects.get(title='TestPoll')
 		self.assertEqual(poll.choices.count(), 2)
 		group_permissions = ["polls.{}".format(name) for name in get_perms(self.group, poll)]
-		self.assertEqual(len(group_permissions), 5)
+		self.assertEqual(len(group_permissions), 6)
 		self.assertIn(poll.edit_permission_name, group_permissions)
 		self.assertIn(poll.vote_permission_name, group_permissions)
 		self.assertIn(poll.view_permission_name, group_permissions)

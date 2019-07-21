@@ -1,6 +1,6 @@
 channels == 1.1.8
 
-Django >= 2.0, < 2.1
+Django >= 2.1, < 2.2
 django-static-precompiler == 1.8.2
 
 django-extensions == 2.1.0
