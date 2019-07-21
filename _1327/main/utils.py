@@ -103,7 +103,7 @@ def slugify(string):
 
 
 class SlugWithSlashConverter:
-	regex = '[\w\-/]+'
+	regex = r'[\w\-/]+'
 
 	def to_python(self, value):
 		return str(value)
