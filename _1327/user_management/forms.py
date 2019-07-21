@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import Group
+from django.forms import BooleanField, ModelMultipleChoiceField
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.debug import sensitive_variables
 
@@ -47,3 +49,25 @@ class UserImpersonationForm(forms.Form):
 	def __init__(self, *args, **kwargs):
 		super(UserImpersonationForm, self).__init__(*args, **kwargs)
 		self.fields['username'].widget.attrs['class'] = 'select2-selection'
+
+
+class GroupEdit(forms.ModelForm):
+	add_information_document = BooleanField(required=False)
+	add_minutes = BooleanField(required=False)
+	add_poll = BooleanField(required=False)
+	users = ModelMultipleChoiceField(UserProfile.objects.all())
+
+	class Meta:
+		model = Group
+		fields = ("name",)
+
+	def __init__(self, *args, **kwargs):
+		super().__init__(**kwargs)
+		self.fields['users'].widget.attrs['class'] = 'select2-selection'
+
+	def save(self, *args, **kwargs):
+		super().save(*args, **kwargs)
+		instance = forms.ModelForm.save(self)
+		instance.user_set.clear()
+		instance.user_set.add(*self.cleaned_data["users"])
+		return instance
