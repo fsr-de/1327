@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load information_pages_templatetags %}
+{% load information_pages_filters %}
 
 <dl class="meta-information">
 	{% if permission_overview %}
@@ -8,8 +8,7 @@
 	{% endif %}
 	<dt>{% trans "Last change" %}</dt>
 	<dd>{{ document.last_change|date:"d.m.Y, H:i" }}
-		{% resolve_show_author_policy document.show_author_to as author_is_shown %}
-		{% if document.last_author and author_is_shown %}
+		{% if document.last_author and document|can_user_see_author:request.user %}
 			<i>{% trans "by" %}</i> {{ document.last_author }}
 		{% endif %}
 	</dd>
