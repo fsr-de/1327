@@ -136,7 +136,8 @@ class MenuItemTests(WebTest):
 
 		response = self.app.get(reverse('menu_item_create'), user=self.root_user)
 		form = response.form
-		form['title'] = 'test title'
+		form['title_en'] = 'test title'
+		form['title_de'] = 'test titel'
 		form['link'] = 'polls:index'
 		form['group'].select(text=self.staff_group.name)
 
@@ -150,7 +151,8 @@ class MenuItemTests(WebTest):
 
 		response = self.app.get(reverse('menu_item_create'), user=self.root_user)
 		form = response.form
-		form['title'] = 'test title'
+		form['title_en'] = 'test title'
+		form['title_de'] = 'test titel'
 		form['link'] = 'minutes:list?groupid={}'.format(self.staff_group.id)
 		form['group'].select(text=self.staff_group.name)
 
@@ -164,7 +166,8 @@ class MenuItemTests(WebTest):
 
 		response = self.app.get(reverse('menu_item_create'), user=self.root_user)
 		form = response.form
-		form['title'] = 'test title'
+		form['title_en'] = 'test title'
+		form['title_de'] = 'test titel'
 		form['link'] = 'polls:index?kekse?kekse2'
 		form['group'].select(text=self.staff_group.name)
 
@@ -178,7 +181,8 @@ class MenuItemTests(WebTest):
 
 		response = self.app.get(reverse('menu_item_create'), user=self.root_user)
 		form = response.form
-		form['title'] = 'test title'
+		form['title_en'] = 'test title'
+		form['title_de'] = 'test titel'
 		form['link'] = 'www.example.com'
 		form['group'].select(text=self.staff_group.name)
 
@@ -193,7 +197,8 @@ class MenuItemTests(WebTest):
 
 		response = self.app.get(reverse('menu_item_create'), user=self.root_user)
 		form = response.form
-		form['title'] = 'test title'
+		form['title_en'] = 'test title'
+		form['title_de'] = 'test titel'
 		form['document'].select(text=document.title)
 		form['group'].select(text=self.staff_group.name)
 
@@ -225,7 +230,8 @@ class MenuItemTests(WebTest):
 
 		response = self.app.get(reverse('menu_item_create'), user=self.user)
 		form = response.form
-		form['title'] = 'test title'
+		form['title_en'] = 'test title'
+		form['title_de'] = 'test titel'
 		form['document'].select(text=document.title)
 		form['group'].select(text=self.staff_group.name)
 		form['parent'].select(text=self.sub_item.title)
@@ -241,7 +247,8 @@ class MenuItemTests(WebTest):
 
 		response = self.app.get(reverse('menu_item_create'), user=self.user)
 		form = response.form
-		form['title'] = 'test title'
+		form['title_en'] = 'test title'
+		form['title_de'] = 'test titel'
 		form['document'].select(text=document.title)
 		form['group'].select(text=self.staff_group.name)
 
@@ -257,7 +264,8 @@ class MenuItemTests(WebTest):
 
 		response = self.app.get(reverse('menu_item_create'), user=self.user)
 		form = response.form
-		form['title'] = 'test title'
+		form['title_en'] = 'test title'
+		form['title_de'] = 'test titel'
 		form['document'].select(text=document.title)
 		form['group'].force_value(group.id)
 
@@ -405,7 +413,8 @@ class MenuItemTests(WebTest):
 		original_menu_item = self.sub_item
 
 		form = response.form
-		form['title'] = 'Lorem Ipsum'
+		form['title_en'] = 'Lorem Ipsum'
+		form['title_de'] = 'test titel'
 		form['document'] = document.pk
 
 		response = form.submit().maybe_follow()
@@ -509,25 +518,32 @@ class MenuItemTests(WebTest):
 		self.assertIn(self.sub_sub_item.title, response.body.decode('utf-8'))
 		self.assertNotIn(other_sub_item.title, response.body.decode('utf-8'))
 
-	def test_language_change_for_authenticated_user(self):
-		response = self.app.post(reverse('set_lang'), params={'language': 'de'}, user=self.user)
-		self.assertEqual(response.status_code, 302)
+	def test_menu_item_language_change(self):
+		# menu_item_count = MenuItem.objects.count()
+
+		document = mommy.make(InformationDocument)
+		title_en = 'test title'
+		title_de = 'test titel'
+
+		response = self.app.get(reverse('menu_item_create'), user=self.user)
+		form = response.form
+		form['title_en'] = title_en
+		form['title_de'] = title_de
+		form['document'].select(text=document.title)
+		form['group'].select(text=self.staff_group.name)
+		form['parent'].select(text=self.sub_item.title)
+
+		response = form.submit().maybe_follow()
+		self.assertEqual(200, response.status_code)
+		self.assertIn("Successfully created menu item.", response.body.decode('utf-8'))
+		self.assertEqual(title_en, MenuItem.objects.get(title_en=title_en).title)
+
+		response = self.app.post(reverse('set_lang'), params={'language': 'de'}, user=self.user).follow()
+		self.assertEqual(response.status_code, 200)
 		self.user.refresh_from_db()
 		self.assertEqual(self.user.language, 'de')
 
-		response = self.app.post(reverse('set_lang'), params={'language': 'en'}, user=self.user)
-		self.assertEqual(response.status_code, 302)
-		self.user.refresh_from_db()
-		self.assertEqual(self.user.language, 'en')
-
-	def test_language_change_for_unauthenticated_user(self):
-		response = self.app.post(reverse('set_lang'), params={'language': 'de'}, user=None)
-		self.assertEqual(response.status_code, 302)
-		self.assertIn("setLanguage(\'en\');", response.follow().body.decode('utf-8'))
-
-		response = self.app.post(reverse('set_lang'), params={'language': 'en'}, user=None)
-		self.assertEqual(response.status_code, 302)
-		self.assertIn("setLanguage(\'de\');", response.follow().body.decode('utf-8'))
+		self.assertEqual(title_de, MenuItem.objects.get(title_en=title_en).title)
 
 
 class TestSendRemindersCommand(TestCase):
@@ -581,6 +597,34 @@ class TestTools(TestCase):
 			with translation.override(language_code):
 				dc = self.DummyClass()
 				self.assertEqual('english', dc.title)
+
+
+class TestLanguageChange(WebTest):
+	csrf_checks = False
+
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = mommy.make(UserProfile)
+
+	def test_language_change_for_authenticated_user(self):
+		response = self.app.post(reverse('set_lang'), params={'language': 'de'}, user=self.user)
+		self.assertEqual(response.status_code, 302)
+		self.user.refresh_from_db()
+		self.assertEqual(self.user.language, 'de')
+
+		response = self.app.post(reverse('set_lang'), params={'language': 'en'}, user=self.user)
+		self.assertEqual(response.status_code, 302)
+		self.user.refresh_from_db()
+		self.assertEqual(self.user.language, 'en')
+
+	def test_language_change_for_unauthenticated_user(self):
+		response = self.app.post(reverse('set_lang'), params={'language': 'de'}, user=None)
+		self.assertEqual(response.status_code, 302)
+		self.assertIn("setLanguage(\'en\');", response.follow().body.decode('utf-8'))
+
+		response = self.app.post(reverse('set_lang'), params={'language': 'en'}, user=None)
+		self.assertEqual(response.status_code, 302)
+		self.assertIn("setLanguage(\'de\');", response.follow().body.decode('utf-8'))
 
 
 @override_settings(LOGO_FILE="/static/images/logo.png")
