@@ -17,7 +17,7 @@ from guardian.utils import get_anonymous_user
 from model_mommy import mommy
 
 from _1327.information_pages.models import InformationDocument
-from _1327.main.utils import find_root_menu_items, delete_navbar_cache_for_users
+from _1327.main.utils import delete_navbar_cache_for_users, find_root_menu_items
 from _1327.minutes.models import MinutesDocument
 from _1327.user_management.models import UserProfile
 from .context_processors import mark_selected

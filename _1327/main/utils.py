@@ -1,11 +1,11 @@
 import re
 
-from django.db.utils import OperationalError
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
 from django.core.exceptions import ValidationError
+from django.db.utils import OperationalError
 from django.utils.text import slugify as django_slugify
 from django.utils.translation import ugettext_lazy as _
 

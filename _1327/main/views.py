@@ -17,10 +17,10 @@ from _1327.documents.models import Document
 from _1327.documents.views import edit as document_edit, view as document_view
 from _1327.main.forms import AbbreviationExplanationForm, get_permission_form
 from _1327.main.models import AbbreviationExplanation
-from _1327.user_management.models import UserProfile
-from _1327.main.utils import find_root_menu_items, delete_navbar_cache_for_users
+from _1327.main.utils import delete_navbar_cache_for_users, find_root_menu_items
 from _1327.shortlinks.models import Shortlink
 from _1327.shortlinks.views import edit as shortlink_edit, view as shortlink_view
+from _1327.user_management.models import UserProfile
 from .forms import MenuItemAdminForm, MenuItemCreationAdminForm, MenuItemCreationForm, MenuItemForm
 from .models import MenuItem
 from .utils import save_footer_item_order, save_main_menu_item_order
