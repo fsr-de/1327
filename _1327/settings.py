@@ -26,8 +26,13 @@ SECRET_KEY = 'usba$w)n_sr3u(u1os05!8t6)m(w0skpx&%n@wwpgi_bzdxt-e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 TESTING = 'test' in sys.argv
+
+# Very helpful but eats a lot of performance on sql-heavy pages.
+# only with DEBUG == True and TESTING == False
+ENABLE_DEBUG_TOOLBAR = False
+ENABLE_DEBUG_TOOLBAR = ENABLE_DEBUG_TOOLBAR and DEBUG and not TESTING
+
 
 ALLOWED_HOSTS = []
 
@@ -277,3 +282,9 @@ _LOCAL_SETTINGS_FILENAME = os.path.join(BASE_DIR, "localsettings.py")
 if os.path.exists(_LOCAL_SETTINGS_FILENAME):
 	exec(compile(open(_LOCAL_SETTINGS_FILENAME, "rb").read(), _LOCAL_SETTINGS_FILENAME, 'exec'))
 del _LOCAL_SETTINGS_FILENAME
+
+# Django debug toolbar settings
+if ENABLE_DEBUG_TOOLBAR:
+	INSTALLED_APPS += ['debug_toolbar']
+	MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE
+	INTERNAL_IPS = ['127.0.0.1']
