@@ -199,8 +199,8 @@ class TestVersions(WebTest):
 		self.assertEqual(len(versions), 2)
 
 		# check whether the comment of the version correct
-		self.assertEqual(versions[0].revision.comment, 'hallo Bibi Blocksberg')
-		self.assertEqual(versions[1].revision.comment, 'test version')
+		self.assertEqual(versions[0].revision.get_comment(), 'hallo Bibi Blocksberg')
+		self.assertEqual(versions[1].revision.get_comment(), 'test version')
 
 	def test_last_author(self):
 		# test whether last author is part of page
@@ -379,7 +379,7 @@ class TestNewPage(WebTest):
 		# check whether the properties of the new document are correct
 		self.assertEqual(document.title, text)
 		self.assertEqual(document.text, text)
-		self.assertEqual(versions[0].revision.comment, text)
+		self.assertEqual(versions[0].revision.get_comment(), text)
 
 	def test_save_new_page_with_slash_url(self):
 		# get the editor page and save the site

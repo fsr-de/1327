@@ -413,7 +413,7 @@ class TestNewMinutesDocument(WebTest):
 		self.assertEqual(document.author, self.user)
 		self.assertEqual(document.moderator, self.user)
 		self.assertEqual(document.text, text)
-		self.assertEqual(versions[0].revision.comment, text)
+		self.assertEqual(versions[0].revision.get_comment(), text)
 		self.assertListEqual(list(document.participants.all().order_by('username')), list(self.group.user_set.all().order_by('username')))
 
 		checker = ObjectPermissionChecker(self.group)

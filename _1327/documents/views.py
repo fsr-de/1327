@@ -323,7 +323,7 @@ def revert(request):
 		revisions.set_user(request.user)
 		revisions.set_comment(
 			_('reverted to revision \"{revision_comment}\" (at {date})'.format(
-				revision_comment=revert_version.revision.comment,
+				revision_comment=revert_version.revision.get_comment(),
 				date=datetime.utcnow().strftime("%Y-%m-%d %H:%M"),
 			))
 		)
