@@ -43,7 +43,7 @@ class Document(PolymorphicModel):
 			(DOCUMENT_VIEW_PERMISSION_NAME, 'User/Group is allowed to view that document'),
 		)
 
-	class LinkPattern (InternalLinkPattern):
+	class LinkPattern(InternalLinkPattern):
 		def url(self, id):
 			document = Document.objects.get(id=id)
 			if document:

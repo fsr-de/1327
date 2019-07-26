@@ -14,4 +14,4 @@ django-compat == 1.0.15
 django-polymorphic == 2.1.2
 django-sendfile == 0.3.11
 
-Markdown == 2.6.11
+Markdown == 3.1.1

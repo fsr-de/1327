@@ -45,7 +45,7 @@ class Poll(Document):
 			(POLL_VOTE_PERMISSION_NAME, 'User/Group is allowed to participate (vote) in that poll'),
 		)
 
-	class LinkPattern (InternalLinkPattern):
+	class LinkPattern(InternalLinkPattern):
 
 		def url(self, id):
 			poll = Poll.objects.get(id=id)
