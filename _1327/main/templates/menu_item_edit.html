@@ -3,6 +3,7 @@
 {% load i18n %}
 {% load guardian_tags %}
 {% load bootstrap3 %}
+{% load static %}
 
 {% block title %}
 	{% if form.instance.pk %}
@@ -51,6 +52,7 @@
 
 {% block scripts %}
 	{{ block.super }}
+	<script type="text/javascript" src="{% static 'node_modules/select2/dist/js/i18n/de.js' %}"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$("#id_parent,#id_menu_type").select2({
