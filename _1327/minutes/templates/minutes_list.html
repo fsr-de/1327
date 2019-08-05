@@ -77,3 +77,17 @@
 		{% endblock %}
 	{% endfor %}
 {% endblock %}
+
+{% block scripts %}
+	{{ block.super }}
+	<script>
+		const searchForm = document.getElementById("text_search");
+		searchForm.addEventListener("submit", (event) => {
+			const searchFormInput = document.getElementById("id_search_phrase");
+
+			if (searchFormInput.value.trim() === "") {
+				event.preventDefault();
+			}
+		});
+	</script>
+{% endblock %}
