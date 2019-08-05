@@ -10,11 +10,12 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
+        migrations.RenameField(
             model_name='temporarydocumenttext',
-            name='text',
+            old_name='text',
+            new_name='text_de',
         ),
-        migrations.AddField(
+        migrations.AlterField(
             model_name='temporarydocumenttext',
             name='text_de',
             field=models.TextField(blank=True),

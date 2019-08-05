@@ -11,15 +11,17 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
+        migrations.RenameField(
             model_name='choice',
-            name='description',
+            old_name='description',
+            new_name='description_de',
         ),
-        migrations.RemoveField(
+        migrations.RenameField(
             model_name='choice',
-            name='text',
+            old_name='text',
+            new_name='text_de',
         ),
-        migrations.AddField(
+        migrations.AlterField(
             model_name='choice',
             name='description_de',
             field=models.TextField(blank=True, default='', verbose_name='description (german)'),
@@ -29,7 +31,7 @@ class Migration(migrations.Migration):
             name='description_en',
             field=models.TextField(blank=True, default='', verbose_name='description (english)'),
         ),
-        migrations.AddField(
+        migrations.AlterField(
             model_name='choice',
             name='text_de',
             field=models.CharField(default=1, max_length=255, verbose_name='text (german)'),
