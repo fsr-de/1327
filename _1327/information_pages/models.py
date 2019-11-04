@@ -6,7 +6,7 @@ from reversion import revisions
 
 from _1327.documents.models import Document
 
-INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME = 'view_informationdocument'
+INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME = 'show_informationdocument'
 
 
 class InformationDocument(Document):

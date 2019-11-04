@@ -16,7 +16,7 @@ def unlinked_list(request):
 		# parse all menu pages for ids to linked documents and collect them in a list
 		menu_page_document_ids = set()
 		for menu_page in menu_pages:
-			for document_id in re.findall("\(document:([0-9]+)\)", menu_page.text):
+			for document_id in re.findall(r"\(document:([0-9]+)\)", menu_page.text):
 				try:
 					menu_page_document_ids.add(int(document_id))
 				except ValueError:

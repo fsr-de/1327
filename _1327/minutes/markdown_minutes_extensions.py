@@ -104,12 +104,12 @@ class EnterLeavePreprocessor(MinutesBasePreprocessor):
 
 
 class MinuteExtension(Extension):
-	def extendMarkdown(self, md, md_globals):
+	def extendMarkdown(self, md):
 		md.registerExtension(self)
-		md.preprocessors.add('votify', VotePreprocessor(md), '_end')
-		md.preprocessors.add('start_or_endify', StartEndPreprocessor(md), '_end')
-		md.preprocessors.add('quorumify', QuorumPrepocessor(md), '_end')
-		md.preprocessors.add('enter_or_leavify', EnterLeavePreprocessor(md), '_end')
+		md.preprocessors.register(VotePreprocessor(md), 'votify', 200)
+		md.preprocessors.register(StartEndPreprocessor(md), 'start_or_endify', 200)
+		md.preprocessors.register(QuorumPrepocessor(md), 'quorumify', 200)
+		md.preprocessors.register(EnterLeavePreprocessor(md), 'enter_or_leavify', 200)
 
 
 def makeExtension():

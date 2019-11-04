@@ -128,7 +128,7 @@ class TestRevertion(WebTest):
 		versions = Version.objects.get_for_object(self.document)
 		self.assertEqual(len(versions), 3)
 		self.assertEqual(versions[0].object.text, "text")
-		self.assertEqual(versions[0].revision.comment, 'reverted to revision "test version" (at {date})'.format(
+		self.assertEqual(versions[0].revision.get_comment(), 'reverted to revision "test version" (at {date})'.format(
 			date=datetime.utcnow().strftime("%Y-%m-%d %H:%M"),
 		))
 

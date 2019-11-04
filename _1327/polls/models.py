@@ -15,7 +15,7 @@ from _1327.documents.models import Document
 from _1327.user_management.models import UserProfile
 
 
-POLL_VIEW_PERMISSION_NAME = 'view_poll'
+POLL_VIEW_PERMISSION_NAME = 'show_poll'
 POLL_VOTE_PERMISSION_NAME = 'vote_poll'
 
 
@@ -45,7 +45,7 @@ class Poll(Document):
 			(POLL_VOTE_PERMISSION_NAME, 'User/Group is allowed to participate (vote) in that poll'),
 		)
 
-	class LinkPattern (InternalLinkPattern):
+	class LinkPattern(InternalLinkPattern):
 
 		def url(self, id):
 			poll = Poll.objects.get(id=id)

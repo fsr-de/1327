@@ -103,7 +103,7 @@ class PermissionBaseForm(forms.BaseForm):
 			'<tr>',
 			'<th class="col-md-6"> {} </th>'.format(_("Role")),
 		]
-		for permission in sorted(filter(lambda x: 'add' not in x.codename, Permission.objects.filter(content_type=content_type)), key=lambda x: x.codename):
+		for permission in sorted(filter(lambda x: 'add' not in x.codename and 'view' not in x.codename, Permission.objects.filter(content_type=content_type)), key=lambda x: x.codename):
 			item = "<th class=\"col-md-2 text-center\"> {} </th>".format(_(permission.codename.rsplit('_')[0]))
 			output.append(item)
 		output.append('</tr>')
@@ -135,12 +135,12 @@ class PermissionBaseForm(forms.BaseForm):
 		cleaned_data = super(PermissionBaseForm, self).clean()
 		for field, __ in filter(lambda x: type(x[1]) == forms.BooleanField, self.fields.items()):
 			field_value = cleaned_data.get(field)
-			if 'view' in field:
+			if 'show' in field:
 				view_permission_enabled = field_value
 			else:
 				other_permission_enabled = other_permission_enabled or field_value
 		if other_permission_enabled and not view_permission_enabled:
-			raise forms.ValidationError(_("If you want to enable additional permissions for a group you also need to enable the view permission for that group!"))
+			raise forms.ValidationError(_("If you want to enable additional permissions for a group you also need to enable the show permission for that group!"))
 
 	@classmethod
 	def prepare_initial_data(cls, groups, content_type, obj=None):
@@ -165,7 +165,7 @@ def get_permission_form(document):
 	fields = {
 		"{app}.{codename}".format(app=content_type.app_label, codename=permission.codename): forms.BooleanField(required=False)
 		for permission in
-		filter(lambda x: 'add' not in x.codename, Permission.objects.filter(content_type=content_type))
+		filter(lambda x: 'add' not in x.codename and 'view' not in x.codename, Permission.objects.filter(content_type=content_type))
 	}
 	fields['group_name'] = forms.CharField(required=False, widget=forms.HiddenInput())
 	return type('PermissionForm', (PermissionBaseForm,), {'base_fields': fields, 'obj': document})
