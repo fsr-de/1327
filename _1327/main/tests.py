@@ -519,8 +519,6 @@ class MenuItemTests(WebTest):
 		self.assertNotIn(other_sub_item.title, response.body.decode('utf-8'))
 
 	def test_menu_item_language_change(self):
-		# menu_item_count = MenuItem.objects.count()
-
 		document = mommy.make(InformationDocument)
 		title_en = 'test title'
 		title_de = 'test titel'
