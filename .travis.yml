@@ -9,7 +9,6 @@ cache:
   - pip
   - yarn
 install:
-  - yarn global add less
   - pip install -r requirements-test.txt
   - yarn install --cwd _1327/static
 script:

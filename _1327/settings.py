@@ -259,7 +259,12 @@ TEMPLATES = [
 ]
 
 STATIC_PRECOMPILER_COMPILERS = [
-	'static_precompiler.compilers.LESS',
+	(
+		'static_precompiler.compilers.LESS',
+		{
+			"executable": os.path.join(BASE_DIR, "static/node_modules/.bin/lessc")
+		}
+	),
 ]
 
 # Set this to the ID of the document that shall be shown as Main Page

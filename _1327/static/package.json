@@ -21,6 +21,7 @@
     "jquery-ui-datepicker-with-i18n": "^1.10.4",
     "jquery.formset": "^1.3.0",
     "jsdifflib-dist": "^1.0.0",
+    "less": "^3.10.3",
     "select2": "^4.0.6-rc.1"
   }
 }
