@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "bootstrap": "=3.3.4",
+    "bootstrap": "=3.4.1",
     "bootstrap-editable": "^1.0.1",
     "bootstrap-markdown": "^2.10.0",
     "emojione": "^4.0.0",

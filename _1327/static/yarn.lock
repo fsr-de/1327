@@ -75,10 +75,10 @@ bootstrap-markdown@^2.10.0:
   resolved "https://registry.yarnpkg.com/bootstrap-markdown/-/bootstrap-markdown-2.10.0.tgz#65234277840454ee1adc7482b2f4a5e3975dace5"
   integrity sha1-ZSNCd4QEVO4a3HSCsvSl45ddrOU=
 
-bootstrap@=3.3.4:
-  version "3.3.4"
-  resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-3.3.4.tgz#02378b4a6b6ce7a55e3add1edae41ad79f74646a"
-  integrity sha1-AjeLSmts56VeOt0e2uQa1590ZGo=
+bootstrap@=3.4.1:
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-3.4.1.tgz#c3a347d419e289ad11f4033e3c4132b87c081d72"
+  integrity sha512-yN5oZVmRCwe5aKwzRj6736nSmKDX7pLYwsXiCj/EYmo16hODaBiT4En5btW/jhBF/seV+XMx3aYwukYC3A49DA==
 
 braces@^2.3.1:
   version "2.3.2"
