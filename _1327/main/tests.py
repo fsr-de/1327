@@ -348,13 +348,13 @@ class MenuItemTests(WebTest):
 		self.root_menu_item.order = 2
 		self.root_menu_item.save()
 
-		root_item_1 = baker.make(MenuItem, order=1)  # root item before self.root_menu_item
+		baker.make(MenuItem, order=1)  # root item before self.root_menu_item
 		root_item_5 = baker.make(MenuItem, order=5)  # root item after self.root_menu_item
 
 		sub_item_5_1 = baker.make(MenuItem, parent=root_item_5, order=6)
 		baker.make(MenuItem, parent=sub_item_5_1, order=8)  # out of creation order, should be second
 		baker.make(MenuItem, parent=sub_item_5_1, order=7)
-		sub_item_5_3 = baker.make(MenuItem, parent=root_item_5, order=11)  # out of creation order, should be third
+		baker.make(MenuItem, parent=root_item_5, order=11)  # out of creation order, should be third
 		sub_item_5_2 = baker.make(MenuItem, parent=root_item_5, order=9)
 		baker.make(MenuItem, parent=sub_item_5_2, order=10)
 
