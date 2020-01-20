@@ -206,7 +206,7 @@
 	<script>
 		for (const language of ["de", "en"]) {
 			const textInput = $(`#id_text_${language}`);
-			const efficient_render = debounce(function render() {
+			const efficientRender = debounce(function render() {
 				$.ajax({
 					url: "{% url 'documents:render' document.url_title %}",
 					type: "post",
@@ -233,11 +233,11 @@
 				autofocus:true,
 				resize:"both",
 				hiddenButtons: ["cmdPreview", "cmdImage"],
-				onChange: efficient_render,
+				onChange: efficientRender,
 				onShow: function(e) {
 					this.onChange(e);
 				},
-				additionalButtons: getCustomButtons(textInput)
+				additionalButtons: getCustomButtons(textInput, efficientRender)
 			});
 
 			let text = textInput.val();
@@ -403,7 +403,7 @@
 		// add datepicker to date inputs
 		$("input[name*='date']:not([readonly='True'])").datepicker( $.datepicker.regional["{{ LANGUAGE_CODE }}"] );
 
-		function getCustomButtons(textInput) {
+		function getCustomButtons(textInput, efficientRender) {
 			return [
 				[{
 					name: "ImageGroup",
@@ -550,9 +550,10 @@
                         icon: "glyphicon glyphicon-thumbs-up emojiparent",
                         callback: function (e) {
                             // check if we already created an emojionearea object
-                            var emojiHolder = $('.emojioneholder');
+                            const editor = e.$editor;
+                            let emojiHolder = editor.find(".emojioneholder");
                             if (emojiHolder.length) {
-                                if ($(".emojionearea-picker").hasClass('hidden')) {
+                                if (editor.find(".emojionearea-picker").hasClass('hidden')) {
                                     emojiHolder.data("emojioneArea").showPicker();
                                 } else {
                                     emojiHolder.data("emojioneArea").hidePicker();
@@ -560,9 +561,9 @@
                                 return;
                             }
 
-                            $(".btn-toolbar").append("<div class='emojioneholder'></div>");
-                            emojiHolder = $('.emojioneholder');
-                            var emojiArea = emojiHolder.emojioneArea({
+                            editor.find(".btn-toolbar").append("<div class='emojioneholder'></div>");
+                            emojiHolder = editor.find(".emojioneholder");
+                            const emojiArea = emojiHolder.emojioneArea({
                                 standalone: true,
                                 shortnames: true,
                                 saveEmojisAs: 'shortname',
@@ -571,26 +572,26 @@
                                 pickerPosition: 'bottom',
                                 autocomplete: false,
                                 events: {
-                                    'picker.hide': function () {
+                                    'picker.hide': function (picker) {
                                         // add the selected emoji to the correct place in our editor
-                                        var markdownEditor = $('#id_text');
-                                        var markdownText = markdownEditor.val();
-                                        var cursorPosition = markdownEditor[0].selectionStart;
-                                        var textWithEmoji = markdownText.splice(cursorPosition, 0, this.getText());
+                                        const markdownEditor = picker.closest(".md-editor").find(".md-input");
+                                        const markdownText = markdownEditor.val();
+                                        const cursorPosition = markdownEditor[0].selectionStart;
+                                        const textWithEmoji = markdownText.splice(cursorPosition, 0, this.getText());
                                         markdownEditor.val(textWithEmoji);
 
                                         // set the cursor to the correct position, because we automatically set it to
                                         // the end
-                                        var emojiLength = this.getText().length;
+                                        const emojiLength = this.getText().length;
                                         markdownEditor[0].selectionStart = cursorPosition + emojiLength;
                                         markdownEditor[0].selectionEnd = cursorPosition + emojiLength;
 
                                         // rerender the preview
-                                        efficient_render();
+                                        efficientRender();
                                         this.setText('');
                                     },
                                     'picker.show': function () {
-                                        var focusElement = $('.emojionearea-picker').find('.emojionearea-search').find('input');
+                                        const focusElement = $('.emojionearea-picker').find('.emojionearea-search').find('input');
                                         setTimeout(function () {
                                             focusElement.focus();
                                             focusElement.prop('autofocus');
