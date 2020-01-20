@@ -158,9 +158,9 @@ def view(request, title):
 	except (ImportError, AttributeError):
 		pass
 
-	if document.text is "" and (document.text_en is not "" or document.text_de is not ""):
+	if document.text == "" and (document.text_en != "" or document.text_de != ""):
 		messages.warning(request, _('The requested document is not available in the selected language.'))
-		text, toc = convert_markdown(next((text for text in (document.text_de, document.text_en) if text is not ""), ""))
+		text, toc = convert_markdown(next((text for text in (document.text_de, document.text_en) if text != ""), ""))
 	else:
 		text, toc = convert_markdown(document.text)
 
@@ -265,24 +265,21 @@ def search(request):
 		request.user,
 		MinutesDocument.VIEW_PERMISSION_NAME,
 		klass=MinutesDocument.objects.filter(
-			Q(title_de__icontains=query) |
-			Q(title_en__icontains=query)
+			Q(title_de__icontains=query) | Q(title_en__icontains=query)
 		)
 	)
 	information_documents = get_objects_for_user(
 		request.user,
 		InformationDocument.VIEW_PERMISSION_NAME,
 		klass=InformationDocument.objects.filter(
-			Q(title_de__icontains=query) |
-			Q(title_en__icontains=query)
+			Q(title_de__icontains=query) | Q(title_en__icontains=query)
 		)
 	)
 	polls = get_objects_for_user(
 		request.user,
 		Poll.VIEW_PERMISSION_NAME,
 		klass=Poll.objects.filter(
-			Q(title_de__icontains=query) |
-			Q(title_en__icontains=query)
+			Q(title_de__icontains=query) | Q(title_en__icontains=query)
 		)
 	)
 
