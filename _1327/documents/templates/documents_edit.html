@@ -240,20 +240,6 @@
 				additionalButtons: getCustomButtons(textInput)
 			});
 
-			textInput.emojioneArea({
-				shortnames: true,
-				saveEmojisAs: 'unicode',
-				useInternalCDN: false,
-				pickerPosition: 'bottom',
-				autocomplete: false,
-				events: {
-					keyup: function () {
-						textInput.val(this.getText());
-						efficient_render();
-					}
-				}
-			});
-
 			let text = textInput.val();
 			function save() {
 				if(text !== textInput.val()) {
