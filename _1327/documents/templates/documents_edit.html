@@ -392,6 +392,9 @@
 			minimumInputLength: 1,
 			templateResult: (documentInfo) => {
 				{% include "select2_result_template.js" %}
+			},
+			templateSelection: (documentInfo) => {
+				{% include "select2_selection_template.js" %}
 			}
 		});
 
@@ -510,7 +513,6 @@
                         title: "Add internal link",
                         icon: "glyphicon glyphicon-circle-arrow-right",
                         callback: function (e) {
-
                             const modalItem = $('#selectInternalLinkDestination');
                             modalItem.modal();
 
