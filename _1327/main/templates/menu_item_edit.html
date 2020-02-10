@@ -73,6 +73,9 @@
 				minimumInputLength: 1,
 				templateResult: (documentInfo) => {
 					{% include "select2_result_template.js" %}
+				},
+				templateSelection: (documentInfo) => {
+					{% include "select2_selection_template.js" %}
 				}
 			});
 		});
