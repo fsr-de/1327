@@ -13,6 +13,7 @@
 						{% else %}
 							"id": "[{{ minute.title_de }} | {{ minute.title_en }}](document:{{ minute.id }})",
 						{% endif %}
+						"text": "{{ minute.title_de }} | {{ minute.title_en }}",
 						"text_de": "{{ minute.title_de }} ({{ minute.date|date:"d.m.Y" }})",
 						"text_en": "{{ minute.title_en }} ({{ minute.date|date:"d.m.Y" }})"
 					}{% if not forloop.last %},{% endif %}
@@ -31,6 +32,7 @@
 						{% else %}
 							"id": "[{{ information_document.title_de }} | {{ information_document.title_en }}](document:{{ information_document.id }})",
 						{% endif %}
+						"text": "{{ information_document.title_de }} | {{ information_document.title_en }}",
 						"text_de": "{{ information_document.title_de }}",
 						"text_en": "{{ information_document.title_en }}"
 					}{% if not forloop.last %},{% endif %}
@@ -49,6 +51,7 @@
 						{% else %}
 							"id": "[{{ poll.title_de }} | {{ poll.title_en }}](poll:{{ poll.id }})",
 						{% endif %}
+						"text": "{{ poll.title_de }} | {{ poll.title_en }}",
 						"text_de": "{{ poll.title_de }}",
 						"text_en": "{{ poll.title_en }}"
 					}{% if not forloop.last %},{% endif %}
