@@ -123,7 +123,7 @@ class MenuItemTests(WebTest):
 		response = self.app.get(reverse('menu_item_create'), user=self.root_user)
 		form = response.form
 		form['link'] = 'polls:index'
-		form['document'].select(text=document.title)
+		form['document'].select(value=document.id)
 		form['group'].select(text=self.staff_group.name)
 
 		response = form.submit()
@@ -199,7 +199,7 @@ class MenuItemTests(WebTest):
 		form = response.form
 		form['title_en'] = 'test title'
 		form['title_de'] = 'test titel'
-		form['document'].select(text=document.title)
+		form['document'].select(value=document.id)
 		form['group'].select(text=self.staff_group.name)
 
 		response = form.submit().follow()
@@ -232,7 +232,7 @@ class MenuItemTests(WebTest):
 		form = response.form
 		form['title_en'] = 'test title'
 		form['title_de'] = 'test titel'
-		form['document'].select(text=document.title)
+		form['document'].select(value=document.id)
 		form['group'].select(text=self.staff_group.name)
 		form['parent'].select(text=self.sub_item.title)
 
@@ -249,7 +249,7 @@ class MenuItemTests(WebTest):
 		form = response.form
 		form['title_en'] = 'test title'
 		form['title_de'] = 'test titel'
-		form['document'].select(text=document.title)
+		form['document'].select(value=document.id)
 		form['group'].select(text=self.staff_group.name)
 
 		response = form.submit().maybe_follow()
@@ -266,7 +266,7 @@ class MenuItemTests(WebTest):
 		form = response.form
 		form['title_en'] = 'test title'
 		form['title_de'] = 'test titel'
-		form['document'].select(text=document.title)
+		form['document'].select(value=document.id)
 		form['group'].force_value(group.id)
 
 		response = form.submit().maybe_follow()
@@ -527,7 +527,7 @@ class MenuItemTests(WebTest):
 		form = response.form
 		form['title_en'] = title_en
 		form['title_de'] = title_de
-		form['document'].select(text=document.title)
+		form['document'].select(value=document.id)
 		form['group'].select(text=self.staff_group.name)
 		form['parent'].select(text=self.sub_item.title)
 

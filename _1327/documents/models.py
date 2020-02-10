@@ -55,7 +55,7 @@ class Document(PolymorphicModel):
 			return ''
 
 	def __str__(self):
-		return self.title
+		return f"{self.title_de} | {self.title_en}"
 
 	def save(self, *args, **kwargs):
 		# make sure that the url is slugified
