@@ -159,7 +159,7 @@ def view(request, title):
 		pass
 
 	if document.text == "" and (document.text_en != "" or document.text_de != ""):
-		messages.warning(request, _('The requested document is not available in the selected language.'))
+		messages.warning(request, _('The requested document is not available in the selected language. It will be shown in the available language instead.'))
 		text, toc = convert_markdown(next((text for text in (document.text_de, document.text_en) if text != ""), ""))
 	else:
 		text, toc = convert_markdown(document.text)

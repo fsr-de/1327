@@ -756,7 +756,7 @@ class TestLanguage(WebTest):
 		self.assertEqual(response.status_code, 200)
 		messages = list(response.context['messages'])
 		self.assertEqual(len(messages), 1)
-		self.assertEqual(str(messages[0]), 'The requested document is not available in the selected language.')
+		self.assertEqual(str(messages[0]), 'The requested document is not available in the selected language. It will be shown in the available language instead.')
 
 		response = self.app.post(reverse('set_lang'), params={'language': 'de'}, user=self.user)
 		self.assertEqual(response.status_code, 302)

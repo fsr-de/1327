@@ -28,12 +28,12 @@ class Document(PolymorphicModel):
 		return '{}_{}'.format(hashlib.md5(str(datetime.now()).encode()).hexdigest(), int(max_id) + 1)
 
 	created = models.DateTimeField(default=timezone.now)
-	title_de = models.CharField(max_length=255, verbose_name=_("title (german)"))
-	title_en = models.CharField(max_length=255, verbose_name=_("title (english)"))
+	title_de = models.CharField(max_length=255, verbose_name=_("Title (German)"))
+	title_en = models.CharField(max_length=255, verbose_name=_("Title (English)"))
 	title = translate(en='title_en', de='title_de')
 	url_title = models.CharField(unique=True, max_length=255, verbose_name='url_title')
-	text_de = models.TextField(blank=True, verbose_name=_("text (german)"))
-	text_en = models.TextField(blank=True, verbose_name=_("text (english)"))
+	text_de = models.TextField(blank=True, verbose_name=_("Text (German)"))
+	text_en = models.TextField(blank=True, verbose_name=_("Text (English)"))
 	text = translate(en='text_en', de='text_de')
 	hash_value = models.CharField(max_length=40, unique=True, default=get_hash, verbose_name=_("Hash value"))
 
