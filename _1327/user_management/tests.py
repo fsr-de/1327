@@ -109,6 +109,10 @@ class UsecaseTests(WebTest):
 		response = response.follow(status=403)
 		self.assertEqual(response.status_code, 403)
 
+	def test_login_url_with_logged_in_user_redirects_to_home(self):
+		response = self.app.get(reverse('login'), user=self.user)
+		self.assertRedirects(response, reverse('index'))
+
 	def test_name(self):
 		user = UserProfile.objects.get(username='noname')
 		self.assertEqual(user.get_full_name(), 'noname')

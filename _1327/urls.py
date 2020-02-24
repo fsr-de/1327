@@ -16,7 +16,7 @@ urlpatterns = [
 	path("" + settings.POLLS_URL_NAME + "/", include("_1327.polls.urls")),
 	path("documents/", include("_1327.documents.urls")),
 	path("information_pages/", include("_1327.information_pages.urls")),
-	path("login", auth_views.LoginView.as_view(template_name="login.html", authentication_form=LoginUsernameForm), name="login"),
+	path("login", auth_views.LoginView.as_view(template_name="login.html", authentication_form=LoginUsernameForm, redirect_authenticated_user=True), name="login"),
 	path("logout", user_management_views.logout, name="logout"),
 	path("view_as", user_management_views.view_as, name="view_as"),
 
