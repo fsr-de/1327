@@ -10,7 +10,10 @@ class MinutesDocumentForm(DocumentForm):
 
 	class Meta:
 		model = MinutesDocument
-		fields = ['title', 'date', 'moderator', 'author', 'participants', 'labels', 'state', 'text', 'comment', 'url_title', 'group']
+		fields = [
+			'title_de', 'title_en', 'date', 'moderator', 'author', 'participants', 'labels', 'state', 'text_de',
+			'text_en', 'comment', 'url_title', 'group'
+		]
 
 	def __init__(self, *args, **kwargs):
 		user = kwargs.get('user', None)
@@ -22,7 +25,8 @@ class MinutesDocumentForm(DocumentForm):
 			last_minutes_document = get_last_minutes_document_for_group(creation_group)
 			if last_minutes_document:
 				self.initial['moderator'] = last_minutes_document.moderator
-				self.initial['title'] = last_minutes_document.title
+				self.initial['title_de'] = last_minutes_document.title_de
+				self.initial['title_en'] = last_minutes_document.title_en
 			else:
 				self.initial['moderator'] = user
 

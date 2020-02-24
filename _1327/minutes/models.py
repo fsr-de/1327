@@ -68,7 +68,7 @@ class MinutesDocument(Document):
 
 	@classmethod
 	def generate_new_title(cls):
-		return _("Minutes")
+		return "Minutes", "Protokoll"
 
 	@classmethod
 	def generate_default_slug(cls, title):

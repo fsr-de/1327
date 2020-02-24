@@ -28,6 +28,8 @@ urlpatterns = [
 	path("menu_item_delete", main_views.menu_item_delete, name="menu_item_delete"),
 	path("menu_item/update_order", main_views.menu_items_update_order, name="menu_items_update_order"),
 
+	path("set_lang", main_views.set_lang, name="set_lang"),
+
 	path("shortlinks", shortlinks_views.shortlinks_index, name="shortlinks_index"),
 	path("shortlink/create", shortlinks_views.shortlink_create, name="shortlink_create"),
 	path("shortlink/delete", shortlinks_views.shortlink_delete, name="shortlink_delete"),

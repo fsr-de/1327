@@ -21,7 +21,7 @@ class DocumentForm(forms.ModelForm):
 
 	class Meta:
 		model = Document
-		fields = ['title', 'text', 'url_title', 'group', 'comment']
+		fields = ['title_de', 'title_en', 'text_de', 'text_en', 'url_title', 'group', 'comment']
 
 	def __init__(self, *args, **kwargs):
 		user = kwargs.pop('user', None)
@@ -91,7 +91,8 @@ class PermissionBaseForm(forms.BaseForm):
 			if field_name == 'group_name':
 				continue
 			if value:
-				if (group.name == settings.ANONYMOUS_GROUP_NAME or group.name == settings.UNIVERSITY_GROUP_NAME) and field_name != model.view_permission_name:
+				if (group.name == settings.ANONYMOUS_GROUP_NAME or group.name == settings.UNIVERSITY_GROUP_NAME) and \
+					field_name != model.view_permission_name:
 					continue
 				assign_perm(field_name, group, model)
 			else:
@@ -119,7 +120,8 @@ class PermissionBaseForm(forms.BaseForm):
 		for name in sorted(self.fields.keys()):
 			if name == "group_name":
 				continue
-			if (self['group_name'].value() == settings.ANONYMOUS_GROUP_NAME or self['group_name'].value() == settings.UNIVERSITY_GROUP_NAME) and name != self.obj.view_permission_name:
+			if self['group_name'].value() in (settings.ANONYMOUS_GROUP_NAME, settings.UNIVERSITY_GROUP_NAME) and \
+				name != self.obj.view_permission_name:
 				output.append('<td class="text-center"><input type="checkbox" disabled="disabled" /></td>')
 				continue
 			output.append('<td class="text-center"> {} </td>'.format(self[name]))
@@ -163,7 +165,8 @@ class PermissionBaseForm(forms.BaseForm):
 def get_permission_form(document):
 	content_type = ContentType.objects.get_for_model(document)
 	fields = {
-		"{app}.{codename}".format(app=content_type.app_label, codename=permission.codename): forms.BooleanField(required=False)
+		"{app}.{codename}".format(app=content_type.app_label, codename=permission.codename): forms.BooleanField(
+			required=False)
 		for permission in
 		filter(lambda x: 'add' not in x.codename and 'view' not in x.codename, Permission.objects.filter(content_type=content_type))
 	}

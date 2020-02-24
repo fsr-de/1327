@@ -246,7 +246,6 @@ TEMPLATES = [
 				'django.template.context_processors.static',
 				'django.template.context_processors.tz',
 				'django.contrib.messages.context_processors.messages',
-				'_1327.main.context_processors.set_language',
 				'_1327.main.context_processors.menu',
 				'_1327.main.context_processors.can_create_informationpage',
 				'_1327.main.context_processors.can_create_minutes',

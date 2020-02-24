@@ -199,8 +199,8 @@ div#wrapper {
 		width: 1170px;
 	}
 }
-.nav > li > a,
-.nav > li > span {
+.nav:not(.nav-tabs) > li > a,
+.nav:not(.nav-tabs) > li > span {
 	padding: 15px;
 	color: @gray-lighter;
 	line-height: 20px;
@@ -242,6 +242,9 @@ div#wrapper {
 }
 .breadcrumb-area {
 	display: inline-block;
+}
+.selected-language {
+	color: #f6a800;
 }
 .login-area {
 	display: inline-block;
@@ -371,10 +374,6 @@ nav li:hover > .dropdown-menu {
 	// Note that this doesn't work for the attachments table.
 	// See the attachments table CSS below (#attachment-table) for details.
 	overflow-wrap: break-word;
-}
-
-.content :first-child {
-	margin-top: 0;
 }
 
 .headline {
@@ -992,4 +991,16 @@ table.diff > thead th:nth-of-type(4) { width: 45%; }
 	.emojionearea-editor {
 		display: None !important;
 	}
+}
+
+.preview-tab {
+	margin-top: 1em;
+}
+
+.document-title {
+	margin-top: 0;
+}
+
+.select2-container--default .select2-results>.select2-results__options {
+	max-height: 400px;
 }

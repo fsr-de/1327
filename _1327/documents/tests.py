@@ -36,7 +36,7 @@ class TestInternalLinkMarkDown(TestCase):
 
 		cls.md = markdown.Markdown(extensions=[EscapeHtml(), InternalLinksMarkdownExtension(), 'markdown.extensions.tables'])
 
-		cls.document = mommy.prepare(InformationDocument, text="text")
+		cls.document = mommy.prepare(InformationDocument, text_en="text")
 		with transaction.atomic(), revisions.create_revision():
 				cls.document.save()
 				revisions.set_user(cls.user)
@@ -61,14 +61,14 @@ class TestRevertion(WebTest):
 	def setUpTestData(cls):
 		cls.user = mommy.make(UserProfile, is_superuser=True)
 
-		cls.document = mommy.prepare(Document, text="text")
+		cls.document = mommy.prepare(Document, text_en="text")
 		with transaction.atomic(), revisions.create_revision():
 				cls.document.save()
 				revisions.set_user(cls.user)
 				revisions.set_comment('test version')
 
 		# create a second version
-		cls.document.text += '\nmore text'
+		cls.document.text_en += '\nmore text'
 		with transaction.atomic(), revisions.create_revision():
 				cls.document.save()
 				revisions.set_user(cls.user)
@@ -127,7 +127,7 @@ class TestRevertion(WebTest):
 
 		versions = Version.objects.get_for_object(self.document)
 		self.assertEqual(len(versions), 3)
-		self.assertEqual(versions[0].object.text, "text")
+		self.assertEqual(versions[0].object.text_en, "text")
 		self.assertEqual(versions[0].revision.get_comment(), 'reverted to revision "test version" (at {date})'.format(
 			date=datetime.utcnow().strftime("%Y-%m-%d %H:%M"),
 		))
@@ -195,7 +195,7 @@ class TestRevertion(WebTest):
 			versions = Version.objects.get_for_object(document).reverse()
 			self.assertEqual(len(versions), 2)
 			for version, text in zip(versions, [text_1, text_2]):
-				self.assertEqual(version.field_dict['text'], text)
+				self.assertEqual(version.field_dict['text_en'], text)
 
 
 class TestAutosave(WebTest):
@@ -208,7 +208,7 @@ class TestAutosave(WebTest):
 		cls.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
 		cls.group = mommy.make(Group)
 
-		cls.document = mommy.prepare(InformationDocument, text="text")
+		cls.document = mommy.prepare(InformationDocument, text_de="text_de", title_de="title_de", text_en="text_en")
 		with transaction.atomic(), revisions.create_revision():
 				cls.document.save()
 				revisions.set_user(cls.user)
@@ -219,12 +219,13 @@ class TestAutosave(WebTest):
 		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
-		self.assertEqual(form.get('text').value, 'text')
+		self.assertEqual(form.get('text_de').value, 'text_de')
+		self.assertEqual(form.get('text_en').value, 'text_en')
 
 		# autosave AUTO
 		response = self.app.post(
 			reverse('documents:autosave', args=[self.document.url_title]),
-			params={'text': 'AUTO', 'title': form.get('title').value, 'comment': ''},
+			params={'text_de': 'AUTO_de', 'text_en': 'AUTO_en', 'title_en': form.get('title_en').value, 'comment': ''},
 			user=self.user,
 			xhr=True
 		)
@@ -234,7 +235,8 @@ class TestAutosave(WebTest):
 		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
-		self.assertEqual(form.get('text').value, 'text')
+		self.assertEqual(form.get('text_de').value, 'text_de')
+		self.assertEqual(form.get('text_en').value, 'text_en')
 
 		# if loading autosave text should be AUTO
 		autosave = TemporaryDocumentText.objects.get()
@@ -245,12 +247,13 @@ class TestAutosave(WebTest):
 		)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
-		self.assertEqual(form.get('text').value, 'AUTO')
+		self.assertEqual(form.get('text_de').value, 'AUTO_de')
+		self.assertEqual(form.get('text_en').value, 'AUTO_en')
 
 		# second autosave AUTO2
 		response = self.app.post(
 			reverse('documents:autosave', args=[self.document.url_title]),
-			params={'text': 'AUTO2', 'title': form.get('title').value, 'comment': ''},
+			params={'text_de': 'AUTO2_de', 'text_en': 'AUTO2_en', 'title_en': form.get('title_en').value, 'comment': ''},
 			user=self.user,
 			xhr=True
 		)
@@ -265,19 +268,20 @@ class TestAutosave(WebTest):
 		)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
-		self.assertEqual(form.get('text').value, 'AUTO2')
+		self.assertEqual(form.get('text_de').value, 'AUTO2_de')
+		self.assertEqual(form.get('text_en').value, 'AUTO2_en')
 
 	def test_autosave_not_logged_in(self):
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
 		form = response.forms['document-form']
-		url_title = slugify(form.get('title').value)
+		url_title = slugify(form.get('title_en').value)
 
 		# autosave AUTO
 		response = self.app.post(
 			reverse('documents:autosave', args=[url_title]),
-			params={'text': 'AUTO', 'title': form.get('title').value, 'comment': ''},
+			params={'text_en': 'AUTO', 'title_en': form.get('title_en').value, 'comment': ''},
 			xhr=True,
 			user=get_anonymous_user(),
 			expect_errors=True,
@@ -295,7 +299,7 @@ class TestAutosave(WebTest):
 		# autosave AUTO
 		response = self.app.post(
 			reverse('documents:autosave', args=[url_title]),
-			params={'text': 'AUTO', 'title': form.get('title').value, 'comment': ''},
+			params={'text_en': 'AUTO', 'title_en': form.get('title_en').value, 'comment': ''},
 			xhr=True
 		)
 		self.assertEqual(response.status_code, 200)
@@ -325,7 +329,7 @@ class TestAutosave(WebTest):
 		# autosave second document AUTO
 		response = self.app.post(
 			reverse('documents:autosave', args=[url_title2]),
-			params={'text': 'AUTO', 'title': form.get('title').value, 'comment': ''},
+			params={'text_en': 'AUTO', 'title_en': form.get('title_en').value, 'comment': ''},
 			user=self.user,
 			xhr=True
 		)
@@ -340,7 +344,7 @@ class TestAutosave(WebTest):
 		response = self.app.get(reverse('edit', args=[url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
-		self.assertEqual(form.get('text').value, '')
+		self.assertEqual(form.get('text_en').value, '')
 
 		# if loading autosave text should be AUTO
 		autosave = TemporaryDocumentText.objects.first()
@@ -351,7 +355,7 @@ class TestAutosave(WebTest):
 		)
 		self.assertEqual(response.status_code, 200)
 		form = response.forms['document-form']
-		self.assertEqual(form.get('text').value, 'AUTO')
+		self.assertEqual(form.get('text_en').value, 'AUTO')
 
 	def test_create_autosave_non_superuser(self):
 		# test every document type
@@ -374,7 +378,7 @@ class TestAutosave(WebTest):
 
 			response = self.app.post(
 				reverse('documents:autosave', args=[url_title]),
-				params={'text': 'AUTO', 'title': form.get('title').value, 'comment': ''},
+				params={'text_en': 'AUTO', 'title_en': form.get('title_en').value, 'comment': ''},
 				xhr=True,
 				user=user,
 			)
@@ -392,7 +396,7 @@ class TestAutosave(WebTest):
 		# autosave AUTO
 		response = self.app.post(
 			reverse('documents:autosave', args=[url_title]),
-			params={'text': 'AUTO', 'title': form.get('title').value, 'comment': '', 'group': mommy.make(Group)},
+			params={'text_en': 'AUTO', 'title_en': form.get('title_en').value, 'comment': '', 'group': mommy.make(Group)},
 			xhr=True
 		)
 		self.assertEqual(response.status_code, 200)
@@ -444,7 +448,7 @@ class TestAutosave(WebTest):
 	def test_can_not_restore_autosave_of_different_user(self):
 		mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
 		second_user = mommy.make(UserProfile)
-		second_document = mommy.prepare(InformationDocument, text="text")
+		second_document = mommy.prepare(InformationDocument, text_en="text_en")
 
 		with transaction.atomic(), revisions.create_revision():
 			second_document.save()
@@ -487,7 +491,7 @@ class TestAutosave(WebTest):
 			user=self.user
 		)
 		self.assertEqual(response.status_code, 200)
-		self.assertIn(autosave.text, response.body.decode('utf-8'))
+		self.assertIn(autosave.text_en, response.body.decode('utf-8'))
 
 	def test_autosave_with_multiple_autosaves(self):
 		assign_perm(self.document.edit_permission_name, self.group, self.document)
@@ -497,14 +501,14 @@ class TestAutosave(WebTest):
 
 		response = self.app.post(
 			reverse('documents:autosave', args=[self.document.url_title]),
-			params={'text': 'AUTO', 'title': self.document.title, 'comment': ''},
+			params={'text_en': 'AUTO', 'title_en': self.document.title_en, 'comment': ''},
 			user=self.user,
 			xhr=True,
 		)
 
 		latest_autosave = TemporaryDocumentText.objects.filter(document=self.document).latest('created')
 		self.assertEqual(response.status_code, 200)
-		self.assertEqual(latest_autosave.text, 'AUTO')
+		self.assertEqual(latest_autosave.text_en, 'AUTO')
 
 	def test_autosaves_removed_after_successful_edit(self):
 		assign_perm(self.document.edit_permission_name, self.group, self.document)
@@ -514,7 +518,7 @@ class TestAutosave(WebTest):
 
 		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 		form = response.forms['document-form']
-		form['title'] = 'new title'
+		form['title_en'] = 'new title'
 
 		response = form.submit().follow()
 		self.assertEqual(response.status_code, 200)
@@ -532,7 +536,7 @@ class TestAutosave(WebTest):
 			# autosave AUTO
 			response = self.app.post(
 				reverse('documents:autosave', args=[url_title]),
-				params={'text': 'AUTO', 'title': form.get('title').value, 'comment': '', 'group': mommy.make(Group)},
+				params={'text_en': 'AUTO', 'title_en': form.get('title_en').value, 'comment': '', 'group': mommy.make(Group)},
 				xhr=True
 			)
 			self.assertEqual(response.status_code, 200)
@@ -556,7 +560,7 @@ class TestAutosave(WebTest):
 			# autosave AUTO
 			response = self.app.post(
 				reverse('documents:autosave', args=[url_title]),
-				params={'text': 'AUTO', 'title': form.get('title').value, 'comment': ''},
+				params={'text_en': 'AUTO', 'title_en': form.get('title_en').value, 'comment': ''},
 				xhr=True
 			)
 			self.assertEqual(response.status_code, 200)
@@ -694,7 +698,7 @@ class TestMarkdownRendering(WebTest):
 	def setUpTestData(cls):
 		cls.user = mommy.make(UserProfile, is_superuser=True)
 		cls.document_text = 'test'
-		cls.document = mommy.make(InformationDocument, text=cls.document_text)
+		cls.document = mommy.make(InformationDocument, text_en=cls.document_text)
 		cls.document.set_all_permissions(mommy.make(Group))
 
 	def test_render_text_no_permission(self):
@@ -729,6 +733,49 @@ class TestMarkdownRendering(WebTest):
 		self.assertEqual('<p>' + self.document_text + '</p>', response.body.decode('utf-8'))
 
 
+class TestLanguage(WebTest):
+	csrf_checks = False
+
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.document_text = 'test'
+		cls.document = mommy.make(InformationDocument, text_de=cls.document_text)
+		cls.document.set_all_permissions(mommy.make(Group))
+
+		cls.empty_document = mommy.make(InformationDocument)
+		cls.empty_document.set_all_permissions(mommy.make(Group))
+
+	# Test that alert is there if only one language available
+	# Test no alert if both languages missing
+	def test_not_available_alert(self):
+		response = self.app.post(reverse('set_lang'), params={'language': 'en'}, user=self.user)
+		self.assertEqual(response.status_code, 302)
+
+		response = self.app.get(reverse('view', args=[self.document.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		messages = list(response.context['messages'])
+		self.assertEqual(len(messages), 1)
+		self.assertEqual(str(messages[0]), 'The requested document is not available in the selected language. It will be shown in the available language instead.')
+
+		response = self.app.post(reverse('set_lang'), params={'language': 'de'}, user=self.user)
+		self.assertEqual(response.status_code, 302)
+
+		response = self.app.get(reverse('view', args=[self.document.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		messages = list(response.context['messages'])
+		self.assertEqual(len(messages), 0)
+
+	def test_no_not_available_alert_on_empty_document(self):
+		response = self.app.post(reverse('set_lang'), params={'language': 'en'}, user=self.user)
+		self.assertEqual(response.status_code, 302)
+
+		response = self.app.get(reverse('view', args=[self.empty_document.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		messages = list(response.context['messages'])
+		self.assertEqual(len(messages), 0)
+
+
 class TestSignals(TestCase):
 	@classmethod
 	def setUpTestData(cls):
@@ -738,7 +785,7 @@ class TestSignals(TestCase):
 		# create a new document for every subclass of document
 		# and see whether the url_title is automatically created
 		for obj_id, subclass in enumerate(Document.__subclasses__()):
-			new_document = mommy.make(subclass, title="test_{}".format(obj_id), url_title="")
+			new_document = mommy.make(subclass, title_en="test_{}".format(obj_id), url_title="")
 			self.assertEqual(new_document.url_title, "test_{}".format(obj_id))
 
 	def test_group_permission_hook(self):
@@ -755,7 +802,7 @@ class TestSignals(TestCase):
 				assign_perm(permission_name, group)
 
 			# test whether the permission hook works
-			test_object = mommy.make(subclass, title="test")
+			test_object = mommy.make(subclass, title_en="test")
 			user_permissions = get_perms(group, test_object)
 			self.assertNotEqual(len(user_permissions), 0)
 
@@ -1317,7 +1364,10 @@ class TestDeletion(WebTest):
 	def setUpTestData(cls):
 		cls.user = mommy.make(UserProfile, is_superuser=True)
 		cls.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
-		cls.document = mommy.make(InformationDocument)
+		cls.document = mommy.make(
+			InformationDocument,
+			title_en='title'
+		)
 		cls.document.set_all_permissions(mommy.make(Group))
 
 	def test_delete_cascade(self):

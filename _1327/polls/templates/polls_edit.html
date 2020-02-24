@@ -24,8 +24,22 @@
 							{{ field }}
 						{% endfor %}
 						<td class="sorthandle"><span class="glyphicon glyphicon-move"></span></td>
-						<td>{% bootstrap_field form_element.text layout='horizontal' show_label=False horizontal_label_class="" %}</td>
-						<td>{% bootstrap_field form_element.description layout='horizontal' show_label=False horizontal_label_class="" %}</td>
+						<td>
+							<div class="row">
+								{% bootstrap_field form_element.text_de layout='horizontal' show_label=False horizontal_label_class="" %}
+							</div>
+							<div class="row">
+								{% bootstrap_field form_element.text_en layout='horizontal' show_label=False horizontal_label_class="" %}
+							</div>
+						</td>
+						<td>
+							<div class="row">
+								{% bootstrap_field form_element.description_de layout='horizontal' show_label=False horizontal_label_class="" %}
+							</div>
+							<div class="row">
+								{% bootstrap_field form_element.description_en layout='horizontal' show_label=False horizontal_label_class="" %}
+							</div>
+						</td>
 						<td>{% if form_element.instance.pk %}{{ form_element.DELETE }}{% endif %}</td>
 					</tr>
 				{% endfor %}
@@ -36,8 +50,8 @@
 
 {% block additional_scripts%}
 	function setOrderIndex(row, index) {
-		var text = row.find("input[name*='text']");
-		var description = row.find("input[name*='description']");
+		var text = row.find("input[name*='text_de']");
+		var description = row.find("input[name*='description_de']");
 		var orderIndex = row.children("input[name*='index']");
 		if (text.val() === "" && description.val() === "") {
 			// if the row is empty (has no text in the input fields) set the order to 0 (default),

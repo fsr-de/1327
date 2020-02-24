@@ -8,6 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from guardian.shortcuts import assign_perm
 
 from _1327.documents.models import Document
+from _1327.main.tools import translate
 
 MENUITEM_VIEW_PERMISSION_NAME = 'show_menuitem'
 MENUITEM_EDIT_PERMISSION_NAME = 'change_menuitem'
@@ -23,7 +24,9 @@ class MenuItem(models.Model):
 		(MAIN_MENU, _("Main Menu")),
 		(FOOTER, _("Footer")),
 	)
-	title = models.CharField(max_length=255, unique=False, verbose_name=_("Title"))
+	title_de = models.CharField(max_length=255, verbose_name=_("Title (german)"))
+	title_en = models.CharField(max_length=255, verbose_name=_("Title (english)"))
+	title = translate(en='title_en', de='title_de')
 	order = models.IntegerField(default=999)
 
 	link = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Link"))
