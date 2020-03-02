@@ -138,15 +138,15 @@ revisions.register(Poll, follow=["document_ptr"])
 
 class Choice(models.Model):
 	poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name="choices")
-	text_de = models.CharField(max_length=255, verbose_name=_("text (german)"))
-	text_en = models.CharField(max_length=255, verbose_name=_("text (english)"))
+	text_de = models.CharField(max_length=255, verbose_name=_("Text (German)"))
+	text_en = models.CharField(max_length=255, verbose_name=_("Text (English)"))
 	text = translate(en='text_en', de='text_de')
-	description_de = models.TextField(default="", blank=True, verbose_name=_("description (german)"))
-	description_en = models.TextField(default="", blank=True, verbose_name=_("description (english)"))
+	description_de = models.TextField(default="", blank=True, verbose_name=_("Description (German)"))
+	description_en = models.TextField(default="", blank=True, verbose_name=_("Description (English)"))
 	description = translate(en='description_en', de='description_de')
 	votes = models.IntegerField(default=0)
 
-	index = models.IntegerField(verbose_name=_("ordering index"), default=0)
+	index = models.IntegerField(verbose_name=_("Ordering index"), default=0)
 
 	class Meta:
 		ordering = ['index']

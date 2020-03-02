@@ -24,8 +24,8 @@ class MenuItem(models.Model):
 		(MAIN_MENU, _("Main Menu")),
 		(FOOTER, _("Footer")),
 	)
-	title_de = models.CharField(max_length=255, verbose_name=_("Title (german)"))
-	title_en = models.CharField(max_length=255, verbose_name=_("Title (english)"))
+	title_de = models.CharField(max_length=255, verbose_name=_("Title (German)"))
+	title_en = models.CharField(max_length=255, verbose_name=_("Title (English)"))
 	title = translate(en='title_en', de='title_de')
 	order = models.IntegerField(default=999)
 
