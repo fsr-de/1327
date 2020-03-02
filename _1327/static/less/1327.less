@@ -243,11 +243,25 @@ div#wrapper {
 .breadcrumb-area {
 	display: inline-block;
 }
-.selected-language {
-	color: #f6a800;
-}
 .login-area {
 	display: inline-block;
+}
+.language-info {
+	display: inline-block;
+	padding: 0 15px;
+}
+.language-button {
+	display: inline-block;
+	height: 25px;
+	padding: 3px 0;
+	color: @gray-lighter;
+	&:hover,
+	&:focus {
+		background-color: @gray;
+	}
+}
+.language-button-selected {
+	color: @hpi-yellow;
 }
 .login-info {
 	display: inline-block;
