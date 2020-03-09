@@ -14,7 +14,7 @@ from django_webtest import WebTest
 from guardian.shortcuts import assign_perm, get_perms, get_perms_for_model, remove_perm
 from guardian.utils import get_anonymous_user
 import markdown
-from model_mommy import mommy
+from model_bakery import baker
 from reversion import revisions
 from reversion.models import Version
 
@@ -32,11 +32,11 @@ from .models import Attachment, Document, TemporaryDocumentText
 class TestInternalLinkMarkDown(TestCase):
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.user = baker.make(UserProfile, is_superuser=True)
 
 		cls.md = markdown.Markdown(extensions=[EscapeHtml(), InternalLinksMarkdownExtension(), 'markdown.extensions.tables'])
 
-		cls.document = mommy.prepare(InformationDocument, text_en="text")
+		cls.document = baker.prepare(InformationDocument, text_en="text")
 		with transaction.atomic(), revisions.create_revision():
 				cls.document.save()
 				revisions.set_user(cls.user)
@@ -59,9 +59,9 @@ class TestRevertion(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.user = baker.make(UserProfile, is_superuser=True)
 
-		cls.document = mommy.prepare(Document, text_en="text")
+		cls.document = baker.prepare(Document, text_en="text")
 		with transaction.atomic(), revisions.create_revision():
 				cls.document.save()
 				revisions.set_user(cls.user)
@@ -78,7 +78,7 @@ class TestRevertion(WebTest):
 		versions = Version.objects.get_for_object(self.document)
 		self.assertEqual(len(versions), 2)
 
-		user_without_perms = mommy.make(UserProfile)
+		user_without_perms = baker.make(UserProfile)
 		response = self.app.post(
 			reverse('documents:revert'),
 			params={'id': versions[1].pk, 'url_title': self.document.url_title},
@@ -169,7 +169,7 @@ class TestRevertion(WebTest):
 			response = form.submit().follow()
 			self.assertEqual(response.status_code, 200)
 
-		group = mommy.make(Group)
+		group = baker.make(Group)
 		assign_perm("minutes.add_minutesdocument", group)
 		assign_perm("information_pages.add_informationdocument", group)
 		assign_perm("polls.add_poll", group)
@@ -204,11 +204,11 @@ class TestAutosave(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.user = baker.make(UserProfile, is_superuser=True)
 		cls.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
-		cls.group = mommy.make(Group)
+		cls.group = baker.make(Group)
 
-		cls.document = mommy.prepare(InformationDocument, text_de="text_de", title_de="title_de", text_en="text_en")
+		cls.document = baker.prepare(InformationDocument, text_de="text_de", title_de="title_de", text_en="text_en")
 		with transaction.atomic(), revisions.create_revision():
 				cls.document.save()
 				revisions.set_user(cls.user)
@@ -312,7 +312,7 @@ class TestAutosave(WebTest):
 		self.assertEqual(response.status_code, 200)
 		self.assertIn((reverse('edit', args=[url_title]) + '?restore={}'.format(autosave.id)), str(response.body))
 
-		user2 = mommy.make(UserProfile, is_superuser=True)
+		user2 = baker.make(UserProfile, is_superuser=True)
 		user2.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
 		# on the new page site should be a banner with a restore link but not for another user
 		response = self.app.get(reverse('documents:create', args=['informationdocument']), user=user2)
@@ -360,8 +360,8 @@ class TestAutosave(WebTest):
 	def test_create_autosave_non_superuser(self):
 		# test every document type
 		for klass in Document.__subclasses__():
-			user = mommy.make(UserProfile)
-			group = mommy.make(Group)
+			user = baker.make(UserProfile)
+			group = baker.make(Group)
 			group.user_set.add(user)
 			# add the 'add' permission to the group for that document type
 			content_type = ContentType.objects.get_for_model(klass)
@@ -396,7 +396,7 @@ class TestAutosave(WebTest):
 		# autosave AUTO
 		response = self.app.post(
 			reverse('documents:autosave', args=[url_title]),
-			params={'text_en': 'AUTO', 'title_en': form.get('title_en').value, 'comment': '', 'group': mommy.make(Group)},
+			params={'text_en': 'AUTO', 'title_en': form.get('title_en').value, 'comment': '', 'group': baker.make(Group)},
 			xhr=True
 		)
 		self.assertEqual(response.status_code, 200)
@@ -415,11 +415,11 @@ class TestAutosave(WebTest):
 		self.assertIn((reverse('edit', args=[url_title]) + '?restore={}'.format(autosave.id)), str(response.body))
 
 	def test_autosave_not_possible_to_view_without_permissions(self):
-		autosave = mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
+		autosave = baker.make(TemporaryDocumentText, document=self.document, author=self.user)
 
 		self.assertFalse(self.document.has_perms())
 
-		user_without_permissions = mommy.make(UserProfile)
+		user_without_permissions = baker.make(UserProfile)
 		response = self.app.get(
 			reverse(autosave.document.get_edit_url_name(), args=[autosave.document.url_title]),
 			expect_errors=True,
@@ -428,7 +428,7 @@ class TestAutosave(WebTest):
 		self.assertEqual(response.status_code, 403)
 
 	def test_autosave_possible_to_view_autosave_with_permissions(self):
-		autosave = mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
+		autosave = baker.make(TemporaryDocumentText, document=self.document, author=self.user)
 
 		self.assertFalse(self.document.has_perms())
 		assign_perm(self.document.add_permission_name, self.user)
@@ -438,7 +438,7 @@ class TestAutosave(WebTest):
 		self.assertIn("The text of this document was autosaved on", response.body.decode('utf-8'))
 
 	def test_autosave_not_possible_to_view_because_not_author(self):
-		autosave = mommy.make(TemporaryDocumentText, document=self.document)
+		autosave = baker.make(TemporaryDocumentText, document=self.document)
 
 		self.assertFalse(self.document.has_perms())
 
@@ -446,17 +446,17 @@ class TestAutosave(WebTest):
 		self.assertNotIn('?restore={}'.format(autosave.id), response.body.decode('utf-8'))
 
 	def test_can_not_restore_autosave_of_different_user(self):
-		mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
-		second_user = mommy.make(UserProfile)
-		second_document = mommy.prepare(InformationDocument, text_en="text_en")
+		baker.make(TemporaryDocumentText, document=self.document, author=self.user)
+		second_user = baker.make(UserProfile)
+		second_document = baker.prepare(InformationDocument, text_en="text_en")
 
 		with transaction.atomic(), revisions.create_revision():
 			second_document.save()
 			revisions.set_user(second_user)
 			revisions.set_comment('test version')
 
-		autosave_2 = mommy.make(TemporaryDocumentText, document=second_document, author=second_user)
-		autosave_3 = mommy.make(TemporaryDocumentText, document=self.document, author=second_user)
+		autosave_2 = baker.make(TemporaryDocumentText, document=second_document, author=second_user)
+		autosave_3 = baker.make(TemporaryDocumentText, document=self.document, author=second_user)
 
 		response = self.app.get(
 			reverse(self.document.get_edit_url_name(), args=[self.document.url_title]) + "?restore={}".format(autosave_2.id),
@@ -474,7 +474,7 @@ class TestAutosave(WebTest):
 
 	def test_multiple_autosaves_while_editing(self):
 		assign_perm(self.document.edit_permission_name, self.group, self.document)
-		mommy.make(TemporaryDocumentText, document=self.document, author=self.user, _quantity=2)
+		baker.make(TemporaryDocumentText, document=self.document, author=self.user, _quantity=2)
 
 		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
@@ -482,9 +482,9 @@ class TestAutosave(WebTest):
 
 	def test_restore_one_of_multiple_autosaves(self):
 		assign_perm(self.document.edit_permission_name, self.group, self.document)
-		autosave = mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
-		second_user = mommy.make(UserProfile)
-		mommy.make(TemporaryDocumentText, document=self.document, author=second_user)
+		autosave = baker.make(TemporaryDocumentText, document=self.document, author=self.user)
+		second_user = baker.make(UserProfile)
+		baker.make(TemporaryDocumentText, document=self.document, author=second_user)
 
 		response = self.app.get(
 			reverse(self.document.get_edit_url_name(), args=[self.document.url_title]) + "?restore={}".format(autosave.id),
@@ -495,9 +495,9 @@ class TestAutosave(WebTest):
 
 	def test_autosave_with_multiple_autosaves(self):
 		assign_perm(self.document.edit_permission_name, self.group, self.document)
-		mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
-		second_user = mommy.make(UserProfile)
-		mommy.make(TemporaryDocumentText, document=self.document, author=second_user)
+		baker.make(TemporaryDocumentText, document=self.document, author=self.user)
+		second_user = baker.make(UserProfile)
+		baker.make(TemporaryDocumentText, document=self.document, author=second_user)
 
 		response = self.app.post(
 			reverse('documents:autosave', args=[self.document.url_title]),
@@ -512,7 +512,7 @@ class TestAutosave(WebTest):
 
 	def test_autosaves_removed_after_successful_edit(self):
 		assign_perm(self.document.edit_permission_name, self.group, self.document)
-		mommy.make(TemporaryDocumentText, document=self.document, author=self.user, _quantity=2)
+		baker.make(TemporaryDocumentText, document=self.document, author=self.user, _quantity=2)
 
 		self.assertEqual(TemporaryDocumentText.objects.count(), 2)
 
@@ -536,7 +536,7 @@ class TestAutosave(WebTest):
 			# autosave AUTO
 			response = self.app.post(
 				reverse('documents:autosave', args=[url_title]),
-				params={'text_en': 'AUTO', 'title_en': form.get('title_en').value, 'comment': '', 'group': mommy.make(Group)},
+				params={'text_en': 'AUTO', 'title_en': form.get('title_en').value, 'comment': '', 'group': baker.make(Group)},
 				xhr=True
 			)
 			self.assertEqual(response.status_code, 200)
@@ -594,8 +594,8 @@ class TestAutosave(WebTest):
 		assign_perm("polls.add_poll", self.group)
 
 		# create document with appended '_\d+' for testing a special case of url_title handling
-		mommy.make(InformationDocument, url_title=InformationDocument.__name__.lower())
-		test_document = mommy.make(InformationDocument, url_title="{}_2".format(InformationDocument.__name__.lower()))
+		baker.make(InformationDocument, url_title=InformationDocument.__name__.lower())
+		test_document = baker.make(InformationDocument, url_title="{}_2".format(InformationDocument.__name__.lower()))
 
 		self.assertEqual(
 			test_document.generate_default_slug(test_document.url_title),
@@ -603,7 +603,7 @@ class TestAutosave(WebTest):
 		)
 
 	def test_autosave_delete_no_post_request(self):
-		mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
+		baker.make(TemporaryDocumentText, document=self.document, author=self.user)
 		response = self.app.get(
 			reverse("documents:delete_autosave", args=[self.document.url_title]),
 			user=self.user,
@@ -612,7 +612,7 @@ class TestAutosave(WebTest):
 		self.assertEqual(response.status_code, 404)
 
 	def test_autosave_delete_non_existing_document(self):
-		autosave = mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
+		autosave = baker.make(TemporaryDocumentText, document=self.document, author=self.user)
 		response = self.app.post(
 			reverse("documents:delete_autosave", args=["non_existing_document"]),
 			user=self.user,
@@ -622,8 +622,8 @@ class TestAutosave(WebTest):
 		self.assertEqual(response.status_code, 404)
 
 	def test_autosave_delete_user_different_user(self):
-		autosave = mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
-		user = mommy.make(UserProfile)
+		autosave = baker.make(TemporaryDocumentText, document=self.document, author=self.user)
+		user = baker.make(UserProfile)
 		response = self.app.post(
 			reverse("documents:delete_autosave", args=[self.document.url_title]),
 			user=user,
@@ -633,8 +633,8 @@ class TestAutosave(WebTest):
 		self.assertEqual(response.status_code, 403)
 
 	def test_autosave_delete_user_insufficient_permissions(self):
-		user = mommy.make(UserProfile)
-		autosave = mommy.make(TemporaryDocumentText, document=self.document, author=user)
+		user = baker.make(UserProfile)
+		autosave = baker.make(TemporaryDocumentText, document=self.document, author=user)
 		response = self.app.post(
 			reverse("documents:delete_autosave", args=[self.document.url_title]),
 			user=user,
@@ -644,7 +644,7 @@ class TestAutosave(WebTest):
 		self.assertEqual(response.status_code, 403)
 
 	def test_autosave_delete_not_existing_autosave_id(self):
-		mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
+		baker.make(TemporaryDocumentText, document=self.document, author=self.user)
 		response = self.app.post(
 			reverse("documents:delete_autosave", args=[self.document.url_title]),
 			user=self.user,
@@ -654,8 +654,8 @@ class TestAutosave(WebTest):
 		self.assertEqual(response.status_code, 404)
 
 	def test_autosave_delete_autosave_not_created_by_user(self):
-		autosave = mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
-		user = mommy.make(UserProfile)
+		autosave = baker.make(TemporaryDocumentText, document=self.document, author=self.user)
+		user = baker.make(UserProfile)
 		assign_perm(self.document.edit_permission_name, user, self.document)
 		response = self.app.post(
 			reverse("documents:delete_autosave", args=[self.document.url_title]),
@@ -666,7 +666,7 @@ class TestAutosave(WebTest):
 		self.assertEqual(response.status_code, 400)
 
 	def test_autosave_delete_document_is_in_creation(self):
-		autosave = mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
+		autosave = baker.make(TemporaryDocumentText, document=self.document, author=self.user)
 		response = self.app.post(
 			reverse("documents:delete_autosave", args=[self.document.url_title]),
 			user=self.user,
@@ -678,7 +678,7 @@ class TestAutosave(WebTest):
 		self.assertEqual(Document.objects.count(), 0)
 
 	def test_autosave_delete_document_not_in_creation(self):
-		autosave = mommy.make(TemporaryDocumentText, document=self.document, author=self.user)
+		autosave = baker.make(TemporaryDocumentText, document=self.document, author=self.user)
 		assign_perm(self.document.edit_permission_name, self.group, self.document)
 		response = self.app.post(
 			reverse("documents:delete_autosave", args=[self.document.url_title]),
@@ -696,13 +696,13 @@ class TestMarkdownRendering(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.user = baker.make(UserProfile, is_superuser=True)
 		cls.document_text = 'test'
-		cls.document = mommy.make(InformationDocument, text_en=cls.document_text)
-		cls.document.set_all_permissions(mommy.make(Group))
+		cls.document = baker.make(InformationDocument, text_en=cls.document_text)
+		cls.document.set_all_permissions(baker.make(Group))
 
 	def test_render_text_no_permission(self):
-		user_without_permission = mommy.make(UserProfile)
+		user_without_permission = baker.make(UserProfile)
 		response = self.app.post(
 			reverse('documents:render', args=[self.document.url_title]),
 			params={'text': self.document_text},
@@ -738,13 +738,13 @@ class TestLanguage(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.user = baker.make(UserProfile, is_superuser=True)
 		cls.document_text = 'test'
-		cls.document = mommy.make(InformationDocument, text_de=cls.document_text)
-		cls.document.set_all_permissions(mommy.make(Group))
+		cls.document = baker.make(InformationDocument, text_de=cls.document_text)
+		cls.document.set_all_permissions(baker.make(Group))
 
-		cls.empty_document = mommy.make(InformationDocument)
-		cls.empty_document.set_all_permissions(mommy.make(Group))
+		cls.empty_document = baker.make(InformationDocument)
+		cls.empty_document.set_all_permissions(baker.make(Group))
 
 	# Test that alert is there if only one language available
 	# Test no alert if both languages missing
@@ -779,13 +779,13 @@ class TestLanguage(WebTest):
 class TestSignals(TestCase):
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.user = baker.make(UserProfile, is_superuser=True)
 
 	def test_slugify_hook(self):
 		# create a new document for every subclass of document
 		# and see whether the url_title is automatically created
 		for obj_id, subclass in enumerate(Document.__subclasses__()):
-			new_document = mommy.make(subclass, title_en="test_{}".format(obj_id), url_title="")
+			new_document = baker.make(subclass, title_en="test_{}".format(obj_id), url_title="")
 			self.assertEqual(new_document.url_title, "test_{}".format(obj_id))
 
 	def test_group_permission_hook(self):
@@ -802,7 +802,7 @@ class TestSignals(TestCase):
 				assign_perm(permission_name, group)
 
 			# test whether the permission hook works
-			test_object = mommy.make(subclass, title_en="test")
+			test_object = baker.make(subclass, title_en="test")
 			user_permissions = get_perms(group, test_object)
 			self.assertNotEqual(len(user_permissions), 0)
 
@@ -810,8 +810,8 @@ class TestSignals(TestCase):
 				self.assertIn(permission.codename, user_permissions)
 
 	def test_possibility_to_change_permission_for_groups(self):
-		group = mommy.make(Group, name="FSR")
-		test_user = mommy.make(UserProfile)
+		group = baker.make(Group, name="FSR")
+		test_user = baker.make(UserProfile)
 		test_user.groups.add(group)
 		test_user.save()
 
@@ -824,7 +824,7 @@ class TestSignals(TestCase):
 
 		# test whether we can remove a permission from the group
 		# the permission should not be added again
-		test_object = mommy.make(InformationDocument)
+		test_object = baker.make(InformationDocument)
 		self.assertTrue(test_user.has_perm(permission_names[0], test_object))
 		remove_perm(permission_names[0], group, test_object)
 		test_object.save()
@@ -868,24 +868,24 @@ class TestAttachments(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.user = baker.make(UserProfile, is_superuser=True)
 
-		cls.group = mommy.make(Group, make_m2m=True)
+		cls.group = baker.make(Group, make_m2m=True)
 		for permission in get_perms_for_model(InformationDocument):
 			permission_name = "{}.{}".format(permission.content_type.app_label, permission.codename)
 			assign_perm(permission_name, cls.group)
 		cls.group.save()
 
-		cls.group_user = mommy.make(UserProfile)
+		cls.group_user = baker.make(UserProfile)
 		cls.group_user.groups.add(cls.group)
 		cls.group_user.save()
 
-		cls.document = mommy.make(InformationDocument)
+		cls.document = baker.make(InformationDocument)
 
 	def setUp(self):
 		self.content = "test content of test attachment"
 		attachment_file = ContentFile(self.content)
-		self.attachment = mommy.make(Attachment, document=self.document, displayname="test")  # displayname does not include the extension
+		self.attachment = baker.make(Attachment, document=self.document, displayname="test")  # displayname does not include the extension
 		self.attachment.file.save('temp.txt', attachment_file)
 		self.attachment.save()
 
@@ -911,7 +911,7 @@ class TestAttachments(WebTest):
 
 		# test that user who has no change permission on a document can not add an attachment
 		# and neither see the corresponding page
-		normal_user = mommy.make(UserProfile)
+		normal_user = baker.make(UserProfile)
 
 		response = self.app.get(
 			reverse(self.document.get_attachments_url_name(), args=[self.document.url_title]),
@@ -993,7 +993,7 @@ class TestAttachments(WebTest):
 		self.assertEqual(response.status_code, 403)
 
 		# try to delete an attachment as user with no permissions
-		normal_user = mommy.make(UserProfile)
+		normal_user = baker.make(UserProfile)
 		response = self.app.post(reverse('documents:delete_attachment'), params=params, expect_errors=True, xhr=True, user=normal_user)
 		self.assertEqual(
 			response.status_code,
@@ -1045,7 +1045,7 @@ class TestAttachments(WebTest):
 		self.assertTemplateUsed(response, 'login.html', msg_prefix="Anonymous users should see the login page")
 
 		# test viewing an attachment using a user with insufficient permissions
-		normal_user = mommy.make(UserProfile)
+		normal_user = baker.make(UserProfile)
 		assign_perm('change_informationdocument', normal_user, self.document)
 
 		response = self.app.get(reverse('documents:download_attachment'), params=params, expect_errors=True, user=normal_user)
@@ -1098,7 +1098,7 @@ class TestAttachments(WebTest):
 		)
 
 	def test_sort_attachments(self):
-		mommy.make(Attachment, _quantity=3, document=self.document)
+		baker.make(Attachment, _quantity=3, document=self.document)
 
 		attachments = Attachment.objects.all()
 		old_attachment_order = {}
@@ -1145,7 +1145,7 @@ class TestAttachments(WebTest):
 
 	def test_attachment_change_no_direct_download_wrong_permissions(self):
 		self.assertFalse(self.attachment.no_direct_download)
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 		response = self.app.post(
 			reverse('documents:change_attachment'),
 			params={'id': self.attachment.id, 'no_direct_download': 'false'},
@@ -1188,7 +1188,7 @@ class TestAttachments(WebTest):
 
 	def test_attachment_change_displayname_permissions(self):
 		self.assertFalse(self.attachment.no_direct_download)
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 		new_displayname = 'lorem ipsum'
 		response = self.app.post(
 			reverse('documents:change_attachment'),
@@ -1221,7 +1221,7 @@ class TestAttachments(WebTest):
 		self.assertEqual(response.status_code, 404)
 
 	def test_attachment_change_no_direct_download_view(self):
-		attachment = mommy.make(Attachment, document=self.document, displayname="pic.jpg", no_direct_download=True)
+		attachment = baker.make(Attachment, document=self.document, displayname="pic.jpg", no_direct_download=True)
 		response = self.app.get(
 			reverse(self.document.get_view_url_name(), args=[self.document.url_title]),
 			user=self.user,
@@ -1240,7 +1240,7 @@ class TestAttachments(WebTest):
 		self.assertEqual(len(returned_data), 0)
 
 	def test_attachment_get_all_attachments(self):
-		attachment = mommy.make(Attachment, displayname="pic.jpg", document=self.document)
+		attachment = baker.make(Attachment, displayname="pic.jpg", document=self.document)
 		attachment.save()
 
 		response = self.app.get(
@@ -1253,7 +1253,7 @@ class TestAttachments(WebTest):
 		self.assertEqual(len(returned_data), 1)
 
 	def test_attachment_get_all_attachments_wrong_user(self):
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 		response = self.app.get(
 			reverse('documents:get_attachments', args=[self.document.id]),
 			user=user,
@@ -1291,7 +1291,7 @@ class TestAttachments(WebTest):
 			'document': self.document.id,
 		}
 
-		normal_user = mommy.make(UserProfile)
+		normal_user = baker.make(UserProfile)
 
 		response = self.app.post(
 			reverse('documents:create_attachment'),
@@ -1362,13 +1362,13 @@ class TestDeletion(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.user = baker.make(UserProfile, is_superuser=True)
 		cls.user.groups.add(Group.objects.get(name=settings.STAFF_GROUP_NAME))
-		cls.document = mommy.make(
+		cls.document = baker.make(
 			InformationDocument,
 			title_en='title'
 		)
-		cls.document.set_all_permissions(mommy.make(Group))
+		cls.document.set_all_permissions(baker.make(Group))
 
 	def test_delete_cascade(self):
 		response = self.app.get(reverse("documents:get_delete_cascade", args=[self.document.url_title]), user=self.user)
@@ -1377,7 +1377,7 @@ class TestDeletion(WebTest):
 		self.assertEqual(type(self.document).__name__, data[0]["type"])
 
 	def test_delete_cascade_nested_objects(self):
-		mommy.make(Attachment, document=self.document)
+		baker.make(Attachment, document=self.document)
 		response = self.app.get(reverse("documents:get_delete_cascade", args=[self.document.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		data = json.loads(response.body.decode('utf-8'))
@@ -1385,13 +1385,13 @@ class TestDeletion(WebTest):
 		self.assertEqual(Attachment.__name__, data[1][0]['type'])
 
 	def test_delete_cascade_no_permissions(self):
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 		response = self.app.get(reverse("documents:get_delete_cascade", args=[self.document.url_title]), user=user, expect_errors=True)
 		self.assertEqual(response.status_code, 403)
 
 	def test_delete_documents(self):
 		for document_class in Document.__subclasses__():
-			document = mommy.make(document_class)
+			document = baker.make(document_class)
 			self.assertEqual(Document.objects.count(), 2)
 			response = self.app.post(reverse("documents:delete_document", args=[document.url_title]), user=self.user)
 			self.assertEqual(response.status_code, 200)
@@ -1399,9 +1399,9 @@ class TestDeletion(WebTest):
 
 	def test_delete_documents_with_attachment(self):
 		for document_class in Document.__subclasses__():
-			document = mommy.make(document_class)
+			document = baker.make(document_class)
 			self.assertEqual(Document.objects.count(), 2)
-			mommy.make(Attachment, document=document)
+			baker.make(Attachment, document=document)
 			self.assertEqual(Attachment.objects.count(), 1)
 			response = self.app.post(reverse("documents:delete_document", args=[document.url_title]), user=self.user)
 			self.assertEqual(response.status_code, 200)
@@ -1409,9 +1409,9 @@ class TestDeletion(WebTest):
 			self.assertEqual(Document.objects.count(), 1)
 
 	def test_delete_documents_insufficient_permissions(self):
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 		for document_class in Document.__subclasses__():
-			document = mommy.make(document_class)
+			document = baker.make(document_class)
 			self.assertEqual(Document.objects.count(), 2)
 			response = self.app.post(reverse("documents:delete_document", args=[document.url_title]), user=user, expect_errors=True)
 			self.assertEqual(response.status_code, 403)
@@ -1443,8 +1443,8 @@ class TestPreview(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.document = mommy.make(Document)
-		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.document = baker.make(Document)
+		cls.user = baker.make(UserProfile, is_superuser=True)
 
 	def test_preview_wrong_method(self):
 		response = self.app.post(reverse('documents:preview') + '?hash_value={}'.format(self.document.hash_value), status=404)
@@ -1474,11 +1474,11 @@ class TestPermissionOverview(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile)
-		cls.minutes_document = mommy.make(MinutesDocument)
-		cls.poll = mommy.make(Poll)
-		cls.information_document = mommy.make(InformationDocument)
-		cls.group = mommy.make(Group)
+		cls.user = baker.make(UserProfile)
+		cls.minutes_document = baker.make(MinutesDocument)
+		cls.poll = baker.make(Poll)
+		cls.information_document = baker.make(InformationDocument)
+		cls.group = baker.make(Group)
 		cls.user.groups.add(cls.group)
 		cls.minutes_document.set_all_permissions(cls.group)
 		cls.poll.set_all_permissions(cls.group)
@@ -1541,8 +1541,8 @@ class DocumentCreationTests(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile)
-		cls.group = mommy.make(Group)
+		cls.user = baker.make(UserProfile)
+		cls.group = baker.make(Group)
 		cls.user.groups.add(cls.group)
 		assign_perm("information_pages.add_informationdocument", cls.group)
 		assign_perm("minutes.add_minutesdocument", cls.group)
@@ -1557,7 +1557,7 @@ class DocumentCreationTests(WebTest):
 			self.assertIn('type="hidden" name="group"', body)
 
 	def test_create_document_with_two_groups(self):
-		group = mommy.make(Group)
+		group = baker.make(Group)
 		self.user.groups.add(group)
 		assign_perm("information_pages.add_informationdocument", group)
 		assign_perm("minutes.add_minutesdocument", group)

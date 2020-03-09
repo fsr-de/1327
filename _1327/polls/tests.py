@@ -8,7 +8,7 @@ from django.urls import reverse
 from django_webtest import WebTest
 from guardian.shortcuts import assign_perm, get_perms
 from guardian.utils import get_anonymous_user
-from model_mommy import mommy
+from model_bakery import baker
 from reversion import revisions
 from reversion.models import Version
 
@@ -23,20 +23,20 @@ class PollModelTests(TestCase):
 		num_choices = 3
 		num_participants = 5
 
-		user = mommy.make(UserProfile, _quantity=num_participants)
-		poll = mommy.make(Poll, participants=user)
+		user = baker.make(UserProfile, _quantity=num_participants)
+		poll = baker.make(Poll, participants=user)
 
-		mommy.make(Choice, poll=poll, _quantity=num_choices, votes=num_votes)
+		baker.make(Choice, poll=poll, _quantity=num_choices, votes=num_votes)
 
 		expected_percentage = num_votes * 100 / num_participants
 		for choice in poll.choices.all():
 			self.assertAlmostEqual(choice.percentage(), expected_percentage, 2)
 
 	def test_percentage_with_no_participants(self):
-		poll = mommy.make(Poll)
+		poll = baker.make(Poll)
 
 		num_choices = 3
-		mommy.make(Choice, poll=poll, _quantity=num_choices, votes=0)
+		baker.make(Choice, poll=poll, _quantity=num_choices, votes=0)
 
 		expected_percentage = 0
 		for choice in poll.choices.all():
@@ -48,18 +48,18 @@ class PollViewTests(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile, is_superuser=True)
-		cls.poll = mommy.make(
+		cls.user = baker.make(UserProfile, is_superuser=True)
+		cls.poll = baker.make(
 			Poll,
 			start_date=datetime.date.today(),
 			end_date=datetime.date.today() + datetime.timedelta(days=3),
 		)
-		mommy.make(
+		baker.make(
 			Choice,
 			poll=cls.poll,
 			_quantity=3,
 		)
-		cls.group = mommy.make(Group)
+		cls.group = baker.make(Group)
 		cls.poll.set_all_permissions(cls.group)
 		cls.user.groups.add(cls.group)
 		assign_perm("polls.add_poll", cls.group)
@@ -77,7 +77,7 @@ class PollViewTests(WebTest):
 		self.assertIn(b"There are no results you can see.", response.body)
 
 	def test_view_all_running_and_not_running(self):
-		finished_poll = mommy.make(
+		finished_poll = baker.make(
 			Poll,
 			start_date=datetime.date.today() - datetime.timedelta(days=10),
 			end_date=datetime.date.today() - datetime.timedelta(days=1),
@@ -149,7 +149,7 @@ class PollViewTests(WebTest):
 		self.assertTrue("Hidden" in str(form.fields['group'][0]))
 
 	def test_group_field_not_hidden_when_user_has_multiple_groups(self):
-		other_group = mommy.make(Group)
+		other_group = baker.make(Group)
 		self.user.groups.add(other_group)
 		assign_perm("polls.add_poll", other_group)
 		response = self.app.get(reverse('documents:create', args=['poll']), user=self.user)
@@ -193,7 +193,7 @@ class PollViewTests(WebTest):
 		self.assertIn(poll.delete_permission_name, group_permissions)
 
 	def test_create_poll_user_has_no_permission(self):
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 
 		response = self.app.get(reverse('documents:create', args=['poll']), user=user, expect_errors=True)
 		self.assertEqual(response.status_code, 403)
@@ -253,7 +253,7 @@ class PollViewTests(WebTest):
 		self.assertEqual(poll.choices.count(), 2)
 
 	def test_edit_poll_user_has_no_permission(self):
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 
 		response = self.app.get(reverse(self.poll.get_edit_url_name(), args=[self.poll.url_title]), user=user, expect_errors=True)
 		self.assertEqual(response.status_code, 403)
@@ -262,7 +262,7 @@ class PollViewTests(WebTest):
 		self.assertEqual(response.status_code, 403)
 
 	def test_deletion_no_superuser(self):
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 		assign_perm(self.poll.edit_permission_name, user, self.poll)
 
 		response = self.app.get(reverse('documents:get_delete_cascade', args=[self.poll.url_title]), user=user)
@@ -286,14 +286,14 @@ class PollViewTests(WebTest):
 		self.assertEqual(response.status_code, 200)
 		self.assertIn("glyphicon glyphicon-eye-open", response.body.decode('utf-8'))
 
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 		assign_perm(self.poll.vote_permission_name, user, self.poll)
 		response = self.app.get(reverse('polls:index'), user=user)
 		self.assertEqual(response.status_code, 200)
 		self.assertNotIn("glyphicon glyphicon-eye-open", response.body.decode('utf-8'))
 
 	def test_result_preview_non_superuser(self):
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 		assign_perm(self.poll.vote_permission_name, user, self.poll)
 
 		response = self.app.get(reverse('polls:results_for_admin', args=[self.poll.url_title]), user=user, expect_errors=True)
@@ -305,12 +305,12 @@ class PollViewTests(WebTest):
 
 	def test_view_poll_list_as_student_without_vote_permission_but_view_permission_by_anonymous(self):
 		# 1. create a new poll and give anonymous view permission
-		poll = mommy.make(
+		poll = baker.make(
 			Poll,
 			start_date=datetime.date.today(),
 			end_date=datetime.date.today() + datetime.timedelta(days=3),
 		)
-		mommy.make(
+		baker.make(
 			Choice,
 			poll=poll,
 			_quantity=3,
@@ -319,7 +319,7 @@ class PollViewTests(WebTest):
 		assign_perm(poll.view_permission_name, get_anonymous_user(), poll)
 
 		# 2. create a student, add him to the student group and let him have a look at the polls index page
-		student = mommy.make(UserProfile)
+		student = baker.make(UserProfile)
 		student_group = Group.objects.get(name='Student')
 		student.groups.add(student_group)
 
@@ -333,13 +333,13 @@ class PollResultTests(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile)
-		cls.poll = mommy.make(
+		cls.user = baker.make(UserProfile)
+		cls.poll = baker.make(
 			Poll,
 			start_date=datetime.date.today(),
 			end_date=datetime.date.today() + datetime.timedelta(days=3),
 		)
-		mommy.make(
+		baker.make(
 			Choice,
 			poll=cls.poll,
 			votes=10,
@@ -427,13 +427,13 @@ class PollVoteTests(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile, is_superuser=True)
-		cls.poll = mommy.make(
+		cls.user = baker.make(UserProfile, is_superuser=True)
+		cls.poll = baker.make(
 			Poll,
 			start_date=datetime.date.today(),
 			end_date=datetime.date.today() + datetime.timedelta(days=3),
 		)
-		mommy.make(
+		baker.make(
 			Choice,
 			poll=cls.poll,
 			votes=10,
@@ -445,7 +445,7 @@ class PollVoteTests(WebTest):
 		self.poll.refresh_from_db()
 
 	def test_vote_with_insufficient_permissions(self):
-		user_without_perms = mommy.make(UserProfile)
+		user_without_perms = baker.make(UserProfile)
 		response = self.app.get(
 			reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]),
 			expect_errors=True,
@@ -453,7 +453,7 @@ class PollVoteTests(WebTest):
 		)
 		self.assertEqual(response.status_code, 403)
 
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 		assign_perm(Poll.VIEW_PERMISSION_NAME, user, self.poll)
 
 		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), user=user, expect_errors=True)
@@ -464,7 +464,7 @@ class PollVoteTests(WebTest):
 		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 		assign_perm(Poll.VIEW_PERMISSION_NAME, user, self.poll)
 		assign_perm('vote_poll', user, self.poll)
 		user.save()
@@ -607,20 +607,20 @@ class PollEditTests(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile, is_superuser=True)
-		cls.poll = mommy.make(
+		cls.user = baker.make(UserProfile, is_superuser=True)
+		cls.poll = baker.make(
 			Poll,
 			title_en='title',
 			start_date=datetime.date.today(),
 			end_date=datetime.date.today() + datetime.timedelta(days=3),
 		)
-		mommy.make(
+		baker.make(
 			Choice,
 			poll=cls.poll,
 			votes=10,
 			_quantity=3,
 		)
-		cls.group = mommy.make(Group)
+		cls.group = baker.make(Group)
 		cls.poll.set_all_permissions(cls.group)
 		cls.user.groups.add(cls.group)
 		assign_perm("polls.add_poll", cls.group)
@@ -702,9 +702,9 @@ class PollRevertionTests(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.user = baker.make(UserProfile, is_superuser=True)
 
-		cls.poll = mommy.prepare(Poll, text_en='text', start_date=datetime.date.today(), end_date=datetime.date.today())
+		cls.poll = baker.prepare(Poll, text_en='text', start_date=datetime.date.today(), end_date=datetime.date.today())
 		with transaction.atomic(), revisions.create_revision():
 			cls.poll.save()
 			revisions.set_user(cls.user)
