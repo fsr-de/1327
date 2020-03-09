@@ -2,7 +2,7 @@
 
 # Unit tests
 django-webtest == 1.9.7
-model_mommy == 1.6.0
+model-bakery == 1.1.0
 
 # Coverage
 coveralls
