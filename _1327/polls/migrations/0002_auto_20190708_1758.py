@@ -4,6 +4,16 @@ from django.db import migrations, models
 import django.utils.timezone
 
 
+def copy_german_texts_and_descriptions(apps, _schema_editor):
+    Choice = apps.get_model("polls", "Choice")
+    for choice in Choice.objects.all():
+        if not choice.description_en:
+            choice.description_en = choice.description_de
+        if not choice.text_en:
+            choice.text_en = choice.text_de
+        choice.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -40,7 +50,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='choice',
             name='text_en',
-            field=models.CharField(default=django.utils.timezone.now, max_length=255, verbose_name='text (english)'),
+            field=models.CharField(blank=True, max_length=255, verbose_name='text (english)'),
             preserve_default=False,
         ),
+        migrations.RunPython(copy_german_texts_and_descriptions, reverse_code=migrations.RunPython.noop),
     ]
