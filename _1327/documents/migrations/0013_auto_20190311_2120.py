@@ -3,6 +3,14 @@
 from django.db import migrations, models
 
 
+def copy_german_titles(apps, _schema_editor):
+    Document = apps.get_model("documents", "Document")
+    for document in Document.objects.all():
+        if not document.title_en:
+            document.title_en = document.title_de
+            document.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -10,6 +18,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunPython(copy_german_titles, reverse_code=migrations.RunPython.noop),
         migrations.AlterField(
             model_name='document',
             name='title_de',
