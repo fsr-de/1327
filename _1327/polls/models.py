@@ -1,8 +1,12 @@
 from datetime import date, datetime
 
+from django.conf import settings
+from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import Sum
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.template import loader
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
@@ -21,6 +25,14 @@ POLL_VOTE_PERMISSION_NAME = 'vote_poll'
 
 
 class Poll(Document):
+	UNPUBLISHED = 0
+	AFTER_END = 1
+	PUBLISHED = 2
+	PUBLISH_CHOICES = (
+		(UNPUBLISHED, _('Unpublished')),
+		(AFTER_END, _('Published After End of Poll')),
+		(PUBLISHED, _('Published')),
+	)
 
 	def can_be_changed_by(self, user):
 		permission_name = self.edit_permission_name
@@ -34,7 +46,9 @@ class Poll(Document):
 	end_date = models.DateField(default=datetime.now, verbose_name=_("End Date"))
 	max_allowed_number_of_answers = models.PositiveIntegerField(default=1)
 	participants = models.ManyToManyField(UserProfile, related_name="polls", blank=True)
-	show_results_immediately = models.BooleanField(default=True, verbose_name=_("show results immediately after vote"))
+	# show_results_immediately = models.BooleanField(default=True, verbose_name=_("show results immediately after vote"))
+	state = models.IntegerField(choices=PUBLISH_CHOICES, default=UNPUBLISHED, verbose_name=_("State"))
+
 
 	VIEW_PERMISSION_NAME = POLL_VIEW_PERMISSION_NAME
 	VOTE_PERMISSION_NAME = POLL_VOTE_PERMISSION_NAME
