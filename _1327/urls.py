@@ -16,7 +16,7 @@ urlpatterns = [
 	path("" + settings.POLLS_URL_NAME + "/", include("_1327.polls.urls")),
 	path("documents/", include("_1327.documents.urls")),
 	path("information_pages/", include("_1327.information_pages.urls")),
-	path("login", auth_views.LoginView.as_view(template_name="login.html", authentication_form=LoginUsernameForm), name="login"),
+	path("login", auth_views.LoginView.as_view(template_name="login.html", authentication_form=LoginUsernameForm, redirect_authenticated_user=True), name="login"),
 	path("logout", user_management_views.logout, name="logout"),
 	path("view_as", user_management_views.view_as, name="view_as"),
 
@@ -27,6 +27,8 @@ urlpatterns = [
 	path("menu_item/<int:menu_item_pk>/edit", main_views.menu_item_edit, name="menu_item_edit"),
 	path("menu_item_delete", main_views.menu_item_delete, name="menu_item_delete"),
 	path("menu_item/update_order", main_views.menu_items_update_order, name="menu_items_update_order"),
+
+	path("set_lang", main_views.set_lang, name="set_lang"),
 
 	path("shortlinks", shortlinks_views.shortlinks_index, name="shortlinks_index"),
 	path("shortlink/create", shortlinks_views.shortlink_create, name="shortlink_create"),

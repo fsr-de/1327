@@ -16,7 +16,7 @@ from _1327.documents.models import Document
 from _1327.minutes.fields import HexColorModelField
 from _1327.user_management.models import UserProfile
 
-MINUTES_VIEW_PERMISSION_NAME = 'view_minutesdocument'
+MINUTES_VIEW_PERMISSION_NAME = 'show_minutesdocument'
 
 
 class MinutesLabel(models.Model):
@@ -68,7 +68,7 @@ class MinutesDocument(Document):
 
 	@classmethod
 	def generate_new_title(cls):
-		return _("Minutes")
+		return "Minutes", "Protokoll"
 
 	@classmethod
 	def generate_default_slug(cls, title):

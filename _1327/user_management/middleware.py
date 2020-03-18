@@ -49,8 +49,8 @@ class LoginRedirectMiddleware:
 			current_scheme, current_netloc = urlparse(path)[:2]
 
 			if (
-				(not login_scheme or login_scheme == current_scheme) and
-				(not login_netloc or login_netloc == current_netloc)
+				(not login_scheme or login_scheme == current_scheme)
+				and (not login_netloc or login_netloc == current_netloc)
 			):
 				path = request.get_full_path()
 

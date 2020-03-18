@@ -246,7 +246,6 @@ TEMPLATES = [
 				'django.template.context_processors.static',
 				'django.template.context_processors.tz',
 				'django.contrib.messages.context_processors.messages',
-				'_1327.main.context_processors.set_language',
 				'_1327.main.context_processors.menu',
 				'_1327.main.context_processors.can_create_informationpage',
 				'_1327.main.context_processors.can_create_minutes',
@@ -277,5 +276,6 @@ if TESTING:
 # development or different settings in deployments using multiple servers.
 _LOCAL_SETTINGS_FILENAME = os.path.join(BASE_DIR, "localsettings.py")
 if os.path.exists(_LOCAL_SETTINGS_FILENAME):
-	exec(compile(open(_LOCAL_SETTINGS_FILENAME, "rb").read(), _LOCAL_SETTINGS_FILENAME, 'exec'))
+	with open(_LOCAL_SETTINGS_FILENAME, "rb") as f:
+		exec(compile(f.read(), _LOCAL_SETTINGS_FILENAME, 'exec'))
 del _LOCAL_SETTINGS_FILENAME

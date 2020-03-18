@@ -1,5 +1,9 @@
+from django.contrib.auth import user_logged_in
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
+from django.dispatch import receiver
+from django.utils import translation
+from django.utils.translation import get_language, LANGUAGE_SESSION_KEY
 from guardian.core import ObjectPermissionChecker
 from guardian.utils import get_anonymous_user
 
@@ -33,3 +37,13 @@ class _1327AuthorizationBackend:
 			check = ObjectPermissionChecker(group)
 			return check.has_perm(perm, obj)
 		return False
+
+
+@receiver(user_logged_in)
+def set_or_get_language(user, request, **kwargs):
+	if user.language:
+		request.session[LANGUAGE_SESSION_KEY] = user.language
+		translation.activate(user.language)
+	else:
+		user.language = get_language()
+		user.save()

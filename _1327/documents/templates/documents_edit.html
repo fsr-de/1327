@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block document_content %}
-	<h2>{% trans "Edit page" %}</h2>
+	<h2 class="document-title">{% trans "Edit page" %}</h2>
 
 	{% for autosave in form.autosaves %}
 		<div class="alert alert-danger alert-margin-bottom" role="alert">{% blocktrans with date=autosave.created %}The text of this document was autosaved on {{ date }}{% endblocktrans %}, {% trans "you can restore unsaved changes:" %} <a href="{{ document.get_edit_url }}?restore={{ autosave.id }}" class="btn-sm btn-default">{% trans "Restore" %}</a></div>
@@ -21,36 +21,45 @@
 		<div class="alert alert-danger alert-margin-bottom" role="alert">{% blocktrans with date=new_autosaved_page.created %}There is an autosaved text (saved on {{ date }}){% endblocktrans %}, {% trans "you can restore this unsaved text:" %} <a href="{{ new_autosaved_page.document.get_edit_url }}?restore={{ new_autosaved_page.id }}" class="btn-sm btn-default">{% trans "Restore" %}</a></div>
 	{% endfor %}
 
-<form action="{{ document.get_edit_url }}" method="post" class="form-horizontal" role="form" id="document-form">
-	{% bootstrap_form form layout='horizontal' %}
-	{% csrf_token %}
-	{% block inlineformset %}{% endblock %}
-	{% buttons %}
-	<div class="col-md-offset-2 col-md-9">
-		<button type="submit" class="btn btn-primary">
-			{% trans 'Save' %}
-		</button>
-		{% if document|num_revisions > 0 %}
-			<button type="button" class="btn btn-danger" id="deleteDocumentButton">
-				{% trans 'Delete' %}
-			</button>
-		{% endif %}
-		{% if form.autosave_id %}
-			<button type="button" class="btn btn-danger" id="deleteAutosaveButton">
-				{% trans 'Delete Autosave' %}
-			</button>
-		{% endif %}
-	</div>
-	{% endbuttons %}
-</form>
+	<form action="{{ document.get_edit_url }}" method="post" class="form-horizontal" role="form" id="document-form">
+		{% csrf_token %}
+		{% bootstrap_form form layout='horizontal' %}
+		{% block inlineformset %}{% endblock %}
+		{% buttons %}
+			<div class="col-md-offset-2 col-md-9">
+				<button type="submit" class="btn btn-primary">
+					{% trans 'Save' %}
+				</button>
+				{% if document|num_revisions > 0 %}
+					<button type="button" class="btn btn-danger" id="deleteDocumentButton">
+						{% trans 'Delete' %}
+					</button>
+				{% endif %}
+				{% if form.autosave_id %}
+					<button type="button" class="btn btn-danger" id="deleteAutosaveButton">
+						{% trans 'Delete Autosave' %}
+					</button>
+				{% endif %}
+			</div>
+		{% endbuttons %}
+	</form>
 
 	<h2>{% trans "Preview" %} <a id="shareText" class="hidden">Share</a></h2>
-	<div class="divider"></div>
-	<div id="text-preview"></div>
+	<div>
+		<ul class="nav nav-tabs" role="tablist">
+			<li role="presentation" class="active"><a href="#text-preview-de" aria-controls="german" role="tab" data-toggle="tab">{% trans "German" %}</a></li>
+			<li role="presentation"><a href="#text-preview-en" aria-controls="english" role="tab" data-toggle="tab">{% trans "English" %}</a></li>
+		</ul>
+
+		<div class="tab-content">
+			<div role="tabpanel" class="tab-pane preview-tab active" id="text-preview-de">Deutsch</div>
+			<div role="tabpanel" class="tab-pane preview-tab" id="text-preview-en">Englisch</div>
+		</div>
+	</div>
 {% endblock %}
 
 {% block modals %}
-{{ block.super }}
+	{{ block.super }}
 	<div class="modal fade ontop" id="selectImageAttachment" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -147,436 +156,454 @@
 		</div>
 	{% endif %}
 
-<div class="modal fade ontop" id="selectInternalLinkDestination" role="dialog" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-				<div class="modal-title">{% trans "Select link target" %}</div>
-			</div>
-			<div class="modal-body">
-				<select class="form-control" id="selectInternalLinkModal"></select>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" id="setInternalLinkDestination">{% trans "OK" %}</button>
+	<div class="modal fade ontop" id="selectInternalLinkDestination" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<div class="modal-title">{% trans "Select link target" %}</div>
+				</div>
+				<div class="modal-body">
+					<select class="form-control" id="selectInternalLinkModal"></select>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" id="setInternalLinkDestination">{% trans "OK" %}</button>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
 
-<div class="modal fade ontop" id="autosaveErrorDialog" role="dialog" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-				<div class="modal-title">{% trans "Autosave failed" %}</div>
-			</div>
-			<div class="modal-body">
-				<span class="autosaveErrorDialogExplanation"></span>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-primary autosaveErrorDialogClose">{% trans "Close" %}</button>
+	<div class="modal fade ontop" id="autosaveErrorDialog" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<div class="modal-title">{% trans "Autosave failed" %}</div>
+				</div>
+				<div class="modal-body">
+					<span class="autosaveErrorDialogExplanation"></span>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary autosaveErrorDialogClose">{% trans "Close" %}</button>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
 {% endblock %}
 
 {% block scripts %}
-{{ block.super }}
-<!-- mandatory script include -->
-<script type="text/javascript" src="{% static 'node_modules/jquery-hotkeys/jquery-hotkeys.js' %}"></script>
-<script type="text/javascript" src="{% static 'node_modules/jquery.formset/src/jquery.formset.js' %}"></script>
-<script type="text/javascript" src="{% static 'node_modules/bootstrap-markdown/js/bootstrap-markdown.js' %}"></script>
-<script type="text/javascript" src="{% static 'node_modules/emojionearea/dist/emojionearea.min.js' %}"></script>
+	{{ block.super }}
+	<!-- mandatory script include -->
+	<script type="text/javascript" src="{% static 'node_modules/jquery-hotkeys/jquery-hotkeys.js' %}"></script>
+	<script type="text/javascript" src="{% static 'node_modules/jquery.formset/src/jquery.formset.js' %}"></script>
+	<script type="text/javascript" src="{% static 'node_modules/bootstrap-markdown/js/bootstrap-markdown.js' %}"></script>
+	<script type="text/javascript" src="{% static 'node_modules/emojionearea/dist/emojionearea.min.js' %}"></script>
 
-<script>
-	var efficient_render = debounce(function render() {
-		$.ajax({
-			url: "{% url 'documents:render' document.url_title %}",
-			type: "post",
-			data: {'text': $('#id_text').val()},
-			success: function(data, status, jqxhr) {
-				data = emojione.toImage(data);
-				$('#text-preview').html(data);
-			}
-		});
-	}, 1000);
-
-	function addImageToText(editor, attachmentHash, attachmentWidth, attachmentHeight, modal) {
-		var scaleText = (attachmentWidth || attachmentHeight) ? (" =" + attachmentWidth + "x" + attachmentHeight) : "";
-		var chunk = "![Image Alt]({% url 'documents:download_attachment' %}?hash_value=" + attachmentHash + "&embed=True" + scaleText + ")";
-		editor.replaceSelection(chunk);
-		var cursor = editor.getSelection();
-
-		editor.setSelection(cursor, cursor + chunk.length);
-		modal.modal('hide');
-		$('#id_text').trigger('change');
-	}
-
-	$("#id_text").removeClass('form-control').markdown({
-		autofocus:true,
-		resize:"both",
-		hiddenButtons: ["cmdPreview", "cmdImage"],
-		onChange: efficient_render,
-		onShow: function(e) {
-			this.onChange(e);
-		},
-		additionalButtons: [
-			// exchange the old image button by a new button
-			[{
-				name: "ImageGroup",
-				data: [{
-					name: "cmdAddImage",
-					toggle: false,
-					title: "Add Image",
-					icon: "glyphicon glyphicon-picture",
-					callback: function (e) {
-						// get all attachments
-						$.getJSON(
-							"{% url "documents:get_attachments" document.id %}",
-							{},
-							function (data, textStatus, jqXHR) {
-								// prepare the select in the modal
-								var select = $('#attachmentModalSelect');
-								if ($.isEmptyObject(data)) {
-									// if there are no pictures disable the select
-									select.attr('disabled', 'disabled');
-									return;
-								} else {
-									select.attr('disabled', false);
-								}
-								var options = select.prop('options');
-								$('option', select).remove();
-								$.each(data, function (val, text) {
-									options[options.length] = new Option(text, val);
-								});
-								// trigger the change event in order to show the preview of the pre selected
-								// image
-								select.trigger('change');
-						});
-
-						var modalItem = $('#selectImageAttachment');
-						modalItem.modal();
-						modalItem.on('hide.bs.modal', function () {
-							$('#image-upload-area').addClass('hidden');
-							$('#image-upload-error-display').addClass('hidden');
-						});
-
-						// set the click handler on the ok button that adds the image to the text
-						// and closes the modal
-						var setButton = $('#setImage');
-						setButton.off('click');
-						setButton.on("click", function (event) {
-							var select = $('#attachmentModalSelect');
-							if (select.attr('disabled')) {
-								modalItem.modal('hide');
-								return;
-							}
-							// find the right spot to insert the text and create the correct markdown
-							var attachmentHash = select.val();
-							var attachmentWidth = $('#attachmentWidthInput').val();
-							var attachmentHeight = $('#attachmentHeightInput').val();
-							addImageToText(e, attachmentHash, attachmentWidth, attachmentHeight, modalItem);
-						});
-
-						// enable image uploading
-						var imageUploadForm = $('#image-upload-form');
-						imageUploadForm.off('submit');
-						imageUploadForm.on('submit', function (event) {
-							event.preventDefault();
-
-							var filename = $(this).find('input[name=file]').val();
-
-							// determine whether selected file might be an image
-							var file_type_is_ok = false;
-							{% for image_type in supported_image_types %}
-								if (filename.toLowerCase().endsWith('{{ image_type }}')) {
-									file_type_is_ok = true;
-								}
-							{% endfor %}
-
-							if (!file_type_is_ok) {
-								$('#image-upload-error-display').removeClass('hidden');
-								return;
-							}
-
-							var formData = new FormData(this);
-							formData.append("document", {{ document.id }});
-
-							var attachmentWidth = $('#attachmentWidthInput').val();
-							var attachmentHeight = $('#attachmentHeightInput').val();
-
-							$.ajax({
-								url: "{% url 'documents:create_attachment' %}",
-								data: formData,
-								processData: false,
-								contentType: false,
-								type: 'POST',
-								success: function (data) {
-									addImageToText(e, data, attachmentWidth, attachmentHeight, modalItem);
-								},
-								error: function () {
-									$('#image-upload-error-display').removeClass('hidden');
-								}
-							});
-						});
+	<script>
+		for (const language of ["de", "en"]) {
+			const textInput = $(`#id_text_${language}`);
+			const efficientRender = debounce(function render() {
+				$.ajax({
+					url: "{% url 'documents:render' document.url_title %}",
+					type: "post",
+					data: {'text': textInput.val()},
+					success: function(data, status, jqxhr) {
+						data = emojione.toImage(data);
+						$(`#text-preview-${language}`).html(data);
 					}
-				}]
-			},
-
-			{
-				name: "InternalGroup",
-				data: [{
-					name: "cmdAddInternalLink",
-					toggle: false,
-					title: "Add internal link",
-					icon: "glyphicon glyphicon-circle-arrow-right",
-					callback: function (e) {
-
-						var modalItem = $('#selectInternalLinkDestination');
-						modalItem.modal();
-
-						// set the click handler on the ok button that adds the markdown to the text
-						// and closes the modal
-						var setButton = $('#setInternalLinkDestination');
-						setButton.off('click');
-						setButton.on("click", function (event) {
-							modalItem.modal('hide');
-							// find the right spot to insert the text and create the correct markdown
-							var markdown = $('#selectInternalLinkModal').val();
-							if (markdown !== null) {
-								var linkText = markdown.match(/\[(.*?)\]/)[1]; // we want the text inside the [ ]
-								var selected = e.getSelection();
-								e.replaceSelection(markdown);
-								var cursor = selected.start;
-								e.setSelection(cursor + 1, cursor + linkText.length + 1); // +1 because we do not want to select the starting [
-								if(selected.length > 0) { // if there was selected text, we want to use this a link text
-									e.replaceSelection(selected.text);
-									e.setSelection(cursor + 1, cursor + selected.length + 1);
-								}
-								$("#id_text").trigger("change");
-								$("#id_text").focus();
-							}
-						});
-					}
-				}]
-			},
-			{
-				name: "EmojiGroup",
-				data: [{
-					name: "cmdAddEmoji",
-					toggle: false,
-					title: "Add Emoji",
-					icon: "glyphicon glyphicon-thumbs-up emojiparent",
-					callback: function(e) {
-						// check if we already created an emojionearea object
-						var emojiHolder = $('.emojioneholder');
-						if (emojiHolder.length) {
-							if ($(".emojionearea-picker").hasClass('hidden')) {
-								emojiHolder.data("emojioneArea").showPicker();
-							} else {
-								emojiHolder.data("emojioneArea").hidePicker();
-							}
-							return;
-						}
-
-						$(".btn-toolbar").append("<div class='emojioneholder'></div>");
-						emojiHolder = $('.emojioneholder');
-						var emojiArea = emojiHolder.emojioneArea({
-							standalone: true,
-							shortnames: true,
-							saveEmojisAs: 'shortname',
-							emojiPlaceholder: ":wink:",
-							useInternalCDN: false,
-							pickerPosition: 'bottom',
-							autocomplete: false,
-							events: {
-								'picker.hide': function () {
-									// add the selected emoji to the correct place in our editor
-									var markdownEditor = $('#id_text');
-									var markdownText = markdownEditor.val();
-									var cursorPosition = markdownEditor[0].selectionStart;
-									var textWithEmoji = markdownText.splice(cursorPosition, 0, this.getText());
-									markdownEditor.val(textWithEmoji);
-
-									// set the cursor to the correct position, because we automatically set it to
-									// the end
-									var emojiLength = this.getText().length;
-									markdownEditor[0].selectionStart = cursorPosition + emojiLength;
-									markdownEditor[0].selectionEnd = cursorPosition + emojiLength;
-
-									// rerender the preview
-									efficient_render();
-									this.setText('');
-								},
-								'picker.show': function () {
-									var focusElement = $('.emojionearea-picker').find('.emojionearea-search').find('input');
-									setTimeout(function () {
-										focusElement.focus();
-										focusElement.prop('autofocus');
-									}, 250);
-								}
-							}
-						});
-						emojiArea.data("emojioneArea").showPicker();
-					}
-				}]
-			}]
-		]
-	});
-
-	// handler to update the preview in the modal
-	$('#attachmentModalSelect').on('change', function (event) {
-		var attachmentHash = $(this).val();
-		$('#attachment-preview').attr('src', "{% url 'documents:download_attachment' %}?hash_value=" + attachmentHash + "&embed=True");
-	});
-
-	$('#addImage').on('click', function (event) {
-		$('#image-upload-area').removeClass('hidden');
-	});
-
-	{% if document|num_revisions > 0 %}
-		function createCascadeList(cascade, domObject) {
-			for(var i = 0; i < cascade.length; i++) {
-				var cascadeItem = cascade[i];
-				if (cascadeItem.constructor === Array) {
-					var sublist = $('<ul>');
-					createCascadeList(cascadeItem, sublist);
-					domObject.append(sublist);
-				}
-				else {
-					domObject.append($('<li></li>').text(cascadeItem.type + ": " + cascadeItem.name));
-				}
-			}
-		}
-
-		var deleteDocumentModal = $('#deleteDocumentModal');
-		deleteDocumentModal.modal({
-			show: false
-		});
-
-		$('#deleteDocumentButton').on('click', function (event) {
-			$.getJSON(
-				"{% url "documents:get_delete_cascade" document.url_title %}",
-				{},
-				function (data, textStatus, jqXHR) {
-					deleteDocumentModal.modal('show');
-					// prepare the select in the modal
-					var cascadeInfo = $('#documentDeleteCascadeInfo');
-
-					// delete old content
-					cascadeInfo.children().each(function (index, element) {
-						element.remove();
-					});
-
-					// create new content by traversing provided data
-					var cascadeList = $('<ul>');
-					createCascadeList(data, cascadeList);
-					cascadeInfo.append(cascadeList);
 				});
-		});
+			}, 1000);
 
-		$("#deleteDocumentConfirmationButton").on('click', function (event) {
-			$.post(
-				"{% url "documents:delete_document" document.url_title %}",
-				{},
-				function (data, textStatus, jqXHR) {
-					deleteDocumentModal.modal('hide');
-					window.location.replace("/");
-				}
-			);
-		});
-	{% endif %}
+			function addImageToText(editor, attachmentHash, attachmentWidth, attachmentHeight, modal) {
+				const scaleText = (attachmentWidth || attachmentHeight) ? (" =" + attachmentWidth + "x" + attachmentHeight) : "";
+				const chunk = "![Image Alt]({% url 'documents:download_attachment' %}?hash_value=" + attachmentHash + "&embed=True" + scaleText + ")";
+				editor.replaceSelection(chunk);
+				const cursor = editor.getSelection();
 
-	{% if form.autosave_id %}
-		var deleteAutosaveModal = $('#deleteAutosaveModal');
-		deleteAutosaveModal.modal({
-			show: false
-		});
-		$('#deleteAutosaveButton').on('click', function (event) {
-			deleteAutosaveModal.modal('show');
-		});
-	{% endif %}
+				editor.setSelection(cursor, cursor + chunk.length);
+				modal.modal('hide');
+				textInput.trigger('change');
+			}
 
-	var text = $('#id_text').val();
-	function save() {
-		if(text != $('#id_text').val()) {
-			text = $('#id_text').val();
-
-			var form = $('#document-form');
-			var serializedData = form.serialize();
-
-			$.ajax({
-				url: "{% url 'documents:autosave' document.url_title %}",
-				type: "post",
-				data: serializedData,
-				success: function(data, textStatus, jqXHR) {
-					data = JSON.parse(data);
-					var url = data.preview_url;
-					var destinationElement = $('#shareText');
-					destinationElement.attr('href', url);
-					destinationElement.removeClass('hidden');
+			textInput.removeClass('form-control').markdown({
+				autofocus:true,
+				resize:"both",
+				hiddenButtons: ["cmdPreview", "cmdImage"],
+				onChange: efficientRender,
+				onShow: function(e) {
+					this.onChange(e);
 				},
-				error: function(jqXHR, textStatus, errorThrown) {
-					var reasonDisplay = $('.autosaveErrorDialogExplanation');
-					var statusCode = jqXHR.status;
-					var reason = "";
-					switch (statusCode) {
-						case 403:
-							reason = "{% trans "Probably you are logged out!" %}";
-							break;
-						case 404:
-							reason = "{% trans "The document you are editing does not exist!" %}";
-							break;
-						default:
-							reason = "{% trans "There was an unknown error!" %}";
-							break;
-					}
-					reasonDisplay.html(reason);
+				additionalButtons: getCustomButtons(textInput, efficientRender)
+			});
 
-					var errorDisplay = $('#autosaveErrorDialog');
-					errorDisplay.modal();
-					$('.autosaveErrorDialogClose').on('click', function() {
-						errorDisplay.modal('hide');
+			let text = textInput.val();
+			function save() {
+				if(text !== textInput.val()) {
+					text = textInput.val();
+
+					const form = $('#document-form');
+					const serializedData = form.serialize();
+
+					$.ajax({
+						url: "{% url 'documents:autosave' document.url_title %}",
+						type: "post",
+						data: serializedData,
+						success: function(data, textStatus, jqXHR) {
+							data = JSON.parse(data);
+							const url = data.preview_url;
+							const destinationElement = $('#shareText');
+							destinationElement.attr('href', url);
+							destinationElement.removeClass('hidden');
+						},
+						error: function(jqXHR, textStatus, errorThrown) {
+							const reasonDisplay = $('.autosaveErrorDialogExplanation');
+							const statusCode = jqXHR.status;
+							let reason = "";
+							switch (statusCode) {
+								case 403:
+									reason = "{% trans "Probably you are logged out!" %}";
+									break;
+								case 404:
+									reason = "{% trans "The document you are editing does not exist!" %}";
+									break;
+								default:
+									reason = "{% trans "There was an unknown error!" %}";
+									break;
+							}
+							reasonDisplay.html(reason);
+
+							const errorDisplay = $('#autosaveErrorDialog');
+							errorDisplay.modal();
+							$('.autosaveErrorDialogClose').on('click', function() {
+								errorDisplay.modal('hide');
+							});
+						}
 					});
 				}
-			});
+				setTimeout(function() { save(); }, 10000);
+			}
+			save();
+
 		}
-		setTimeout(function() { save(); }, 10000);
-	}
-	save();
 
-	// Activate Select2 if present on page
-	$(".select2-selection").select2({
-		language: "{{ LANGUAGE_CODE }}",
-		placeholder: "{% trans 'Please select...' %}"
-	});
+		// hotfix emojionearea picker positioning in fullscreen mode
+		$('.emojionearea.md-input').on('keyup', function (event) {
+			const margin = $('.emojionearea-button').css('margin-right');
+			$('.emojionearea-picker').css("right", margin);
+		});
 
-	$(".select2-selection-clearable").select2({
-		language: "{{ LANGUAGE_CODE }}",
-		placeholder: "{% trans 'Please select...' %}",
-		allowClear: true
-	});
+		// handler to update the preview in the modal
+		$('#attachmentModalSelect').on('change', function (event) {
+			const attachmentHash = $(this).val();
+			$('#attachment-preview').attr('src', "{% url 'documents:download_attachment' %}?hash_value=" + attachmentHash + "&embed=True");
+		});
 
-	$("#selectInternalLinkModal").select2({
-		language: "{{ LANGUAGE_CODE }}",
-		placeholder: "{% trans 'Please select...' %}",
-		ajax: {
-			url: '/documents/search',
-			delay: 250,
-			dataType: 'json'
-		},
-		minimumInputLength: 1
-	});
+		$('#addImage').on('click', function (event) {
+			$('#image-upload-area').removeClass('hidden');
+		});
 
-	{% block additional_scripts %}{% endblock %}
+		{% if document|num_revisions > 0 %}
+			function createCascadeList(cascade, domObject) {
+				for(let i = 0; i < cascade.length; i++) {
+					const cascadeItem = cascade[i];
+					if (cascadeItem.constructor === Array) {
+						const sublist = $('<ul>');
+						createCascadeList(cascadeItem, sublist);
+						domObject.append(sublist);
+					}
+					else {
+						domObject.append($('<li></li>').text(cascadeItem.type + ": " + cascadeItem.name));
+					}
+				}
+			}
 
-	// add datepicker to date inputs
-	$("input[name*='date']:not([readonly='True'])").datepicker( $.datepicker.regional["{{ LANGUAGE_CODE }}"] );
+			const deleteDocumentModal = $('#deleteDocumentModal');
+			deleteDocumentModal.modal({
+				show: false
+			});
+
+			$('#deleteDocumentButton').on('click', function (event) {
+				$.getJSON(
+					"{% url "documents:get_delete_cascade" document.url_title %}",
+					{},
+					function (data, textStatus, jqXHR) {
+						deleteDocumentModal.modal('show');
+						// prepare the select in the modal
+						const cascadeInfo = $('#documentDeleteCascadeInfo');
+
+						// delete old content
+						cascadeInfo.children().each(function (index, element) {
+							element.remove();
+						});
+
+						// create new content by traversing provided data
+						const cascadeList = $('<ul>');
+						createCascadeList(data, cascadeList);
+						cascadeInfo.append(cascadeList);
+					});
+			});
+
+			$("#deleteDocumentConfirmationButton").on('click', function (event) {
+				$.post(
+					"{% url "documents:delete_document" document.url_title %}",
+					{},
+					function (data, textStatus, jqXHR) {
+						deleteDocumentModal.modal('hide');
+						window.location.replace("/");
+					}
+				);
+			});
+		{% endif %}
+
+		{% if form.autosave_id %}
+			const deleteAutosaveModal = $('#deleteAutosaveModal');
+			deleteAutosaveModal.modal({
+				show: false
+			});
+			$('#deleteAutosaveButton').on('click', function (event) {
+				deleteAutosaveModal.modal('show');
+			});
+		{% endif %}
+
+		// Activate Select2 if present on page
+		$(".select2-selection").select2({
+			language: "{{ LANGUAGE_CODE }}",
+			placeholder: "{% trans 'Please select...' %}"
+		});
+
+		$(".select2-selection-clearable").select2({
+			language: "{{ LANGUAGE_CODE }}",
+			placeholder: "{% trans 'Please select...' %}",
+			allowClear: true
+		});
+
+		$("#selectInternalLinkModal").select2({
+			language: "{{ LANGUAGE_CODE }}",
+			placeholder: "{% trans 'Please select...' %}",
+			ajax: {
+				url: '/documents/search',
+				delay: 250,
+				dataType: 'json'
+			},
+			minimumInputLength: 1,
+			templateResult: (documentInfo) => {
+				{% include "select2_result_template.js" %}
+			},
+			templateSelection: (documentInfo) => {
+				{% include "select2_selection_template.js" %}
+			}
+		});
+
+		{% block additional_scripts %}{% endblock %}
+
+		// add datepicker to date inputs
+		$("input[name*='date']:not([readonly='True'])").datepicker( $.datepicker.regional["{{ LANGUAGE_CODE }}"] );
+
+		function getCustomButtons(textInput, efficientRender) {
+			return [
+				[{
+					name: "ImageGroup",
+					data: [{
+						name: "cmdAddImage",
+						toggle: false,
+						title: "Add Image",
+						icon: "glyphicon glyphicon-picture",
+						callback: function (e) {
+							// get all attachments
+							$.getJSON(
+								"{% url "documents:get_attachments" document.id %}",
+								{},
+								function (data, textStatus, jqXHR) {
+									// prepare the select in the modal
+									const select = $('#attachmentModalSelect');
+									if ($.isEmptyObject(data)) {
+										// if there are no pictures disable the select
+										select.attr('disabled', 'disabled');
+										return;
+									} else {
+										select.attr('disabled', false);
+									}
+									const options = select.prop('options');
+									$('option', select).remove();
+									$.each(data, function (val, text) {
+										options[options.length] = new Option(text, val);
+									});
+									// trigger the change event in order to show the preview of the pre selected
+									// image
+									select.trigger('change');
+								});
+
+							const modalItem = $('#selectImageAttachment');
+							modalItem.modal();
+							modalItem.on('hide.bs.modal', function () {
+								$('#image-upload-area').addClass('hidden');
+								$('#image-upload-error-display').addClass('hidden');
+							});
+
+							// set the click handler on the ok button that adds the image to the text
+							// and closes the modal
+							const setButton = $('#setImage');
+							setButton.off('click');
+							setButton.on("click", function (event) {
+								const select = $('#attachmentModalSelect');
+								if (select.attr('disabled')) {
+									modalItem.modal('hide');
+									return;
+								}
+								// find the right spot to insert the text and create the correct markdown
+								const attachmentHash = select.val();
+								const attachmentWidth = $('#attachmentWidthInput').val();
+								const attachmentHeight = $('#attachmentHeightInput').val();
+								addImageToText(e, attachmentHash, attachmentWidth, attachmentHeight, modalItem);
+							});
+
+							// enable image uploading
+							const imageUploadForm = $('#image-upload-form');
+							imageUploadForm.off('submit');
+							imageUploadForm.on('submit', function (event) {
+								event.preventDefault();
+
+								const filename = $(this).find('input[name=file]').val();
+
+								// determine whether selected file might be an image
+								let file_type_is_ok = false;
+								{% for image_type in supported_image_types %}
+									if (filename.toLowerCase().endsWith('{{ image_type }}')) {
+										file_type_is_ok = true;
+									}
+								{% endfor %}
+
+								if (!file_type_is_ok) {
+									$('#image-upload-error-display').removeClass('hidden');
+									return;
+								}
+
+								const formData = new FormData(this);
+								formData.append("document", {{ document.id }});
+
+								const attachmentWidth = $('#attachmentWidthInput').val();
+								const attachmentHeight = $('#attachmentHeightInput').val();
+
+								$.ajax({
+									url: "{% url 'documents:create_attachment' %}",
+									data: formData,
+									processData: false,
+									contentType: false,
+									type: 'POST',
+									success: function (data) {
+										addImageToText(e, data, attachmentWidth, attachmentHeight, modalItem);
+									},
+									error: function () {
+										$('#image-upload-error-display').removeClass('hidden');
+									}
+								});
+							});
+						}
+					}]
+				},
+                {
+                    name: "InternalGroup",
+                    data: [{
+                        name: "cmdAddInternalLink",
+                        toggle: false,
+                        title: "Add internal link",
+                        icon: "glyphicon glyphicon-circle-arrow-right",
+                        callback: function (e) {
+                            const modalItem = $('#selectInternalLinkDestination');
+                            modalItem.modal();
+
+                            // set the click handler on the ok button that adds the markdown to the text
+                            // and closes the modal
+                            const setButton = $('#setInternalLinkDestination');
+                            setButton.off('click');
+                            setButton.on("click", function (event) {
+                                modalItem.modal('hide');
+                                // find the right spot to insert the text and create the correct markdown
+                                const markdown = $('#selectInternalLinkModal').val();
+                                if (markdown !== null) {
+                                    const linkText = markdown.match(/\[(.*?)\]/)[1]; // we want the text inside the [ ]
+                                    const selected = e.getSelection();
+                                    e.replaceSelection(markdown);
+                                    const cursor = selected.start;
+                                    e.setSelection(cursor + 1, cursor + linkText.length + 1); // +1 because we do not want to select the starting [
+                                    if(selected.length > 0) { // if there was selected text, we want to use this a link text
+                                        e.replaceSelection(selected.text);
+                                        e.setSelection(cursor + 1, cursor + selected.length + 1);
+                                    }
+                                    textInput.trigger("change");
+                                    textInput.focus();
+                                }
+                            });
+                        }
+                    }]
+                },
+                {
+                    name: "EmojiGroup",
+                    data: [{
+                        name: "cmdAddEmoji",
+                        toggle: false,
+                        title: "Add Emoji",
+                        icon: "glyphicon glyphicon-thumbs-up emojiparent",
+                        callback: function (e) {
+                            // check if we already created an emojionearea object
+                            const editor = e.$editor;
+                            let emojiHolder = editor.find(".emojioneholder");
+                            if (emojiHolder.length) {
+                                if (editor.find(".emojionearea-picker").hasClass('hidden')) {
+                                    emojiHolder.data("emojioneArea").showPicker();
+                                } else {
+                                    emojiHolder.data("emojioneArea").hidePicker();
+                                }
+                                return;
+                            }
+
+                            editor.find(".btn-toolbar").append("<div class='emojioneholder'></div>");
+                            emojiHolder = editor.find(".emojioneholder");
+                            const emojiArea = emojiHolder.emojioneArea({
+                                standalone: true,
+                                shortnames: true,
+                                saveEmojisAs: 'shortname',
+                                emojiPlaceholder: ":wink:",
+                                useInternalCDN: false,
+                                pickerPosition: 'bottom',
+                                autocomplete: false,
+                                events: {
+                                    'picker.hide': function (picker) {
+                                        // add the selected emoji to the correct place in our editor
+                                        const markdownEditor = picker.closest(".md-editor").find(".md-input");
+                                        const markdownText = markdownEditor.val();
+                                        const cursorPosition = markdownEditor[0].selectionStart;
+                                        const textWithEmoji = markdownText.splice(cursorPosition, 0, this.getText());
+                                        markdownEditor.val(textWithEmoji);
+
+                                        // set the cursor to the correct position, because we automatically set it to
+                                        // the end
+                                        const emojiLength = this.getText().length;
+                                        markdownEditor[0].selectionStart = cursorPosition + emojiLength;
+                                        markdownEditor[0].selectionEnd = cursorPosition + emojiLength;
+
+                                        // rerender the preview
+                                        efficientRender();
+                                        this.setText('');
+                                    },
+                                    'picker.show': function () {
+                                        const focusElement = $('.emojionearea-picker').find('.emojionearea-search').find('input');
+                                        setTimeout(function () {
+                                            focusElement.focus();
+                                            focusElement.prop('autofocus');
+                                        }, 250);
+                                    }
+                                }
+                            });
+                            emojiArea.data("emojioneArea").showPicker();
+                        }
+                    }]
+	            }]
+            ];
+	    }
 	</script>
 {% endblock %}

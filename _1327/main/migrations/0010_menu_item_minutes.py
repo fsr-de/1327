@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
-from django.contrib.auth.models import Group
 from django.db import migrations
 
 def initial_data(apps, schema_editor):
@@ -21,6 +20,7 @@ def initial_data(apps, schema_editor):
 	menu_item.menu_type = 1  # MenuItem.MAIN_MENU
 	menu_item.save()
 
+	Group = apps.get_model("auth", "Group")
 	staff = Group.objects.get(name=settings.STAFF_GROUP_NAME)
 
 	menu_item = MenuItem()

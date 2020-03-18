@@ -6,6 +6,6 @@ from _1327.polls.models import Poll
 
 class InternalLinksMarkdownExtension(markdown.extensions.Extension):
 
-	def extendMarkdown(self, md, md_globals):
-		md.inlinePatterns.add('InternalLinkDocumentsPattern', Document.LinkPattern(Document.DOCUMENT_LINK_REGEX, md), "_begin")
-		md.inlinePatterns.add('InternalLinkPollsPattern', Poll.LinkPattern(Poll.POLLS_LINK_REGEX, md), "_begin")
+	def extendMarkdown(self, md):
+		md.inlinePatterns.register(Document.LinkPattern(Document.DOCUMENT_LINK_REGEX, md), 'InternalLinkDocumentsPattern', 200)
+		md.inlinePatterns.register(Poll.LinkPattern(Poll.POLLS_LINK_REGEX, md), 'InternalLinkPollsPattern', 200)

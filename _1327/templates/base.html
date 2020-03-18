@@ -164,6 +164,16 @@
 				</ul>
 			</div>
 			<div class="login-area pull-right hidden-print">
+				<div class="language-info">
+					{% get_current_language as LANGUAGE_CODE %}
+					{% if LANGUAGE_CODE == "de" %}
+						<span class="language-button language-button-selected">DE</span> |
+						<a onclick="setLanguage('en');"><div class="language-button">EN</div></a>
+					{% else %}
+						<a onclick="setLanguage('de');"><div class="language-button">DE</div></a> |
+						<span class="language-button language-button-selected">EN</span>
+					{% endif %}
+				</div>
 				<div class="login-info" {% if user.groups.all %}data-toggle="tooltip" data-placement="bottom" data-container="body" title="{% trans 'Groups' %}: {{ user.groups.all|join:', ' }}"{% endif %}>
 					{% if user.is_authenticated %}{% trans 'Logged in as' %} <b>{{ user.get_full_name }}</b>{% endif %}
 				</div>
@@ -249,5 +259,15 @@
 				$(this).parent().removeClass('menu-hover');
 			});
 		});
+
+		function setLanguage(language) {
+			$.ajax({
+				type: "POST",
+				url: "{% url 'set_lang' %}",
+				data: {"language": language},
+				success: function(){ location.reload(); },
+				error: function(){}
+			});
+		};
 	</script>
 {% endblock %}

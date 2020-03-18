@@ -2,13 +2,14 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-from django.contrib.auth.models import Group
 
 
 def add_student_group(apps, schema_editor):
+	Group = apps.get_model("auth", "Group")
 	Group.objects.create(name="Student")
 
 def remove_student_group(apps, schema_editor):
+	Group = apps.get_model("auth", "Group")
 	Group.objects.get(name="Student").delete()
 
 class Migration(migrations.Migration):

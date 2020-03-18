@@ -2,9 +2,11 @@ import re
 
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from django.shortcuts import Http404, redirect, render
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
+from django.utils.translation import get_language
 from guardian.core import ObjectPermissionChecker
 
 from _1327.minutes.forms import SearchForm
@@ -58,7 +60,7 @@ def search(request, groupid):
 		return redirect("minutes:list", groupid=groupid)
 
 	# filter for documents that contain the searched for string
-	minutes = MinutesDocument.objects.filter(text__icontains=search_text).prefetch_related('labels').order_by('-date')
+	minutes = MinutesDocument.objects.filter(Q(text_de__icontains=search_text) | Q(text_en__icontains=search_text)).prefetch_related('labels').order_by('-date')
 
 	# only show permitted documents
 	minutes, own_group = get_permitted_minutes(minutes, request, groupid)
@@ -67,17 +69,27 @@ def search(request, groupid):
 	result = {}
 	for m in minutes:
 		# find lines with the searched for string and mark it as bold
-		lines = m.text.splitlines()
-		lines = [
-			mark_safe(
-				re.sub(
-					r'(' + re.escape(escape(search_text)) + ')',
-					r'<b>\1</b>', escape(line),
-					flags=re.IGNORECASE
+		lines = []
+		for language in ['de', 'en']:
+			lines_lang = getattr(m, 'text_' + language).splitlines()
+
+			lines_lang = [
+				mark_safe(
+					re.sub(
+						r'(' + re.escape(escape(search_text)) + ')',
+						r'<b>\1</b>', escape(line),
+						flags=re.IGNORECASE
+					)
 				)
-			)
-			for line in lines if (line.casefold().find(search_text.casefold()) != -1)
-		]
+				for line in lines_lang if (line.casefold().find(search_text.casefold()) != -1)
+			]
+
+			# We're searching the string on all possible languages but if there's a match in a different language
+			# than the one selected it is highlighted in italics.
+			if not get_language().startswith(language):
+				lines_lang = [mark_safe('<i>' + line + '</i>') for line in lines_lang]
+
+			lines += lines_lang
 
 		if m.date.year not in result:
 			result[m.date.year] = []

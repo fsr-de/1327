@@ -1,21 +1,27 @@
 from markdown import Extension
-from markdown.inlinepatterns import BRK, dequote, handleAttributes, LinkPattern
+from markdown.inlinepatterns import dequote, Pattern
 from markdown.util import etree
 
 
-# Mostly copied from default "ImagePattern"
+NOBRACKET = r'[^\]\[]*'
+BRK = (
+	r'\[('
+	+ (NOBRACKET + r'(\[') * 6
+	+ (NOBRACKET + r'\])*') * 6
+	+ NOBRACKET + r')\]'
+)
 SCALED_IMAGE_LINK_RE = r'\!' + BRK + r'\s*\(\s*(<.*?>|([^"\)\s]+\s*"[^"]*"|[^\)\s]*))\s+=(\d+)?x(\d+)?\s*\)'
 
 
 class ScaledImageExtension(Extension):
-	def extendMarkdown(self, md, md_globals):
+	def extendMarkdown(self, md):
 		md.registerExtension(self)
-		md.inlinePatterns['scaled_image_link'] = ScaledImagePattern(SCALED_IMAGE_LINK_RE, md)
+		md.inlinePatterns.register(ScaledImagePattern(SCALED_IMAGE_LINK_RE, md), 'scaled_image_link', 200)
 
 
-class ScaledImagePattern(LinkPattern):
-	def handleMatch(self, m):
-		# Copied from default "ImagePattern"
+class ScaledImagePattern(Pattern):
+	def handleMatch(self, m, data=None):
+		# Mostly copied from (deprecated) default "ImagePattern"
 		el = etree.Element("img")
 		src_parts = m.group(9).split()
 		if src_parts:
@@ -27,7 +33,6 @@ class ScaledImagePattern(LinkPattern):
 			el.set('src', "")
 		if len(src_parts) > 1:
 			el.set('title', dequote(self.unescape(" ".join(src_parts[1:]))))
-		# End of copy
 
 		width = m.group(11)
 		if width:
@@ -36,15 +41,8 @@ class ScaledImagePattern(LinkPattern):
 		if height:
 			el.set('height', height + 'px')
 
-		# Copied from default "ImagePattern"
-		if self.markdown.enable_attributes:
-			truealt = handleAttributes(m.group(2), el)
-		else:
-			truealt = m.group(2)
-
-		el.set('alt', self.unescape(truealt))
+		el.set('alt', self.unescape(m.group(2)))
 		return el
-		# End of copy
 
 
 def makeExtension():

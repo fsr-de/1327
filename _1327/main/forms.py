@@ -17,7 +17,7 @@ from .models import MenuItem
 class MenuItemForm(forms.ModelForm):
 	class Meta:
 		model = MenuItem
-		fields = ("title", "document")
+		fields = ("title_de", "title_en", "document")
 
 	def clean(self):
 		if 'link' in self.cleaned_data and self.cleaned_data['link']:
@@ -30,7 +30,7 @@ class MenuItemForm(forms.ModelForm):
 class MenuItemAdminForm(MenuItemForm):
 	class Meta:
 		model = MenuItem
-		fields = ("title", "link", "document")
+		fields = ("title_de", "title_en", "link", "document")
 
 	def clean_link(self):
 		data = self.cleaned_data['link']
@@ -65,7 +65,7 @@ class MenuItemCreationForm(MenuItemForm):
 
 	class Meta:
 		model = MenuItem
-		fields = ("title", "document", "parent", "group")
+		fields = ("title_de", "title_en", "document", "parent", "group")
 
 	def __init__(self, user, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -84,7 +84,7 @@ class MenuItemCreationForm(MenuItemForm):
 			self.fields['group'].initial = self.user_groups[0]
 			self.fields['group'].widget = forms.HiddenInput()
 
-		self.fields['parent'].queryset = MenuItem.objects.filter(Q(pk__in=items) & Q(menu_type=MenuItem.MAIN_MENU) & (Q(parent=None) | Q(parent__parent=None))).order_by('menu_type', 'title')
+		self.fields['parent'].queryset = MenuItem.objects.filter(Q(pk__in=items) & Q(menu_type=MenuItem.MAIN_MENU) & (Q(parent=None) | Q(parent__parent=None))).order_by('menu_type', 'title_de')
 
 	def clean_group(self):
 		value = self.cleaned_data['group']
@@ -98,12 +98,12 @@ class MenuItemCreationAdminForm(MenuItemAdminForm):
 
 	class Meta:
 		model = MenuItem
-		fields = ("title", "link", "document", "parent", "group")
+		fields = ("title_de", "title_en", "link", "document", "parent", "group")
 
 	def __init__(self, user, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.user_groups = user.groups.all()
-		self.fields['parent'].queryset = MenuItem.objects.filter(Q(menu_type=MenuItem.MAIN_MENU) & (Q(parent=None) | Q(parent__parent=None))).order_by('menu_type', 'title')
+		self.fields['parent'].queryset = MenuItem.objects.filter(Q(menu_type=MenuItem.MAIN_MENU) & (Q(parent=None) | Q(parent__parent=None))).order_by('menu_type', 'title_de')
 		staff = Group.objects.get(name=settings.STAFF_GROUP_NAME)
 		self.fields['group'].queryset = self.user_groups
 		if staff in self.user_groups and not self.fields['group'].initial:

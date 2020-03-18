@@ -3,25 +3,28 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
-from django.contrib.auth.models import Group
 from django.db import migrations
-from guardian.utils import get_anonymous_user
+from guardian.conf import settings as guardian_settings
 
 
 def add_initial_groups(apps, schema_editor):
 	initial_group_names = list(filter(lambda x: 'GROUP_NAME' in x and not 'DEFAULT' in x, dir(settings)))
 
 	for group_name in initial_group_names:
+		Group = apps.get_model("auth", "Group")
 		group, created = Group.objects.get_or_create(name=getattr(settings, group_name))
 
-		if 'ANONYMOUS' in group_name:
-			get_anonymous_user().groups.add(group)
+		if 'ANONYMOUS' in group_name and created:
+			UserProfile = apps.get_model("user_management", "UserProfile")
+			anonymous = UserProfile.objects.get(username=guardian_settings.ANONYMOUS_USER_NAME)
+			anonymous.groups.add(group)
 		group.save()
 
 
 def reverse_add_initial_groups(apps, schema_editor):
 	initial_group_names = [getattr(settings, group_name) for group_name in filter(lambda x: 'GROUP_NAME' in x, dir(settings))]
 
+	Group = apps.get_model("auth", "Group")
 	for group in Group.objects.filter(name__in=initial_group_names):
 		group.delete()
 

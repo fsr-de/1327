@@ -49,8 +49,8 @@ class TestEditor(WebTest):
 		self.assertEqual(response.status_code, 200)
 
 		form = response.forms['document-form']
-		self.assertEqual(form.get('title').value, self.document.title)
-		self.assertEqual(form.get('text').value, self.document.text)
+		self.assertEqual(form.get('title_en').value, self.document.title_en)
+		self.assertEqual(form.get('text_en').value, self.document.text_en)
 		self.assertEqual(int(form.get('moderator').value), self.document.moderator.id)
 		self.assertEqual(sorted([int(id) for id in form.get('participants').value]), sorted([participant.id for participant in self.document.participants.all()]))
 		self.assertTrue("Hidden" in str(form.fields['group'][0]))
@@ -254,15 +254,38 @@ class TestSearchMinutes(WebTest):
 		text3 = "this will never show up notB notO"
 		text4 = "<script>alert(Hello);</script> something else"
 
-		cls.minutes_document1 = mommy.make(MinutesDocument, text=text1, title="MinutesOne")
-		cls.minutes_document2 = mommy.make(MinutesDocument, text=text2, title="MinutesTwo")
-		cls.minutes_document3 = mommy.make(MinutesDocument, text=text3, title="MinutesThree")
-		cls.minutes_document4 = mommy.make(MinutesDocument, text=text4, title="MinutesFour")
+		text_en = "This is the English Case"
+
+		cls.minutes_document1 = mommy.make(MinutesDocument, text_en=text_en, text_de=text1, title_en="MinutesOne", title_de="MinutesOne")
+		cls.minutes_document2 = mommy.make(MinutesDocument, text_de=text2, title_en="MinutesTwo", title_de="MinutesTwo")
+		cls.minutes_document3 = mommy.make(MinutesDocument, text_de=text3, title_en="MinutesThree", title_de="MinutesThree")
+		cls.minutes_document4 = mommy.make(MinutesDocument, text_de=text4, title_en="MinutesFour", title_de="MinutesFour")
 		cls.group = mommy.make(Group)
 		cls.minutes_document1.set_all_permissions(cls.group)
 		cls.minutes_document2.set_all_permissions(cls.group)
 		cls.minutes_document3.set_all_permissions(cls.group)
 		cls.minutes_document4.set_all_permissions(cls.group)
+
+	def test_multiple_languages(self):
+		response = self.app.post(reverse('set_lang'), params={'language': 'de'}, user=self.user)
+		self.assertEqual(response.status_code, 302)
+
+		search_string = 'Case'
+		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
+
+		form = response.forms[0]
+		form.set('search_phrase', search_string)
+
+		response = form.submit()
+
+		self.assertIn('MinutesOne', response)
+		self.assertNotIn('MinutesTwo', response)
+		self.assertNotIn('MinutesThree', response)
+
+		self.assertContains(response, search_string, count=2)
+
+		self.assertIn("<li><i>This is the English <b>Case</b></i></li>", response)
+		self.assertIn("<li> <b>Case</b> notB notO </li>", response)
 
 	def test_two_minutes_results(self):
 		search_string = "both"
@@ -395,7 +418,7 @@ class TestNewMinutesDocument(WebTest):
 
 		form = response.forms['document-form']
 		text = "Lorem ipsum"
-		form.set('text', text)
+		form.set('text_en', text)
 		form.set('comment', text)
 		form.set('url_title', slugify(text))
 
@@ -409,11 +432,11 @@ class TestNewMinutesDocument(WebTest):
 		self.assertEqual(len(versions), 1)
 
 		# check whether the properties of the new document are correct
-		self.assertEqual(document.title, MinutesDocument.generate_new_title())
+		self.assertEqual((document.title_en, document.title_de), MinutesDocument.generate_new_title())
 		self.assertEqual(document.author, self.user)
 		self.assertEqual(document.moderator, self.user)
-		self.assertEqual(document.text, text)
-		self.assertEqual(versions[0].revision.comment, text)
+		self.assertEqual(document.text_en, text)
+		self.assertEqual(versions[0].revision.get_comment(), text)
 		self.assertListEqual(list(document.participants.all().order_by('username')), list(self.group.user_set.all().order_by('username')))
 
 		checker = ObjectPermissionChecker(self.group)
@@ -422,7 +445,7 @@ class TestNewMinutesDocument(WebTest):
 	def test_save_another_minutes_document(self):
 		test_title = "Test title"
 		test_moderator = mommy.make(UserProfile)
-		first_document = mommy.make(MinutesDocument, title=test_title, moderator=test_moderator)
+		first_document = mommy.make(MinutesDocument, title_en=test_title, moderator=test_moderator)
 		first_document.set_all_permissions(self.group)
 
 		# get the editor page and save the site
@@ -431,7 +454,7 @@ class TestNewMinutesDocument(WebTest):
 
 		form = response.forms['document-form']
 		text = "Lorem ipsum"
-		form.set('text', text)
+		form.set('text_en', text)
 		form.set('comment', text)
 		form.set('url_title', slugify(text))
 
@@ -441,10 +464,10 @@ class TestNewMinutesDocument(WebTest):
 		document = MinutesDocument.objects.get(url_title=slugify(text))
 
 		# check whether the properties of the new document are correct
-		self.assertEqual(document.title, test_title)  # should be taken from previous minutes document
+		self.assertEqual(document.title_en, test_title)  # should be taken from previous minutes document
 		self.assertEqual(document.moderator, test_moderator)  # should be taken from previous minutes document
 		self.assertEqual(document.author, self.user)
-		self.assertEqual(document.text, text)
+		self.assertEqual(document.text_en, text)
 		self.assertListEqual(list(document.participants.all().order_by('username')), list(self.group.user_set.all().order_by('username')))
 
 	def test_group_field_hidden_when_user_has_one_group(self):
