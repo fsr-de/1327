@@ -150,6 +150,7 @@ class TestEditor(WebTest):
 
 class TestVersions(WebTest):
 	csrf_checks = False
+	extra_environ = {'HTTP_ACCEPT_LANGUAGE': 'en'}
 
 	@classmethod
 	def setUpTestData(cls):
@@ -255,9 +256,6 @@ class TestAuthorDisplay(WebTest):
 		self.assertIn(author_str, self.app.get(self.document.get_view_url(), user=self.user).body.decode('utf-8'))
 		self.app.reset()
 		self.assertIn(author_str, self.app.get(self.document.get_view_url()).body.decode('utf-8'))
-
-		# The following part of the test is currently disables as the anonymous user's is_authenticated() method evaluates to true
-		# and I haven't found a way to create a user who isn't authenticated, even after over 8 hours of trial and error.
 
 		self.document.show_author_to = InformationDocument.SHOW_AUTHOR_TO_LOGGED_IN_USERS
 		with transaction.atomic(), revisions.create_revision():
