@@ -46,3 +46,8 @@ custom_urlpatterns = [
 	path("<slugwithslash:title>", main_views.view, name="view"),
 ]
 urlpatterns.extend(custom_urlpatterns)
+
+
+if settings.ENABLE_DEBUG_TOOLBAR:
+	import debug_toolbar
+	urlpatterns = [path('__debug__/', include(debug_toolbar.urls))] + urlpatterns

@@ -26,6 +26,13 @@ SECRET_KEY = 'usba$w)n_sr3u(u1os05!8t6)m(w0skpx&%n@wwpgi_bzdxt-e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+TESTING = 'test' in sys.argv
+
+# Very helpful but eats a lot of performance on sql-heavy pages.
+# only with DEBUG == True and TESTING == False
+ENABLE_DEBUG_TOOLBAR = False
+ENABLE_DEBUG_TOOLBAR = ENABLE_DEBUG_TOOLBAR and DEBUG and not TESTING
+
 
 ALLOWED_HOSTS = []
 
@@ -138,7 +145,6 @@ ROOT_URLCONF = '_1327.urls'
 APPEND_SLASH = False
 
 WSGI_APPLICATION = '_1327.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
@@ -264,13 +270,10 @@ STATIC_PRECOMPILER_COMPILERS = [
 # Set this to the ID of the document that shall be shown as Main Page
 MAIN_PAGE_ID = -1
 
-TESTING = 'test' in sys.argv
-
 if TESTING:
 	DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3'}  # use sqlite to speed tests up
 	logging.disable(logging.CRITICAL)  # disable logging, primarily to prevent console spam
 	LANGUAGE_CODE = 'en-US'  # force language to be English while testing
-
 
 # Create a localsettings.py to override settings per machine or user, e.g. for
 # development or different settings in deployments using multiple servers.
@@ -279,3 +282,9 @@ if os.path.exists(_LOCAL_SETTINGS_FILENAME):
 	with open(_LOCAL_SETTINGS_FILENAME, "rb") as f:
 		exec(compile(f.read(), _LOCAL_SETTINGS_FILENAME, 'exec'))
 del _LOCAL_SETTINGS_FILENAME
+
+# Django debug toolbar settings
+if ENABLE_DEBUG_TOOLBAR:
+	INSTALLED_APPS += ['debug_toolbar']
+	MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE
+	INTERNAL_IPS = ['127.0.0.1']
