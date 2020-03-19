@@ -53,14 +53,14 @@ class StartEndPreprocessor(MinutesBasePreprocessor):
 		return self.startify_or_endify(match, _('End of meeting'))
 
 
-class PausePreprocessor(MinutesBasePreprocessor):
+class BreakPreprocessor(MinutesBasePreprocessor):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.patterns = [
-			(r'\|pause\|\(([0-9:]+)\)\(([0-9:]+)\)', self.pausify),
+			(r'\|break\|\(([0-9:]+)\)\(([0-9:]+)\)', self.breakify),
 		]
 
-	def pausify(self, match):
+	def breakify(self, match):
 		time_start_break = match.group(1)
 		time_end_break = match.group(2)
 		
@@ -125,7 +125,7 @@ class MinuteExtension(Extension):
 		md.registerExtension(self)
 		md.preprocessors.register(VotePreprocessor(md), 'votify', 200)
 		md.preprocessors.register(StartEndPreprocessor(md), 'start_or_endify', 200)
-		md.preprocessors.register(PausePreprocessor(md), 'pausify', 200)
+		md.preprocessors.register(BreakPreprocessor(md), 'breakify', 200)
 		md.preprocessors.register(QuorumPrepocessor(md), 'quorumify', 200)
 		md.preprocessors.register(EnterLeavePreprocessor(md), 'enter_or_leavify', 200)
 
