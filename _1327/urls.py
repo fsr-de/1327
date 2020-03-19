@@ -34,8 +34,6 @@ urlpatterns = [
 	path("shortlink/create", shortlinks_views.shortlink_create, name="shortlink_create"),
 	path("shortlink/delete", shortlinks_views.shortlink_delete, name="shortlink_delete"),
 
-	path("admin2/group/<int:group_id>/edit", user_management_views.edit_group, name="edit_group"),
-
 	path("admin/", admin.site.urls),
 	path("hijack/", include("hijack.urls")),
 ]

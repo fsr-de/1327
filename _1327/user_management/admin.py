@@ -6,6 +6,7 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
 
+from .forms import GroupEditForm
 from .models import UserProfile
 
 
@@ -126,7 +127,7 @@ class GroupAdminForm(forms.ModelForm):
 
 
 class MyGroupAdmin(GroupAdmin):
-	form = GroupAdminForm
+	form = GroupEditForm
 
 
 admin.site.unregister(Group)
