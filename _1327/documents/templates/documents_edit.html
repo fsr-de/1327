@@ -415,6 +415,17 @@
 			return currentHour + ":" + currentMinute;
 		}
 
+		function insertText(textToInsert, markdownEditor) {
+			const markdownText = markdownEditor[0].value;
+			const cursorPosition = markdownEditor[0].selectionStart;
+
+			markdownEditor[0].value = markdownText.splice(cursorPosition, markdownEditor[0].selectionEnd - cursorPosition, textToInsert);
+							
+			const additionalTextLength = textToInsert.length;
+			markdownEditor[0].selectionStart = cursorPosition + additionalTextLength;
+			markdownEditor[0].selectionEnd = cursorPosition + additionalTextLength;
+		}
+
 		function getCustomButtons(textInput, efficientRender) {
 			return [
 				[{
@@ -624,16 +635,11 @@
                         icon: "glyphicon glyphicon-play",
 						callback: function (e) {
                             const markdownEditor = e.$editor.find(".md-input");
-							const markdownText = markdownEditor[0].value;
-							const cursorPosition = markdownEditor[0].selectionStart;
 
 							const currentTime = getCurrentTime();
-							const addedText = "|start|(" + currentTime + ")";
-							markdownEditor[0].value = markdownText.splice(cursorPosition, markdownEditor[0].selectionEnd - cursorPosition, addedText);
+							const textToInsert = "|start|(" + currentTime + ")";
 							
-							const addedTextLength = addedText.length;
-                            markdownEditor[0].selectionStart = cursorPosition + addedTextLength;
-                            markdownEditor[0].selectionEnd = cursorPosition + addedTextLength;
+							insertText(textToInsert, markdownEditor);
                         }
 					},
 					{
@@ -652,16 +658,11 @@
                         icon: "glyphicon glyphicon-stop",
 						callback: function (e) {
                             const markdownEditor = e.$editor.find(".md-input");
-							const markdownText = markdownEditor[0].value;
-							const cursorPosition = markdownEditor[0].selectionStart;
-
-							const currentTime = getCurrentTime();
-							const addedText = "\n|end|(" + currentTime + ")";
-							markdownEditor[0].value = markdownText.splice(cursorPosition, markdownEditor[0].selectionEnd - cursorPosition, addedText);
 							
-							const addedTextLength = addedText.length;
-                            markdownEditor[0].selectionStart = cursorPosition + addedTextLength;
-                            markdownEditor[0].selectionEnd = cursorPosition + addedTextLength;
+							const currentTime = getCurrentTime();
+							const textToInsert = "\n|end|(" + currentTime + ")";
+							
+							insertText(textToInsert, markdownEditor);
                         }
 					}]
                 },
@@ -674,15 +675,10 @@
                         icon: "glyphicon glyphicon-user",
                         callback: function (e) {
                             const markdownEditor = e.$editor.find(".md-input");
-							const markdownText = markdownEditor[0].value;
-							const cursorPosition = markdownEditor[0].selectionStart;
 
-							const addedText = "\n|quorum|(/)";
-							markdownEditor[0].value = markdownText.splice(cursorPosition, markdownEditor[0].selectionEnd - cursorPosition, addedText);
-							
-							const addedTextLength = addedText.length;
-                            markdownEditor[0].selectionStart = cursorPosition + addedTextLength - 2;
-                            markdownEditor[0].selectionEnd = cursorPosition + addedTextLength - 2;
+							const textToInsert = "\n|quorum|(/)";
+
+							insertText(textToInsert, markdownEditor);
                         }
                     },
 					{
@@ -692,17 +688,11 @@
                         icon: "glyphicon glyphicon-chevron-right",
 						callback: function (e) {
                             const markdownEditor = e.$editor.find(".md-input");
-							const markdownText = markdownEditor[0].value;
-							const cursorPosition = markdownEditor[0].selectionStart;
 
 							const currentTime = getCurrentTime();
+							const textToInsert = "\n|enter|(" + currentTime + ")()";
 
-							const addedText = "\n|enter|(" + currentTime + ")()";
-							markdownEditor[0].value = markdownText.splice(cursorPosition, markdownEditor[0].selectionEnd - cursorPosition, addedText);
-							
-							const addedTextLength = addedText.length;
-                            markdownEditor[0].selectionStart = cursorPosition + addedTextLength - 1;
-                            markdownEditor[0].selectionEnd = cursorPosition + addedTextLength - 1;
+							insertText(textToInsert, markdownEditor);
                         }
 					},
 					{
@@ -712,18 +702,12 @@
                         icon: "glyphicon glyphicon-chevron-left",
 						callback: function (e) {
                             const markdownEditor = e.$editor.find(".md-input");
-							const markdownText = markdownEditor[0].value;
-							const cursorPosition = markdownEditor[0].selectionStart;
-
-							const currentTime = getCurrentTime();
-
-							const addedText = "\n|leave|(" + currentTime + ")()";
-							markdownEditor[0].value = markdownText.splice(cursorPosition, markdownEditor[0].selectionEnd - cursorPosition, addedText);
 							
-							const addedTextLength = addedText.length;
-                            markdownEditor[0].selectionStart = cursorPosition + addedTextLength - 1;
-                            markdownEditor[0].selectionEnd = cursorPosition + addedTextLength - 1;
-                        }
+							const currentTime = getCurrentTime();
+							const textToInsert = "\n|leave|(" + currentTime + ")()";
+
+							insertText(textToInsert, markdownEditor);
+						}
 					}]
                 }]
             ];
