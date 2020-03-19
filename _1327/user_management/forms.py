@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.models import Group
 from django.forms import BooleanField, ModelMultipleChoiceField
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.debug import sensitive_variables
