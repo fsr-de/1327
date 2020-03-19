@@ -631,30 +631,56 @@
                     data: [{
                         name: "cmdAddStartText",
                         toggle: false,
-                        title: "Add start text",
+                        title: "Begin or continue the meeting",
                         icon: "glyphicon glyphicon-play",
 						callback: function (e) {
                             const markdownEditor = e.$editor.find(".md-input");
 
 							const currentTime = getCurrentTime();
-							const textToInsert = "|start|(" + currentTime + ")";
-							
-							insertText(textToInsert, markdownEditor);
+							let textToInsert;
+
+							const unfinishedBreak = markdownEditor[0].value.match(/\|break\|\((\d+):(\d+)\)\(\)/);
+							const startedMeeting = markdownEditor[0].value.search(/\|start\|\((\d+):(\d+)\)/);
+
+							if(unfinishedBreak) {
+								const unfinishedBreakPosition = markdownEditor[0].value.search(/\|break\|\((\d+):(\d+)\)\(\)/);
+								const relativeInsertPosition = unfinishedBreak[0].search(/\(\)/) + 1;
+								
+								const oldSelectionStartPosition = markdownEditor[0].selectionStart;
+								const oldSelectionEndPosition = markdownEditor[0].selectionEnd;
+								
+								markdownEditor[0].selectionStart = unfinishedBreakPosition + relativeInsertPosition;
+								markdownEditor[0].selectionEnd = unfinishedBreakPosition + relativeInsertPosition;
+								
+								textToInsert = currentTime;
+								insertText(textToInsert, markdownEditor);
+								
+								markdownEditor[0].selectionStart = oldSelectionStartPosition; // cursor stays at its old position
+								markdownEditor[0].selectionEnd = oldSelectionEndPosition;
+							} else if (startedMeeting < 0) { // meeting only needs to be started once
+								textToInsert = "|start|(" + currentTime + ")";
+								insertText(textToInsert, markdownEditor);
+							}	
                         }
 					},
 					{
-                        name: "cmdAddPauseText",
+                        name: "cmdAddBreakText",
                         toggle: false,
-                        title: "Add pause text",
+                        title: "Pause the meeting",
                         icon: "glyphicon glyphicon-pause",
 						callback: function (e) {
-							return;
+							const markdownEditor = e.$editor.find(".md-input");
+
+							const currentTime = getCurrentTime();
+							const textToInsert = "\n|break|(" + currentTime + ")()";
+							
+							insertText(textToInsert, markdownEditor);
 						}
 					},
 					{
                         name: "cmdAddEndText",
                         toggle: false,
-                        title: "Add end text",
+                        title: "End the meeting",
                         icon: "glyphicon glyphicon-stop",
 						callback: function (e) {
                             const markdownEditor = e.$editor.find(".md-input");
