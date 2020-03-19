@@ -406,6 +406,15 @@
 		// add datepicker to date inputs
 		$("input[name*='date']:not([readonly='True'])").datepicker( $.datepicker.regional["{{ LANGUAGE_CODE }}"] );
 
+		function getCurrentTime() {
+			const currentDate = new Date();
+			const currentHour = currentDate.getHours().toString();
+			let currentMinute = currentDate.getMinutes().toString();
+			if(currentMinute.length == 1) currentMinute = "0" + currentMinute;
+
+			return currentHour + ":" + currentMinute;
+		}
+
 		function getCustomButtons(textInput, efficientRender) {
 			return [
 				[{
@@ -605,7 +614,118 @@
                             emojiArea.data("emojioneArea").showPicker();
                         }
                     }]
-	            }]
+	            },
+				{
+                    name: "GeneralTextBlockGroup",
+                    data: [{
+                        name: "cmdAddStartText",
+                        toggle: false,
+                        title: "Add start text",
+                        icon: "glyphicon glyphicon-play",
+						callback: function (e) {
+                            const markdownEditor = e.$editor.find(".md-input");
+							const markdownText = markdownEditor[0].value;
+							const cursorPosition = markdownEditor[0].selectionStart;
+
+							const currentTime = getCurrentTime();
+							const addedText = "|start|(" + currentTime + ")";
+							markdownEditor[0].value = markdownText.splice(cursorPosition, markdownEditor[0].selectionEnd - cursorPosition, addedText);
+							
+							const addedTextLength = addedText.length;
+                            markdownEditor[0].selectionStart = cursorPosition + addedTextLength;
+                            markdownEditor[0].selectionEnd = cursorPosition + addedTextLength;
+                        }
+					},
+					{
+                        name: "cmdAddPauseText",
+                        toggle: false,
+                        title: "Add pause text",
+                        icon: "glyphicon glyphicon-pause",
+						callback: function (e) {
+							return;
+						}
+					},
+					{
+                        name: "cmdAddEndText",
+                        toggle: false,
+                        title: "Add end text",
+                        icon: "glyphicon glyphicon-stop",
+						callback: function (e) {
+                            const markdownEditor = e.$editor.find(".md-input");
+							const markdownText = markdownEditor[0].value;
+							const cursorPosition = markdownEditor[0].selectionStart;
+
+							const currentTime = getCurrentTime();
+							const addedText = "\n|end|(" + currentTime + ")";
+							markdownEditor[0].value = markdownText.splice(cursorPosition, markdownEditor[0].selectionEnd - cursorPosition, addedText);
+							
+							const addedTextLength = addedText.length;
+                            markdownEditor[0].selectionStart = cursorPosition + addedTextLength;
+                            markdownEditor[0].selectionEnd = cursorPosition + addedTextLength;
+                        }
+					}]
+                },
+				{
+                    name: "PersonTextBlockGroup",
+                    data: [{
+                        name: "cmdAddQuorumText",
+                        toggle: false,
+                        title: "Add quorum text",
+                        icon: "glyphicon glyphicon-user",
+                        callback: function (e) {
+                            const markdownEditor = e.$editor.find(".md-input");
+							const markdownText = markdownEditor[0].value;
+							const cursorPosition = markdownEditor[0].selectionStart;
+
+							const addedText = "\n|quorum|(/)";
+							markdownEditor[0].value = markdownText.splice(cursorPosition, markdownEditor[0].selectionEnd - cursorPosition, addedText);
+							
+							const addedTextLength = addedText.length;
+                            markdownEditor[0].selectionStart = cursorPosition + addedTextLength - 2;
+                            markdownEditor[0].selectionEnd = cursorPosition + addedTextLength - 2;
+                        }
+                    },
+					{
+                        name: "cmdAddEnterText",
+                        toggle: false,
+                        title: "Add enter text",
+                        icon: "glyphicon glyphicon-chevron-right",
+						callback: function (e) {
+                            const markdownEditor = e.$editor.find(".md-input");
+							const markdownText = markdownEditor[0].value;
+							const cursorPosition = markdownEditor[0].selectionStart;
+
+							const currentTime = getCurrentTime();
+
+							const addedText = "\n|enter|(" + currentTime + ")()";
+							markdownEditor[0].value = markdownText.splice(cursorPosition, markdownEditor[0].selectionEnd - cursorPosition, addedText);
+							
+							const addedTextLength = addedText.length;
+                            markdownEditor[0].selectionStart = cursorPosition + addedTextLength - 1;
+                            markdownEditor[0].selectionEnd = cursorPosition + addedTextLength - 1;
+                        }
+					},
+					{
+                        name: "cmdAddLeaveText",
+                        toggle: false,
+                        title: "Add leave text",
+                        icon: "glyphicon glyphicon-chevron-left",
+						callback: function (e) {
+                            const markdownEditor = e.$editor.find(".md-input");
+							const markdownText = markdownEditor[0].value;
+							const cursorPosition = markdownEditor[0].selectionStart;
+
+							const currentTime = getCurrentTime();
+
+							const addedText = "\n|leave|(" + currentTime + ")()";
+							markdownEditor[0].value = markdownText.splice(cursorPosition, markdownEditor[0].selectionEnd - cursorPosition, addedText);
+							
+							const addedTextLength = addedText.length;
+                            markdownEditor[0].selectionStart = cursorPosition + addedTextLength - 1;
+                            markdownEditor[0].selectionEnd = cursorPosition + addedTextLength - 1;
+                        }
+					}]
+                }]
             ];
 	    }
 	</script>
