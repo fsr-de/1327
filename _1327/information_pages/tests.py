@@ -211,15 +211,15 @@ class TestAuthorDisplay(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.user = baker.make(UserProfile, is_superuser=True)
 		cls.unauthenticated_user = get_anonymous_user()
-		cls.document = mommy.prepare(InformationDocument)
+		cls.document = baker.prepare(InformationDocument)
 		with transaction.atomic(), revisions.create_revision():
 			cls.document.save()
 			revisions.set_user(cls.user)
 			revisions.set_comment('test version')
 
-		cls.group = mommy.make(Group)
+		cls.group = baker.make(Group)
 		cls.user.groups.add(cls.group)
 		cls.unauthenticated_user.groups.add(cls.group)
 		cls.document.set_all_permissions(cls.group)
