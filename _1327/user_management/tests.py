@@ -271,3 +271,32 @@ class _1327AuthenticationBackendUniversityNetworkTests(WebTest):
 		)
 		redirect_url = reverse('login') + '?next=' + reverse(self.document.get_view_url_name(), args=[self.document.url_title])
 		self.assertRedirects(response, redirect_url)
+
+
+class GroupEditFormTests(WebTest):
+
+	def setUp(self):
+		self.user1 = baker.make(UserProfile, is_superuser=True)
+		self.user2 = baker.make(UserProfile)
+		self.group = baker.make(Group)
+
+	def test_empty_group(self):
+		self.app.set_user(self.user1)
+		form = self.app.get(reverse("admin:change_group", self.group.id))
+		self.assertFalse(form["add_information_document"].checked)
+		self.assertFalse(form["add_minutesdocument"].checked)
+		self.assertFalse(form["add_poll"].checked)
+
+	def test_add_information_document_permission(self):
+		self.app.set_user(self.user1)
+		form = self.app.get(reverse("admin:change_group", self.group.id))
+		form["add_information_document"].checked = True
+		form.submit()
+		self.assertTrue(self.group.has_perm("add_information_document"))
+
+	def test_add_minutes_document_permission(self):
+		self.app.set_user(self.user1)
+		form = self.app.get(reverse("admin:change_group", self.group.id))
+		form["add_minutes_document"].checked = True
+		form.submit()
+		self.assertTrue(self.group.has_perm("add_minutes_document"))
