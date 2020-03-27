@@ -13,7 +13,7 @@ from django.utils import translation
 from django_webtest import WebTest
 from guardian.shortcuts import assign_perm
 from guardian.utils import get_anonymous_user
-from model_mommy import mommy
+from model_bakery import baker
 
 from _1327.information_pages.models import InformationDocument
 from _1327.main.tools import translate
@@ -30,7 +30,7 @@ class TestMenuProcessor(TestCase):
 		rf = RequestFactory()
 		request = rf.get('/this_is_a_page_that_most_certainly_does_not_exist.html')
 
-		menu_item = mommy.make(MenuItem)
+		menu_item = baker.make(MenuItem)
 		try:
 			mark_selected(request, menu_item)
 		except AttributeError:
@@ -45,7 +45,7 @@ class MainPageTests(WebTest):
 		self.assertTemplateUsed(response, 'index.html')
 
 	def test_main_page_information_page_set(self):
-		document = mommy.make(InformationDocument)
+		document = baker.make(InformationDocument)
 		assign_perm(InformationDocument.VIEW_PERMISSION_NAME, get_anonymous_user(), document)
 		with self.settings(MAIN_PAGE_ID=document.id):
 			response = self.app.get(reverse('index')).follow()
@@ -57,7 +57,7 @@ class MainPageTests(WebTest):
 			self.assertTemplateUsed(response, 'documents_base.html')
 
 	def test_main_page_minutes_document_set(self):
-		document = mommy.make(MinutesDocument)
+		document = baker.make(MinutesDocument)
 		assign_perm(MinutesDocument.VIEW_PERMISSION_NAME, get_anonymous_user(), document)
 		with self.settings(MAIN_PAGE_ID=document.id):
 			response = self.app.get(reverse('index')).follow()
@@ -71,16 +71,16 @@ class MenuItemTests(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.root_user = mommy.make(UserProfile, is_superuser=True)
-		cls.user = mommy.make(UserProfile)
+		cls.root_user = baker.make(UserProfile, is_superuser=True)
+		cls.user = baker.make(UserProfile)
 
 		cls.staff_group = Group.objects.get(name=settings.STAFF_GROUP_NAME)
 		cls.root_user.groups.add(cls.staff_group)
 		cls.user.groups.add(cls.staff_group)
 
-		cls.root_menu_item = mommy.make(MenuItem)
-		cls.sub_item = mommy.make(MenuItem, parent=cls.root_menu_item)
-		cls.sub_sub_item = mommy.make(MenuItem, parent=cls.sub_item)
+		cls.root_menu_item = baker.make(MenuItem)
+		cls.sub_item = baker.make(MenuItem, parent=cls.root_menu_item)
+		cls.sub_sub_item = baker.make(MenuItem, parent=cls.sub_item)
 
 		assign_perm(cls.sub_item.change_children_permission_name, cls.user, cls.sub_item)
 		assign_perm(cls.sub_item.view_permission_name, cls.user, cls.sub_item)
@@ -91,7 +91,7 @@ class MenuItemTests(WebTest):
 		self.sub_sub_item.refresh_from_db()
 
 	def test_visit_menu_item_page(self):
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 
 		response = self.app.get(reverse('menu_items_index'), user=user, status=403)
 		self.assertEqual(response.status_code, 403)
@@ -118,7 +118,7 @@ class MenuItemTests(WebTest):
 
 	def test_create_menu_item_as_superuser_document_and_link(self):
 		menu_item_count = MenuItem.objects.count()
-		document = mommy.make(InformationDocument)
+		document = baker.make(InformationDocument)
 
 		response = self.app.get(reverse('menu_item_create'), user=self.root_user)
 		form = response.form
@@ -193,7 +193,7 @@ class MenuItemTests(WebTest):
 
 	def test_create_menu_item_as_superuser_with_document(self):
 		menu_item_count = MenuItem.objects.count()
-		document = mommy.make(InformationDocument)
+		document = baker.make(InformationDocument)
 
 		response = self.app.get(reverse('menu_item_create'), user=self.root_user)
 		form = response.form
@@ -226,7 +226,7 @@ class MenuItemTests(WebTest):
 
 	def test_create_menu_item_as_normal_user_with_document(self):
 		menu_item_count = MenuItem.objects.count()
-		document = mommy.make(InformationDocument)
+		document = baker.make(InformationDocument)
 
 		response = self.app.get(reverse('menu_item_create'), user=self.user)
 		form = response.form
@@ -243,7 +243,7 @@ class MenuItemTests(WebTest):
 
 	def test_create_menu_item_as_normal_user_with_document_without_parent(self):
 		menu_item_count = MenuItem.objects.count()
-		document = mommy.make(InformationDocument)
+		document = baker.make(InformationDocument)
 
 		response = self.app.get(reverse('menu_item_create'), user=self.user)
 		form = response.form
@@ -259,8 +259,8 @@ class MenuItemTests(WebTest):
 
 	def test_create_menu_wrong_group(self):
 		menu_item_count = MenuItem.objects.count()
-		document = mommy.make(InformationDocument)
-		group = mommy.make(Group)
+		document = baker.make(InformationDocument)
+		group = baker.make(Group)
 
 		response = self.app.get(reverse('menu_item_create'), user=self.user)
 		form = response.form
@@ -294,8 +294,8 @@ class MenuItemTests(WebTest):
 		self.assertIn(reverse('menu_item_edit', args=[self.root_menu_item.id]), response.body.decode('utf-8'))
 
 	def test_find_root_menu_items(self):
-		sub_item = mommy.make(MenuItem, parent=self.root_menu_item)
-		sub_sub_item = mommy.make(MenuItem, parent=self.sub_item)
+		sub_item = baker.make(MenuItem, parent=self.root_menu_item)
+		sub_sub_item = baker.make(MenuItem, parent=self.sub_item)
 
 		menu_items = [sub_sub_item, self.sub_sub_item, sub_item]
 		root_menu_items = find_root_menu_items(menu_items)
@@ -316,7 +316,7 @@ class MenuItemTests(WebTest):
 		self.assertIn(reverse('menu_item_edit', args=[self.sub_sub_item.id]), response.body.decode('utf-8'))
 
 	def test_change_parent_without_edit_permission(self):
-		extra_sub_item = mommy.make(MenuItem, parent=self.sub_item)
+		extra_sub_item = baker.make(MenuItem, parent=self.sub_item)
 
 		response = self.app.get(reverse('menu_items_index'), user=self.user)
 		self.assertEqual(response.status_code, 200)
@@ -330,7 +330,7 @@ class MenuItemTests(WebTest):
 		self.assertNotIn(reverse('menu_item_edit', args=[extra_sub_item.id]), response.body.decode('utf-8'))
 
 	def test_change_parent_with_edit_permission(self):
-		extra_sub_item = mommy.make(MenuItem, parent=self.sub_item)
+		extra_sub_item = baker.make(MenuItem, parent=self.sub_item)
 		assign_perm(extra_sub_item.edit_permission_name, self.user, extra_sub_item)
 
 		response = self.app.get(reverse('menu_items_index'), user=self.user)
@@ -348,8 +348,8 @@ class MenuItemTests(WebTest):
 		self.root_menu_item.order = 2
 		self.root_menu_item.save()
 
-		mommy.make(MenuItem, order=0)
-		mommy.make(MenuItem, order=1)
+		baker.make(MenuItem, order=0)
+		baker.make(MenuItem, order=1)
 
 		menu_items = list(MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU).order_by('order'))
 		for idx, item in enumerate(menu_items):
@@ -368,7 +368,7 @@ class MenuItemTests(WebTest):
 			self.assertEqual(menu_item.id, int(menu_item_id), 'Menu Item ordering is not as expected')
 
 	def test_menu_item_visible_for_user(self):
-		document = mommy.make(InformationDocument)
+		document = baker.make(InformationDocument)
 		self.sub_item.document = document
 		self.sub_item.save()
 		assign_perm(self.root_menu_item.view_permission_name, self.user, self.root_menu_item)
@@ -377,7 +377,7 @@ class MenuItemTests(WebTest):
 		self.assertEqual(response.status_code, 200)
 		self.assertIn(reverse('view', args=[document.url_title]), response.body.decode('utf-8'))
 
-		document2 = mommy.make(InformationDocument)
+		document2 = baker.make(InformationDocument)
 		self.sub_sub_item.document = document2
 		self.sub_sub_item.save()
 		assign_perm(self.sub_sub_item.view_permission_name, self.user, self.sub_sub_item)
@@ -387,7 +387,7 @@ class MenuItemTests(WebTest):
 		self.assertIn(reverse('view', args=[document2.url_title]), response.body.decode('utf-8'))
 
 	def test_menu_item_not_visible_for_user(self):
-		document = mommy.make(InformationDocument)
+		document = baker.make(InformationDocument)
 		self.root_menu_item.document = document
 		self.root_menu_item.save()
 
@@ -400,8 +400,8 @@ class MenuItemTests(WebTest):
 		self.assertEqual(response.status_code, 403)
 
 	def test_menu_item_edit(self):
-		document = mommy.make(InformationDocument)
-		document_2 = mommy.make(InformationDocument)
+		document = baker.make(InformationDocument)
+		document_2 = baker.make(InformationDocument)
 		self.sub_item.document = document_2
 		self.sub_item.save()
 
@@ -510,7 +510,7 @@ class MenuItemTests(WebTest):
 		test_root_menu_order(root_menu_items)
 
 	def test_only_subitems_with_change_children_permission_are_visible(self):
-		other_sub_item = mommy.make(MenuItem, parent=self.root_menu_item)
+		other_sub_item = baker.make(MenuItem, parent=self.root_menu_item)
 		response = self.app.get(reverse('menu_items_index'), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		self.assertIn(self.sub_item.title, response.body.decode('utf-8'))
@@ -519,7 +519,7 @@ class MenuItemTests(WebTest):
 		self.assertNotIn(other_sub_item.title, response.body.decode('utf-8'))
 
 	def test_menu_item_language_change(self):
-		document = mommy.make(InformationDocument)
+		document = baker.make(InformationDocument)
 		title_en = 'test title'
 		title_de = 'test titel'
 
@@ -547,20 +547,20 @@ class MenuItemTests(WebTest):
 class TestSendRemindersCommand(TestCase):
 
 	def test_remind_users_about_due_unpublished_minutes_documents(self):
-		author_1 = mommy.make(UserProfile, email='foo@example.com')
-		author_2 = mommy.make(UserProfile, email='bar@example.com')
-		mommy.make(
+		author_1 = baker.make(UserProfile, email='foo@example.com')
+		author_2 = baker.make(UserProfile, email='bar@example.com')
+		baker.make(
 			MinutesDocument,
 			date=datetime.date.today() - datetime.timedelta(days=settings.MINUTES_PUBLISH_REMINDER_DAYS),
 			author=author_1
 		)
-		mommy.make(
+		baker.make(
 			MinutesDocument,
 			date=datetime.date.today() - datetime.timedelta(days=settings.MINUTES_PUBLISH_REMINDER_DAYS),
 			author=author_2
 		)
 		# don't send a reminder for this one
-		mommy.make(
+		baker.make(
 			MinutesDocument,
 			date=datetime.date.today() - datetime.timedelta(days=settings.MINUTES_PUBLISH_REMINDER_DAYS + 1),
 			author=author_1
@@ -602,7 +602,7 @@ class TestLanguageChange(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile)
+		cls.user = baker.make(UserProfile)
 
 	def test_language_change_for_authenticated_user(self):
 		response = self.app.post(reverse('set_lang'), params={'language': 'de'}, user=self.user)

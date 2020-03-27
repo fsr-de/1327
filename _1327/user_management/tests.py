@@ -6,7 +6,7 @@ from django.urls import reverse
 from django_webtest import WebTest
 from guardian.shortcuts import assign_perm
 from guardian.utils import get_anonymous_user
-from model_mommy import mommy
+from model_bakery import baker
 
 from _1327.information_pages.models import InformationDocument
 from .models import UserProfile
@@ -17,15 +17,15 @@ class UsecaseTests(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(
+		cls.user = baker.make(
 			UserProfile,
 			username="user",
 			password="pbkdf2_sha256$12000$uH9Cc7pBkaxQ$XLVGZKTbCyuDlgFQB65Mn5SAm6v/2kjpCTct1td2VTo=")
-		mommy.make(UserProfile, username="noname")
-		mommy.make(UserProfile, username="nofirstname", last_name="Last")
-		mommy.make(UserProfile, username="nolastname", first_name="First")
-		mommy.make(UserProfile, is_superuser=True, username="admin", first_name="Admin", last_name="User")
-		mommy.make(UserProfile, username="test testman", password="pbkdf2_sha256$12000$uH9Cc7pBkaxQ$XLVGZKTbCyuDlgFQB65Mn5SAm6v/2kjpCTct1td2VTo=")
+		baker.make(UserProfile, username="noname")
+		baker.make(UserProfile, username="nofirstname", last_name="Last")
+		baker.make(UserProfile, username="nolastname", first_name="First")
+		baker.make(UserProfile, is_superuser=True, username="admin", first_name="Admin", last_name="User")
+		baker.make(UserProfile, username="test testman", password="pbkdf2_sha256$12000$uH9Cc7pBkaxQ$XLVGZKTbCyuDlgFQB65Mn5SAm6v/2kjpCTct1td2VTo=")
 
 	def test_login(self):
 		page = self.app.get("/login", user="")
@@ -75,7 +75,7 @@ class UsecaseTests(WebTest):
 		self.assertEqual(response.status_code, 302)
 
 	def test_login_redirect_sufficient_permissions(self):
-		document = mommy.make(InformationDocument)
+		document = baker.make(InformationDocument)
 		assign_perm(document.view_permission_name, self.user, document)
 
 		response = self.app.get(reverse(document.get_view_url_name(), args=[document.url_title]))
@@ -93,7 +93,7 @@ class UsecaseTests(WebTest):
 		self.assertEqual(response.status_code, 200)
 
 	def test_login_insufficient_permissions(self):
-		document = mommy.make(InformationDocument)
+		document = baker.make(InformationDocument)
 
 		response = self.app.get(reverse(document.get_view_url_name(), args=[document.url_title]))
 		redirect_url = reverse('login') + '?next=' + reverse(document.get_view_url_name(), args=[document.url_title])
@@ -131,11 +131,11 @@ class UsecaseTests(WebTest):
 		self.assertEqual(user.get_short_name(), 'Admin')
 
 	def test_default_group(self):
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 		self.assertEqual(user.groups.count(), 0)
 
 		with self.settings(DEFAULT_USER_GROUP_NAME='Default'):
-			user = mommy.make(UserProfile)
+			user = baker.make(UserProfile)
 			self.assertEqual(user.groups.count(), 1)
 			default_group = Group.objects.get(name='Default')
 			self.assertIn(default_group, user.groups.all())
@@ -147,8 +147,8 @@ class UserImpersonationTests(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile, is_superuser=True)
-		mommy.make(UserProfile, username='test')
+		cls.user = baker.make(UserProfile, is_superuser=True)
+		baker.make(UserProfile, username='test')
 
 	def test_view_impersonation_page(self):
 		response = self.app.get(reverse('view_as'), user=self.user)
@@ -161,7 +161,7 @@ class UserImpersonationTests(WebTest):
 			self.assertIn(user.username, options)
 
 	def test_view_impersonation_list_no_superuser(self):
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 		response = self.app.get(reverse('view_as'), user=user, expect_errors=True)
 		self.assertEqual(response.status_code, 403)
 
@@ -202,8 +202,8 @@ class _1327AuthenticationBackendTests(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.document = mommy.make(InformationDocument)
-		cls.user = mommy.make(UserProfile)
+		cls.document = baker.make(InformationDocument)
+		cls.user = baker.make(UserProfile)
 
 	def test_anonymous_fallback_if_user_has_no_permissions(self):
 		anonymous_user = get_anonymous_user()
@@ -222,7 +222,7 @@ class _1327AuthenticationBackendTests(WebTest):
 		self.assertEqual(response.status_code, 403)
 
 	def test_anonymous_fallback_not_used_if_user_has_permission(self):
-		group = mommy.make(Group)
+		group = baker.make(Group)
 		self.user.groups.add(group)
 		self.user.save()
 
@@ -240,8 +240,8 @@ class _1327AuthenticationBackendUniversityNetworkTests(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.document = mommy.make(InformationDocument)
-		cls.university_group = mommy.make(Group, name='university_group')
+		cls.document = baker.make(InformationDocument)
+		cls.university_group = baker.make(Group, name='university_group')
 
 	def test_university_network_fallback_no_access(self):
 		# check that user is not allowed to view the document if he is not in the university network
