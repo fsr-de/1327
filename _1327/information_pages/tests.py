@@ -204,6 +204,27 @@ class TestVersions(WebTest):
 		self.assertEqual(versions[0].revision.get_comment(), 'hallo Bibi Blocksberg')
 		self.assertEqual(versions[1].revision.get_comment(), 'test version')
 
+
+class TestAuthorDisplay(WebTest):
+	csrf_checks = False
+	extra_environ = {'HTTP_ACCEPT_LANGUAGE': 'en'}
+
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = baker.make(UserProfile, is_superuser=True)
+		cls.unauthenticated_user = get_anonymous_user()
+		cls.document = baker.prepare(InformationDocument)
+		with transaction.atomic(), revisions.create_revision():
+			cls.document.save()
+			revisions.set_user(cls.user)
+			revisions.set_comment('test version')
+
+		cls.group = baker.make(Group)
+		cls.user.groups.add(cls.group)
+		cls.unauthenticated_user.groups.add(cls.group)
+		cls.document.set_all_permissions(cls.group)
+		assign_perm("information_pages.add_informationdocument", cls.group)
+
 	def test_last_author(self):
 		# test whether last author is part of page
 		response = self.app.get(self.document.get_view_url(), user=self.user)
@@ -223,6 +244,36 @@ class TestVersions(WebTest):
 		# test whether last author is part of page
 		response = self.app.get(self.document.get_view_url(), user=self.user)
 		self.assertIn('<i>by</i> {}'.format(user2.username), response.body.decode('utf-8'))
+
+	def test_show_author_to(self):
+		author_str = '<i>by</i> {}'.format(self.user.username)
+
+		self.document.show_author_to = InformationDocument.SHOW_AUTHOR_TO_EVERYONE
+		with transaction.atomic(), revisions.create_revision():
+			self.document.save()
+			revisions.set_user(self.user)
+			revisions.set_comment('test version 2')
+		self.assertIn(author_str, self.app.get(self.document.get_view_url(), user=self.user).body.decode('utf-8'))
+		self.app.reset()
+		self.assertIn(author_str, self.app.get(self.document.get_view_url()).body.decode('utf-8'))
+
+		self.document.show_author_to = InformationDocument.SHOW_AUTHOR_TO_LOGGED_IN_USERS
+		with transaction.atomic(), revisions.create_revision():
+			self.document.save()
+			revisions.set_user(self.user)
+			revisions.set_comment('test version 3')
+		self.assertIn(author_str, self.app.get(self.document.get_view_url(), user=self.user).body.decode('utf-8'))
+		self.app.reset()
+		self.assertNotIn(author_str, self.app.get(self.document.get_view_url()).body.decode('utf-8'))
+
+		self.document.show_author_to = InformationDocument.SHOW_AUTHOR_TO_NO_ONE
+		with transaction.atomic(), revisions.create_revision():
+			self.document.save()
+			revisions.set_user(self.user)
+			revisions.set_comment('test version 4')
+		self.assertNotIn(author_str, self.app.get(self.document.get_view_url(), user=self.user).body.decode('utf-8'))
+		self.app.reset()
+		self.assertNotIn(author_str, self.app.get(self.document.get_view_url()).body.decode('utf-8'))
 
 
 class TestPermissions(WebTest):
