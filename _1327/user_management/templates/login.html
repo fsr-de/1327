@@ -12,18 +12,29 @@
 			{% trans "Please login to see this page." %}
 		</div>
 	{% endif %}
-	<form action="{% url 'login' %}" method="post" class="form-horizontal" role="form">
-	{% bootstrap_form form layout='horizontal' bound_css_class='has-error' %}
-	<input type="hidden" name="next" value="{{ next }}" />
-	{% csrf_token %}
-	{% buttons %}
-	<div class="col-md-offset-2 col-md-4">
-		<button type="submit" class="btn btn-primary">
-			{% trans 'Login' %}
-		</button>
-	</div>
-	{% endbuttons %}
-	</form>
+	{% if openid_login and not request.GET.local_login %}
+		<p>
+			{% trans 'Log in using HPI OpenID Connect.' %}
+		</p>
+		{% buttons %}
+			<a href="{% url 'oidc_authentication_init' %}{% if 'next' in request.GET %}?next={{ request.GET.next }}{% endif %}" class="btn btn-primary">
+				{% trans 'Login' %}
+			</a>
+		{% endbuttons %}
+	{% else %}
+		<form action="{% url 'login' %}" method="post" class="form-horizontal" role="form">
+			{% bootstrap_form form layout='horizontal' bound_css_class='has-error' %}
+			<input type="hidden" name="next" value="{{ next }}" />
+			{% csrf_token %}
+			{% buttons %}
+				<div class="col-md-offset-2 col-md-4">
+					<button type="submit" class="btn btn-primary">
+						{% trans 'Login' %}
+					</button>
+				</div>
+			{% endbuttons %}
+		</form>
+	{% endif %}
 {% endblock %}
 
 {% block scripts %}

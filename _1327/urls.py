@@ -2,6 +2,10 @@ from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import include, path, register_converter
+from django.utils.module_loading import import_string
+
+from mozilla_django_oidc import views as oidc_views
+from mozilla_django_oidc.utils import import_from_settings
 
 from _1327.documents import urls as document_urls
 from _1327.main import views as main_views
@@ -16,7 +20,12 @@ urlpatterns = [
 	path("" + settings.POLLS_URL_NAME + "/", include("_1327.polls.urls")),
 	path("documents/", include("_1327.documents.urls")),
 	path("information_pages/", include("_1327.information_pages.urls")),
-	path("login", auth_views.LoginView.as_view(template_name="login.html", authentication_form=LoginUsernameForm, redirect_authenticated_user=True), name="login"),
+	path("login", auth_views.LoginView.as_view(
+		template_name="login.html",
+		authentication_form=LoginUsernameForm,
+		redirect_authenticated_user=True,
+		extra_context={"openid_login": settings.ACTIVATE_OPEN_ID_LOGIN},
+	), name="login"),
 	path("logout", user_management_views.logout, name="logout"),
 	path("view_as", user_management_views.view_as, name="view_as"),
 
@@ -37,6 +46,17 @@ urlpatterns = [
 	path("admin/", admin.site.urls),
 	path("hijack/", include("hijack.urls")),
 ]
+
+# see https://mozilla-django-oidc.readthedocs.io/en/stable/installation.html#add-routing-to-urls-py for documented import
+# this is done manually here because of problems with trailing slashes
+OIDCCallbackClass = import_string(import_from_settings('OIDC_CALLBACK_CLASS', 'mozilla_django_oidc.views.OIDCAuthenticationCallbackView'))
+OIDCAuthenticateClass = import_string(import_from_settings('OIDC_AUTHENTICATE_CLASS', 'mozilla_django_oidc.views.OIDCAuthenticationRequestView'))
+urlpatterns.extend([
+	path('oidc/callback', OIDCCallbackClass.as_view(), name='oidc_authentication_callback'),
+	path('oidc/authenticate', OIDCAuthenticateClass.as_view(), name='oidc_authentication_init'),
+	path('oidc/logout', oidc_views.OIDCLogoutView.as_view(), name='oidc_logout'),
+])
+
 urlpatterns.extend(document_urls.document_urlpatterns)
 
 register_converter(SlugWithSlashConverter, 'slugwithslash')

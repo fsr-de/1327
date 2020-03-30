@@ -32,6 +32,8 @@ At that point, one created a vagrant box, running a [PostgreSQL](https://www.pos
 ./manage.py createsuperuser --username=root
 ```
 
+To login with your local user instead of the default OpenID login, you have to visit `http://localhost:8000/login?local_login=1`
+
 ### Virtual Environment
 
 Another way of executing this django application is the use of a virtual python environment. This way bypasses the needs for a virtual machine and simplifies the life with multiple python versions installed:

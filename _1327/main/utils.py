@@ -180,3 +180,13 @@ def document_permission_overview(user, document):
 			permissions.append((group.name, "view"))
 
 	return permissions
+
+
+def clean_email(email):
+	if email:
+		# Replace email domains in case there are multiple alias domains used in the organisation and all emails should
+		# have the same domain.
+		for original_domain, replaced_domain in settings.INSTITUTION_EMAIL_REPLACEMENTS:
+			if email.endswith(original_domain):
+				return email[:-len(original_domain)] + replaced_domain
+	return email
