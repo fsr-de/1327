@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-02 19:16+0100\n"
-"PO-Revision-Date: 2020-03-02 19:16+0100\n"
+"POT-Creation-Date: 2020-03-30 16:55+0200\n"
+"PO-Revision-Date: 2020-03-30 16:56+0200\n"
 "Last-Translator: Johannes Wolf <johannes-wolf@posteo.de>\n"
 "Language-Team: Johannes Wolf (janno42)\n"
 "Language: de\n"
@@ -92,7 +92,7 @@ msgstr "Angezeigter Name"
 
 #: _1327/documents/models.py:227
 #: _1327/documents/templates/documents_attachments.html:39
-#: _1327/information_pages/templates/information_pages_meta_information.html:5
+#: _1327/information_pages/templates/information_pages_meta_information.html:6
 #: _1327/shortlinks/templates/shortlinks_index.html:17
 msgid "Created"
 msgstr "Erstellt"
@@ -397,7 +397,7 @@ msgstr "Vergleichen"
 
 #: _1327/documents/templates/documents_versions.html:32
 #: _1327/documents/templates/documents_versions.html:37
-#: _1327/information_pages/templates/information_pages_meta_information.html:11
+#: _1327/information_pages/templates/information_pages_meta_information.html:12
 msgid "by"
 msgstr "von"
 
@@ -462,11 +462,27 @@ msgstr "Dokument gelöscht: {}"
 msgid "Successfully deleted autosave"
 msgstr "Autosave erfolgreich gelöscht"
 
-#: _1327/information_pages/models.py:15
+#: _1327/information_pages/models.py:17
+msgid "No one"
+msgstr "Niemanden"
+
+#: _1327/information_pages/models.py:18
+msgid "Logged in users"
+msgstr "Angemeldete Nutzer"
+
+#: _1327/information_pages/models.py:19
+msgid "Everyone"
+msgstr "Alle"
+
+#: _1327/information_pages/models.py:24
+msgid "Show author to"
+msgstr "Autor anzeigen für"
+
+#: _1327/information_pages/models.py:25
 msgid "Is menu page"
 msgstr "Ist Menü-Seite"
 
-#: _1327/information_pages/models.py:15
+#: _1327/information_pages/models.py:25
 msgid ""
 "Select this if the page is used mainly for navigation purposes and if all "
 "documents linked on the page should be removed from the 'unlinked "
@@ -476,11 +492,11 @@ msgstr ""
 "und alle auf der Seite verlinkten Seiten aus der Liste 'nicht verlinkte "
 "Informationsseiten' entfernt werden sollen."
 
-#: _1327/information_pages/models.py:19
+#: _1327/information_pages/models.py:29
 msgid "Information document"
 msgstr "Informationsseite"
 
-#: _1327/information_pages/models.py:20
+#: _1327/information_pages/models.py:30
 msgid "Information documents"
 msgstr "Informationsseiten"
 
@@ -488,7 +504,7 @@ msgstr "Informationsseiten"
 msgid "Information pages"
 msgstr "Informationsseiten"
 
-#: _1327/information_pages/templates/information_pages_meta_information.html:8
+#: _1327/information_pages/templates/information_pages_meta_information.html:9
 #: _1327/minutes/templates/minutes_meta_information.html:38
 #: _1327/polls/templates/polls_meta_information.html:12
 msgid "Last change"
@@ -831,7 +847,7 @@ msgid "Participants"
 msgstr "Teilnehmende"
 
 #: _1327/minutes/models.py:63 _1327/minutes/models.py:64
-#: _1327/minutes/templates/minutes_list.html:6 _1327/templates/base.html:117
+#: _1327/minutes/templates/minutes_list.html:6 _1327/templates/navbar.html:109
 msgid "Minutes"
 msgid_plural "Minutes"
 msgstr[0] "Protokoll"
@@ -948,7 +964,7 @@ msgstr "Zukünftige Umfragen"
 
 #: _1327/polls/templates/polls_index.html:23
 #: _1327/polls/templates/polls_index.html:63
-#: _1327/polls/templates/polls_index.html:103 _1327/templates/base.html:120
+#: _1327/polls/templates/polls_index.html:103 _1327/templates/navbar.html:112
 msgid "Poll"
 msgstr "Umfrage"
 
@@ -1095,7 +1111,7 @@ msgid "Create shortlink"
 msgstr "Kurzlink erstellen"
 
 #: _1327/shortlinks/templates/shortlinks_index.html:8
-#: _1327/templates/base.html:96
+#: _1327/templates/navbar.html:88
 msgid "Shortlinks"
 msgstr "Kurzlinks"
 
@@ -1214,78 +1230,78 @@ msgstr "%(full_result_count)s insgesamt"
 msgid "Search"
 msgstr "Suchen"
 
-#: _1327/templates/base.html:17 _1327/templates/base.html:32
-msgid "Logo"
-msgstr "Logo"
-
-#: _1327/templates/base.html:67
-msgid "Create information page"
-msgstr "Informationsseite erstellen"
-
-#: _1327/templates/base.html:70
-msgid "Create poll"
-msgstr "Umfrage erstellen"
-
-#: _1327/templates/base.html:74
-msgid "Create minutes for"
-msgstr "Protokoll erstellen für"
-
-#: _1327/templates/base.html:81
-msgid "Create minutes"
-msgstr "Protokoll erstellen"
-
-#: _1327/templates/base.html:87
-msgid "Manage menu items"
-msgstr "Menüeinträge bearbeiten"
-
-#: _1327/templates/base.html:90
-msgid "Find unlinked information pages"
-msgstr "Nicht-verlinkte Informationsseiten finden"
-
-#: _1327/templates/base.html:95
-msgid "Manage abbreviation explanations"
-msgstr "Abkürzungserklärungen bearbeiten"
-
-#: _1327/templates/base.html:97
-msgid "View page as different user"
-msgstr "Seite als anderer Nutzer betrachten"
-
-#: _1327/templates/base.html:98 _1327/templates/base.html:126
-msgid "Admin"
-msgstr "Admin"
-
-#: _1327/templates/base.html:111
-msgid "Create content"
-msgstr "Inhalt erstellen"
-
-#: _1327/templates/base.html:114
-msgid "Information page"
-msgstr "Informationsseite"
-
-#: _1327/templates/base.html:128
-msgid "Main page"
-msgstr "Startseite"
-
-#: _1327/templates/base.html:177
+#: _1327/templates/base.html:31
 msgid "Groups"
 msgstr "Gruppen"
 
-#: _1327/templates/base.html:178
+#: _1327/templates/base.html:32
 msgid "Logged in as"
 msgstr "Angemeldet als"
 
-#: _1327/templates/base.html:182
+#: _1327/templates/base.html:36
 msgid "Logout"
 msgstr "Abmelden"
 
-#: _1327/templates/base.html:182 _1327/user_management/templates/login.html:5
+#: _1327/templates/base.html:36 _1327/user_management/templates/login.html:5
 #: _1327/user_management/templates/login.html:22
 msgid "Login"
 msgstr "Anmelden"
 
-#: _1327/templates/base.html:220
+#: _1327/templates/base.html:74
 msgid "Return to the top of the page"
 msgstr "An den Seitenanfang scrollen"
+
+#: _1327/templates/navbar.html:9 _1327/templates/navbar.html:24
+msgid "Logo"
+msgstr "Logo"
+
+#: _1327/templates/navbar.html:59
+msgid "Create information page"
+msgstr "Informationsseite erstellen"
+
+#: _1327/templates/navbar.html:62
+msgid "Create poll"
+msgstr "Umfrage erstellen"
+
+#: _1327/templates/navbar.html:66
+msgid "Create minutes for"
+msgstr "Protokoll erstellen für"
+
+#: _1327/templates/navbar.html:73
+msgid "Create minutes"
+msgstr "Protokoll erstellen"
+
+#: _1327/templates/navbar.html:79
+msgid "Manage menu items"
+msgstr "Menüeinträge bearbeiten"
+
+#: _1327/templates/navbar.html:82
+msgid "Find unlinked information pages"
+msgstr "Nicht-verlinkte Informationsseiten finden"
+
+#: _1327/templates/navbar.html:87
+msgid "Manage abbreviation explanations"
+msgstr "Abkürzungserklärungen bearbeiten"
+
+#: _1327/templates/navbar.html:89
+msgid "View page as different user"
+msgstr "Seite als anderer Nutzer betrachten"
+
+#: _1327/templates/navbar.html:90 _1327/templates/navbar.html:118
+msgid "Admin"
+msgstr "Admin"
+
+#: _1327/templates/navbar.html:103
+msgid "Create content"
+msgstr "Inhalt erstellen"
+
+#: _1327/templates/navbar.html:106
+msgid "Information page"
+msgstr "Informationsseite"
+
+#: _1327/templates/navbar.html:120
+msgid "Main page"
+msgstr "Startseite"
 
 #: _1327/templates/reversion/change_list.html:8
 #, python-format
