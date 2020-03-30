@@ -140,6 +140,11 @@ class UsecaseTests(WebTest):
 			default_group = Group.objects.get(name='Default')
 			self.assertIn(default_group, user.groups.all())
 
+	@override_settings(INSTITUTION_EMAIL_REPLACEMENTS=[("example.com", "institution.com")])
+	def test_email_domain_replacement(self):
+		user = baker.make(UserProfile, email="test@example.com")
+		self.assertEqual(user.email, "test@institution.com")
+
 
 class UserImpersonationTests(WebTest):
 	csrf_checks = False

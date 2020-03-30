@@ -74,6 +74,11 @@ POLLS_URL_NAME = "polls"
 # number of days after which a reminder for unpublished minutes documents is sent
 MINUTES_PUBLISH_REMINDER_DAYS = 6
 
+# List of tuples defining email domains that should be replaced on saving UserProfiles.
+# Emails ending on the first value will have this part replaced by the second value.
+# e.g.: [("institution.example.com", "institution.com")]
+INSTITUTION_EMAIL_REPLACEMENTS = []
+
 
 # Application definition
 
@@ -100,7 +105,8 @@ INSTALLED_APPS = [
 	'_1327.information_pages',
 	'_1327.minutes',
 	'_1327.polls',
-	'_1327.shortlinks'
+	'_1327.shortlinks',
+	'mozilla_django_oidc',
 ]
 
 MIDDLEWARE = [
@@ -114,11 +120,13 @@ MIDDLEWARE = [
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
 	'django.middleware.locale.LocaleMiddleware',
 	'_1327.user_management.middleware.LoginRedirectMiddleware',
+	'mozilla_django_oidc.middleware.SessionRefresh',
 ]
 
 AUTHENTICATION_BACKENDS = [
 	'django.contrib.auth.backends.ModelBackend',
 	'guardian.backends.ObjectPermissionBackend',
+	'_1327.user_management.authentication.OpenIDAuthenticationBackend',
 	'_1327.user_management.authentication._1327AuthorizationBackend',
 ]
 
@@ -269,6 +277,25 @@ STATIC_PRECOMPILER_COMPILERS = [
 
 # Set this to the ID of the document that shall be shown as Main Page
 MAIN_PAGE_ID = -1
+
+
+# OpenID Login
+# replace 'example.com', OIDC_RP_CLIENT_ID and OIDC_RP_CLIENT_SECRET with real values in localsettings when activating
+ACTIVATE_OPEN_ID_LOGIN = False
+OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 60 * 60 * 24 * 7  # one week
+OIDC_RP_SIGN_ALGO = 'RS256'
+OIDC_USERNAME_ALGO = ''
+OIDC_RP_SCOPES = 'openid email profile'
+LOGOUT_REDIRECT_URL = '/'
+
+OIDC_RP_CLIENT_ID = '1327'
+OIDC_RP_CLIENT_SECRET = '1327-secret'
+
+OIDC_OP_AUTHORIZATION_ENDPOINT = "https://example.com/auth"
+OIDC_OP_TOKEN_ENDPOINT = "https://example.com/token"
+OIDC_OP_USER_ENDPOINT = "https://example.com/me"
+OIDC_OP_JWKS_ENDPOINT = "https://example.com/certs"
+
 
 if TESTING:
 	DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3'}  # use sqlite to speed tests up

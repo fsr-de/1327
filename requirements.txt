@@ -15,3 +15,5 @@ django-polymorphic == 2.1.2
 django-sendfile == 0.3.11
 
 Markdown == 3.1.1
+
+mozilla-django-oidc == 1.2.3
