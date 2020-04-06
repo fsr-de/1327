@@ -52,7 +52,7 @@ FORBIDDEN_URLS = [
 	"admin", "login", "logout", "documents", "information_pages", "minutes", "polls", "list", "view_as", "abbreviation_explanation",
 	"menu_items", "menu_item_delete", "menu_item", "create", "edit", "delete", "update_order", "hijack", "unlinked", "revert", "search", "download",
 	"update", "attachment", "no-direct-download", "autosave", "publish", "render", "delete-cascade", "versions", "permissions", "attachments",
-	"shortlink", "shortlinks", "preview", "get", "change", "autosave", "ws",
+	"shortlink", "shortlinks", "preview", "get", "change", "autosave", "ws", "oidc",
 ]
 
 ANONYMOUS_GROUP_NAME = "Anonymous"
@@ -282,7 +282,7 @@ MAIN_PAGE_ID = -1
 # OpenID Login
 # replace 'example.com', OIDC_RP_CLIENT_ID and OIDC_RP_CLIENT_SECRET with real values in localsettings when activating
 ACTIVATE_OPEN_ID_LOGIN = False
-OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 60 * 60 * 24 * 7  # one week
+OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = timedelta(weeks=1).total_seconds()
 OIDC_RP_SIGN_ALGO = 'RS256'
 OIDC_USERNAME_ALGO = ''
 OIDC_RP_SCOPES = 'openid email profile'

@@ -32,7 +32,7 @@ At that point, one created a vagrant box, running a [PostgreSQL](https://www.pos
 ./manage.py createsuperuser --username=root
 ```
 
-To login with your local user instead of the default OpenID login, you have to visit `http://localhost:8000/local_login=1`
+To login with your local user instead of the default OpenID login, you have to visit `http://localhost:8000/login?local_login=1`
 
 ### Virtual Environment
 
