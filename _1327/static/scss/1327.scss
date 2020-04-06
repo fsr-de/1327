@@ -1,8 +1,9 @@
-@import "admin.less";
+@import "admin.scss";
 
-@import "variables.less";
-@import "../node_modules/bootstrap/less/mixins.less";
-@import "../node_modules/bootstrap-markdown/less/bootstrap-markdown.less";
+@import "variables.scss";
+@import "../bootstrap/scss/bootstrap";
+//TODO
+//@import "../bootstrap-markdown/scss/bootstrap-markdown";
 
 // Add future Bootstrap 4 classes which are missing in Bootstrap 3
 // TODO: Remove these after update to Bootstrap 4
@@ -20,10 +21,10 @@
 
 // Fix bootstrap:
 .modal-dialog {
-	z-index: @zindex-modal-background + 1;
+	z-index: $zindex-modal-background + 1;
 }
 .table-striped > tbody > tr:nth-of-type(even) {
-	background-color: @table-bg-accent-even;
+	background-color: $table-bg-accent-even;
 }
 // End fix.
 
@@ -37,7 +38,7 @@ table.diff {
 .content table {
 	width: 100%;
 	max-width: 100%;
-	margin-bottom: @line-height-computed;
+	margin-bottom: $line-height-computed;
 	// Cells
 	> thead,
 	> tbody,
@@ -45,17 +46,17 @@ table.diff {
 		> tr {
 			> th,
 			> td {
-				padding: @table-cell-padding;
-				line-height: @line-height-base;
+				padding: $table-cell-padding;
+				line-height: $line-height-base;
 				vertical-align: top;
-				border-top: 1px solid @table-border-color;
+				border-top: 1px solid $table-border-color;
 			}
 		}
 	}
 	// Bottom align for column headings
 	> thead > tr > th {
 		vertical-align: bottom;
-		border-bottom: 2px solid @table-border-color;
+		border-bottom: 2px solid $table-border-color;
 	}
 	// Remove top border from thead by default
 	> caption + thead,
@@ -70,12 +71,12 @@ table.diff {
 	}
 	// Account for multiple tbody instances
 	> tbody + tbody {
-		border-top: 2px solid @table-border-color;
+		border-top: 2px solid $table-border-color;
 	}
 
 	// Nesting
 	.table {
-		background-color: @body-bg;
+		background-color: $body-bg;
 	}
 }
 // end of Bootstrap table CSS
@@ -85,7 +86,7 @@ html {
 }
 body {
 	height: 100%;
-	background-color: lighten(@hpi-yellow, 45%);
+	background-color: lighten($hpi-yellow, 45%);
 	font-size: 15px;
 }
 h2 {
@@ -105,39 +106,39 @@ h6 {
 }
 
 .text-red {
-	color: @hpi-red;
+	color: $hpi-red;
 }
 .text-orange {
-	color: @hpi-orange;
+	color: $hpi-orange;
 }
 .text-yellow {
-	color: @hpi-yellow;
+	color: $hpi-yellow;
 }
 .text-gray {
-	color: @hpi-gray;
+	color: $hpi-gray;
 }
 .text-blue {
-	color: @hpi-blue;
+	color: $hpi-blue;
 }
 .text-green {
-	color: @green;
+	color: $green;
 }
 
 .permission-icons {
 	text-align: center;
 }
 .permission-icon-more {
-	.text-gray;
+	@import "variables";
 	padding-left: 10px;
 }
 .permission-icon-edit {
-	.text-blue;
+	@import "variables";
 }
 .permission-icon-view {
-	.text-green;
+	@import "variables";
 }
 .permission-icon-none {
-	.text-red;
+	@import "variables";
 }
 
 a {
@@ -145,8 +146,8 @@ a {
 }
 
 ::selection {
-	background: @hpi-blue;
-	color: @gray-lighter;
+	background: $hpi-blue;
+	color: $gray-lighter;
 }
 
 // fix abbr underline (https://github.com/twbs/bootstrap/issues/22562)
@@ -157,8 +158,8 @@ abbr[title] {
 div#wrapper {
 	position: relative;
 	min-height: 100%;
-	padding: 0 0 @footer-height 0;
-	background-color: @white;
+	padding: 0 0 $footer-height 0;
+	background-color: $white;
 }
 
 .navbar-collapse {
@@ -177,7 +178,7 @@ div#wrapper {
 }
 .navbar-toggle-brand.navbar-toggle:hover,
 .navbar-toggle-brand.navbar-toggle:focus {
-	background-color: @gray;
+	background-color: $gray;
 }
 .navbar {
 	margin: 0px;
@@ -202,7 +203,7 @@ div#wrapper {
 .nav:not(.nav-tabs) > li > a,
 .nav:not(.nav-tabs) > li > span {
 	padding: 15px;
-	color: @gray-lighter;
+	color: $gray-lighter;
 	line-height: 20px;
 }
 .navbar-nav > li > a.navbar-brand {
@@ -222,24 +223,25 @@ div#wrapper {
 
 .header-line-gradient {
 	height: 5px;
-	background-color: @gray-dark;
+	background-color: $gray-dark;
 }
 .header-line-subheader {
-	color: @gray-lighter;
-	background-color: @gray-dark;
+	color: $gray-lighter;
+	background-color: $gray-dark;
 	font-size: 10pt;
 	overflow: auto;
 }
 .footer-line {
 	height: 3px;
-	background-color: @gray-dark;
+	background-color: $gray-dark;
 }
-.gradient {
-	#gradient.horizontal-three-colors(@hpi-red, @hpi-orange, 50%, @hpi-yellow);
-}
-.gradient.gradient-inv {
-	#gradient.horizontal-three-colors(@hpi-yellow, @hpi-orange, 50%, @hpi-red);
-}
+//TODO
+//.gradient {
+//	#gradient.horizontal-three-colors($hpi-red, $hpi-orange, 50%, $hpi-yellow);
+//}
+//.gradient.gradient-inv {
+//	#gradient.horizontal-three-colors($hpi-yellow, $hpi-orange, 50%, $hpi-red);
+//}
 .breadcrumb-area {
 	display: inline-block;
 }
@@ -254,14 +256,14 @@ div#wrapper {
 	display: inline-block;
 	height: 25px;
 	padding: 3px 0;
-	color: @gray-lighter;
+	color: $gray-lighter;
 	&:hover,
 	&:focus {
-		background-color: @gray;
+		background-color: $gray;
 	}
 }
 .language-button-selected {
-	color: @hpi-yellow;
+	color: $hpi-yellow;
 }
 .login-info {
 	display: inline-block;
@@ -270,11 +272,11 @@ div#wrapper {
 .login-button {
 	display: inline-block;
 	height: 25px;
-	color: @gray-lighter;
+	color: $gray-lighter;
 	padding: 3px 15px;
 	&:hover,
 	&:focus {
-		background-color: @gray;
+		background-color: $gray;
 	}
 }
 
@@ -282,17 +284,17 @@ div#wrapper {
 	display: none;
 }
 .navbar-collapse-menu li.active > a {
-	color: @hpi-yellow;
+	color: $hpi-yellow;
 }
 .navbar-collapse-menu li.disabled > a {
-	color: @gray;
+	color: $gray;
 	text-decoration: none;
 }
 .navbar-collapse-menu a {
-	color: @gray-lighter;
+	color: $gray-lighter;
 }
 .navbar-collapse-menu ul {
-	color: @gray-lighter;
+	color: $gray-lighter;
 	margin: 0;
 	list-style-type: none;
 }
@@ -300,31 +302,31 @@ div#wrapper {
 .navbar-default .navbar-nav > li {
 	&:hover,
 	&:focus {
-		background-color: @gray;
+		background-color: $gray;
 	}
 }
 .dropdown-menu li a {
 	display: block;
 	padding: 3px 20px;
-	color: @navbar-default-link-color;
+	color: $navbar-default-link-color;
 	&:hover,
 	&:focus {
-		color: @navbar-default-link-color;
-		background-color: @gray-dark;
+		color: $navbar-default-link-color;
+		background-color: $gray-dark;
 		text-decoration: none;
 	}
 }
 
 .dropdown-menu li.active > a {
-	color: @navbar-default-link-active-color;
+	color: $navbar-default-link-active-color;
 	&:hover,
 	&:focus {
-		color: @navbar-default-link-active-color;
-		background-color: @gray-dark;
+		color: $navbar-default-link-active-color;
+		background-color: $gray-dark;
 	}
 }
 .dropdown-menu {
-	background-color: @gray;
+	background-color: $gray;
 	border: 0px;
 	min-width: auto;
 	border-radius: 0;
@@ -344,7 +346,7 @@ nav li:hover > .dropdown-menu {
 	transition-delay: 0.2s;
 }
 .menu-level-2 .menu-hover > a {
-	background-color: @gray-dark;
+	background-color: $gray-dark;
 }
 .modal-body .dropdown {
 	z-index: 999999;
@@ -403,9 +405,9 @@ nav li:hover > .dropdown-menu {
 	top: 0px;
 	left: -10px;
 	box-sizing: border-box;
-	border-bottom: 10px solid @hpi-yellow;
-	border-left: 10px solid @hpi-yellow;
-	border-color: transparent transparent @hpi-yellow transparent;
+	border-bottom: 10px solid $hpi-yellow;
+	border-left: 10px solid $hpi-yellow;
+	border-color: transparent transparent $hpi-yellow transparent;
 	z-index: -1;
 }
 
@@ -415,9 +417,9 @@ nav li:hover > .dropdown-menu {
 	height: 0;
 	top: 0;
 	box-sizing: border-box;
-	border-top: 50px solid @hpi-yellow;
-	border-right: 18px solid @hpi-yellow;
-	border-color: @hpi-yellow transparent transparent transparent;
+	border-top: 50px solid $hpi-yellow;
+	border-right: 18px solid $hpi-yellow;
+	border-color: $hpi-yellow transparent transparent transparent;
 	position: relative;
 	float: left;
 	right: 10px;
@@ -428,32 +430,32 @@ nav li:hover > .dropdown-menu {
 	display: inline-block;
 	position: relative;
 	left: -10px;
-	line-height: @headline-height;
-	min-height: @headline-height;
-	background-color: @hpi-yellow;
+	line-height: $headline-height;
+	min-height: $headline-height;
+	background-color: $hpi-yellow;
 	font-size: 26px;
 	padding: 0 9px 0 20px;
 	height: 50px;
 	overflow: hidden;
-	max-width: ~"calc(100% - 18px)";
+	//max-width: "calc(100% - 18px)";
 	float: left;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
 .headline-box-shadow {
-	filter: drop-shadow(3px 3px 3px @hpi-gray);
+	filter: drop-shadow(3px 3px 3px $hpi-gray);
 }
 
 ul.breadcrumbs {
-	color: @hpi-yellow;
+	color: $hpi-yellow;
 	margin: 0;
 	padding: 3px 0 3px 20px;
 	li {
 		display: inline-block;
 		&:before {
 			padding: 0 2px;
-			color: @gray;
+			color: $gray;
 		}
 		&:first-child:before {
 			padding: 0;
@@ -464,7 +466,7 @@ ul.breadcrumbs {
 		padding-right: 3px;
 	}
 	a {
-		color: @gray-lighter;
+		color: $gray-lighter;
 	}
 }
 
@@ -475,7 +477,7 @@ ul.breadcrumbs {
 	margin: 0;
 }
 .alert-dismissable .close {
-	color: @gray-darker;
+	color: $gray-darker;
 }
 
 .alert-margin-bottom {
@@ -483,11 +485,11 @@ ul.breadcrumbs {
 }
 
 .bright-text {
-	color: @gray-lighter;
+	color: $gray-lighter;
 }
 
 .dark-text {
-	color: @gray-darker;
+	color: $gray-darker;
 }
 
 .back-to-top {
@@ -502,9 +504,9 @@ footer {
 	left: 0;
 	right: 0;
 	bottom: 0;
-	height: @footer-height + 6px;
-	background-color: @gray-dark;
-	color: @gray-lighter;
+	height: $footer-height + 6px;
+	background-color: $gray-dark;
+	color: $gray-lighter;
 	ul, span {
 		margin: 10px 0 0px 0;
 		padding-left: 0;
@@ -514,7 +516,7 @@ footer {
 		&:before {
 			content: "\22c5\00a0";
 			padding: 0 5px;
-			color: @gray-light;
+			color: $gray-light;
 		}
 		&:first-child:before {
 			content: "";
@@ -522,10 +524,10 @@ footer {
 		}
 	}
 	a {
-		color: @gray-lighter;
+		color: $gray-lighter;
 	}
 	a.brand-link {
-		color: @hpi-yellow;
+		color: $hpi-yellow;
 	}
 }
 
@@ -539,12 +541,12 @@ footer {
 	height: 1px;
 	margin: 9px 0;
 	overflow: hidden;
-	background-color: @gray-light;
+	background-color: $gray-light;
 }
 
 .dropdown-menu .divider
 {
-	background-color: @gray-darker;
+	background-color: $gray-darker;
 }
 
 .content img {
@@ -552,7 +554,7 @@ footer {
 }
 
 img.emoji {
-	max-height: @emoji-height;
+	max-height: $emoji-height;
 }
 
 @media print {
@@ -587,8 +589,8 @@ img.emoji {
 }
 
 .sidebar {
-	border-left: 1px solid @gray-light;
-	padding-right: @grid-gutter-width * (2/3);
+	border-left: 1px solid $gray-light;
+	padding-right: $grid-gutter-width * (2/3);
 	@media print {
 		border: none;
 	}
@@ -610,7 +612,7 @@ img.emoji {
 }
 
 .main-container {
-	box-shadow: 0 0 7px 2px @gray;
+	box-shadow: 0 0 7px 2px $gray;
 }
 
 .diffview {
@@ -641,7 +643,7 @@ div.radio {
 	margin-right: 15px;
 }
 #document-form #id_state {
-	padding-top: (@padding-base-vertical + 1);
+	padding-top: ($padding-base-vertical + 1);
 }
 
 .editor-image-modal-scale-container {
@@ -681,30 +683,31 @@ div.radio {
 }
 
 .md-editor {
-	border-radius: @input-border-radius;
+	border-radius: $input-border-radius;
 }
 
 .has-error .md-editor {
-	border-color: @state-danger-text;
-	.box-shadow(inset 0 1px 1px rgba(0,0,0,.075));
+	border-color: $state-danger-text;
+	//TODO
+	//@include box-shadow(inset 0 1px 1px rgba(0,0,0,.075));
 }
 
 .has-error .md-editor.active {
-	border-color: darken(@state-danger-text, 10%);
-	@shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 6px lighten(@state-danger-text, 20%);
-	.box-shadow(@shadow);
+	border-color: darken($state-danger-text, 10%);
+	$shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 6px lighten($state-danger-text, 20%);
+	@include box-shadow($shadow);
 }
 
 .md-editor textarea {
-	padding: @padding-base-vertical @padding-base-horizontal;
+	padding: $padding-base-vertical $padding-base-horizontal;
 	border-bottom: none;
 	border-top-style: solid;
 }
 
 .md-editor .md-controls .md-control {
-	color: @gray-dark;
+	color: $gray-dark;
 	&:hover {
-		color: @gray;
+		color: $gray;
 	}
 }
 
@@ -713,8 +716,8 @@ div.radio {
 }
 
 .input-group[class*="inlineformset"] {
-	padding-left:  (@grid-gutter-width / 2);
-	padding-right: (@grid-gutter-width / 2);
+	padding-left:  ($grid-gutter-width / 2);
+	padding-right: ($grid-gutter-width / 2);
 }
 
 .sorthandle {
@@ -735,7 +738,7 @@ table.diff > thead th:nth-of-type(3) { width: 5%; }
 table.diff > thead th:nth-of-type(4) { width: 45%; }
 
 .alert.alert-warning {
-	color: @gray-darker;
+	color: $gray-darker;
 }
 
 // fix for select2 in modal
@@ -776,16 +779,16 @@ table.diff > thead th:nth-of-type(4) { width: 45%; }
 .dd-item > button[data-action="collapse"]:before { content: '-'; }
 
 .dd-placeholder,
-.dd-empty { margin: 5px 0; padding: 0; min-height: 30px; background: @gray-lighter; border: 1px dashed @gray; }
+.dd-empty { margin: 5px 0; padding: 0; min-height: 30px; background: $gray-lighter; border: 1px dashed $gray; }
 
 .dd-dragel { position: absolute; pointer-events: none; z-index: 9999; }
 .dd-dragel > .dd-item .dd-handle { margin-top: 0; }
 
-.dd-handle { display: block; position: absolute; margin: 0; padding: 5px 12px 5px 11px; left: 0; top: 0; cursor: pointer; height: 30px; width: 30px; white-space: nowrap; overflow: hidden; border: 1px solid @gray; background: @gray; color: @gray-lighter; }
+.dd-handle { display: block; position: absolute; margin: 0; padding: 5px 12px 5px 11px; left: 0; top: 0; cursor: pointer; height: 30px; width: 30px; white-space: nowrap; overflow: hidden; border: 1px solid $gray; background: $gray; color: $gray-lighter; }
 .dd-handle .glyphicon {position: absolute; left: 5px; top: 4px; font-size: 18px; }
-.dd-handle:hover { background: @gray-light; }
+.dd-handle:hover { background: $gray-light; }
 
-.dd-content { display: block; height: 30px; margin: 5px 0; padding: 5px 10px 5px 40px; font-weight: bold; border: 1px solid @gray-light; background: @gray-lighter; }
+.dd-content { display: block; height: 30px; margin: 5px 0; padding: 5px 10px 5px 40px; font-weight: bold; border: 1px solid $gray-light; background: $gray-lighter; }
 // Render Bootstrap as "small" layout when printing (https://gist.github.com/donnierayjones/6fd9802d992b2d8d6cfd)
 
 @media print {

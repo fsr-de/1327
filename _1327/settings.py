@@ -30,7 +30,7 @@ TESTING = 'test' in sys.argv
 
 # Very helpful but eats a lot of performance on sql-heavy pages.
 # only with DEBUG == True and TESTING == False
-ENABLE_DEBUG_TOOLBAR = False
+ENABLE_DEBUG_TOOLBAR = True
 ENABLE_DEBUG_TOOLBAR = ENABLE_DEBUG_TOOLBAR and DEBUG and not TESTING
 
 
@@ -90,8 +90,8 @@ INSTALLED_APPS = [
 	'django.contrib.sessions',
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
-	'static_precompiler',
-	'bootstrap3',
+	'compressor',
+	'bootstrap4',
 	'reversion',
 	'guardian',
 	'polymorphic',
@@ -240,7 +240,7 @@ STATICFILES_DIRS = [
 STATICFILES_FINDERS = [
 	'django.contrib.staticfiles.finders.FileSystemFinder',
 	'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-	'static_precompiler.finders.StaticPrecompilerFinder',
+	'compressor.finders.CompressorFinder',
 ]
 
 SUPPORTED_IMAGE_TYPES = ["jpg", "jpeg", "png", "gif", "tiff", "bmp"]
@@ -273,9 +273,9 @@ TEMPLATES = [
 	},
 ]
 
-STATIC_PRECOMPILER_COMPILERS = [
-	'static_precompiler.compilers.LESS',
-]
+COMPRESS_PRECOMPILERS = (
+	('text/x-scss', 'django_libsass.SassCompiler'),
+)
 
 # Set this to the ID of the document that shall be shown as Main Page
 MAIN_PAGE_ID = -1

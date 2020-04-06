@@ -11,7 +11,7 @@
 {% block css %}
 	{{ block.super }}
 	<link rel="stylesheet" href="{% static 'node_modules/jsdifflib-dist/diffview.min.css' %}"/>
-	<link rel="stylesheet" href="{% static 'less/diffview.less'|compile %}"/>
+	<link rel="stylesheet" href="{% static 'scss/diffview.scss'|compile %}"/>
 {% endblock %}
 
 {% block document_content %}

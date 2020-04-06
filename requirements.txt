@@ -2,11 +2,12 @@ channels == 2.3.1
 channels_redis == 2.4.1
 
 Django >= 2.2, < 2.3
-django-static-precompiler == 1.8.2
+django_compressor==2.2
+django-libsass==0.7
 
 django-extensions == 2.2.1
 
-django-bootstrap3 == 11.1.0
+django-bootstrap4 == 1.1.1
 django-admin-bootstrapped == 2.5.7
 django-reversion == 3.0.1
 django-guardian == 2.0.0
