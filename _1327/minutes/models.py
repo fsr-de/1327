@@ -16,7 +16,7 @@ from _1327.documents.models import Document
 from _1327.minutes.fields import HexColorModelField
 from _1327.user_management.models import UserProfile
 
-MINUTES_VIEW_PERMISSION_NAME = 'show_minutesdocument'
+MINUTES_VIEW_PERMISSION_NAME = 'view_minutesdocument'
 
 
 class MinutesLabel(models.Model):
@@ -62,9 +62,6 @@ class MinutesDocument(Document):
 	class Meta(Document.Meta):
 		verbose_name = ungettext_lazy("Minutes", "Minutes", 1)
 		verbose_name_plural = ungettext_lazy("Minutes", "Minutes", 2)
-		permissions = (
-			(MINUTES_VIEW_PERMISSION_NAME, 'User/Group is allowed to view those minutes'),
-		)
 
 	@classmethod
 	def generate_new_title(cls):

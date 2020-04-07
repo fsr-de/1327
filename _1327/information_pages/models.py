@@ -6,7 +6,7 @@ from reversion import revisions
 
 from _1327.documents.models import Document
 
-INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME = 'show_informationdocument'
+INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME = 'view_informationdocument'
 
 
 class InformationDocument(Document):
@@ -28,9 +28,6 @@ class InformationDocument(Document):
 
 		verbose_name = _("Information document")
 		verbose_name_plural = _("Information documents")
-		permissions = (
-			(INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME, 'User/Group is allowed to view that document'),
-		)
 
 	def get_view_url(self):
 		return reverse(self.get_view_url_name(), args=(self.url_title, ))
