@@ -99,3 +99,14 @@
     </div>
 </form>
 {% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+	// Activate Select2 if present on page
+	$(".select2-selection").select2({
+		language: "{{ LANGUAGE_CODE }}",
+		placeholder: "{% trans 'Please select...' %}"
+	});
+	</script>
+{% endblock %}

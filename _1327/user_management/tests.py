@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
 from django.test.utils import override_settings
 from django.urls import reverse
 
@@ -271,3 +271,111 @@ class _1327AuthenticationBackendUniversityNetworkTests(WebTest):
 		)
 		redirect_url = reverse('login') + '?next=' + reverse(self.document.get_view_url_name(), args=[self.document.url_title])
 		self.assertRedirects(response, redirect_url)
+
+
+class GroupEditFormTests(WebTest):
+
+	def setUp(self):
+		self.user1 = baker.make(UserProfile, is_superuser=True)
+		self.user2 = baker.make(UserProfile)
+		self.group = baker.make(Group, name="Testgroup")
+
+	def test_display_empty_group(self):
+		self.app.set_user(self.user1)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		self.assertEqual(form["name"].value, self.group.name)
+		self.assertFalse(form["add_information_document"].checked)
+		self.assertFalse(form["add_minutesdocument"].checked)
+		self.assertFalse(form["add_poll"].checked)
+		self.assertIsNone(form["users"].value)
+
+	def test_display_information_document_permission(self):
+		self.app.set_user(self.user1)
+		permission = Permission.objects.get(codename="add_informationdocument")
+		self.group.permissions.add(permission)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		self.assertTrue(form["add_information_document"].checked)
+
+	def test_display_minutes_document_permission(self):
+		self.app.set_user(self.user1)
+		permission = Permission.objects.get(codename="add_minutesdocument")
+		self.group.permissions.add(permission)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		self.assertTrue(form["add_minutesdocument"].checked)
+
+	def test_display_poll_permission(self):
+		self.app.set_user(self.user1)
+		permission = Permission.objects.get(codename="add_poll")
+		self.group.permissions.add(permission)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		self.assertTrue(form["add_poll"].checked)
+
+	def test_add_information_document_permission(self):
+		self.app.set_user(self.user1)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		form["add_information_document"].checked = True
+		form.submit()
+		self.assertIn(Permission.objects.get(codename="add_informationdocument"), self.group.permissions.all())
+
+	def test_add_minutes_document_permission(self):
+		self.app.set_user(self.user1)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		form["add_minutesdocument"].checked = True
+		form.submit()
+		self.assertIn(Permission.objects.get(codename="add_minutesdocument"), self.group.permissions.all())
+
+	def test_add_poll_permission(self):
+		self.app.set_user(self.user1)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		form["add_poll"].checked = True
+		form.submit()
+		self.assertIn(Permission.objects.get(codename="add_poll"), self.group.permissions.all())
+
+	def test_remove_information_document_permission(self):
+		self.app.set_user(self.user1)
+		permission = Permission.objects.get(codename="add_informationdocument")
+		self.group.permissions.add(permission)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		form["add_information_document"].checked = False
+		form.submit()
+		self.assertNotIn(permission, self.group.permissions.all())
+
+	def test_remove_minutes_document_permission(self):
+		self.app.set_user(self.user1)
+		permission = Permission.objects.get(codename="add_minutesdocument")
+		self.group.permissions.add(permission)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		form["add_minutesdocument"].checked = False
+		form.submit()
+		self.assertNotIn(permission, self.group.permissions.all())
+
+	def test_remove_poll_permission(self):
+		self.app.set_user(self.user1)
+		permission = Permission.objects.get(codename="add_poll")
+		self.group.permissions.add(permission)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		form["add_poll"].checked = False
+		form.submit()
+		self.assertNotIn(permission, self.group.permissions.all())
+
+	def test_change_group_name(self):
+		self.app.set_user(self.user1)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		form["name"] = "New name"
+		form.submit()
+		self.assertEqual(Group.objects.get(id=self.group.id).name, "New name")
+
+	def test_add_user(self):
+		self.app.set_user(self.user1)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		form["users"].select_multiple(texts=[self.user2.username])
+		form.submit()
+		self.assertIn(self.group, self.user2.groups.all())
+
+	def test_remove_user(self):
+		self.app.set_user(self.user1)
+		self.user2.groups.add(self.group)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		form["users"].select_multiple(texts=[])
+		form.submit()
+		self.assertNotIn(self.group, self.user2.groups.all())
