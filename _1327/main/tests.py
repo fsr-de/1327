@@ -79,8 +79,8 @@ class MenuItemTests(WebTest):
 		cls.user.groups.add(cls.staff_group)
 
 		cls.root_menu_item = baker.make(MenuItem)
-		cls.sub_item = baker.make(MenuItem, parent=cls.root_menu_item)
-		cls.sub_sub_item = baker.make(MenuItem, parent=cls.sub_item)
+		cls.sub_item = baker.make(MenuItem, parent=cls.root_menu_item, order=3)
+		cls.sub_sub_item = baker.make(MenuItem, parent=cls.sub_item, order=4)
 
 		assign_perm(cls.sub_item.change_children_permission_name, cls.user, cls.sub_item)
 		assign_perm(cls.sub_item.view_permission_name, cls.user, cls.sub_item)
@@ -348,8 +348,15 @@ class MenuItemTests(WebTest):
 		self.root_menu_item.order = 2
 		self.root_menu_item.save()
 
-		baker.make(MenuItem, order=0)
-		baker.make(MenuItem, order=1)
+		baker.make(MenuItem, order=1)  # root item before self.root_menu_item
+		root_item_5 = baker.make(MenuItem, order=5)  # root item after self.root_menu_item
+
+		sub_item_5_1 = baker.make(MenuItem, parent=root_item_5, order=6)
+		baker.make(MenuItem, parent=sub_item_5_1, order=8)  # out of creation order, should be second
+		baker.make(MenuItem, parent=sub_item_5_1, order=7)
+		baker.make(MenuItem, parent=root_item_5, order=11)  # out of creation order, should be third
+		sub_item_5_2 = baker.make(MenuItem, parent=root_item_5, order=9)
+		baker.make(MenuItem, parent=sub_item_5_2, order=10)
 
 		menu_items = list(MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU).order_by('order'))
 		for idx, item in enumerate(menu_items):
