@@ -184,6 +184,8 @@ div#wrapper {
 	margin: 0px;
 	border: 0px;
 	font-size: 16px;
+	color: $gray-lighter;
+	background-color: $gray-dark;
 }
 @media (min-width: 768px) {
 	ul.nav {
@@ -200,8 +202,7 @@ div#wrapper {
 		width: 1170px;
 	}
 }
-.nav:not(.nav-tabs) > li > a,
-.nav:not(.nav-tabs) > li > span {
+.navbar a {
 	padding: 15px;
 	color: $gray-lighter;
 	line-height: 20px;
@@ -235,13 +236,12 @@ div#wrapper {
 	height: 3px;
 	background-color: $gray-dark;
 }
-//TODO
-//.gradient {
-//	#gradient.horizontal-three-colors($hpi-red, $hpi-orange, 50%, $hpi-yellow);
-//}
-//.gradient.gradient-inv {
-//	#gradient.horizontal-three-colors($hpi-yellow, $hpi-orange, 50%, $hpi-red);
-//}
+.gradient {
+	background: linear-gradient(45deg, $hpi-red, $hpi-orange 50%, $hpi-yellow);
+}
+.gradient.gradient-inv {
+	background: linear-gradient(45deg, $hpi-yellow, $hpi-orange 50%, $hpi-red);
+}
 .breadcrumb-area {
 	display: inline-block;
 }
@@ -279,27 +279,23 @@ div#wrapper {
 		background-color: $gray;
 	}
 }
-
-.navbar-collapse-menu {
-	display: none;
-}
-.navbar-collapse-menu li.active > a {
+.navbar li.active > a {
 	color: $hpi-yellow;
 }
-.navbar-collapse-menu li.disabled > a {
+.navbar li.disabled > a {
 	color: $gray;
 	text-decoration: none;
 }
-.navbar-collapse-menu a {
+.navbar a {
 	color: $gray-lighter;
 }
-.navbar-collapse-menu ul {
+.navbar ul {
 	color: $gray-lighter;
 	margin: 0;
 	list-style-type: none;
 }
 
-.navbar-default .navbar-nav > li {
+.navbar .navbar-nav > li {
 	&:hover,
 	&:focus {
 		background-color: $gray;
