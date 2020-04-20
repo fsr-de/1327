@@ -1,22 +1,23 @@
-from channels import Group
+from asgiref.sync import async_to_sync
+from channels.generic.websocket import WebsocketConsumer
 
 
-def get_group_name(id):
-	return '_'.join(['preview', id])
+class PreviewConsumer(WebsocketConsumer):
 
+	def connect(self):
+		self.group_name = self.scope['url_route']['kwargs']['hash_value']
+		async_to_sync(self.channel_layer.group_add)(
+			self.group_name,
+			self.channel_name,
+		)
 
-def send_preview(message, id):
-	Group(get_group_name(id)).send({
-		"text": message.content['text'],
-	})
+		self.accept()
 
+	def disconnect(self, messsage, **kwargs):
+		async_to_sync(self.channel_layer.group_discard)(
+			self.group_name,
+			self.channel_name,
+		)
 
-def ws_add(message):
-	message.reply_channel.send({"accept": True})
-	group_name = message.content['path'].replace('/ws/', '').replace('/', '_')
-	Group(group_name).add(message.reply_channel)
-
-
-def ws_disconnect(message):
-	group_name = message.content['path'].replace('/ws/', '').replace('/', '_')
-	Group(group_name).discard(message.reply_channel)
+	def update_preview(self, event):
+		self.send(text_data=event['message'])

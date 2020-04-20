@@ -1,9 +1,20 @@
-from channels.routing import route
+from channels.auth import AuthMiddlewareStack
+from channels.routing import ProtocolTypeRouter, URLRouter
+from django.conf import settings
+from django.urls import path
 
-from _1327.documents.consumers import send_preview, ws_add, ws_disconnect
+from _1327.documents.consumers import PreviewConsumer
 
-channel_routing = [
-	route("websocket.connect", ws_add),
-	route("send_preview", send_preview),
-	route("websocket.disconnect", ws_disconnect),
+
+websocket_urlpatterns = [
+	path("{preview_url}/<hash_value>".format(preview_url=settings.PREVIEW_URL.lstrip('/')), PreviewConsumer),
 ]
+
+
+application = ProtocolTypeRouter({
+	'websocket': AuthMiddlewareStack(
+		URLRouter(
+			websocket_urlpatterns
+		)
+	)
+})
