@@ -2,8 +2,7 @@
 
 @import "variables.scss";
 @import "node_modules/bootstrap/scss/bootstrap";
-//TODO
-//@import "../bootstrap-markdown/scss/bootstrap-markdown";
+@import "bootstrap-markdown";
 
 // Fix bootstrap:
 .modal-dialog {

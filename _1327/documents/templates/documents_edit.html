@@ -237,7 +237,8 @@
 				onShow: function(e) {
 					this.onChange(e);
 				},
-				additionalButtons: getCustomButtons(textInput, efficientRender)
+				additionalButtons: getCustomButtons(textInput, efficientRender),
+				iconlibrary:"fa"
 			});
 
 			let text = textInput.val();
@@ -411,7 +412,7 @@
 						name: "cmdAddImage",
 						toggle: false,
 						title: "Add Image",
-						icon: "glyphicon glyphicon-picture",
+						icon: "fa fa-picture-o",
 						callback: function (e) {
 							// get all attachments
 							$.getJSON(
@@ -511,7 +512,7 @@
                         name: "cmdAddInternalLink",
                         toggle: false,
                         title: "Add internal link",
-                        icon: "glyphicon glyphicon-circle-arrow-right",
+                        icon: "fa fa-arrow-circle-right",
                         callback: function (e) {
                             const modalItem = $('#selectInternalLinkDestination');
                             modalItem.modal();
@@ -547,7 +548,7 @@
                         name: "cmdAddEmoji",
                         toggle: false,
                         title: "Add Emoji",
-                        icon: "glyphicon glyphicon-thumbs-up emojiparent",
+                        icon: "fa fa-thumbs-up emojiparent",
                         callback: function (e) {
                             // check if we already created an emojionearea object
                             const editor = e.$editor;
