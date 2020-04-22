@@ -37,12 +37,12 @@
 			{% endif %}
 			{% with edit_groups=permission_overview|permission_filter:'edit'|join:', ' view_groups=permission_overview|permission_filter:'view'|join:', '%}
 				<div class="permission-icons hidden-print" data-toggle="tooltip" data-placement="top" data-container="body" data-html="true" title="<b>{% trans 'Edit' %}:</b> {% if edit_groups %}{{ edit_groups }}{% else %}&mdash;{% endif %}</br><b>{% trans 'View' %}:</b> {% if view_groups %}{{ view_groups }}{% else %}&mdash;{% endif %}">
-					<span class="glyphicon glyphicon-globe permission-icon-{{ permission_overview.0.1 }}" aria-hidden="true"></span>
-					<span class="glyphicon glyphicon-education permission-icon-{{ permission_overview.1.1 }}" aria-hidden="true"></span>
-					<span class="glyphicon glyphicon-user permission-icon-{{ permission_overview.2.1 }}" aria-hidden="true"></span>
-					<span class="glyphicon glyphicon-briefcase permission-icon-{{ permission_overview.3.1 }}" aria-hidden="true"></span>
+					<span class="fa fa-globe permission-icon-{{ permission_overview.0.1 }}" aria-hidden="true"></span>
+					<span class="fa fa-university permission-icon-{{ permission_overview.1.1 }}" aria-hidden="true"></span>
+					<span class="fa fa-user permission-icon-{{ permission_overview.2.1 }}" aria-hidden="true"></span>
+					<span class="fa fa-briefcase permission-icon-{{ permission_overview.3.1 }}" aria-hidden="true"></span>
 					{% if permission_overview|length > 4 %}
-						<span class="glyphicon glyphicon-option-horizontal permission-icon-more" aria-hidden="true"></span>
+						<span class="fa fa-ellipsis-h permission-icon-more" aria-hidden="true"></span>
 					{% endif %}<br/>
 				</div>
 			{% endwith %}
@@ -66,13 +66,13 @@
 	{{ block.super }}
 	{% for menu_item in main_menu %}
 		{% if menu_item.selected and menu_item.document != document %}
-			<li><span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>&nbsp;<a href="{{ menu_item.get_url }}">{{ menu_item.title }}</a></li>
+			<li><span class="fa fa-angle-right" aria-hidden="true"></span>&nbsp;<a href="{{ menu_item.get_url }}">{{ menu_item.title }}</a></li>
 			{% for subitem in menu_item.submenu %}
 				{% if subitem.selected %}
-					<li><span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>&nbsp;{% if subitem.document != document %}<a href="{{ subitem.get_url }}">{% endif %}{{ subitem.title }}{% if subitem.document != document %}</a>{% endif %}</li>
+					<li><span class="fa fa-angle-right" aria-hidden="true"></span>&nbsp;{% if subitem.document != document %}<a href="{{ subitem.get_url }}">{% endif %}{{ subitem.title }}{% if subitem.document != document %}</a>{% endif %}</li>
 					{% for subsubitem in subitem.submenu %}
 						{% if subsubitem.selected %}
-							<li><span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>&nbsp;{{ subsubitem.title }}</li>
+							<li><span class="fa fa-angle-right" aria-hidden="true"></span>&nbsp;{{ subsubitem.title }}</li>
 						{% endif %}
 					{% endfor %}
 				{% endif %}

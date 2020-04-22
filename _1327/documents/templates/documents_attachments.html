@@ -38,7 +38,7 @@
 				<th class="col-xs-3">{% trans "Filename" %}</th>
 				<th class="col-xs-2">{% trans "Created" %}</th>
 				<th class="col-xs-2">
-					{% trans "Do not show" %} <span data-toggle="tooltip" data-placement="top" class="glyphicon glyphicon-info-sign" title="{% blocktrans %}Select if attachment is only used as embedded image.{% endblocktrans %}"></span>
+					{% trans "Do not show" %} <span data-toggle="tooltip" data-placement="top" class="fa fa-info" title="{% blocktrans %}Select if attachment is only used as embedded image.{% endblocktrans %}"></span>
 				</th>
 				<th class="col-xs-1"></th>
 				<th></th>
@@ -46,7 +46,7 @@
 		</thead>
 		{% for attachment in attachments %}
 			<tr data-index="{{ attachment.index }}" data-id="{{ attachment.id }}" class="sortable">
-				<td class="sorthandle"><span class="glyphicon glyphicon-move"></span></td>
+				<td class="sorthandle"><span class="fa fa-arrows"></span></td>
 				<td>
 					<input type="hidden" class="attachmentinput" name="file" value="{{ attachment.id }}">
 					<a class="attachment-display-name">{{ attachment.displayname }}</a>
@@ -64,7 +64,7 @@
 					</a>
 				</td>
 				<td>
-					<a class="btn btn-sm btn-default" href="{% url 'documents:download_attachment' %}?hash_value={{ attachment.hash_value }}"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+					<a class="btn btn-sm btn-default" href="{% url 'documents:download_attachment' %}?hash_value={{ attachment.hash_value }}"><span class="fa fa-download" aria-hidden="true"></span></a>
 				</td>
 			</tr>
 		{% endfor %}
