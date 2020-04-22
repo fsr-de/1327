@@ -1,7 +1,7 @@
 {% extends 'documents_base.html' %}
 {% load static %}
 {% load i18n %}
-{% load compile_static %}
+{% load compress %}
 
 
 {% block title %}
@@ -11,7 +11,9 @@
 {% block css %}
 	{{ block.super }}
 	<link rel="stylesheet" href="{% static 'node_modules/jsdifflib-dist/diffview.min.css' %}"/>
-	<link rel="stylesheet" href="{% static 'scss/diffview.scss'|compile %}"/>
+	{% compress css %}
+	<link rel="stylesheet" type="text/x-scss" href="{% static 'scss/diffview.scss' %}"/>
+	{% endcompress %}
 {% endblock %}
 
 {% block document_content %}

@@ -5,20 +5,6 @@
 //TODO
 //@import "../bootstrap-markdown/scss/bootstrap-markdown";
 
-// Add future Bootstrap 4 classes which are missing in Bootstrap 3
-// TODO: Remove these after update to Bootstrap 4
-.pt-2 {
-	padding-top: 2rem;
-}
-.px-1 {
-	padding-left: 1rem;
-	padding-right: 1rem;
-}
-.pr-1 {
-	padding-right: 1rem;
-}
-// End missing classes
-
 // Fix bootstrap:
 .modal-dialog {
 	z-index: $zindex-modal-background + 1;
@@ -202,7 +188,7 @@ div#wrapper {
 		width: 1170px;
 	}
 }
-.navbar a {
+.navbar :not(.dropdown-menu-right) > a {
 	padding: 15px;
 	color: $gray-lighter;
 	line-height: 20px;
