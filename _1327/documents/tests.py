@@ -855,9 +855,6 @@ class TestSubclassConstraints(TestCase):
 			self.assertTrue(self.has_permissions(subclass), msg="All Document subclasses must specify permissions in their Meta class")
 			self.assertTrue(hasattr(subclass, "VIEW_PERMISSION_NAME"), msg="All Document subclasses must specify a VIEW_PERMISSION_NAME field")
 
-			permission_names = [permission[0] for permission in subclass._meta.permissions]
-			self.assertIn(subclass.VIEW_PERMISSION_NAME, permission_names, msg="All Document subclasses must declare the permission named in VIEW_PERMISSION_NAME")
-
 
 class TestAttachments(WebTest):
 	"""

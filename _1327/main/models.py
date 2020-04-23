@@ -10,7 +10,7 @@ from guardian.shortcuts import assign_perm
 from _1327.documents.models import Document
 from _1327.main.tools import translate
 
-MENUITEM_VIEW_PERMISSION_NAME = 'show_menuitem'
+MENUITEM_VIEW_PERMISSION_NAME = 'view_menuitem'
 MENUITEM_EDIT_PERMISSION_NAME = 'change_menuitem'
 MENUITEM_CHANGE_CHILDREN_PERMISSION_NAME = 'changechildren_menuitem'
 
@@ -44,7 +44,6 @@ class MenuItem(models.Model):
 	class Meta:
 		ordering = ['order']
 		permissions = (
-			(MENUITEM_VIEW_PERMISSION_NAME, 'User/Group is allowed to view this menu item'),
 			(MENUITEM_CHANGE_CHILDREN_PERMISSION_NAME, 'User/Group is allowed to change children items'),
 		)
 
@@ -67,7 +66,7 @@ class MenuItem(models.Model):
 	@property
 	def view_permission_name(self):
 		content_type = ContentType.objects.get_for_model(self)
-		return "{app}.show_{model}".format(app=content_type.app_label, model=content_type.model)
+		return "{app}.view_{model}".format(app=content_type.app_label, model=content_type.model)
 
 	@property
 	def change_children_permission_name(self):

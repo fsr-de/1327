@@ -18,7 +18,7 @@ from _1327.main.utils import slugify
 from _1327.user_management.models import UserProfile
 
 
-DOCUMENT_VIEW_PERMISSION_NAME = 'show_document'
+DOCUMENT_VIEW_PERMISSION_NAME = 'view_document'
 
 
 @revisions.register
@@ -43,9 +43,6 @@ class Document(PolymorphicModel):
 	class Meta:
 		verbose_name = _("Document")
 		verbose_name_plural = _("Documents")
-		permissions = (
-			(DOCUMENT_VIEW_PERMISSION_NAME, 'User/Group is allowed to view that document'),
-		)
 
 	class LinkPattern(InternalLinkPattern):
 		def url(self, id):
@@ -132,7 +129,7 @@ class Document(PolymorphicModel):
 	@property
 	def view_permission_name(self):
 		content_type = ContentType.objects.get_for_model(self)
-		return "{app}.show_{model}".format(app=content_type.app_label, model=content_type.model)
+		return "{app}.view_{model}".format(app=content_type.app_label, model=content_type.model)
 
 	@property
 	def edit_permission_name(self):
