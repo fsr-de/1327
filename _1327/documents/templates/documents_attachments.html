@@ -92,6 +92,14 @@
 
 	<script src="{% static 'node_modules/bootstrap-editable/js/index.js' %}"></script>
 	<script>
+		$.fn.editableform.buttons =
+      '<button type="submit" class="btn btn-primary btn-sm editable-submit">'+
+        '<i class="fa fa-lg fa-check"></i>'+
+      '</button>'+
+      '<button type="button" class="btn btn-default btn-sm editable-cancel">'+
+        '<i class="fa fa-lg fa-remove"></i>'+
+      '</button>';
+
 		$('#confirmAttachmentDeleteModal').on('show.bs.modal', function (event){
 			var button = $(event.relatedTarget);
 			var input = button.closest('tr').find('input.attachmentinput');
