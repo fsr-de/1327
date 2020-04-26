@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-30 16:55+0200\n"
-"PO-Revision-Date: 2020-03-30 16:56+0200\n"
+"POT-Creation-Date: 2020-04-26 09:43+0200\n"
+"PO-Revision-Date: 2020-04-26 09:45+0200\n"
 "Last-Translator: Johannes Wolf <johannes-wolf@posteo.de>\n"
 "Language-Team: Johannes Wolf (janno42)\n"
 "Language: de\n"
@@ -40,7 +40,7 @@ msgstr "Rolle"
 #: _1327/documents/forms.py:145
 msgid ""
 "If you want to enable additional permissions for a group you also need to "
-"enable the show permission for that group!"
+"enable the view permission for that group!"
 msgstr ""
 "Wenn zusätzliche Berechtigungen vergeben werden sollen, muss immer auch die "
 "\"Anzeigen\"-Berechtigung für diese Gruppe vergeben werden!"
@@ -61,19 +61,19 @@ msgstr "Titel (Deutsch)"
 msgid "Title (English)"
 msgstr "Titel (Englisch)"
 
-#: _1327/documents/models.py:35 _1327/polls/models.py:141
+#: _1327/documents/models.py:35 _1327/polls/models.py:140
 msgid "Text (German)"
 msgstr "Text (Deutsch)"
 
-#: _1327/documents/models.py:36 _1327/polls/models.py:142
+#: _1327/documents/models.py:36 _1327/polls/models.py:141
 msgid "Text (English)"
 msgstr "Text (Englisch)"
 
-#: _1327/documents/models.py:38 _1327/documents/models.py:229
+#: _1327/documents/models.py:38 _1327/documents/models.py:226
 msgid "Hash value"
 msgstr "Hashwert"
 
-#: _1327/documents/models.py:44 _1327/documents/models.py:226
+#: _1327/documents/models.py:44 _1327/documents/models.py:223
 #: _1327/main/models.py:34 _1327/main/templates/menu_items_list.html:20
 #: _1327/shortlinks/models.py:12
 #: _1327/shortlinks/templates/shortlinks_index.html:35
@@ -85,35 +85,35 @@ msgstr "Dokument"
 msgid "Documents"
 msgstr "Dokumente"
 
-#: _1327/documents/models.py:225
+#: _1327/documents/models.py:222
 #: _1327/documents/templates/documents_attachments.html:37
 msgid "Display name"
 msgstr "Angezeigter Name"
 
-#: _1327/documents/models.py:227
+#: _1327/documents/models.py:224
 #: _1327/documents/templates/documents_attachments.html:39
 #: _1327/information_pages/templates/information_pages_meta_information.html:6
 #: _1327/shortlinks/templates/shortlinks_index.html:17
 msgid "Created"
 msgstr "Erstellt"
 
-#: _1327/documents/models.py:228
+#: _1327/documents/models.py:225
 msgid "File"
 msgstr "Datei"
 
-#: _1327/documents/models.py:231
+#: _1327/documents/models.py:228
 msgid "ordering index"
 msgstr "Sortierreihenfolge"
 
-#: _1327/documents/models.py:232
+#: _1327/documents/models.py:229
 msgid "Do not show as attachment (for embedded images)"
 msgstr "Nicht als Anhang anzeigen (für eingebettete Bilder)"
 
-#: _1327/documents/models.py:235
+#: _1327/documents/models.py:232
 msgid "Attachment"
 msgstr "Anhang"
 
-#: _1327/documents/models.py:236
+#: _1327/documents/models.py:233
 #: _1327/documents/templates/documents_base.html:20
 #: _1327/documents/templates/documents_base.html:59
 #: _1327/documents/templates/documents_base.html:89
@@ -375,6 +375,7 @@ msgstr "Es gab einen unbekannten Fehler!"
 #: _1327/main/templates/menu_item_edit.html:60
 #: _1327/main/templates/menu_item_edit.html:66
 #: _1327/shortlinks/templates/shortlink_edit.html:36
+#: _1327/templates/admin/change_form.html:109
 #: _1327/user_management/templates/user_impersonation.html:34
 msgid "Please select..."
 msgstr "Bitte auswählen..."
@@ -445,20 +446,20 @@ msgstr "Protokoll wurde veröffentlicht."
 msgid "File has been uploaded successfully!"
 msgstr "Datei erfolgreich hochgeladen!"
 
-#: _1327/documents/views.py:350
+#: _1327/documents/views.py:355
 #, python-brace-format
 msgid "reverted to revision \"{revision_comment}\" (at {date})"
 msgstr "Version \"{revision_comment}\" (vom {date}) wiederhergestellt"
 
-#: _1327/documents/views.py:384
+#: _1327/documents/views.py:389
 msgid "Successfully deleted Attachment!"
 msgstr "Anhang gelöscht!"
 
-#: _1327/documents/views.py:470 _1327/documents/views.py:531
+#: _1327/documents/views.py:475 _1327/documents/views.py:537
 msgid "Successfully deleted document: {}"
 msgstr "Dokument gelöscht: {}"
 
-#: _1327/documents/views.py:536
+#: _1327/documents/views.py:542
 msgid "Successfully deleted autosave"
 msgstr "Autosave erfolgreich gelöscht"
 
@@ -570,24 +571,24 @@ msgstr "Fußzeile"
 msgid "Link"
 msgstr "Link"
 
-#: _1327/main/models.py:111
+#: _1327/main/models.py:110
 msgid "view"
 msgstr "Anzeigen"
 
-#: _1327/main/models.py:112
+#: _1327/main/models.py:111
 msgid "change children"
 msgstr "Unterpunkte bearbeiten"
 
-#: _1327/main/models.py:113
+#: _1327/main/models.py:112
 msgid "edit"
 msgstr "bearbeiten"
 
-#: _1327/main/models.py:119
+#: _1327/main/models.py:118
 #: _1327/main/templates/abbreviation_explanation.html:19
 msgid "Abbreviation"
 msgstr "Abkürzung"
 
-#: _1327/main/models.py:120
+#: _1327/main/models.py:119
 #: _1327/main/templates/abbreviation_explanation.html:20
 msgid "Explanation"
 msgstr "Erklärung"
@@ -853,11 +854,11 @@ msgid_plural "Minutes"
 msgstr[0] "Protokoll"
 msgstr[1] "Protokolle"
 
-#: _1327/minutes/models.py:163
+#: _1327/minutes/models.py:160
 msgid "Name"
 msgstr "Name"
 
-#: _1327/minutes/models.py:164
+#: _1327/minutes/models.py:161
 #: _1327/minutes/templates/minutes_meta_information.html:17
 msgid "Guests"
 msgstr "Gäste"
@@ -928,15 +929,15 @@ msgstr "Enddatum"
 msgid "show results immediately after vote"
 msgstr "Ergebnisse direkt nach dem Abstimmen anzeigen"
 
-#: _1327/polls/models.py:144
+#: _1327/polls/models.py:143
 msgid "Description (German)"
 msgstr "Beschreibung (Deutsch)"
 
-#: _1327/polls/models.py:145
+#: _1327/polls/models.py:144
 msgid "Description (English)"
 msgstr "Beschreibung (Englisch)"
 
-#: _1327/polls/models.py:149
+#: _1327/polls/models.py:148
 msgid "Ordering index"
 msgstr "Sortierreihenfolge"
 
@@ -1243,7 +1244,8 @@ msgid "Logout"
 msgstr "Abmelden"
 
 #: _1327/templates/base.html:36 _1327/user_management/templates/login.html:5
-#: _1327/user_management/templates/login.html:22
+#: _1327/user_management/templates/login.html:21
+#: _1327/user_management/templates/login.html:32
 msgid "Login"
 msgstr "Anmelden"
 
@@ -1308,69 +1310,73 @@ msgstr "Startseite"
 msgid "Recover deleted %(name)s"
 msgstr "%(name)s wiederherstellen"
 
-#: _1327/user_management/admin.py:14 _1327/user_management/forms.py:14
+#: _1327/user_management/admin.py:15 _1327/user_management/forms.py:20
 msgid "Password"
 msgstr "Passwort"
 
-#: _1327/user_management/admin.py:15
+#: _1327/user_management/admin.py:16
 msgid "Password confirmation"
 msgstr "Passwort bestätigen"
 
-#: _1327/user_management/admin.py:26
+#: _1327/user_management/admin.py:27
 msgid "Passwords don't match"
 msgstr "Passwörter stimmen nicht überein"
 
-#: _1327/user_management/admin.py:95
+#: _1327/user_management/admin.py:96
 msgid "Users"
 msgstr "Benutzer"
 
-#: _1327/user_management/forms.py:13
+#: _1327/user_management/forms.py:19
 msgid "Username"
 msgstr "Benutzername"
 
-#: _1327/user_management/forms.py:32
+#: _1327/user_management/forms.py:37
 msgid "Please enter a correct username and password."
 msgstr "Passwort oder Benutzername ist nicht korrekt."
 
-#: _1327/user_management/forms.py:45
+#: _1327/user_management/forms.py:50
 msgid "Select a user"
 msgstr "Benutzer auswählen"
 
-#: _1327/user_management/models.py:14
+#: _1327/user_management/models.py:16
 msgid "Users must have a username"
 msgstr "Benutzer müssen einen Benutzernamen haben"
 
-#: _1327/user_management/models.py:40
+#: _1327/user_management/models.py:42
 msgid "User name"
 msgstr "Benutzername"
 
-#: _1327/user_management/models.py:41
+#: _1327/user_management/models.py:43
 msgid "Email address"
 msgstr "E-Mail-Adresse"
 
-#: _1327/user_management/models.py:42
+#: _1327/user_management/models.py:44
 msgid "First name"
 msgstr "Vorname"
 
-#: _1327/user_management/models.py:43
+#: _1327/user_management/models.py:45
 msgid "Last name"
 msgstr "Nachname"
 
-#: _1327/user_management/models.py:46
+#: _1327/user_management/models.py:48
 msgid "language"
 msgstr "Sprache"
 
-#: _1327/user_management/models.py:54
+#: _1327/user_management/models.py:56
 msgid "User profile"
 msgstr "Benutzerprofil"
 
-#: _1327/user_management/models.py:55
+#: _1327/user_management/models.py:57
 msgid "User profiles"
 msgstr "Benutzerprofile"
 
 #: _1327/user_management/templates/login.html:12
 msgid "Please login to see this page."
 msgstr "Bitte melde dich an, um diese Seite zu sehen."
+
+#: _1327/user_management/templates/login.html:17
+msgid "Log in using HPI OpenID Connect."
+msgstr "Anmelden mit HPI OpenID Connect."
 
 #: _1327/user_management/templates/user_impersonation.html:5
 msgid "View page as a different user"
