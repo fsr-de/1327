@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django_webtest import WebTest
 from guardian.shortcuts import assign_perm
-from model_mommy import mommy
+from model_bakery import baker
 
 from _1327.information_pages.models import InformationDocument
 from _1327.user_management.models import UserProfile
@@ -24,8 +24,8 @@ class TestShortlinkWeb(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile)
-		cls.document = mommy.make(InformationDocument, text="Internal shortlink example")
+		cls.user = baker.make(UserProfile)
+		cls.document = baker.make(InformationDocument, text_en="Internal shortlink example")
 		assign_perm(InformationDocument.VIEW_PERMISSION_NAME, cls.user, cls.document)
 
 	def test_follow_shortlink_external(self):

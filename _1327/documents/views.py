@@ -2,7 +2,8 @@ from datetime import datetime
 import json
 import os
 
-from channels import Group as WebsocketGroup
+from asgiref.sync import async_to_sync
+import channels.layers
 
 from django.contrib import messages
 from django.contrib.admin.utils import NestedObjects
@@ -10,6 +11,7 @@ from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied, SuspiciousOperation
 from django.db import DEFAULT_DB_ALIAS, models, transaction
+from django.db.models import Q
 from django.forms import formset_factory
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, Http404, render
@@ -23,7 +25,6 @@ from reversion.models import Version
 from sendfile import sendfile
 
 from _1327 import settings
-from _1327.documents.consumers import get_group_name
 from _1327.documents.forms import get_permission_form
 from _1327.documents.models import Attachment, Document, TemporaryDocumentText
 from _1327.documents.utils import delete_cascade_to_json, delete_old_empty_pages, get_model_function, get_new_autosaved_pages_for_user, \
@@ -43,11 +44,12 @@ def create(request, document_type):
 	if request.user.has_perm("{app}.add_{model}".format(app=content_type.app_label, model=content_type.model)):
 		model_class = content_type.model_class()
 		delete_old_empty_pages()
-		title = model_class.generate_new_title()
-		url_title = "temp_{}_{}".format(datetime.utcnow().strftime("%d%m%Y%H%M%S%f"), model_class.generate_default_slug(title))
+		title_en, title_de = model_class.generate_new_title()
+		url_title = "temp_{}_{}".format(datetime.utcnow().strftime("%d%m%Y%H%M%S%f"), model_class.generate_default_slug(title_en))
 		kwargs = {
 			'url_title': url_title,
-			'title': title,
+			'title_en': title_en,
+			'title_de': title_de,
 		}
 		if hasattr(model_class, 'author'):
 			kwargs['author'] = request.user
@@ -156,7 +158,11 @@ def view(request, title):
 	except (ImportError, AttributeError):
 		pass
 
-	text, toc = convert_markdown(document.text)
+	if document.text == "" and (document.text_en != "" or document.text_de != ""):
+		messages.warning(request, _('The requested document is not available in the selected language. It will be shown in the available language instead.'))
+		text, toc = convert_markdown(next((text for text in (document.text_de, document.text_en) if text != ""), ""))
+	else:
+		text, toc = convert_markdown(document.text)
 
 	return render(request, 'documents_base.html', {
 		'document': document,
@@ -241,9 +247,14 @@ def render_text(request, title):
 
 	text, __ = convert_markdown(request.POST['text'])
 
-	WebsocketGroup(get_group_name(document.hash_value)).send({
-		'text': text
-	})
+	channel_layer = channels.layers.get_channel_layer()
+	async_to_sync(channel_layer.group_send)(
+		document.hash_value,
+		{
+			'type': 'update_preview',
+			'message': text,
+		}
+	)
 
 	return HttpResponse(text, content_type='text/plain')
 
@@ -254,9 +265,28 @@ def search(request):
 
 	id_only = request.GET.get('id_only', False)
 
-	minutes = get_objects_for_user(request.user, MinutesDocument.VIEW_PERMISSION_NAME, klass=MinutesDocument.objects.filter(title__icontains=request.GET['q']))
-	information_documents = get_objects_for_user(request.user, InformationDocument.VIEW_PERMISSION_NAME, klass=InformationDocument.objects.filter(title__icontains=request.GET['q']))
-	polls = get_objects_for_user(request.user, Poll.VIEW_PERMISSION_NAME, klass=Poll.objects.filter(title__icontains=request.GET['q']))
+	query = request.GET['q']
+	minutes = get_objects_for_user(
+		request.user,
+		MinutesDocument.VIEW_PERMISSION_NAME,
+		klass=MinutesDocument.objects.filter(
+			Q(title_de__icontains=query) | Q(title_en__icontains=query)
+		)
+	)
+	information_documents = get_objects_for_user(
+		request.user,
+		InformationDocument.VIEW_PERMISSION_NAME,
+		klass=InformationDocument.objects.filter(
+			Q(title_de__icontains=query) | Q(title_en__icontains=query)
+		)
+	)
+	polls = get_objects_for_user(
+		request.user,
+		Poll.VIEW_PERMISSION_NAME,
+		klass=Poll.objects.filter(
+			Q(title_de__icontains=query) | Q(title_en__icontains=query)
+		)
+	)
 
 	return render(request, "ajax_search_api.json", {
 		'minutes': minutes,
@@ -323,7 +353,7 @@ def revert(request):
 		revisions.set_user(request.user)
 		revisions.set_comment(
 			_('reverted to revision \"{revision_comment}\" (at {date})'.format(
-				revision_comment=revert_version.revision.comment,
+				revision_comment=revert_version.revision.get_comment(),
 				date=datetime.utcnow().strftime("%Y-%m-%d %H:%M"),
 			))
 		)
@@ -477,10 +507,11 @@ def preview(request):
 		request,
 		'documents_preview.html',
 		{
-			'title': document.title,
+			'document': document,
 			'text': text,
 			'preview_url': settings.PREVIEW_URL,
 			'hash_value': hash_value,
+			'view_page': True,
 		}
 	)
 

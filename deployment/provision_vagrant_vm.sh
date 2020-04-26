@@ -1,5 +1,7 @@
 set -x # print executed commands
 
+export DEBIAN_FRONTEND=noninteractive
+
 # install python stuff
 apt-get -q update
 apt-get -q install -y python3-dev python3-pip gettext
@@ -32,6 +34,10 @@ sudo -H -u vagrant pip3 install --user psycopg2==2.7.3.1
 # deploy localsettings and insert random key
 cp /vagrant/deployment/localsettings.template.py /vagrant/_1327/localsettings.py
 sed -i -e "s/\${SECRET_KEY}/`sudo head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32`/" /vagrant/_1327/localsettings.py
+
+# setup redis
+cd /vagrant/deployment/redis
+sh init_redis.sh
 
 # setup static files
 cd /vagrant/_1327/static

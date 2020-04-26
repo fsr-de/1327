@@ -1,7 +1,7 @@
 import re
 
 from django.shortcuts import render
-
+from django.utils.translation import get_language
 from guardian.shortcuts import get_objects_for_user
 
 from _1327.information_pages.models import InformationDocument
@@ -16,14 +16,15 @@ def unlinked_list(request):
 		# parse all menu pages for ids to linked documents and collect them in a list
 		menu_page_document_ids = set()
 		for menu_page in menu_pages:
-			for document_id in re.findall("\(document:([0-9]+)\)", menu_page.text):
+			for document_id in re.findall(r"\(document:([0-9]+)\)", menu_page.text):
 				try:
 					menu_page_document_ids.add(int(document_id))
 				except ValueError:
 					pass
 
-		unlinked_information_pages = get_objects_for_user(request.user, permission_name, klass=InformationDocument.objects.filter(menu_items__isnull=True).exclude(id__in=menu_page_document_ids)).order_by('title')
-
+		title_string = "title_" + ("de" if (get_language() or "en").split('-')[0] == "de" else "en")
+		non_menu_item_documents = InformationDocument.objects.filter(menu_items__isnull=True).exclude(id__in=menu_page_document_ids)
+		unlinked_information_pages = get_objects_for_user(request.user, permission_name, klass=non_menu_item_documents).order_by(title_string)
 	else:
 		unlinked_information_pages = []
 

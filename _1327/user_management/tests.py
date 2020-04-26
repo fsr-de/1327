@@ -1,12 +1,12 @@
 from django.conf import settings
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
 from django.test.utils import override_settings
 from django.urls import reverse
 
 from django_webtest import WebTest
 from guardian.shortcuts import assign_perm
 from guardian.utils import get_anonymous_user
-from model_mommy import mommy
+from model_bakery import baker
 
 from _1327.information_pages.models import InformationDocument
 from .models import UserProfile
@@ -17,15 +17,15 @@ class UsecaseTests(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(
+		cls.user = baker.make(
 			UserProfile,
 			username="user",
 			password="pbkdf2_sha256$12000$uH9Cc7pBkaxQ$XLVGZKTbCyuDlgFQB65Mn5SAm6v/2kjpCTct1td2VTo=")
-		mommy.make(UserProfile, username="noname")
-		mommy.make(UserProfile, username="nofirstname", last_name="Last")
-		mommy.make(UserProfile, username="nolastname", first_name="First")
-		mommy.make(UserProfile, is_superuser=True, username="admin", first_name="Admin", last_name="User")
-		mommy.make(UserProfile, username="test testman", password="pbkdf2_sha256$12000$uH9Cc7pBkaxQ$XLVGZKTbCyuDlgFQB65Mn5SAm6v/2kjpCTct1td2VTo=")
+		baker.make(UserProfile, username="noname")
+		baker.make(UserProfile, username="nofirstname", last_name="Last")
+		baker.make(UserProfile, username="nolastname", first_name="First")
+		baker.make(UserProfile, is_superuser=True, username="admin", first_name="Admin", last_name="User")
+		baker.make(UserProfile, username="test testman", password="pbkdf2_sha256$12000$uH9Cc7pBkaxQ$XLVGZKTbCyuDlgFQB65Mn5SAm6v/2kjpCTct1td2VTo=")
 
 	def test_login(self):
 		page = self.app.get("/login", user="")
@@ -75,7 +75,7 @@ class UsecaseTests(WebTest):
 		self.assertEqual(response.status_code, 302)
 
 	def test_login_redirect_sufficient_permissions(self):
-		document = mommy.make(InformationDocument)
+		document = baker.make(InformationDocument)
 		assign_perm(document.view_permission_name, self.user, document)
 
 		response = self.app.get(reverse(document.get_view_url_name(), args=[document.url_title]))
@@ -93,7 +93,7 @@ class UsecaseTests(WebTest):
 		self.assertEqual(response.status_code, 200)
 
 	def test_login_insufficient_permissions(self):
-		document = mommy.make(InformationDocument)
+		document = baker.make(InformationDocument)
 
 		response = self.app.get(reverse(document.get_view_url_name(), args=[document.url_title]))
 		redirect_url = reverse('login') + '?next=' + reverse(document.get_view_url_name(), args=[document.url_title])
@@ -108,6 +108,10 @@ class UsecaseTests(WebTest):
 		self.assertRedirects(response, reverse(document.get_view_url_name(), args=[document.url_title]), target_status_code=403)
 		response = response.follow(status=403)
 		self.assertEqual(response.status_code, 403)
+
+	def test_login_url_with_logged_in_user_redirects_to_home(self):
+		response = self.app.get(reverse('login'), user=self.user)
+		self.assertRedirects(response, reverse('index'))
 
 	def test_name(self):
 		user = UserProfile.objects.get(username='noname')
@@ -127,14 +131,19 @@ class UsecaseTests(WebTest):
 		self.assertEqual(user.get_short_name(), 'Admin')
 
 	def test_default_group(self):
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 		self.assertEqual(user.groups.count(), 0)
 
 		with self.settings(DEFAULT_USER_GROUP_NAME='Default'):
-			user = mommy.make(UserProfile)
+			user = baker.make(UserProfile)
 			self.assertEqual(user.groups.count(), 1)
 			default_group = Group.objects.get(name='Default')
 			self.assertIn(default_group, user.groups.all())
+
+	@override_settings(INSTITUTION_EMAIL_REPLACEMENTS=[("example.com", "institution.com")])
+	def test_email_domain_replacement(self):
+		user = baker.make(UserProfile, email="test@example.com")
+		self.assertEqual(user.email, "test@institution.com")
 
 
 class UserImpersonationTests(WebTest):
@@ -143,8 +152,8 @@ class UserImpersonationTests(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile, is_superuser=True)
-		mommy.make(UserProfile, username='test')
+		cls.user = baker.make(UserProfile, is_superuser=True)
+		baker.make(UserProfile, username='test')
 
 	def test_view_impersonation_page(self):
 		response = self.app.get(reverse('view_as'), user=self.user)
@@ -157,7 +166,7 @@ class UserImpersonationTests(WebTest):
 			self.assertIn(user.username, options)
 
 	def test_view_impersonation_list_no_superuser(self):
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 		response = self.app.get(reverse('view_as'), user=user, expect_errors=True)
 		self.assertEqual(response.status_code, 403)
 
@@ -198,8 +207,8 @@ class _1327AuthenticationBackendTests(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.document = mommy.make(InformationDocument)
-		cls.user = mommy.make(UserProfile)
+		cls.document = baker.make(InformationDocument)
+		cls.user = baker.make(UserProfile)
 
 	def test_anonymous_fallback_if_user_has_no_permissions(self):
 		anonymous_user = get_anonymous_user()
@@ -218,7 +227,7 @@ class _1327AuthenticationBackendTests(WebTest):
 		self.assertEqual(response.status_code, 403)
 
 	def test_anonymous_fallback_not_used_if_user_has_permission(self):
-		group = mommy.make(Group)
+		group = baker.make(Group)
 		self.user.groups.add(group)
 		self.user.save()
 
@@ -236,8 +245,8 @@ class _1327AuthenticationBackendUniversityNetworkTests(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.document = mommy.make(InformationDocument)
-		cls.university_group = mommy.make(Group, name='university_group')
+		cls.document = baker.make(InformationDocument)
+		cls.university_group = baker.make(Group, name='university_group')
 
 	def test_university_network_fallback_no_access(self):
 		# check that user is not allowed to view the document if he is not in the university network
@@ -267,3 +276,111 @@ class _1327AuthenticationBackendUniversityNetworkTests(WebTest):
 		)
 		redirect_url = reverse('login') + '?next=' + reverse(self.document.get_view_url_name(), args=[self.document.url_title])
 		self.assertRedirects(response, redirect_url)
+
+
+class GroupEditFormTests(WebTest):
+
+	def setUp(self):
+		self.user1 = baker.make(UserProfile, is_superuser=True)
+		self.user2 = baker.make(UserProfile)
+		self.group = baker.make(Group, name="Testgroup")
+
+	def test_display_empty_group(self):
+		self.app.set_user(self.user1)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		self.assertEqual(form["name"].value, self.group.name)
+		self.assertFalse(form["add_information_document"].checked)
+		self.assertFalse(form["add_minutesdocument"].checked)
+		self.assertFalse(form["add_poll"].checked)
+		self.assertIsNone(form["users"].value)
+
+	def test_display_information_document_permission(self):
+		self.app.set_user(self.user1)
+		permission = Permission.objects.get(codename="add_informationdocument")
+		self.group.permissions.add(permission)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		self.assertTrue(form["add_information_document"].checked)
+
+	def test_display_minutes_document_permission(self):
+		self.app.set_user(self.user1)
+		permission = Permission.objects.get(codename="add_minutesdocument")
+		self.group.permissions.add(permission)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		self.assertTrue(form["add_minutesdocument"].checked)
+
+	def test_display_poll_permission(self):
+		self.app.set_user(self.user1)
+		permission = Permission.objects.get(codename="add_poll")
+		self.group.permissions.add(permission)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		self.assertTrue(form["add_poll"].checked)
+
+	def test_add_information_document_permission(self):
+		self.app.set_user(self.user1)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		form["add_information_document"].checked = True
+		form.submit()
+		self.assertIn(Permission.objects.get(codename="add_informationdocument"), self.group.permissions.all())
+
+	def test_add_minutes_document_permission(self):
+		self.app.set_user(self.user1)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		form["add_minutesdocument"].checked = True
+		form.submit()
+		self.assertIn(Permission.objects.get(codename="add_minutesdocument"), self.group.permissions.all())
+
+	def test_add_poll_permission(self):
+		self.app.set_user(self.user1)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		form["add_poll"].checked = True
+		form.submit()
+		self.assertIn(Permission.objects.get(codename="add_poll"), self.group.permissions.all())
+
+	def test_remove_information_document_permission(self):
+		self.app.set_user(self.user1)
+		permission = Permission.objects.get(codename="add_informationdocument")
+		self.group.permissions.add(permission)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		form["add_information_document"].checked = False
+		form.submit()
+		self.assertNotIn(permission, self.group.permissions.all())
+
+	def test_remove_minutes_document_permission(self):
+		self.app.set_user(self.user1)
+		permission = Permission.objects.get(codename="add_minutesdocument")
+		self.group.permissions.add(permission)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		form["add_minutesdocument"].checked = False
+		form.submit()
+		self.assertNotIn(permission, self.group.permissions.all())
+
+	def test_remove_poll_permission(self):
+		self.app.set_user(self.user1)
+		permission = Permission.objects.get(codename="add_poll")
+		self.group.permissions.add(permission)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		form["add_poll"].checked = False
+		form.submit()
+		self.assertNotIn(permission, self.group.permissions.all())
+
+	def test_change_group_name(self):
+		self.app.set_user(self.user1)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		form["name"] = "New name"
+		form.submit()
+		self.assertEqual(Group.objects.get(id=self.group.id).name, "New name")
+
+	def test_add_user(self):
+		self.app.set_user(self.user1)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		form["users"].select_multiple(texts=[self.user2.username])
+		form.submit()
+		self.assertIn(self.group, self.user2.groups.all())
+
+	def test_remove_user(self):
+		self.app.set_user(self.user1)
+		self.user2.groups.add(self.group)
+		form = self.app.get(reverse("admin:auth_group_change", kwargs={"object_id": self.group.id})).form
+		form["users"].select_multiple(texts=[])
+		form.submit()
+		self.assertNotIn(self.group, self.user2.groups.all())

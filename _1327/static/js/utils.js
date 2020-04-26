@@ -48,3 +48,12 @@ var debounce = function (func, threshold) {
 		}, threshold);
 	};
 };
+
+
+// a nice splice function taken from here:
+// https://stackoverflow.com/questions/4313841/insert-a-string-at-a-specific-index
+if (!String.prototype.splice) {
+    String.prototype.splice = function(start, delCount, newSubStr) {
+        return this.slice(0, start) + newSubStr + this.slice(start + Math.abs(delCount));
+    };
+}

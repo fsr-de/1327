@@ -10,17 +10,24 @@ INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME = 'view_informationdocument'
 
 
 class InformationDocument(Document):
+	SHOW_AUTHOR_TO_NO_ONE = 0
+	SHOW_AUTHOR_TO_LOGGED_IN_USERS = 1
+	SHOW_AUTHOR_TO_EVERYONE = 2
+	SHOW_AUTHOR_TO_CHOICES = (
+		(SHOW_AUTHOR_TO_NO_ONE, _('No one')),
+		(SHOW_AUTHOR_TO_LOGGED_IN_USERS, _('Logged in users')),
+		(SHOW_AUTHOR_TO_EVERYONE, _('Everyone')),
+	)
+
 	VIEW_PERMISSION_NAME = INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME
 
+	show_author_to = models.IntegerField(choices=SHOW_AUTHOR_TO_CHOICES, default=SHOW_AUTHOR_TO_LOGGED_IN_USERS, verbose_name=_("Show author to"))
 	is_menu_page = models.BooleanField(default=False, verbose_name=_("Is menu page"), help_text=_("Select this if the page is used mainly for navigation purposes and if all documents linked on the page should be removed from the 'unlinked information pages' list."))
 
 	class Meta(Document.Meta):
 
 		verbose_name = _("Information document")
 		verbose_name_plural = _("Information documents")
-		permissions = (
-			(INFORMATIONDOCUMENT_VIEW_PERMISSION_NAME, 'User/Group is allowed to view that document'),
-		)
 
 	def get_view_url(self):
 		return reverse(self.get_view_url_name(), args=(self.url_title, ))

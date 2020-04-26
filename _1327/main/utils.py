@@ -73,9 +73,9 @@ def abbreviation_explanation_markdown():
 
 # see https://pythonhosted.org/Markdown/release-2.6.html#safe_mode-deprecated
 class EscapeHtml(Extension):
-	def extendMarkdown(self, md, md_globals):
-		del md.preprocessors['html_block']
-		del md.inlinePatterns['html']
+	def extendMarkdown(self, md):
+		md.preprocessors.deregister('html_block')
+		md.inlinePatterns.deregister('html')
 
 
 def convert_markdown(text):
@@ -103,7 +103,7 @@ def slugify(string):
 
 
 class SlugWithSlashConverter:
-	regex = '[\w\-/]+'
+	regex = r'[\w\-/]+'
 
 	def to_python(self, value):
 		return str(value)
@@ -180,3 +180,13 @@ def document_permission_overview(user, document):
 			permissions.append((group.name, "view"))
 
 	return permissions
+
+
+def clean_email(email):
+	if email:
+		# Replace email domains in case there are multiple alias domains used in the organisation and all emails should
+		# have the same domain.
+		for original_domain, replaced_domain in settings.INSTITUTION_EMAIL_REPLACEMENTS:
+			if email.endswith(original_domain):
+				return email[:-len(original_domain)] + replaced_domain
+	return email

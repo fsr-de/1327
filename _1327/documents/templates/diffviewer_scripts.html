@@ -23,24 +23,22 @@
 <script type="text/javascript" src="{% static 'node_modules/jsdifflib-dist/difflib.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'node_modules/jsdifflib-dist/diffview.min.js' %}"></script>
 <script>
-	var versions = [];
+	let versions = [];
 
-	{% for id, version, text in versions %}
-		versions.push([{{ version.pk }}, "{{ text }}"]);
+	{% for id, version, text_de, text_en in versions %}
+		versions.push([{{ version.pk }}, {DE: '{{ text_de }}', EN: '{{ text_en }}'}]);
 	{% endfor %}
 
-	var versionIDToRevert = null;
+	let versionIDToRevert = null;
 	$('.version-revert-button').on('click', function(event) {
-		var button;
-		button = $(event.target);
+		const button = $(event.target);
 		versionIDToRevert = button.data('revision-id');
 		return $('#version-to-revert-display').text(button.data('revision-name'));
 	});
 
 	$('#revert-button').on('click', function(event) {
-		var data;
 		// tell the server to revert the version of the current document to the selected version
-		data = {
+		const data = {
 			id: versionIDToRevert,
 			url_title: '{{ document.url_title }}'
 		};
@@ -61,26 +59,28 @@
 	$($('input[name="compare-a"]').get(-2)).attr('checked', true);
 	$('input[name="compare-b"]').last().attr('checked', true);
 
-	var createDiff = function() {
-		var display, opcodes, sequenceMatcher, versionA, versionB;
-		// Get the versions in the correct format.
-		versionA = difflib.stringAsLines(versions[$('input[name="compare-a"]:checked').val()][1]);
-		versionB = difflib.stringAsLines(versions[$('input[name="compare-b"]:checked').val()][1]);
-		// Clear the diff view.
-		display = $('#diffDisplay');
-		display.empty();
-		// Create the diff.
-		sequenceMatcher = new difflib.SequenceMatcher(versionA, versionB);
-		opcodes = sequenceMatcher.get_opcodes();
-		// Show it to the user.
-		return display.append(diffview.buildView({
-			baseTextLines: versionA,
-			newTextLines: versionB,
-			opcodes: opcodes,
-			baseTextName: '{% trans "Version A" %}',
-			newTextName: '{% trans "Version B" %}',
-			viewType: 0
-		}));
+	let createDiff = function(lang) {
+		for (let lang of Object.keys(versions[0][1])) {
+			let display, opcodes, sequenceMatcher, versionA, versionB;
+			// Get the versions in the correct format.
+			versionA = difflib.stringAsLines(versions[$('input[name="compare-a"]:checked').val()][1][lang]);
+			versionB = difflib.stringAsLines(versions[$('input[name="compare-b"]:checked').val()][1][lang]);
+			// Clear the diff view.
+			display = $('#diffDisplay' + lang);
+			display.empty();
+			// Create the diff.
+			sequenceMatcher = new difflib.SequenceMatcher(versionA, versionB);
+			opcodes = sequenceMatcher.get_opcodes();
+			// Show it to the user.
+			display.append(diffview.buildView({
+				baseTextLines: versionA,
+				newTextLines: versionB,
+				opcodes: opcodes,
+				baseTextName: '{% trans "Version A" %}',
+				newTextName: '{% trans "Version B" %}',
+				viewType: 0
+			}));
+		}
 	};
 
 	createDiff();

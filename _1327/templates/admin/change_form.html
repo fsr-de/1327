@@ -1,5 +1,5 @@
 {% extends "admin/base_site.html" %}
-{% load i18n admin_urls admin_static admin_modify bootstrapped_goodies_tags %}
+{% load i18n admin_urls static admin_modify bootstrapped_goodies_tags %}
 
 {% block extrahead %}{{ block.super }}
 {% url 'admin:jsi18n' as jsi18nurl %}
@@ -98,4 +98,15 @@
         {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
     </div>
 </form>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+	// Activate Select2 if present on page
+	$(".select2-selection").select2({
+		language: "{{ LANGUAGE_CODE }}",
+		placeholder: "{% trans 'Please select...' %}"
+	});
+	</script>
 {% endblock %}

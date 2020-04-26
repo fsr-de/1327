@@ -167,12 +167,10 @@ div#wrapper {
 }
 .navbar-brand > img, .navbar-toggle-brand > img {
 	height: 50px;
-	width: 78px;
 	padding: 10px 15px 10px 15px;
 }
 .navbar-toggle-brand {
 	height: 50px;
-	width: 78px;
 	float: left;
 	border: 0;
 	padding: 0;
@@ -201,8 +199,8 @@ div#wrapper {
 		width: 1170px;
 	}
 }
-.nav > li > a,
-.nav > li > span {
+.nav:not(.nav-tabs) > li > a,
+.nav:not(.nav-tabs) > li > span {
 	padding: 15px;
 	color: @gray-lighter;
 	line-height: 20px;
@@ -247,6 +245,23 @@ div#wrapper {
 }
 .login-area {
 	display: inline-block;
+}
+.language-info {
+	display: inline-block;
+	padding: 0 15px;
+}
+.language-button {
+	display: inline-block;
+	height: 25px;
+	padding: 3px 0;
+	color: @gray-lighter;
+	&:hover,
+	&:focus {
+		background-color: @gray;
+	}
+}
+.language-button-selected {
+	color: @hpi-yellow;
 }
 .login-info {
 	display: inline-block;
@@ -373,10 +388,6 @@ nav li:hover > .dropdown-menu {
 	// Note that this doesn't work for the attachments table.
 	// See the attachments table CSS below (#attachment-table) for details.
 	overflow-wrap: break-word;
-}
-
-.content :first-child {
-	margin-top: 0;
 }
 
 .headline {
@@ -977,23 +988,33 @@ table.diff > thead th:nth-of-type(4) { width: 45%; }
 	top: -10000px;
 }
 
-.md-fullscreen-mode .emojionearea .emojionearea-editor {
-	min-height: 100%;
-}
-
-.md-fullscreen-mode .emojionearea {
-	.emojionearea-button {
-		margin-right: 35px !important;
-	}
+.emojionearea-standalone {
 	.emojionearea-picker {
-		right: 35px !important;
+		z-index: 9999 !important;
+		margin-top: -30px !important;
+	}
+
+	.emojionearea.has-placeholder {
+		display: None !important;
+	}
+
+	.emojionearea-button {
+		display: None !important;
+	}
+
+	.emojionearea-editor {
+		display: None !important;
 	}
 }
 
-.emojionearea.md-input {
-    height: 450px;
+.preview-tab {
+	margin-top: 1em;
 }
-.emojionearea.md-input .emojionearea-editor {
-    height: 100%;
-    max-height: none;
+
+.document-title {
+	margin-top: 0;
+}
+
+.select2-container--default .select2-results>.select2-results__options {
+	max-height: 400px;
 }

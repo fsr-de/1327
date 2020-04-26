@@ -2,7 +2,6 @@ from datetime import datetime
 import hashlib
 import re
 
-
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
@@ -14,6 +13,7 @@ from reversion import revisions
 from reversion.models import Version
 
 from _1327.documents.markdown_internal_link_pattern import InternalLinkPattern
+from _1327.main.tools import translate
 from _1327.main.utils import slugify
 from _1327.user_management.models import UserProfile
 
@@ -28,9 +28,13 @@ class Document(PolymorphicModel):
 		return '{}_{}'.format(hashlib.md5(str(datetime.now()).encode()).hexdigest(), int(max_id) + 1)
 
 	created = models.DateTimeField(default=timezone.now)
-	title = models.CharField(max_length=255)
+	title_de = models.CharField(max_length=255, verbose_name=_("Title (German)"))
+	title_en = models.CharField(max_length=255, verbose_name=_("Title (English)"))
+	title = translate(en='title_en', de='title_de')
 	url_title = models.CharField(unique=True, max_length=255, verbose_name='url_title')
-	text = models.TextField()
+	text_de = models.TextField(blank=True, verbose_name=_("Text (German)"))
+	text_en = models.TextField(blank=True, verbose_name=_("Text (English)"))
+	text = translate(en='text_en', de='text_de')
 	hash_value = models.CharField(max_length=40, unique=True, default=get_hash, verbose_name=_("Hash value"))
 
 	DOCUMENT_LINK_REGEX = r'\[(?P<title>[^\[]+)\]\(document:(?P<id>\d+)\)'
@@ -39,11 +43,8 @@ class Document(PolymorphicModel):
 	class Meta:
 		verbose_name = _("Document")
 		verbose_name_plural = _("Documents")
-		permissions = (
-			(DOCUMENT_VIEW_PERMISSION_NAME, 'User/Group is allowed to view that document'),
-		)
 
-	class LinkPattern (InternalLinkPattern):
+	class LinkPattern(InternalLinkPattern):
 		def url(self, id):
 			document = Document.objects.get(id=id)
 			if document:
@@ -51,7 +52,7 @@ class Document(PolymorphicModel):
 			return ''
 
 	def __str__(self):
-		return self.title
+		return f"{self.title_de} | {self.title_en}"
 
 	def save(self, *args, **kwargs):
 		# make sure that the url is slugified
@@ -105,7 +106,10 @@ class Document(PolymorphicModel):
 
 	@classmethod
 	def generate_new_title(cls):
-		return _("New Page from {}").format(str(datetime.now()))
+		now = str(datetime.now())
+		title_en = "New Page from {}".format(now)
+		title_de = "Neue Seite vom {}".format(now)
+		return title_en, title_de
 
 	@classmethod
 	def generate_default_slug(cls, title):
@@ -203,7 +207,8 @@ class Document(PolymorphicModel):
 
 
 class TemporaryDocumentText(models.Model):
-	text = models.TextField()
+	text_de = models.TextField(blank=True)
+	text_en = models.TextField(blank=True)
 	document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name='document')
 	created = models.DateTimeField(auto_now=True)
 	author = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='temporary_documents')

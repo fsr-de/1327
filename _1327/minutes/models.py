@@ -62,13 +62,10 @@ class MinutesDocument(Document):
 	class Meta(Document.Meta):
 		verbose_name = ungettext_lazy("Minutes", "Minutes", 1)
 		verbose_name_plural = ungettext_lazy("Minutes", "Minutes", 2)
-		permissions = (
-			(MINUTES_VIEW_PERMISSION_NAME, 'User/Group is allowed to view those minutes'),
-		)
 
 	@classmethod
 	def generate_new_title(cls):
-		return _("Minutes")
+		return "Minutes", "Protokoll"
 
 	@classmethod
 	def generate_default_slug(cls, title):

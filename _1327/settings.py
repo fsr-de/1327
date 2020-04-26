@@ -26,6 +26,13 @@ SECRET_KEY = 'usba$w)n_sr3u(u1os05!8t6)m(w0skpx&%n@wwpgi_bzdxt-e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+TESTING = 'test' in sys.argv
+
+# Very helpful but eats a lot of performance on sql-heavy pages.
+# only with DEBUG == True and TESTING == False
+ENABLE_DEBUG_TOOLBAR = False
+ENABLE_DEBUG_TOOLBAR = ENABLE_DEBUG_TOOLBAR and DEBUG and not TESTING
+
 
 ALLOWED_HOSTS = []
 
@@ -45,7 +52,7 @@ FORBIDDEN_URLS = [
 	"admin", "login", "logout", "documents", "information_pages", "minutes", "polls", "list", "view_as", "abbreviation_explanation",
 	"menu_items", "menu_item_delete", "menu_item", "create", "edit", "delete", "update_order", "hijack", "unlinked", "revert", "search", "download",
 	"update", "attachment", "no-direct-download", "autosave", "publish", "render", "delete-cascade", "versions", "permissions", "attachments",
-	"shortlink", "shortlinks", "preview", "get", "change", "autosave", "ws",
+	"shortlink", "shortlinks", "preview", "get", "change", "autosave", "ws", "oidc",
 ]
 
 ANONYMOUS_GROUP_NAME = "Anonymous"
@@ -66,6 +73,11 @@ POLLS_URL_NAME = "polls"
 
 # number of days after which a reminder for unpublished minutes documents is sent
 MINUTES_PUBLISH_REMINDER_DAYS = 6
+
+# List of tuples defining email domains that should be replaced on saving UserProfiles.
+# Emails ending on the first value will have this part replaced by the second value.
+# e.g.: [("institution.example.com", "institution.com")]
+INSTITUTION_EMAIL_REPLACEMENTS = []
 
 
 # Application definition
@@ -93,7 +105,8 @@ INSTALLED_APPS = [
 	'_1327.information_pages',
 	'_1327.minutes',
 	'_1327.polls',
-	'_1327.shortlinks'
+	'_1327.shortlinks',
+	'mozilla_django_oidc',
 ]
 
 MIDDLEWARE = [
@@ -107,11 +120,13 @@ MIDDLEWARE = [
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
 	'django.middleware.locale.LocaleMiddleware',
 	'_1327.user_management.middleware.LoginRedirectMiddleware',
+	'mozilla_django_oidc.middleware.SessionRefresh',
 ]
 
 AUTHENTICATION_BACKENDS = [
 	'django.contrib.auth.backends.ModelBackend',
 	'guardian.backends.ObjectPermissionBackend',
+	'_1327.user_management.authentication.OpenIDAuthenticationBackend',
 	'_1327.user_management.authentication._1327AuthorizationBackend',
 ]
 
@@ -137,8 +152,7 @@ DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer
 ROOT_URLCONF = '_1327.urls'
 APPEND_SLASH = False
 
-WSGI_APPLICATION = '_1327.wsgi.application'
-
+ASGI_APPLICATION = '_1327.routing.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
@@ -151,9 +165,11 @@ DATABASES = {
 }
 
 CHANNEL_LAYERS = {
-	"default": {
-		"BACKEND": "asgiref.inmemory.ChannelLayer",
-		"ROUTING": "_1327.routing.channel_routing",
+	'default': {
+		'BACKEND': 'channels_redis.core.RedisChannelLayer',
+		'CONFIG': {
+			"hosts": [('127.0.0.1', 6379)],
+		},
 	},
 }
 PREVIEW_URL = '/ws/preview'
@@ -192,6 +208,9 @@ LOGOUT_REDIRECT_URL = '/'
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+LOGO_FILE = ""
+FAVICON_FILE = STATIC_URL + "images/favicon.ico"
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -243,12 +262,12 @@ TEMPLATES = [
 				'django.template.context_processors.static',
 				'django.template.context_processors.tz',
 				'django.contrib.messages.context_processors.messages',
-				'_1327.main.context_processors.set_language',
 				'_1327.main.context_processors.menu',
 				'_1327.main.context_processors.can_create_informationpage',
 				'_1327.main.context_processors.can_create_minutes',
 				'_1327.main.context_processors.can_create_poll',
 				'_1327.main.context_processors.can_change_menu_items',
+				'_1327.main.context_processors.image_paths',
 			],
 		},
 	},
@@ -261,17 +280,40 @@ STATIC_PRECOMPILER_COMPILERS = [
 # Set this to the ID of the document that shall be shown as Main Page
 MAIN_PAGE_ID = -1
 
-TESTING = 'test' in sys.argv
+
+# OpenID Login
+# replace 'example.com', OIDC_RP_CLIENT_ID and OIDC_RP_CLIENT_SECRET with real values in localsettings when activating
+ACTIVATE_OPEN_ID_LOGIN = False
+OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = timedelta(weeks=1).total_seconds()
+OIDC_RP_SIGN_ALGO = 'RS256'
+OIDC_USERNAME_ALGO = ''
+OIDC_RP_SCOPES = 'openid email profile'
+LOGOUT_REDIRECT_URL = '/'
+
+OIDC_RP_CLIENT_ID = '1327'
+OIDC_RP_CLIENT_SECRET = '1327-secret'
+
+OIDC_OP_AUTHORIZATION_ENDPOINT = "https://example.com/auth"
+OIDC_OP_TOKEN_ENDPOINT = "https://example.com/token"
+OIDC_OP_USER_ENDPOINT = "https://example.com/me"
+OIDC_OP_JWKS_ENDPOINT = "https://example.com/certs"
+
 
 if TESTING:
 	DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3'}  # use sqlite to speed tests up
 	logging.disable(logging.CRITICAL)  # disable logging, primarily to prevent console spam
 	LANGUAGE_CODE = 'en-US'  # force language to be English while testing
 
-
 # Create a localsettings.py to override settings per machine or user, e.g. for
 # development or different settings in deployments using multiple servers.
 _LOCAL_SETTINGS_FILENAME = os.path.join(BASE_DIR, "localsettings.py")
 if os.path.exists(_LOCAL_SETTINGS_FILENAME):
-	exec(compile(open(_LOCAL_SETTINGS_FILENAME, "rb").read(), _LOCAL_SETTINGS_FILENAME, 'exec'))
+	with open(_LOCAL_SETTINGS_FILENAME, "rb") as f:
+		exec(compile(f.read(), _LOCAL_SETTINGS_FILENAME, 'exec'))
 del _LOCAL_SETTINGS_FILENAME
+
+# Django debug toolbar settings
+if ENABLE_DEBUG_TOOLBAR:
+	INSTALLED_APPS += ['debug_toolbar']
+	MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE
+	INTERNAL_IPS = ['127.0.0.1']

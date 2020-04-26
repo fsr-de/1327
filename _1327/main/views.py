@@ -10,7 +10,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, Http404, redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
+from django.views.i18n import set_language
 from guardian.shortcuts import get_objects_for_user
 
 from _1327.documents.models import Document
@@ -25,6 +27,7 @@ from .models import MenuItem
 from .utils import save_footer_item_order, save_main_menu_item_order
 
 
+@ensure_csrf_cookie
 def index(request):
 	try:
 		document = Document.objects.get(id=settings.MAIN_PAGE_ID)
@@ -178,3 +181,13 @@ def abbreviation_explanation_edit(request):
 		return redirect('abbreviation_explanation')
 	else:
 		return render(request, "abbreviation_explanation.html", dict(formset=formset))
+
+
+@require_POST
+def set_lang(request):
+	if request.user.is_authenticated:
+		user = request.user
+		user.language = request.POST['language']
+		user.save()
+
+	return set_language(request)

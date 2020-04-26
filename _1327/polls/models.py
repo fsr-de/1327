@@ -12,6 +12,7 @@ from reversion import revisions
 
 from _1327.documents.markdown_internal_link_pattern import InternalLinkPattern
 from _1327.documents.models import Document
+from _1327.main.tools import translate
 from _1327.user_management.models import UserProfile
 
 
@@ -41,11 +42,10 @@ class Poll(Document):
 
 	class Meta:
 		permissions = (
-			(POLL_VIEW_PERMISSION_NAME, 'User/Group is allowed to view that poll'),
 			(POLL_VOTE_PERMISSION_NAME, 'User/Group is allowed to participate (vote) in that poll'),
 		)
 
-	class LinkPattern (InternalLinkPattern):
+	class LinkPattern(InternalLinkPattern):
 
 		def url(self, id):
 			poll = Poll.objects.get(id=id)
@@ -55,7 +55,7 @@ class Poll(Document):
 
 	@classmethod
 	def generate_new_title(cls):
-		return _("New Poll")
+		return "New Poll", "Neue Umfrage"
 
 	@classmethod
 	def get_vote_permission(klass):
@@ -137,17 +137,21 @@ revisions.register(Poll, follow=["document_ptr"])
 
 class Choice(models.Model):
 	poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name="choices")
-	text = models.CharField(max_length=255)
-	description = models.TextField(default="", blank=True)
+	text_de = models.CharField(max_length=255, verbose_name=_("Text (German)"))
+	text_en = models.CharField(max_length=255, verbose_name=_("Text (English)"))
+	text = translate(en='text_en', de='text_de')
+	description_de = models.TextField(default="", blank=True, verbose_name=_("Description (German)"))
+	description_en = models.TextField(default="", blank=True, verbose_name=_("Description (English)"))
+	description = translate(en='description_en', de='description_de')
 	votes = models.IntegerField(default=0)
 
-	index = models.IntegerField(verbose_name=_("ordering index"), default=0)
+	index = models.IntegerField(verbose_name=_("Ordering index"), default=0)
 
 	class Meta:
 		ordering = ['index']
 
 	def __str__(self):
-		return self.text
+		return self.text_en
 
 	def percentage(self):
 		participant_count = self.poll.participants.count()

@@ -7,6 +7,8 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
+from _1327.main.utils import clean_email
+
 
 class UserManager(BaseUserManager):
 	def create_user(self, username, password=None, email=None, first_name=None, last_name=None):
@@ -43,6 +45,7 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
 	last_name = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Last name"))
 	created = models.DateTimeField(default=timezone.now)
 	is_active = models.BooleanField(default=True)
+	language = models.CharField(max_length=8, blank=True, null=True, verbose_name=_("language"))
 
 	USERNAME_FIELD = 'username'
 	REQUIRED_FIELDS = []
@@ -52,6 +55,10 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
 	class Meta:
 		verbose_name = _("User profile")
 		verbose_name_plural = _("User profiles")
+
+	def save(self, *args, **kwargs):
+		self.email = clean_email(self.email)
+		super().save(*args, **kwargs)
 
 	def get_full_name(self):
 		if self.first_name and self.last_name:

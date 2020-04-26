@@ -8,7 +8,7 @@ from django.urls import reverse
 from django_webtest import WebTest
 from guardian.shortcuts import assign_perm, get_perms
 from guardian.utils import get_anonymous_user
-from model_mommy import mommy
+from model_bakery import baker
 from reversion import revisions
 from reversion.models import Version
 
@@ -23,20 +23,20 @@ class PollModelTests(TestCase):
 		num_choices = 3
 		num_participants = 5
 
-		user = mommy.make(UserProfile, _quantity=num_participants)
-		poll = mommy.make(Poll, participants=user)
+		user = baker.make(UserProfile, _quantity=num_participants)
+		poll = baker.make(Poll, participants=user)
 
-		mommy.make(Choice, poll=poll, _quantity=num_choices, votes=num_votes)
+		baker.make(Choice, poll=poll, _quantity=num_choices, votes=num_votes)
 
 		expected_percentage = num_votes * 100 / num_participants
 		for choice in poll.choices.all():
 			self.assertAlmostEqual(choice.percentage(), expected_percentage, 2)
 
 	def test_percentage_with_no_participants(self):
-		poll = mommy.make(Poll)
+		poll = baker.make(Poll)
 
 		num_choices = 3
-		mommy.make(Choice, poll=poll, _quantity=num_choices, votes=0)
+		baker.make(Choice, poll=poll, _quantity=num_choices, votes=0)
 
 		expected_percentage = 0
 		for choice in poll.choices.all():
@@ -48,18 +48,18 @@ class PollViewTests(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile, is_superuser=True)
-		cls.poll = mommy.make(
+		cls.user = baker.make(UserProfile, is_superuser=True)
+		cls.poll = baker.make(
 			Poll,
 			start_date=datetime.date.today(),
 			end_date=datetime.date.today() + datetime.timedelta(days=3),
 		)
-		mommy.make(
+		baker.make(
 			Choice,
 			poll=cls.poll,
 			_quantity=3,
 		)
-		cls.group = mommy.make(Group)
+		cls.group = baker.make(Group)
 		cls.poll.set_all_permissions(cls.group)
 		cls.user.groups.add(cls.group)
 		assign_perm("polls.add_poll", cls.group)
@@ -73,11 +73,11 @@ class PollViewTests(WebTest):
 	def test_view_all_running_poll_with_sufficient_permissions(self):
 		response = self.app.get(reverse('polls:index'), user=self.user)
 		self.assertEqual(response.status_code, 200)
-		self.assertIn(self.poll.title.encode('utf-8'), response.body)
+		self.assertIn(self.poll.title_en.encode('utf-8'), response.body)
 		self.assertIn(b"There are no results you can see.", response.body)
 
 	def test_view_all_running_and_not_running(self):
-		finished_poll = mommy.make(
+		finished_poll = baker.make(
 			Poll,
 			start_date=datetime.date.today() - datetime.timedelta(days=10),
 			end_date=datetime.date.today() - datetime.timedelta(days=1),
@@ -85,7 +85,7 @@ class PollViewTests(WebTest):
 
 		response = self.app.get(reverse('polls:index'), user=self.user)
 		self.assertEqual(response.status_code, 200)
-		self.assertIn(self.poll.title.encode('utf-8'), response.body)
+		self.assertIn(self.poll.title_en.encode('utf-8'), response.body)
 		self.assertIn(finished_poll.title.encode('utf-8'), response.body)
 
 	def test_view_all_already_participated(self):
@@ -95,7 +95,7 @@ class PollViewTests(WebTest):
 		response = self.app.get(reverse('polls:index'), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		self.assertIn(b"There are no polls you can vote for.", response.body)
-		self.assertIn(self.poll.title.encode('utf-8'), response.body)
+		self.assertIn(self.poll.title_en.encode('utf-8'), response.body)
 
 	def test_view_all_future_poll(self):
 		self.poll.start_date += datetime.timedelta(days=1)
@@ -117,14 +117,16 @@ class PollViewTests(WebTest):
 		self.assertEqual(response.status_code, 200)
 
 		form = response.forms['document-form']
-		form['choices-0-description'] = 'test description'
+		form['choices-0-description_en'] = 'test description'
 		form['choices-0-index'] = 0
-		form['choices-0-text'] = 'test choice'
-		form['choices-1-description'] = 'test description 2'
+		form['choices-0-text_en'] = 'test choice'
+		form['choices-0-text_de'] = 'test choice de'
+		form['choices-1-description_en'] = 'test description 2'
 		form['choices-1-index'] = 1
-		form['choices-1-text'] = 'test choice 2'
-		form['title'] = 'TestPoll'
-		form['text'] = 'Sample Text'
+		form['choices-1-text_en'] = 'test choice 2'
+		form['choices-1-text_de'] = 'test choice 2 de'
+		form['title_en'] = 'TestPoll'
+		form['text_en'] = 'Sample Text'
 		form['max_allowed_number_of_answers'] = 1
 		form['start_date'] = '2016-01-01'
 		form['end_date'] = '2088-01-01'
@@ -136,7 +138,7 @@ class PollViewTests(WebTest):
 		response = form.submit()
 		self.assertEqual(response.status_code, 302)
 
-		poll = Poll.objects.get(title='TestPoll')
+		poll = Poll.objects.get(title_en='TestPoll')
 		self.assertEqual(poll.choices.count(), 2)
 
 	def test_group_field_hidden_when_user_has_one_group(self):
@@ -147,7 +149,7 @@ class PollViewTests(WebTest):
 		self.assertTrue("Hidden" in str(form.fields['group'][0]))
 
 	def test_group_field_not_hidden_when_user_has_multiple_groups(self):
-		other_group = mommy.make(Group)
+		other_group = baker.make(Group)
 		self.user.groups.add(other_group)
 		assign_perm("polls.add_poll", other_group)
 		response = self.app.get(reverse('documents:create', args=['poll']), user=self.user)
@@ -161,14 +163,16 @@ class PollViewTests(WebTest):
 		self.assertEqual(response.status_code, 200)
 
 		form = response.forms['document-form']
-		form['choices-0-description'] = 'test description'
+		form['choices-0-description_en'] = 'test description'
 		form['choices-0-index'] = 0
-		form['choices-0-text'] = 'test choice'
-		form['choices-1-description'] = 'test description 2'
+		form['choices-0-text_en'] = 'test choice'
+		form['choices-0-text_de'] = 'test choice de'
+		form['choices-1-description_en'] = 'test description 2'
 		form['choices-1-index'] = 1
-		form['choices-1-text'] = 'test choice 2'
-		form['title'] = 'TestPoll'
-		form['text'] = 'Sample Text'
+		form['choices-1-text_en'] = 'test choice 2'
+		form['choices-1-text_de'] = 'test choice 2 de'
+		form['title_en'] = 'TestPoll'
+		form['text_en'] = 'Sample Text'
 		form['max_allowed_number_of_answers'] = 1
 		form['start_date'] = '2016-01-01'
 		form['end_date'] = '2088-01-01'
@@ -179,7 +183,7 @@ class PollViewTests(WebTest):
 		response = form.submit()
 		self.assertEqual(response.status_code, 302)
 
-		poll = Poll.objects.get(title='TestPoll')
+		poll = Poll.objects.get(title_en='TestPoll')
 		self.assertEqual(poll.choices.count(), 2)
 		group_permissions = ["polls.{}".format(name) for name in get_perms(self.group, poll)]
 		self.assertEqual(len(group_permissions), 5)
@@ -189,7 +193,7 @@ class PollViewTests(WebTest):
 		self.assertIn(poll.delete_permission_name, group_permissions)
 
 	def test_create_poll_user_has_no_permission(self):
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 
 		response = self.app.get(reverse('documents:create', args=['poll']), user=user, expect_errors=True)
 		self.assertEqual(response.status_code, 403)
@@ -201,16 +205,21 @@ class PollViewTests(WebTest):
 		response = self.app.get(reverse(self.poll.get_edit_url_name(), args=[self.poll.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		choice_text = 'test choice'
-		choice_description = 'test description'
+		choice_text_en = 'test choice'
+		choice_text_de = 'test choice de'
+		choice_description_en = 'test description'
+		poll_title = 'Title'
 		poll_description = 'Description'
 
 		form = response.forms['document-form']
-		form['choices-3-description'] = choice_description
+		form['choices-3-description_en'] = choice_description_en
 		form['choices-3-index'] = 3
-		form['choices-3-text'] = choice_text
-		form['choices-0-text'] = choice_text
-		form['text'] = poll_description
+		form['choices-3-text_en'] = choice_text_en
+		form['choices-3-text_de'] = choice_text_de
+		form['choices-0-text_en'] = choice_text_en
+		form['choices-0-text_de'] = choice_text_de
+		form['title_en'] = poll_title
+		form['text_en'] = poll_description
 		form['comment'] = 'sample comment'
 
 		self.assertTrue("Hidden" in str(form.fields['vote_groups'][0]))
@@ -219,17 +228,21 @@ class PollViewTests(WebTest):
 		self.assertEqual(response.status_code, 302)
 
 		poll = Poll.objects.get(id=self.poll.id)
-		self.assertEqual(poll.text, poll_description)
+		self.assertEqual(poll.title_en, poll_title)
+		self.assertEqual(poll.text_en, poll_description)
 		self.assertEqual(poll.choices.count(), 4)
-		self.assertEqual(poll.choices.first().text, choice_text)
-		self.assertEqual(poll.choices.last().text, choice_text)
-		self.assertEqual(poll.choices.last().description, choice_description)
+		self.assertEqual(poll.choices.first().text_en, choice_text_en)
+		self.assertEqual(poll.choices.first().text_de, choice_text_de)
+		self.assertEqual(poll.choices.last().text_en, choice_text_en)
+		self.assertEqual(poll.choices.last().text_de, choice_text_de)
+		self.assertEqual(poll.choices.last().description_en, choice_description_en)
 
 	def test_edit_poll_delete_choice(self):
 		response = self.app.get(reverse(self.poll.get_edit_url_name(), args=[self.poll.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
 		form = response.forms['document-form']
+		form['title_en'] = 'title'
 		form['choices-0-DELETE'] = True
 		form['comment'] = 'sample comment'
 
@@ -240,7 +253,7 @@ class PollViewTests(WebTest):
 		self.assertEqual(poll.choices.count(), 2)
 
 	def test_edit_poll_user_has_no_permission(self):
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 
 		response = self.app.get(reverse(self.poll.get_edit_url_name(), args=[self.poll.url_title]), user=user, expect_errors=True)
 		self.assertEqual(response.status_code, 403)
@@ -249,7 +262,7 @@ class PollViewTests(WebTest):
 		self.assertEqual(response.status_code, 403)
 
 	def test_deletion_no_superuser(self):
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 		assign_perm(self.poll.edit_permission_name, user, self.poll)
 
 		response = self.app.get(reverse('documents:get_delete_cascade', args=[self.poll.url_title]), user=user)
@@ -263,7 +276,7 @@ class PollViewTests(WebTest):
 		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), user=self.user)
 		self.assertNotIn("Description", response.body.decode('utf-8'))
 		choice = self.poll.choices.first()
-		choice.description = "test"
+		choice.description_en = "test"
 		choice.save()
 		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), user=self.user)
 		self.assertIn("Description", response.body.decode('utf-8'))
@@ -273,14 +286,14 @@ class PollViewTests(WebTest):
 		self.assertEqual(response.status_code, 200)
 		self.assertIn("glyphicon glyphicon-eye-open", response.body.decode('utf-8'))
 
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 		assign_perm(self.poll.vote_permission_name, user, self.poll)
 		response = self.app.get(reverse('polls:index'), user=user)
 		self.assertEqual(response.status_code, 200)
 		self.assertNotIn("glyphicon glyphicon-eye-open", response.body.decode('utf-8'))
 
 	def test_result_preview_non_superuser(self):
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 		assign_perm(self.poll.vote_permission_name, user, self.poll)
 
 		response = self.app.get(reverse('polls:results_for_admin', args=[self.poll.url_title]), user=user, expect_errors=True)
@@ -292,12 +305,12 @@ class PollViewTests(WebTest):
 
 	def test_view_poll_list_as_student_without_vote_permission_but_view_permission_by_anonymous(self):
 		# 1. create a new poll and give anonymous view permission
-		poll = mommy.make(
+		poll = baker.make(
 			Poll,
 			start_date=datetime.date.today(),
 			end_date=datetime.date.today() + datetime.timedelta(days=3),
 		)
-		mommy.make(
+		baker.make(
 			Choice,
 			poll=poll,
 			_quantity=3,
@@ -306,7 +319,7 @@ class PollViewTests(WebTest):
 		assign_perm(poll.view_permission_name, get_anonymous_user(), poll)
 
 		# 2. create a student, add him to the student group and let him have a look at the polls index page
-		student = mommy.make(UserProfile)
+		student = baker.make(UserProfile)
 		student_group = Group.objects.get(name='Student')
 		student.groups.add(student_group)
 
@@ -320,13 +333,13 @@ class PollResultTests(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile)
-		cls.poll = mommy.make(
+		cls.user = baker.make(UserProfile)
+		cls.poll = baker.make(
 			Poll,
 			start_date=datetime.date.today(),
 			end_date=datetime.date.today() + datetime.timedelta(days=3),
 		)
-		mommy.make(
+		baker.make(
 			Choice,
 			poll=cls.poll,
 			votes=10,
@@ -377,13 +390,13 @@ class PollResultTests(WebTest):
 
 	def test_view_with_description_of_poll(self):
 		self.assign_view_vote_perms(self.user, self.poll)
-		self.poll.text = b"a nice description"
+		self.poll.text_en = b"a nice description"
 		self.poll.participants.add(self.user)
 		self.poll.save()
 
 		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
-		self.assertIn(self.poll.text, response.body)
+		self.assertIn(self.poll.text_en, response.body)
 
 	def test_view_before_poll_has_started(self):
 		self.assign_view_vote_perms(self.user, self.poll)
@@ -414,13 +427,13 @@ class PollVoteTests(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile, is_superuser=True)
-		cls.poll = mommy.make(
+		cls.user = baker.make(UserProfile, is_superuser=True)
+		cls.poll = baker.make(
 			Poll,
 			start_date=datetime.date.today(),
 			end_date=datetime.date.today() + datetime.timedelta(days=3),
 		)
-		mommy.make(
+		baker.make(
 			Choice,
 			poll=cls.poll,
 			votes=10,
@@ -432,7 +445,7 @@ class PollVoteTests(WebTest):
 		self.poll.refresh_from_db()
 
 	def test_vote_with_insufficient_permissions(self):
-		user_without_perms = mommy.make(UserProfile)
+		user_without_perms = baker.make(UserProfile)
 		response = self.app.get(
 			reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]),
 			expect_errors=True,
@@ -440,7 +453,7 @@ class PollVoteTests(WebTest):
 		)
 		self.assertEqual(response.status_code, 403)
 
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 		assign_perm(Poll.VIEW_PERMISSION_NAME, user, self.poll)
 
 		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), user=user, expect_errors=True)
@@ -451,7 +464,7 @@ class PollVoteTests(WebTest):
 		response = self.app.get(reverse(self.poll.get_view_url_name(), args=[self.poll.url_title]), user=self.user)
 		self.assertEqual(response.status_code, 200)
 
-		user = mommy.make(UserProfile)
+		user = baker.make(UserProfile)
 		assign_perm(Poll.VIEW_PERMISSION_NAME, user, self.poll)
 		assign_perm('vote_poll', user, self.poll)
 		user.save()
@@ -594,19 +607,20 @@ class PollEditTests(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile, is_superuser=True)
-		cls.poll = mommy.make(
+		cls.user = baker.make(UserProfile, is_superuser=True)
+		cls.poll = baker.make(
 			Poll,
+			title_en='title',
 			start_date=datetime.date.today(),
 			end_date=datetime.date.today() + datetime.timedelta(days=3),
 		)
-		mommy.make(
+		baker.make(
 			Choice,
 			poll=cls.poll,
 			votes=10,
 			_quantity=3,
 		)
-		cls.group = mommy.make(Group)
+		cls.group = baker.make(Group)
 		cls.poll.set_all_permissions(cls.group)
 		cls.user.groups.add(cls.group)
 		assign_perm("polls.add_poll", cls.group)
@@ -616,10 +630,12 @@ class PollEditTests(WebTest):
 		self.assertEqual(response.status_code, 200)
 
 		form = response.forms['document-form']
-		form['title'] = 'new awesome title'
-		form['choices-0-text'] = 'test choice'
-		form['choices-1-text'] = 'test choice 2'
-		form['text'] = 'Description'
+		form['title_en'] = 'new awesome title'
+		form['choices-0-text_en'] = 'test choice'
+		form['choices-1-text_en'] = 'test choice 2'
+		form['choices-0-text_de'] = 'test choice de'
+		form['choices-1-text_de'] = 'test choice 2 de'
+		form['text_en'] = 'Description'
 		form['comment'] = 'sample comment'
 		form['group'] = self.group.pk
 		response = form.submit().follow()
@@ -673,7 +689,8 @@ class PollEditTests(WebTest):
 
 		form = response.forms['document-form']
 		form['comment'] = 'sample comment'
-		form['choices-3-text'] = 'choice 4'
+		form['choices-3-text_en'] = 'choice 4'
+		form['choices-3-text_de'] = 'choice 4 de'
 
 		form.submit()
 		self.assertEqual(Choice.objects.filter(poll=self.poll).count(), 4)
@@ -685,15 +702,15 @@ class PollRevertionTests(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.user = baker.make(UserProfile, is_superuser=True)
 
-		cls.poll = mommy.prepare(Poll, text='text', start_date=datetime.date.today(), end_date=datetime.date.today())
+		cls.poll = baker.prepare(Poll, text_en='text', start_date=datetime.date.today(), end_date=datetime.date.today())
 		with transaction.atomic(), revisions.create_revision():
 			cls.poll.save()
 			revisions.set_user(cls.user)
 			revisions.set_comment('test version')
 
-		cls.poll.text = 'very goood and nice text'
+		cls.poll.text_en = 'very goood and nice text'
 		with transaction.atomic(), revisions.create_revision():
 			cls.poll.save()
 			revisions.set_user(cls.user)

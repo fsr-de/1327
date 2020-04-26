@@ -7,7 +7,7 @@ from django_webtest import WebTest
 from guardian.core import ObjectPermissionChecker
 from guardian.shortcuts import assign_perm
 import markdown
-from model_mommy import mommy
+from model_bakery import baker
 from reversion.models import Version
 
 from _1327.main.utils import slugify
@@ -25,19 +25,19 @@ class TestEditor(WebTest):
 	def setUpTestData(cls):
 		num_participants = 8
 
-		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.user = baker.make(UserProfile, is_superuser=True)
 		staff_group = Group.objects.get(name=settings.STAFF_GROUP_NAME)
 		cls.user.groups.add(staff_group)
-		cls.moderator = mommy.make(UserProfile)
-		cls.participants = mommy.make(UserProfile, _quantity=num_participants)
-		cls.document = mommy.make(MinutesDocument, participants=cls.participants, moderator=cls.moderator)
+		cls.moderator = baker.make(UserProfile)
+		cls.participants = baker.make(UserProfile, _quantity=num_participants)
+		cls.document = baker.make(MinutesDocument, participants=cls.participants, moderator=cls.moderator)
 		assign_perm("minutes.add_minutesdocument", staff_group)
 
 	def test_get_editor(self):
 		"""
 		Test if the edit page shows the correct content
 		"""
-		user_without_perms = mommy.make(UserProfile)
+		user_without_perms = baker.make(UserProfile)
 		response = self.app.get(
 			reverse(self.document.get_edit_url_name(), args=[self.document.url_title]),
 			expect_errors=True,
@@ -49,8 +49,8 @@ class TestEditor(WebTest):
 		self.assertEqual(response.status_code, 200)
 
 		form = response.forms['document-form']
-		self.assertEqual(form.get('title').value, self.document.title)
-		self.assertEqual(form.get('text').value, self.document.text)
+		self.assertEqual(form.get('title_en').value, self.document.title_en)
+		self.assertEqual(form.get('text_en').value, self.document.text_en)
 		self.assertEqual(int(form.get('moderator').value), self.document.moderator.id)
 		self.assertEqual(sorted([int(id) for id in form.get('participants').value]), sorted([participant.id for participant in self.document.participants.all()]))
 		self.assertTrue("Hidden" in str(form.fields['group'][0]))
@@ -59,25 +59,25 @@ class TestEditor(WebTest):
 		"""
 		Test if the publish and permission buttons are displayed on the correct minutes states
 		"""
-		unpublished_document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.UNPUBLISHED)
+		unpublished_document = baker.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.UNPUBLISHED)
 		unpublished_document.set_all_permissions(Group.objects.get(name="Staff"))
 		response = self.app.get(reverse(unpublished_document.get_view_url_name(), args=[unpublished_document.url_title]), user=self.user)
 		self.assertIn("Publish", response)
 		self.assertNotIn("Permissions", response)
 
-		published_document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.PUBLISHED)
+		published_document = baker.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.PUBLISHED)
 		published_document.set_all_permissions(Group.objects.get(name="Staff"))
 		response = self.app.get(reverse(published_document.get_view_url_name(), args=[published_document.url_title]), user=self.user)
 		self.assertNotIn("Publish", response)
 		self.assertNotIn("Permissions", response)
 
-		internal_document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.INTERNAL)
+		internal_document = baker.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.INTERNAL)
 		internal_document.set_all_permissions(Group.objects.get(name="Staff"))
 		response = self.app.get(reverse(internal_document.get_view_url_name(), args=[internal_document.url_title]), user=self.user)
 		self.assertNotIn("Publish", response)
 		self.assertNotIn("Permissions", response)
 
-		custom_document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.CUSTOM)
+		custom_document = baker.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.CUSTOM)
 		custom_document.set_all_permissions(Group.objects.get(name="Staff"))
 		response = self.app.get(reverse(custom_document.get_view_url_name(), args=[custom_document.url_title]), user=self.user)
 		self.assertNotIn("Publish", response)
@@ -89,7 +89,7 @@ class TestEditor(WebTest):
 		"""
 		staff_group = Group.objects.get(name=settings.STAFF_GROUP_NAME)
 
-		document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.UNPUBLISHED)
+		document = baker.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.UNPUBLISHED)
 		document.set_all_permissions(staff_group)
 
 		# The 1 sets the state to published
@@ -121,7 +121,7 @@ class TestEditor(WebTest):
 		"""
 		staff_group = Group.objects.get(name=settings.STAFF_GROUP_NAME)
 
-		document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.UNPUBLISHED)
+		document = baker.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.UNPUBLISHED)
 		document.set_all_permissions(staff_group)
 
 		# The 4 sets the state to published_student
@@ -154,7 +154,7 @@ class TestEditor(WebTest):
 		staff_group = Group.objects.get(name=settings.STAFF_GROUP_NAME)
 		university_group = Group.objects.get(name=settings.UNIVERSITY_GROUP_NAME)
 
-		document = mommy.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.UNPUBLISHED)
+		document = baker.make(MinutesDocument, participants=self.participants, moderator=self.moderator, state=MinutesDocument.UNPUBLISHED)
 		document.set_all_permissions(staff_group)
 
 		assign_perm(document.view_permission_name, university_group, document)
@@ -180,9 +180,9 @@ class TestMinutesList(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile, is_superuser=True)
-		cls.minutes_document = mommy.make(MinutesDocument)
-		cls.group = mommy.make(Group)
+		cls.user = baker.make(UserProfile, is_superuser=True)
+		cls.minutes_document = baker.make(MinutesDocument)
+		cls.group = baker.make(Group)
 		cls.minutes_document.set_all_permissions(cls.group)
 
 	def test_list_permission_display(self):
@@ -232,7 +232,7 @@ class TestMinutesList(WebTest):
 		self.assertIn('No minutes available.', response.body.decode('utf-8'))
 		self.assertNotIn('You might have to', response.body.decode('utf-8'))
 
-		document = mommy.make(MinutesDocument)
+		document = baker.make(MinutesDocument)
 		document.set_all_permissions(self.group)
 		document.save()
 
@@ -247,22 +247,45 @@ class TestSearchMinutes(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile, is_superuser=True)
+		cls.user = baker.make(UserProfile, is_superuser=True)
 
 		text1 = "both notO \n Case notB notO \n two notB notO \n two lines notB notO"
 		text2 = "in both minutes notO \n one notB \n substring notB notO"
 		text3 = "this will never show up notB notO"
 		text4 = "<script>alert(Hello);</script> something else"
 
-		cls.minutes_document1 = mommy.make(MinutesDocument, text=text1, title="MinutesOne")
-		cls.minutes_document2 = mommy.make(MinutesDocument, text=text2, title="MinutesTwo")
-		cls.minutes_document3 = mommy.make(MinutesDocument, text=text3, title="MinutesThree")
-		cls.minutes_document4 = mommy.make(MinutesDocument, text=text4, title="MinutesFour")
-		cls.group = mommy.make(Group)
+		text_en = "This is the English Case"
+
+		cls.minutes_document1 = baker.make(MinutesDocument, text_en=text_en, text_de=text1, title_en="MinutesOne", title_de="MinutesOne")
+		cls.minutes_document2 = baker.make(MinutesDocument, text_de=text2, title_en="MinutesTwo", title_de="MinutesTwo")
+		cls.minutes_document3 = baker.make(MinutesDocument, text_de=text3, title_en="MinutesThree", title_de="MinutesThree")
+		cls.minutes_document4 = baker.make(MinutesDocument, text_de=text4, title_en="MinutesFour", title_de="MinutesFour")
+		cls.group = baker.make(Group)
 		cls.minutes_document1.set_all_permissions(cls.group)
 		cls.minutes_document2.set_all_permissions(cls.group)
 		cls.minutes_document3.set_all_permissions(cls.group)
 		cls.minutes_document4.set_all_permissions(cls.group)
+
+	def test_multiple_languages(self):
+		response = self.app.post(reverse('set_lang'), params={'language': 'de'}, user=self.user)
+		self.assertEqual(response.status_code, 302)
+
+		search_string = 'Case'
+		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
+
+		form = response.forms[0]
+		form.set('search_phrase', search_string)
+
+		response = form.submit()
+
+		self.assertIn('MinutesOne', response)
+		self.assertNotIn('MinutesTwo', response)
+		self.assertNotIn('MinutesThree', response)
+
+		self.assertContains(response, search_string, count=2)
+
+		self.assertIn("<li><i>This is the English <b>Case</b></i></li>", response)
+		self.assertIn("<li> <b>Case</b> notB notO </li>", response)
 
 	def test_two_minutes_results(self):
 		search_string = "both"
@@ -380,13 +403,13 @@ class TestNewMinutesDocument(WebTest):
 
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = mommy.make(UserProfile)
-		cls.group = mommy.make(Group)
+		cls.user = baker.make(UserProfile)
+		cls.group = baker.make(Group)
 		cls.user.groups.add(cls.group)
 		assign_perm("minutes.add_minutesdocument", cls.group)
 
 		# add another user to group
-		cls.group.user_set.add(mommy.make(UserProfile))
+		cls.group.user_set.add(baker.make(UserProfile))
 
 	def test_save_first_minutes_document(self):
 		# get the editor page and save the site
@@ -395,7 +418,7 @@ class TestNewMinutesDocument(WebTest):
 
 		form = response.forms['document-form']
 		text = "Lorem ipsum"
-		form.set('text', text)
+		form.set('text_en', text)
 		form.set('comment', text)
 		form.set('url_title', slugify(text))
 
@@ -409,11 +432,11 @@ class TestNewMinutesDocument(WebTest):
 		self.assertEqual(len(versions), 1)
 
 		# check whether the properties of the new document are correct
-		self.assertEqual(document.title, MinutesDocument.generate_new_title())
+		self.assertEqual((document.title_en, document.title_de), MinutesDocument.generate_new_title())
 		self.assertEqual(document.author, self.user)
 		self.assertEqual(document.moderator, self.user)
-		self.assertEqual(document.text, text)
-		self.assertEqual(versions[0].revision.comment, text)
+		self.assertEqual(document.text_en, text)
+		self.assertEqual(versions[0].revision.get_comment(), text)
 		self.assertListEqual(list(document.participants.all().order_by('username')), list(self.group.user_set.all().order_by('username')))
 
 		checker = ObjectPermissionChecker(self.group)
@@ -421,8 +444,8 @@ class TestNewMinutesDocument(WebTest):
 
 	def test_save_another_minutes_document(self):
 		test_title = "Test title"
-		test_moderator = mommy.make(UserProfile)
-		first_document = mommy.make(MinutesDocument, title=test_title, moderator=test_moderator)
+		test_moderator = baker.make(UserProfile)
+		first_document = baker.make(MinutesDocument, title_en=test_title, moderator=test_moderator)
 		first_document.set_all_permissions(self.group)
 
 		# get the editor page and save the site
@@ -431,7 +454,7 @@ class TestNewMinutesDocument(WebTest):
 
 		form = response.forms['document-form']
 		text = "Lorem ipsum"
-		form.set('text', text)
+		form.set('text_en', text)
 		form.set('comment', text)
 		form.set('url_title', slugify(text))
 
@@ -441,10 +464,10 @@ class TestNewMinutesDocument(WebTest):
 		document = MinutesDocument.objects.get(url_title=slugify(text))
 
 		# check whether the properties of the new document are correct
-		self.assertEqual(document.title, test_title)  # should be taken from previous minutes document
+		self.assertEqual(document.title_en, test_title)  # should be taken from previous minutes document
 		self.assertEqual(document.moderator, test_moderator)  # should be taken from previous minutes document
 		self.assertEqual(document.author, self.user)
-		self.assertEqual(document.text, text)
+		self.assertEqual(document.text_en, text)
 		self.assertListEqual(list(document.participants.all().order_by('username')), list(self.group.user_set.all().order_by('username')))
 
 	def test_group_field_hidden_when_user_has_one_group(self):
@@ -455,7 +478,7 @@ class TestNewMinutesDocument(WebTest):
 		self.assertTrue("Hidden" in str(form.fields['group'][0]))
 
 	def test_group_field_not_hidden_when_user_has_multiple_groups(self):
-		other_group = mommy.make(Group)
+		other_group = baker.make(Group)
 		self.user.groups.add(other_group)
 		assign_perm("minutes.add_minutesdocument", other_group)
 		response = self.app.get(reverse('documents:create', args=['minutesdocument']) + '?group={}'.format(self.group.id), user=self.user)

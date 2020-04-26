@@ -1,16 +1,8 @@
 from django.conf import settings
-from django.utils import translation
 from guardian.shortcuts import get_objects_for_user
 
 from _1327.main.models import MenuItem
 from . import models
-
-
-def set_language(request):
-	user_language = settings.ACTIVE_LANGUAGE  # always set to German
-	translation.activate(user_language)
-	request.session[translation.LANGUAGE_SESSION_KEY] = user_language
-	return {'LANGUAGE_CODE': user_language}
 
 
 def menu(request):
@@ -75,3 +67,10 @@ def can_create_poll(request):
 
 def can_change_menu_items(request):
 	return {'CAN_CHANGE_MENU_ITEMS': request.user.is_superuser or len(get_objects_for_user(request.user, MenuItem.CHANGE_CHILDREN_PERMISSION_NAME, klass=MenuItem)) > 0}
+
+
+def image_paths(request):
+	return {
+		'LOGO_FILE': settings.LOGO_FILE,
+		'FAVICON_FILE': settings.FAVICON_FILE
+	}

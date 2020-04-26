@@ -1,17 +1,20 @@
-channels == 1.1.8
+channels == 2.3.1
+channels_redis == 2.4.1
 
-Django >= 2.0, < 2.1
+Django >= 2.2, < 2.3
 django-static-precompiler == 1.8.2
 
-django-extensions == 2.1.0
+django-extensions == 2.2.1
 
-django-bootstrap3 == 10.0.1
+django-bootstrap3 == 11.1.0
 django-admin-bootstrapped == 2.5.7
-django-reversion == 2.0.13
-django-guardian == 1.4.9
+django-reversion == 3.0.1
+django-guardian == 2.0.0
 django-hijack == 2.1.10
 django-compat == 1.0.15
-django-polymorphic == 2.0.2
+django-polymorphic == 2.1.2
 django-sendfile == 0.3.11
 
-Markdown == 2.6.11
+Markdown == 3.1.1
+
+mozilla-django-oidc == 1.2.3
