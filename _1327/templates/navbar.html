@@ -64,9 +64,10 @@
 						{% endif %}
 						{% if CAN_CREATE_MINUTES %}
 							{% if CAN_CREATE_MINUTES|length > 1 %}
+								<div class="dropdown-divider"></div>
 								<h6 class="dropdown-header">{% trans "Create minutes for" %}</h6>
 								{% for group in CAN_CREATE_MINUTES %}
-									<a class="dropdown-item"
+									<a class="dropdown-item pl-5"
 									   href="{% url 'documents:create' 'minutesdocument' %}?group={{ group.id }}">{{ group.name }}</a>
 								{% endfor %}
 							{% else %}
