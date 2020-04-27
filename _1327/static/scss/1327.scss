@@ -586,6 +586,23 @@ img.emoji {
 	}
 }
 
+.btn-default {
+	border-color: $gray-light;
+}
+
+.btn-default:hover {
+	border-color: $gray-dark;
+}
+
+.btn-warning:hover {
+	color: $black !important;
+}
+
+.btn-danger {
+	color: $white !important;
+	border-color: $gray-dark;
+}
+
 .main-container {
 	box-shadow: 0 0 7px 2px $gray;
 }

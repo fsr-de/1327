@@ -35,6 +35,22 @@ $brand-warning:          $hpi-yellow;
 $brand-danger:           $hpi-red;
 
 
+// Theme colors
+
+$theme-colors: (
+    primary: $gray,
+	default: $gray-lighter,
+    secondary: $gray-lighter,
+    success: $green,
+    info: $hpi-blue,
+    warning: $hpi-yellow,
+    danger: $hpi-red,
+    light: $gray-lighter,
+    dark: $gray-dark
+);
+
+
+
 //== Scaffolding
 //
 //## Settings for some of the most global styles.
