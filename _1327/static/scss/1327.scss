@@ -159,9 +159,14 @@ div#wrapper {
 .navbar-toggle-brand.navbar-toggle:focus {
 	background-color: $gray;
 }
+.navbar-toggler-icon {
+	color: $white;
+	padding-top: 0.3rem;
+}
 .navbar {
 	margin: 0px;
 	border: 0px;
+	padding: 0px;
 	font-size: 16px;
 	color: $gray-lighter;
 	background-color: $gray-dark;
@@ -175,16 +180,21 @@ div#wrapper {
 	ul.nav {
 		width: 970px;
 	}
+	.navbar-nav > li > a {
+	padding: 15px;
+	color: $gray-lighter;
+	line-height: 20px;
+}
 }
 @media (min-width: 1200px) {
 	ul.nav {
 		width: 1170px;
 	}
 }
-.navbar :not(.dropdown-menu-right) > a {
-	padding: 15px;
-	color: $gray-lighter;
-	line-height: 20px;
+@media (max-width: 991px) {
+	.nav-link {
+		padding: 0px 0px 0px 0.5rem !important;
+	}
 }
 .navbar-nav > li > a.navbar-brand {
 	padding: 0;
@@ -312,12 +322,11 @@ div#wrapper {
 	display: block;
 }
 nav .dropdown-menu {
-	display: block;
-	visibility: hidden;
+	display: none;
 	transition-delay: 0.2s;
 }
 nav li:hover > .dropdown-menu {
-	visibility: visible;
+	display: block;
 	transition-delay: 0.2s;
 }
 .menu-level-2 .menu-hover > a {

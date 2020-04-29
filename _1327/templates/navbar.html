@@ -9,7 +9,7 @@
 	{% endif %}
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainNavigation"
 			aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
-		<span class="navbar-toggler-icon"></span>
+		<span class="navbar-toggler-icon"><span class="fa fa-bars"></span></span>
 	</button>
 
 	<div class="collapse navbar-collapse" id="mainNavigation">
@@ -17,7 +17,7 @@
 			{% for item in main_menu %}
 				{% if item.submenu %}
 					<li class="nav-item dropdown{% if item.selected %} active{% endif %}">
-						<a href="{{ item.get_url }}">{{ item.title }} <span class="caret"></span></a>
+						<a class="nav-link dropdown-toggle" href="{{ item.get_url }}">{{ item.title }} <span class="caret"></span></a>
 						<ul class="dropdown-menu menu-level-2">
 							{% for subitem in item.submenu %}
 								{% if subitem.submenu %}
@@ -40,7 +40,7 @@
 					</li>
 				{% else %}
 					<li{% if item.selected %} class="active"{% endif %}>
-						<a href="{{ item.get_url }}">{{ item.title }}</a>
+						<a class="nav-link" href="{{ item.get_url }}">{{ item.title }}</a>
 					</li>
 				{% endif %}
 			{% endfor %}
