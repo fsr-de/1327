@@ -11,8 +11,8 @@ from model_bakery import baker
 from reversion.models import Version
 
 from _1327.main.utils import slugify
-from _1327.minutes.markdown_minutes_extensions import EnterLeavePreprocessor, QuorumPrepocessor, StartEndPreprocessor, \
-	BreakPreprocessor, VotePreprocessor
+from _1327.minutes.markdown_minutes_extensions import BreakPreprocessor, EnterLeavePreprocessor, QuorumPrepocessor, \
+	StartEndPreprocessor, VotePreprocessor
 
 from _1327.minutes.models import MinutesDocument
 from _1327.user_management.models import UserProfile

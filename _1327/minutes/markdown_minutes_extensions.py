@@ -65,8 +65,8 @@ class BreakPreprocessor(MinutesBasePreprocessor):
 		time_end_break = match.group(2)
 		
 		return _("*Meeting break: {time_start_break} - {time_end_break}*").format(
-			time_start_break = time_start_break,
-			time_end_break = time_end_break,
+			time_start_break=time_start_break,
+			time_end_break=time_end_break,
 		)
 
 
