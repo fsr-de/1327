@@ -83,7 +83,6 @@ INSTITUTION_EMAIL_REPLACEMENTS = []
 # Application definition
 
 INSTALLED_APPS = [
-	'django_admin_bootstrapped',
 	'django.contrib.admin',
 	'django.contrib.auth',
 	'django.contrib.contenttypes',
@@ -146,8 +145,6 @@ BOOTSTRAP3 = {
 	'jquery_url': None,
 	'base_url': None,
 }
-
-DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
 
 ROOT_URLCONF = '_1327.urls'
 APPEND_SLASH = False
