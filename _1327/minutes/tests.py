@@ -199,7 +199,7 @@ class TestMinutesList(WebTest):
 		self.minutes_document.state = MinutesDocument.PUBLISHED
 		self.minutes_document.save()
 		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
-		self.assertIn("fa-education", response)
+		self.assertIn("fa-university", response)
 
 		self.minutes_document.state = MinutesDocument.INTERNAL
 		self.minutes_document.save()
