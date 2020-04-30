@@ -6,7 +6,7 @@
 		<ul class="breadcrumb">
 			<li><a href="{% url 'admin:index' %}">{% trans 'Home' %}</a></li>
 			{% for app in app_list %}
-				<li>{% render_app_name app %}</li>
+				<li>{{ app.name }}</li>
 			{% endfor %}
 		</ul>
 	{% endblock %}
@@ -14,7 +14,7 @@
 
 {% block content_title %}
 {% for app in app_list %}
-{% render_app_name app %} {% trans "administration" %}
+{{ app.name }} {% trans "administration" %}
 {% endfor %}
 {% endblock %}
 

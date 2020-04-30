@@ -1,8 +1,6 @@
 # from https://github.com/django-admin-bootstrapped/django-admin-bootstrapped/blob/master/django_admin_bootstrapped/templatetags/bootstrapped_goodies_tags.py
-from importlib import import_module
-
 from django import template
-from django.conf import settings
+from django.template import TemplateDoesNotExist
 from django.template.loader import render_to_string
 
 
@@ -14,9 +12,10 @@ def render_with_template_if_exist(context, template, fallback):
     text = fallback
     try:
         text = render_to_string(template, context)
-    except:
+    except TemplateDoesNotExist:
         pass
     return text
+
 
 @register.filter(name='form_fieldset_column_width')
 def form_fieldset_column_width(form):
@@ -32,18 +31,6 @@ def form_fieldset_column_width(form):
         return 12 // width
     except ValueError:
         return 12
-
-@register.simple_tag(takes_context=True)
-def render_app_name(context, app, template="/admin_app_name.html"):
-    """ Render the application name using the default template name. If it cannot find a
-        template matching the given path, fallback to the application name.
-    """
-    try:
-        template = app['app_label'] + template
-        text = render_to_string(template, context)
-    except:
-        text = app['name']
-    return text
 
 
 @register.simple_tag(takes_context=True)
@@ -67,6 +54,6 @@ def render_app_description(context, app, fallback="", template="/admin_app_descr
     try:
         template = app['app_label'] + template
         text = render_to_string(template, context)
-    except:
+    except TemplateDoesNotExist:
         text = fallback
     return text
