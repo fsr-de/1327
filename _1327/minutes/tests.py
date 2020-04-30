@@ -194,7 +194,7 @@ class TestMinutesList(WebTest):
 		self.minutes_document.state = MinutesDocument.UNPUBLISHED
 		self.minutes_document.save()
 		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
-		self.assertIn("fa-alert", response)
+		self.assertIn("fa-exclamation-triangle", response)
 
 		self.minutes_document.state = MinutesDocument.PUBLISHED
 		self.minutes_document.save()
