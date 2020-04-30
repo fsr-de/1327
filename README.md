@@ -23,7 +23,14 @@ Freshly created code needs to be tested - besides our use of unit tests, linting
 One can simply set up an execution environment using `vagrant`:
 
 ```bash
-vagrant up --provision
+vagrant up
+```
+
+To connect to the vagrant virtual machine and start the application run:
+
+```bash
+vagrant ssh
+./manage.py run
 ```
 
 At that point, one created a vagrant box, running a [PostgreSQL](https://www.postgresql.org/) database server, [Apache](https://httpd.apache.org/) web server and the [Django](https://www.djangoproject.com/) application. The contents are available on the default port `8000`, which allows one to access the website at `http://localhost:8000`. To create a new superuser for the application, execute `vagrant ssh` in the project directory and trigger the django user management system:
