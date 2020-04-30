@@ -63,7 +63,7 @@ class BreakPreprocessor(MinutesBasePreprocessor):
 	def breakify(self, match):
 		time_start_break = match.group(1)
 		time_end_break = match.group(2)
-		
+
 		return _("*Meeting break: {time_start_break} - {time_end_break}*").format(
 			time_start_break=time_start_break,
 			time_end_break=time_end_break,
