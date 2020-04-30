@@ -1506,10 +1506,10 @@ class TestPermissionOverview(WebTest):
 		Test if the permissions are correctly shown in the sidebar
 		"""
 		icons = [
-			"glyphicon-globe permission-icon-view",
-			"glyphicon-education permission-icon-view",
-			"glyphicon-user permission-icon-view",
-			"glyphicon-briefcase permission-icon-edit"
+			"fa-globe permission-icon-view",
+			"fa-university permission-icon-view",
+			"fa-user permission-icon-view",
+			"fa-briefcase permission-icon-edit"
 		]
 		for document in self.documents:
 			response = self.app.get(reverse(document.get_edit_url_name(), args=[document.url_title]), user=self.user)
@@ -1526,10 +1526,10 @@ class TestPermissionOverview(WebTest):
 			remove_perm(document.edit_permission_name, self.staff_group, document)
 
 		icons = [
-			"glyphicon-globe permission-icon-none",
-			"glyphicon-education permission-icon-view",
-			"glyphicon-user permission-icon-edit",
-			"glyphicon-briefcase permission-icon-view"
+			"fa-globe permission-icon-none",
+			"fa-university permission-icon-view",
+			"fa-user permission-icon-edit",
+			"fa-briefcase permission-icon-view"
 		]
 		for document in self.documents:
 			response = self.app.get(reverse(document.get_edit_url_name(), args=[document.url_title]), user=self.user)
