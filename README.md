@@ -10,7 +10,7 @@ A student representatives website. This project is live! You can see a working i
 
 ## Development
 
-To be able to contribute to 1327, one needs to get the source code with all dependencies. Please note, that submodules for *bootstrap*, *font-awesome* and *bootstrap-markdown* are in use:
+To be able to contribute to 1327, you need to get the source code with all dependencies. Please note, that submodules for *bootstrap*, *font-awesome* and *bootstrap-markdown* are in use:
 
 ```bash
 git clone https://github.com/fsr-itse/1327.git
@@ -20,24 +20,23 @@ Freshly created code needs to be tested - besides our use of unit tests, linting
 
 ### Vagrant
 
-One can simply set up an execution environment using `vagrant`:
+You can simply set up an execution environment using `vagrant`:
 
 ```bash
 vagrant up
 ```
 
-To connect to the vagrant virtual machine and start the application run:
+This will set up a virtual machine and run it. Running this for the first time might take a while.
+
+To connect to it and start the application do:
 
 ```bash
 vagrant ssh
+# This will take one inside the virtual machine
 ./manage.py run
 ```
 
-At that point, one created a vagrant box, running a [PostgreSQL](https://www.postgresql.org/) database server, [Apache](https://httpd.apache.org/) web server and the [Django](https://www.djangoproject.com/) application. The contents are available on the default port `8000`, which allows one to access the website at `http://localhost:8000`. To create a new superuser for the application, execute `vagrant ssh` in the project directory and trigger the django user management system:
-
-```bash
-./manage.py createsuperuser --username=root
-```
+At that point you created a vagrant box, running a [PostgreSQL](https://www.postgresql.org/) database server, [Apache](https://httpd.apache.org/) web server and the [Django](https://www.djangoproject.com/) application. The contents are available on the default port `8000`, which allows you to access the website at `http://localhost:8000`.
 
 To login with your local user instead of the default OpenID login, you have to visit `http://localhost:8000/login?local_login=1`
 
@@ -48,10 +47,10 @@ Another way of executing this django application is the use of a virtual python 
 ```bash
 virtualenv -p /usr/bin/python3 env
 source env/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 python manage.py migrate
-python manage.py createsuperuser --username=root
-python manage.py runserver 0.0.0.0:8000
+python manage.py createsuperuser --username=admin
+python manage.py run
 ```
 
 After you're done with these steps, you'll need to install all static dependencies
@@ -64,7 +63,6 @@ via [Yarn](https://yarnpkg.com/lang/en/).
 
 For deploying on a single machine 1327 you'll need to install all requirements from `requirements-deploy.txt`, and you can follow these [instructions](https://github.com/fsr-itse/1327/wiki/Deployment), for setting up a webserver and starting all scripts using a Process Control System, if you like.
 You'll also need to setup yarn, as indicated in the last section.
-
 
 ## License
 
