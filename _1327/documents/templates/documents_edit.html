@@ -649,14 +649,22 @@
 								const oldSelectionStartPosition = markdownEditor[0].selectionStart;
 								const oldSelectionEndPosition = markdownEditor[0].selectionEnd;
 								
+								// set cursor position to absolute insert position
 								markdownEditor[0].selectionStart = unfinishedBreakPosition + relativeInsertPosition;
 								markdownEditor[0].selectionEnd = unfinishedBreakPosition + relativeInsertPosition;
-								
+								const currentSelectionStartPosition = markdownEditor[0].selectionStart;
+
 								textToInsert = currentTime;
 								insertText(textToInsert, markdownEditor);
-								
-								markdownEditor[0].selectionStart = oldSelectionStartPosition; // cursor stays at its old position
+
+								// cursor shall stay at its old (relative) position
+								markdownEditor[0].selectionStart = oldSelectionStartPosition;
 								markdownEditor[0].selectionEnd = oldSelectionEndPosition;
+								if (oldSelectionStartPosition > currentSelectionStartPosition) {	
+									markdownEditor[0].selectionStart += textToInsert.length;
+									markdownEditor[0].selectionEnd += textToInsert.length;
+								}
+
 							} else if (startedMeeting < 0) { // meeting only needs to be started once
 								textToInsert = "|start|(" + currentTime + ")";
 								insertText(textToInsert, markdownEditor);
