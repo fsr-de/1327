@@ -30,7 +30,7 @@ TESTING = 'test' in sys.argv
 
 # Very helpful but eats a lot of performance on sql-heavy pages.
 # only with DEBUG == True and TESTING == False
-ENABLE_DEBUG_TOOLBAR = True
+ENABLE_DEBUG_TOOLBAR = False
 ENABLE_DEBUG_TOOLBAR = ENABLE_DEBUG_TOOLBAR and DEBUG and not TESTING
 
 
