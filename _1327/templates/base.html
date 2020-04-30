@@ -80,7 +80,7 @@
 
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$('[data-toggle="tooltip"]').tooltip();
+			$('[data-toggle="tooltip"]').not(".hidden-print").tooltip();
 			$('.headline-box').tooltip({
 				delay: { "show": 1500, "hide": 0 },
 				placement: "bottom",
@@ -104,7 +104,6 @@
 				}, 800);
 				return false;
 			});
-			$('#back-to-top').tooltip('show');
 
 			// highlight parent of subsubmenuitem
 			$('ul .dropdown-menu').on('mouseover', function(){
