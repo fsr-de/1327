@@ -148,7 +148,16 @@ def prepare_versions(document):
 	# prepare data for the template
 	version_list = []
 	for id, version in enumerate(versions):
-		version_list.append((id, version, json.dumps(version.field_dict['text_de']).strip('"'), json.dumps(version.field_dict['text_en']).strip('"')))
+		text_de = version.field_dict['text_de']
+		text_en = version.field_dict['text_en']
+
+		if text_de == "" and text_en == "":  # reversions are old and text was formerly saved in "text" field
+			base_document = Version.objects.get_for_object(document.document_ptr).reverse()[id]
+			parsed_data = json.loads(base_document.serialized_data)
+			text_de = parsed_data[0]["fields"]["text"]
+
+		# TODO: find out why there is a json.dumps here
+		version_list.append((id, version, json.dumps(text_de).strip('"'), json.dumps(text_en).strip('"')))
 
 	return version_list
 
