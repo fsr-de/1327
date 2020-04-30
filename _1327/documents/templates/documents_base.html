@@ -36,7 +36,7 @@
 				</div>
 			{% endif %}
 			{% with edit_groups=permission_overview|permission_filter:'edit'|join:', ' view_groups=permission_overview|permission_filter:'view'|join:', '%}
-				<div class="permission-icons hidden-print" data-toggle="tooltip" data-placement="bottom" data-container="body" data-html="true" title="<b>{% trans 'Edit' %}:</b> {% if edit_groups %}{{ edit_groups }}{% else %}&mdash;{% endif %}</br><b>{% trans 'View' %}:</b> {% if view_groups %}{{ view_groups }}{% else %}&mdash;{% endif %}">
+				<div class="permission-icons" data-toggle="tooltip" data-placement="bottom" data-container="body" data-html="true" title="<b>{% trans 'Edit' %}:</b> {% if edit_groups %}{{ edit_groups }}{% else %}&mdash;{% endif %}</br><b>{% trans 'View' %}:</b> {% if view_groups %}{{ view_groups }}{% else %}&mdash;{% endif %}">
 					<span class="fa fa-globe permission-icon-{{ permission_overview.0.1 }}" aria-hidden="true"></span>
 					<span class="fa fa-university permission-icon-{{ permission_overview.1.1 }}" aria-hidden="true"></span>
 					<span class="fa fa-user permission-icon-{{ permission_overview.2.1 }}" aria-hidden="true"></span>
