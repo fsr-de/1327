@@ -24,9 +24,8 @@
 			{% if document.show_permissions_editor %}<a class="btn btn-sm btn-sidebar {% if active_page == 'permissions' %}btn-warning{% else %}btn-default{% endif %}" href="{% url document.get_permissions_url_name document.url_title %}" role="tab">{% trans "Permissions" %}</a>{% endif %}
 			{% if document.show_publish_button %}
 				<div class="btn-group btn-sidebar hidden-print">
-					<a class="btn btn-sm btn-default col-xs-9" href="{% url document.get_publish_url_name document.url_title 1 %}" role="tab">{% trans "Publish" %}</a>
-					<button type="button" class="btn btn-sm btn-default col-xs-3 dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-						<span class="caret"></span>
+					<a class="btn btn-sm btn-default dropdown-main-btn" href="{% url document.get_publish_url_name document.url_title 1 %}" role="tab">{% trans "Publish" %}</a>
+					<button type="button" class="btn btn-sm btn-default dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 						<span class="sr-only">Toggle Dropdown</span>
 					</button>
 					<ul class="dropdown-menu dropdown-menu-right">

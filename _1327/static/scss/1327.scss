@@ -584,9 +584,11 @@ img.emoji {
 	width: 100%;
 	margin-top: 3px;
 	margin-bottom: 3px;
+	.dropdown-main-btn {
+		width: 100%;
+	}
 	.dropdown-toggle {
-		border-left-width: 0;
-		margin-left: 0 !important;
+		min-width: 30px;
 	}
 	.dropdown-menu {
 		.default {
