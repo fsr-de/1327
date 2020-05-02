@@ -373,13 +373,15 @@
 		// Activate Select2 if present on page
 		$(".select2-selection").select2({
 			language: "{{ LANGUAGE_CODE }}",
-			placeholder: "{% trans 'Please select...' %}"
+			placeholder: "{% trans 'Please select...' %}",
+			minimumResultsForSearch: 6
 		});
 
 		$(".select2-selection-clearable").select2({
 			language: "{{ LANGUAGE_CODE }}",
 			placeholder: "{% trans 'Please select...' %}",
-			allowClear: true
+			allowClear: true,
+			minimumResultsForSearch: 6
 		});
 
 		$("#selectInternalLinkModal").select2({
