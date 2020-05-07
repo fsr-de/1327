@@ -32,7 +32,7 @@ To connect to it and start the application do:
 
 ```bash
 vagrant ssh
-# This will take one inside the virtual machine
+# This will take you inside the virtual machine
 ./manage.py run
 ```
 
