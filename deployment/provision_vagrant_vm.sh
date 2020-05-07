@@ -23,6 +23,7 @@ sudo -u postgres createdb -O 1327 1327
 
 # alias python -> python3
 echo "alias python=python3" >> /home/vagrant/.bashrc
+echo "alias pip=pip3" >> /home/vagrant/.bashrc
 
 # auto cd into /vagrant on login
 echo "cd /vagrant" >> /home/vagrant/.bashrc
@@ -45,8 +46,6 @@ sudo -H -u vagrant yarn --no-bin-links
 # setup 1327
 cd /vagrant
 sudo -H -u vagrant python3 manage.py migrate --noinput
-sudo -H -u vagrant python3 manage.py shell -c "from _1327.user_management import UserProfile;\
-	UserProfile.objects.create_superuser('admin', email='admin@example.com', password='admin');\
-	print('Created superuser')"
+sudo -H -u vagrant python3 manage.py add_superuser
 sudo -H -u vagrant python3 manage.py collectstatic --noinput
 sudo -H -u vagrant python3 manage.py compilemessages
