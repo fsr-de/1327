@@ -11,6 +11,10 @@
 .table-striped > tbody > tr:nth-of-type(even) {
 	background-color: $table-bg-accent-even;
 }
+
+.w-a, ul.nav.w-a {
+	width: auto;
+}
 // End fix.
 
 // Fix jsdifflib line wrapping:
