@@ -45,6 +45,8 @@ sudo -H -u vagrant yarn --no-bin-links
 # setup 1327
 cd /vagrant
 sudo -H -u vagrant python3 manage.py migrate --noinput
-sudo -H -u vagrant python3 manage.py shell -c "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('admin', email='admin@localhost', password='admin'); print('Created superuser')"
+sudo -H -u vagrant python3 manage.py shell -c "from _1327.user_management import UserProfile;\
+	UserProfile.objects.create_superuser('admin', email='admin@example.com', password='admin');\
+	print('Created superuser')"
 sudo -H -u vagrant python3 manage.py collectstatic --noinput
 sudo -H -u vagrant python3 manage.py compilemessages
