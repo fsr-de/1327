@@ -19,7 +19,7 @@ class Command(BaseCommand):
         self.stdout.write('Adding superuser admin with password admin.')
 
         UserProfile.objects.filter(username="admin").delete()
-        user = UserProfile(username='admin', email='admin@example.com', password='admin', is_superuser=True)
+        user = UserProfile.objects.create_superuser(username='admin', email='admin@example.com', password='admin')
         user.save()
 
         Group.objects.filter(name="Admin").delete()
