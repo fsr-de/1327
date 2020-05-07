@@ -1,9 +1,9 @@
 from django.conf import settings
-from django.core.management import call_command
+from django.contrib.auth.models import Group, Permission
 from django.core.management.base import BaseCommand
 
 from _1327.user_management.models import UserProfile
-from django.contrib.auth.models import Group, Permission
+
 
 class Command(BaseCommand):
     args = ''
@@ -30,8 +30,7 @@ class Command(BaseCommand):
         for permission in Permission.objects.filter(codename__in=[
                 "add_minutesdocument",
                 "add_informationdocument",
-                "add_poll",
-            ]):
+                "add_poll"]):
             permission.group_set.add(group)
 
         self.stdout.write('Done.')
