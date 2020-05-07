@@ -122,5 +122,37 @@
 				error: function(){}
 			});
 		};
+
+        $(".dropdown-menu, .navbar-nav").menuAim({
+            activate: activateSubmenu,
+            deactivate: deactivateSubmenu,
+			exitMenu: function() {
+            	return true
+			}
+        });
+
+        function activateSubmenu(row) {
+            var $row = $(row),
+                submenuId = $row.data("submenuId"),
+                $submenu = $("#" + submenuId);
+
+            // Show the submenu
+            $submenu.css({
+                display: "block",
+            });
+
+            // Keep the currently activated row's highlighted look
+            $row.find("a").addClass("maintainHover");
+        }
+
+        function deactivateSubmenu(row) {
+            var $row = $(row),
+                submenuId = $row.data("submenuId"),
+                $submenu = $("#" + submenuId);
+
+            // Hide the submenu and remove the row's highlighted look
+            $submenu.css("display", "none");
+            $row.find("a").removeClass("maintainHover");
+        }
 	</script>
 {% endblock %}

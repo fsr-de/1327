@@ -323,16 +323,8 @@ div#wrapper {
 	box-shadow: none;
 	-webkit-box-shadow: none;
 }
-.dropdown:hover .dropdown-menu {
-	display: block;
-}
 nav .dropdown-menu {
 	display: none;
-	transition-delay: 0.2s;
-}
-nav li:hover > .dropdown-menu {
-	display: block;
-	transition-delay: 0.2s;
 }
 .menu-level-2 .menu-hover > a {
 	background-color: $gray-dark;
@@ -358,11 +350,7 @@ nav li:hover > .dropdown-menu {
 	left: 100%;
 	position: absolute;
 	top: 0;
-	visibility: hidden;
 	margin-top: -8px;
-}
-.dropdown-menu li:hover .sub-menu {
-	visibility: visible;
 }
 .dropdown-menu ul.sublist {
 	padding-left: 0;
