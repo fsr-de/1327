@@ -346,11 +346,13 @@ nav .dropdown-menu {
 	border-top: 4px solid transparent;
 	border-bottom: 4px solid transparent;
 }
-.dropdown-menu .sub-menu {
-	left: 100%;
-	position: absolute;
-	top: 0;
-	margin-top: -8px;
+@media only screen and (min-width: 991px) {
+	.dropdown-menu .sub-menu {
+		left: 100%;
+		position: absolute;
+		top: 0;
+		margin-top: -8px;
+	}
 }
 .dropdown-menu ul.sublist {
 	padding-left: 0;
