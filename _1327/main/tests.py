@@ -101,21 +101,6 @@ class MenuItemTests(WebTest):
 		self.assertEqual(response.status_code, 200)
 		self.assertIn(self.root_menu_item.title, response.body.decode('utf-8'))
 
-	def test_create_menu_item_as_superuser_no_document_and_link(self):
-		menu_item_count = MenuItem.objects.count()
-
-		response = self.app.get(reverse('menu_item_create'), user=self.root_user)
-		self.assertEqual(response.status_code, 200)
-		self.assertIn("Link", response.body.decode('utf-8'))
-
-		form = response.form
-		form['group'].select(text=self.staff_group.name)
-
-		response = form.submit()
-		self.assertEqual(200, response.status_code)
-		self.assertIn('You must select a document or link', response.body.decode('utf-8'))
-		self.assertEqual(MenuItem.objects.count(), menu_item_count)
-
 	def test_create_menu_item_as_superuser_document_and_link(self):
 		menu_item_count = MenuItem.objects.count()
 		document = baker.make(InformationDocument)
@@ -211,18 +196,6 @@ class MenuItemTests(WebTest):
 		response = self.app.get(reverse('menu_item_create'), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		self.assertNotIn("Link", response.body.decode('utf-8'))
-
-	def test_create_menu_item_as_normal_user_no_document_and_link(self):
-		menu_item_count = MenuItem.objects.count()
-
-		response = self.app.get(reverse('menu_item_create'), user=self.user)
-		form = response.form
-		form['group'].select(text=self.staff_group.name)
-
-		response = form.submit()
-		self.assertEqual(200, response.status_code)
-		self.assertIn('You must select a document', response.body.decode('utf-8'))
-		self.assertEqual(MenuItem.objects.count(), menu_item_count)
 
 	def test_create_menu_item_as_normal_user_with_document(self):
 		menu_item_count = MenuItem.objects.count()
