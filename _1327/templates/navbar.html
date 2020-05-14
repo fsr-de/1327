@@ -51,51 +51,63 @@
 				<li class="nav-item dropdown" data-submenu-id="submenu-management">
 					<a class="nav-link dropdown-toggle" href="#" id="dropdownManagement" data-toggle="dropdown"
 					   aria-haspopup="true" aria-expanded="false">
-						Verwaltung
+						{% trans 'Verwaltung' %}
 					</a>
-					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownManagement" id="submenu-management">
+					<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownManagement" id="submenu-management">
 						{% if CAN_CREATE_INFORMATIONPAGE %}
-							<a class="dropdown-item"
-							   href="{% url 'documents:create' 'informationdocument' %}">{% trans "Create information page" %}</a>
+							<li class="dropdown">
+								<a href="{% url 'documents:create' 'informationdocument' %}">{% trans "Create information page" %}</a>
+							</li>
 						{% endif %}
 						{% if CAN_CREATE_POLL %}
-							<a class="dropdown-item"
-							   href="{% url 'documents:create' 'poll' %}">{% trans "Create poll" %}</a>
+							<li class="dropdown">
+								<a href="{% url 'documents:create' 'poll' %}">{% trans "Create poll" %}</a>
+							</li>
 						{% endif %}
 						{% if CAN_CREATE_MINUTES %}
 							{% if CAN_CREATE_MINUTES|length > 1 %}
 								<div class="dropdown-divider"></div>
 								<h6 class="dropdown-header">{% trans "Create minutes for" %}</h6>
 								{% for group in CAN_CREATE_MINUTES %}
-									<a class="dropdown-item pl-5"
-									   href="{% url 'documents:create' 'minutesdocument' %}?group={{ group.id }}">{{ group.name }}</a>
+									<li class="dropdown">
+										<a class="pl-5" href="{% url 'documents:create' 'minutesdocument' %}?group={{ group.id }}">{{ group.name }}</a>
+									</li>
 								{% endfor %}
 							{% else %}
-								<a class="dropdown-item"
-								   href="{% url 'documents:create' 'minutesdocument' %}?group={{ CAN_CREATE_MINUTES.first.id }}">{% trans "Create minutes" %}</a>
+								<li class="dropdown">
+									<a href="{% url 'documents:create' 'minutesdocument' %}?group={{ CAN_CREATE_MINUTES.first.id }}">{% trans "Create minutes" %}</a>
+								</li>
 							{% endif %}
 						{% endif %}
 						{% if CAN_CHANGE_MENU_ITEMS or CAN_CREATE_INFORMATIONPAGE %}
 							<div class="dropdown-divider"></div>
 							{% if CAN_CHANGE_MENU_ITEMS %}
-								<a class="dropdown-item"
-								   href="{% url 'menu_items_index' %}">{% trans "Manage menu items" %}</a>
+								<li class="dropdown">
+									<a href="{% url 'menu_items_index' %}">{% trans "Manage menu items" %}</a>
+								</li>
 							{% endif %}
 							{% if CAN_CREATE_INFORMATIONPAGE %}
-								<a class="dropdown-item"
-								   href="{% url 'information_pages:unlinked_list' %}">{% trans "Find unlinked information pages" %}</a>
+								<li class="dropdown">
+									<a href="{% url 'information_pages:unlinked_list' %}">{% trans "Find unlinked information pages" %}</a>
+								</li>
 							{% endif %}
 						{% endif %}
 						{% if user.is_superuser %}
 							<div class="dropdown-divider"></div>
-							<a class="dropdown-item"
-							   href="{% url 'abbreviation_explanation' %}">{% trans "Manage abbreviation explanations" %}</a>
-							<a class="dropdown-item" href="{% url 'shortlinks_index' %}">{% trans "Shortlinks" %}</a>
-							<a class="dropdown-item"
-							   href="{% url 'view_as' %}">{% trans "View page as different user" %}</a>
-							<a class="dropdown-item" href="{% url 'admin:index' %}">{% trans "Admin" %}</a>
+							<li class="dropdown">
+								<a href="{% url 'abbreviation_explanation' %}">{% trans "Manage abbreviation explanations" %}</a>
+							</li>
+							<li class="dropdown">
+								<a href="{% url 'shortlinks_index' %}">{% trans "Shortlinks" %}</a>
+							</li>
+							<li class="dropdown">
+								<a href="{% url 'view_as' %}">{% trans "View page as different user" %}</a>
+							</li>
+							<li class="dropdown">
+								<a href="{% url 'admin:index' %}">{% trans "Admin" %}</a>
+							</li>
 						{% endif %}
-					</div>
+					</ul>
 				</li>
 			</ul>
 		{% endif %}
