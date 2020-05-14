@@ -380,7 +380,6 @@ class MenuItemTests(WebTest):
 		self.assertEqual(response.status_code, 403)
 
 	def test_menu_item_edit(self):
-		document = baker.make(InformationDocument)
 		document_2 = baker.make(InformationDocument)
 		self.sub_item.document = document_2
 		self.sub_item.save()
