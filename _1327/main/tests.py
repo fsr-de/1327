@@ -408,7 +408,6 @@ class MenuItemTests(WebTest):
 		menu_items = [self.root_menu_item]
 		menu_items.extend(all_main_menu_items)
 
-		# change order of root menu items
 		order_data = {
 			'main_menu_items': [{'id': m.id} for m in menu_items],
 			'footer_items': [{'id': m.id} for m in MenuItem.objects.filter(menu_type=MenuItem.FOOTER)],
@@ -420,16 +419,26 @@ class MenuItemTests(WebTest):
 
 		child_elements_with_large_order_number = MenuItem.objects.filter(order__gte=1, menu_type=MenuItem.MAIN_MENU).exclude(parent_id=None)
 		child_data = [{'id': child.id} for child in child_elements_with_large_order_number]
-		# move children from self.root_element to another menu element
-		new_parent = order_data['main_menu_items'][1]
-		new_parent['children'] = child_data
+
+	def test_move_items_to_other_parent(self):
+		order_data = {
+			'main_menu_items': [{'id': m.id} for m in list(MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU, parent_id=None))],
+			'footer_items': [{'id': m.id} for m in MenuItem.objects.filter(menu_type=MenuItem.FOOTER)],
+		}
+
+		parent_item = baker.make(MenuItem, parent=None)
+		child_item = baker.make(MenuItem, parent=parent_item)
+		new_parent_item = baker.make(MenuItem, parent=None)
+
+		order_data['main_menu_items'].append({'id': parent_item.id})
+		order_data['main_menu_items'].append({'id': new_parent_item.id, 'children': {'id': child_item.id}})
+		print(order_data)
 
 		response = self.app.post(reverse('menu_items_update_order'), params=json.dumps(order_data), user=self.root_user)
 		self.assertEqual(response.status_code, 200)
 
-		changed_child_elements = MenuItem.objects.filter(id__in=[child.id for child in child_elements_with_large_order_number])
-		for changed_child in changed_child_elements:
-			self.assertEqual(changed_child.parent.id, new_parent['id'])
+		updated_child_item = MenuItem.objects.filter(pk=child_item.id).first()
+		self.assertEquals(parent_item.id, updated_child_item.parent.id)
 
 	def test_update_order_as_non_superuser(self):
 		def test_root_menu_order(root_menu_items):
