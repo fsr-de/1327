@@ -344,7 +344,6 @@ class MenuItemTests(WebTest):
 		self.assertEqual(response.status_code, 200)
 		self.assertIn(reverse('menu_item_edit', args=[extra_sub_item.id]), response.body.decode('utf-8'))
 
-# ./manage.py test _1327.main.tests.MenuItemTests.test_can_see_link_details
 	def test_can_see_link_details(self):
 		extra_sub_item = baker.make(MenuItem, parent=self.root_menu_item, title_en="name", link="link123")
 
