@@ -347,7 +347,6 @@ class MenuItemTests(WebTest):
 # ./manage.py test _1327.main.tests.MenuItemTests.test_can_see_link_details
 	def test_can_see_link_details(self):
 		extra_sub_item = baker.make(MenuItem, parent=self.root_menu_item, title_en="name", link="link123")
-		extra_sub_item2 = baker.make(MenuItem, parent=extra_sub_item, title_en="subname", link="link321")
 
 		assign_perm(MenuItem.EDIT_PERMISSION_NAME, self.user, extra_sub_item)
 
