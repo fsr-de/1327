@@ -66,4 +66,4 @@ You'll also need to setup yarn, as indicated in the last section.
 
 ## License
 
-The software is licensed under the terms of the [MIT license](LICENSE). Please note, that non-MIT-licensed contents might be part of this repository.
+The software is licensed under the terms of the [MIT license](LICENSE). Please note that non-MIT-licensed contents might be part of this repository.
