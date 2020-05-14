@@ -223,7 +223,8 @@ div#wrapper {
 	color: $gray-lighter;
 	background-color: $gray-dark;
 	font-size: 10pt;
-	overflow: auto;
+	min-height: 25px;
+	display: flow-root;
 }
 .footer-line {
 	height: 3px;

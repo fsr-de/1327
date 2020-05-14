@@ -28,7 +28,7 @@
 						<span class="language-button language-button-selected">EN</span>
 					{% endif %}
 				</div>
-				<div class="login-info" {% if user.groups.all %}data-toggle="tooltip" data-placement="bottom" data-container="body" title="{% trans 'Groups' %}: {{ user.groups.all|join:', ' }}"{% endif %}>
+				<div class="login-info" {% if user.groups.all %}data-toggle="tooltip" data-placement="bottom" title="{% trans 'Groups' %}: {{ user.groups.all|join:', ' }}"{% endif %}>
 					{% if user.is_authenticated %}{% trans 'Logged in as' %} <b>{{ user.get_full_name }}</b>{% endif %}
 				</div>
 				<a href="{% if user.is_authenticated %}{% url 'logout' %}{% else %}{% url 'login' %}{% redirect_login %}{% endif %}">
