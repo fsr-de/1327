@@ -395,14 +395,14 @@ class MenuItemTests(WebTest):
 		form = response.form
 		form['title_en'] = 'Lorem Ipsum'
 		form['title_de'] = 'test titel'
-		form['document'] = document.pk
+		form['document'] = ''
 
 		response = form.submit().maybe_follow()
 		self.assertEqual(response.status_code, 200)
 
 		changed_menu_item = MenuItem.objects.get(pk=self.sub_item.pk)
 		self.assertNotEqual(original_menu_item.title, changed_menu_item.title)
-		self.assertNotEqual(original_menu_item.document.id, changed_menu_item.document.id)
+		self.assertIsNone(changed_menu_item.document)
 
 	def test_update_order_as_superuser(self):
 		all_main_menu_items = list(MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU, parent_id=None).exclude(id=self.root_menu_item.id))
