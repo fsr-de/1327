@@ -43,9 +43,9 @@ class TestInternalLinkMarkDown(TestCase):
 				revisions.set_comment('test version')
 
 	def test_information_documents(self):
-		text = self.md.convert('[description](document:' + str(self.document.id) + ')')
+		text = self.md.convert('Some text before [a link](document:' + str(self.document.id) + ') and some more text.')
 		link = reverse(self.document.get_view_url_name(), args=[self.document.url_title])
-		self.assertIn('<a href="' + link + '">description</a>', text)
+		self.assertIn('Some text before <a href="' + link + '">a link</a> and some more text.', text)
 
 	def test_document_deleted(self):
 		document = InformationDocument.objects.get()
