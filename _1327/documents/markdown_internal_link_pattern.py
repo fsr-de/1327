@@ -14,9 +14,7 @@ class InternalLinkPattern(LinkInlineProcessor):
 			el.text = markdown.util.AtomicString(m.group('title'))
 		except ObjectDoesNotExist:
 			el.text = markdown.util.AtomicString(_('[missing link]'))
-		__, index, __ = self.getText(data, m.end(0))
-		__, __, index, __ = self.getLink(data, index)
-		return el, m.start(0), index
+		return el, m.start(0), m.end(0)
 
 	def url(id):
 		raise NotImplementedError
