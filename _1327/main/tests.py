@@ -403,6 +403,22 @@ class MenuItemTests(WebTest):
 		self.assertNotEqual(original_menu_item.title, changed_menu_item.title)
 		self.assertIsNone(changed_menu_item.document)
 
+	def test_menu_item_edit_with_children(self):
+		assign_perm(self.root_menu_item.edit_permission_name, self.user, self.root_menu_item)
+
+		response = self.app.get(reverse('menu_item_edit', args=[self.root_menu_item.pk]), user=self.root_user)
+		self.assertEqual(response.status_code, 200)
+
+		form = response.form
+		form['link'] = 'index'
+
+		response = form.submit().maybe_follow()
+		self.assertEqual(response.status_code, 200)
+
+		changed_menu_item = MenuItem.objects.get(pk=self.root_menu_item.pk)
+		# MenuItems are not allowed to have content and children, so it should not be edited
+		self.assertIsNone(changed_menu_item.link)
+
 	def test_update_order_as_superuser(self):
 		all_main_menu_items = list(MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU, parent_id=None).exclude(id=self.root_menu_item.id))
 		menu_items = [self.root_menu_item]
@@ -416,9 +432,6 @@ class MenuItemTests(WebTest):
 		response = self.app.post(reverse('menu_items_update_order'), params=json.dumps(order_data), user=self.root_user)
 		self.assertEqual(response.status_code, 200)
 		self.assertEqual(MenuItem.objects.get(id=self.root_menu_item.id).order, 0)
-
-		child_elements_with_large_order_number = MenuItem.objects.filter(order__gte=1, menu_type=MenuItem.MAIN_MENU).exclude(parent_id=None)
-		child_data = [{'id': child.id} for child in child_elements_with_large_order_number]
 
 	def test_move_items_to_other_parent(self):
 		order_data = {
@@ -438,6 +451,29 @@ class MenuItemTests(WebTest):
 
 		updated_child_item = MenuItem.objects.filter(pk=child_item.id).first()
 		self.assertEquals(new_parent_item.id, updated_child_item.parent.id)
+
+	def test_move_to_parent_with_content(self):
+		order_data = {
+			'main_menu_items': [{'id': m.id} for m in list(MenuItem.objects.filter(menu_type=MenuItem.MAIN_MENU, parent_id=None))],
+			'footer_items': [{'id': m.id} for m in MenuItem.objects.filter(menu_type=MenuItem.FOOTER)],
+		}
+
+		parent_item = baker.make(MenuItem, parent=None)
+		child_item = baker.make(MenuItem, parent=parent_item)
+		new_parent_item = baker.make(MenuItem, parent=None, link="index")
+
+		order_data['main_menu_items'].append({'id': parent_item.id})
+		order_data['main_menu_items'].append({'id': new_parent_item.id, 'children': [{'id': child_item.id}]})
+
+		response = self.app.post(reverse('menu_items_update_order'), params=json.dumps(order_data), user=self.root_user)
+		self.assertEqual(response.status_code, 200)
+
+		response = self.app.post(reverse('menu_items_update_order'), params=json.dumps(order_data), user=self.root_user)
+		self.assertEqual(response.status_code, 200)
+
+		updated_child_item = MenuItem.objects.filter(pk=child_item.id).first()
+		# it is forbidden for a MenuItem to have content and children, so it should not be moved
+		self.assertEquals(parent_item.id, updated_child_item.parent.id)
 
 	def test_update_order_as_non_superuser(self):
 		def test_root_menu_order(root_menu_items):
