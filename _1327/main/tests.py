@@ -431,14 +431,13 @@ class MenuItemTests(WebTest):
 		new_parent_item = baker.make(MenuItem, parent=None)
 
 		order_data['main_menu_items'].append({'id': parent_item.id})
-		order_data['main_menu_items'].append({'id': new_parent_item.id, 'children': {'id': child_item.id}})
-		print(order_data)
+		order_data['main_menu_items'].append({'id': new_parent_item.id, 'children': [{'id': child_item.id}]})
 
 		response = self.app.post(reverse('menu_items_update_order'), params=json.dumps(order_data), user=self.root_user)
 		self.assertEqual(response.status_code, 200)
 
 		updated_child_item = MenuItem.objects.filter(pk=child_item.id).first()
-		self.assertEquals(parent_item.id, updated_child_item.parent.id)
+		self.assertEquals(new_parent_item.id, updated_child_item.parent.id)
 
 	def test_update_order_as_non_superuser(self):
 		def test_root_menu_order(root_menu_items):
