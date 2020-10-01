@@ -21,6 +21,7 @@ Freshly created code needs to be tested - besides our use of unit tests, linting
 ### Vagrant
 
 One can simply set up an execution environment using `vagrant`:
+(Vagrant provides a simple and easy to use command-line client for managing these environments)
 
 ```bash
 vagrant up --provision
@@ -37,6 +38,9 @@ To login with your local user instead of the default OpenID login, you have to v
 ### Virtual Environment
 
 Another way of executing this django application is the use of a virtual python environment. This way bypasses the needs for a virtual machine and simplifies the life with multiple python versions installed:
+
+/“Vagrant enables users to create and configure lightweight, 
+reproducible, and portable development environments.”/
 
 ```bash
 virtualenv -p /usr/bin/python3 env
