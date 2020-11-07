@@ -18,7 +18,7 @@
 				{{ description|safe }}
 				{% if document.max_allowed_number_of_answers > 1 %}
 					<br /><br />
-					<span class="glyphicon glyphicon-th-list"></span>
+					<span class="fa fa-th-list"></span>
 					{% blocktrans with max_allowed_number_of_answers=document.max_allowed_number_of_answers %}Every participant had up to {{ max_allowed_number_of_answers }} votes.{% endblocktrans %}
 				{% endif %}
 			</div>

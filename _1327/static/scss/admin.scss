@@ -1,4 +1,4 @@
-@import "variables.less";
+@import "variables.scss";
 
 // change_list actions
 .actions {
@@ -29,5 +29,5 @@ td.action-checkbox {
 }
 
 .form-actions {
-	margin-bottom: @grid-gutter-width / 2;
+	margin-bottom: $grid-gutter-width / 2;
 }

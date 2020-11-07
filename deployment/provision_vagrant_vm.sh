@@ -13,8 +13,6 @@ echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/source
 apt-get update
 apt-get -q install -y yarn
 
-yarn global add less
-
 # setup postgres
 apt-get -q install -y postgresql
 sudo -u postgres createuser --createdb 1327
@@ -46,5 +44,4 @@ sudo -H -u vagrant yarn --no-bin-links
 # setup 1327
 cd /vagrant
 sudo -H -u vagrant python3 manage.py migrate --noinput
-sudo -H -u vagrant python3 manage.py collectstatic --noinput
 sudo -H -u vagrant python3 manage.py compilemessages

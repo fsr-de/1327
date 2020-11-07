@@ -194,27 +194,27 @@ class TestMinutesList(WebTest):
 		self.minutes_document.state = MinutesDocument.UNPUBLISHED
 		self.minutes_document.save()
 		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
-		self.assertIn("glyphicon-alert", response)
+		self.assertIn("fa-exclamation-triangle", response)
 
 		self.minutes_document.state = MinutesDocument.PUBLISHED
 		self.minutes_document.save()
 		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
-		self.assertIn("glyphicon-education", response)
+		self.assertIn("fa-university", response)
 
 		self.minutes_document.state = MinutesDocument.INTERNAL
 		self.minutes_document.save()
 		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
-		self.assertIn("glyphicon-lock", response)
+		self.assertIn("fa-lock", response)
 
 		self.minutes_document.state = MinutesDocument.CUSTOM
 		self.minutes_document.save()
 		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
-		self.assertIn("glyphicon-cog", response)
+		self.assertIn("fa-cog", response)
 
 		self.minutes_document.state = MinutesDocument.PUBLISHED_STUDENT
 		self.minutes_document.save()
 		response = self.app.get(reverse("minutes:list", args=[self.group.id]), user=self.user)
-		self.assertIn("glyphicon-user", response)
+		self.assertIn("fa-user", response)
 
 	def test_no_minutes_available_text(self):
 		minutes = MinutesDocument.objects.all()

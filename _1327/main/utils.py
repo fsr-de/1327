@@ -30,6 +30,8 @@ def save_main_menu_item_order(main_menu_items, user, parent_id=None):
 	for item in main_menu_items:
 		item_id = item['id']
 		menu_item = MenuItem.objects.get(pk=item_id)
+		if (menu_item.link or menu_item.document) and 'children' in item:
+			continue
 		if menu_item.can_edit(user):
 			menu_item.menu_type = MenuItem.MAIN_MENU
 			if use_old_order:

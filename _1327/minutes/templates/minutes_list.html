@@ -32,15 +32,15 @@
 					{% if own_group %}
 						<td style="width: 10%; text-align: center; font-weight: lighter;">
 							{% if minute.state == minute.UNPUBLISHED %}
-								<span class="text-red" data-toggle="tooltip" data-placement="top" data-container="body" title="{% trans 'Unpublished' %}"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span></span>
+								<span class="text-red" data-toggle="tooltip" data-placement="top" data-container="body" title="{% trans 'Unpublished' %}"><span class="fa fa-exclamation-triangle" aria-hidden="true"></span></span>
 							{% elif minute.state == minute.INTERNAL %}
-								<span class="text-yellow" data-toggle="tooltip" data-placement="top" data-container="body" title="{% trans 'Internal' %}"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span></span>
+								<span class="text-yellow" data-toggle="tooltip" data-placement="top" data-container="body" title="{% trans 'Internal' %}"><span class="fa fa-lock" aria-hidden="true"></span></span>
 							{% elif minute.state == minute.PUBLISHED %}
-								<span class="text-gray" data-toggle="tooltip" data-placement="top" data-container="body" title="{% trans 'Published for Students and University Network' %}"><span class="glyphicon glyphicon-education" aria-hidden="true"></span><span class="glyphicon glyphicon-user" aria-hidden="true"></span></span>
+								<span class="text-gray" data-toggle="tooltip" data-placement="top" data-container="body" title="{% trans 'Published for Students and University Network' %}"><span class="fa fa-university" aria-hidden="true"></span><span class="fa fa-user" aria-hidden="true"></span></span>
 							{% elif minute.state == minute.PUBLISHED_STUDENT %}
-								<span class="text-gray" data-toggle="tooltip" data-placement="top" data-container="body" title="{% trans 'Published for Students' %}"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></span>
+								<span class="text-gray" data-toggle="tooltip" data-placement="top" data-container="body" title="{% trans 'Published for Students' %}"><span class="fa fa-user" aria-hidden="true"></span></span>
 							{% elif minute.state == minute.CUSTOM %}
-								<span class="text-gray" data-toggle="tooltip" data-placement="top" data-container="body" title="{% trans 'Custom Permissions' %}"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></span>
+								<span class="text-gray" data-toggle="tooltip" data-placement="top" data-container="body" title="{% trans 'Custom Permissions' %}"><span class="fa fa-cog" aria-hidden="true"></span></span>
 							{% endif %}
 						</td>
 					{% endif %}
@@ -57,7 +57,7 @@
 					<td style="width: 5%; text-align: center;">
 						{% if minute.attachments.count > 0 %}
 							<span class="text-gray" data-toggle="tooltip" data-placement="left" data-container="body" title="{{ minute.attachments.all|join:', ' }}">
-								<span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+								<span class="fa fa-file" aria-hidden="true"></span>
 							</span>
 						{% endif %}
 					</td>

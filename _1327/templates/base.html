@@ -1,7 +1,7 @@
 {% extends "master.html" %}
 {% load i18n %}
 {% load static %}
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 {% load hijack_tags %}
 {% load redirect_login_tags %}
 
@@ -28,7 +28,7 @@
 						<span class="language-button language-button-selected">EN</span>
 					{% endif %}
 				</div>
-				<div class="login-info" {% if user.groups.all %}data-toggle="tooltip" data-placement="bottom" data-container="body" title="{% trans 'Groups' %}: {{ user.groups.all|join:', ' }}"{% endif %}>
+				<div class="login-info" {% if user.groups.all %}data-toggle="tooltip" data-placement="bottom" title="{% trans 'Groups' %}: {{ user.groups.all|join:', ' }}"{% endif %}>
 					{% if user.is_authenticated %}{% trans 'Logged in as' %} <b>{{ user.get_full_name }}</b>{% endif %}
 				</div>
 				<a href="{% if user.is_authenticated %}{% url 'logout' %}{% else %}{% url 'login' %}{% redirect_login %}{% endif %}">
@@ -71,7 +71,7 @@
 		</div>
 	</footer>
 </div>
-<a id="back-to-top" href="#" class="btn btn-primary back-to-top hidden-print" role="button" title="{% trans 'Return to the top of the page' %}" data-toggle="tooltip" data-placement="left"><span class="glyphicon glyphicon-chevron-up"></span></a>
+<a id="back-to-top" href="#" class="btn btn-primary back-to-top hidden-print" role="button" title="{% trans 'Return to the top of the page' %}" data-toggle="tooltip" data-placement="left"><span class="fa fa-chevron-up"></span></a>
 {% endblock %}
 
 
@@ -80,7 +80,7 @@
 
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$('[data-toggle="tooltip"]').tooltip();
+			$('[data-toggle="tooltip"]').not(".hidden-print").tooltip();
 			$('.headline-box').tooltip({
 				delay: { "show": 1500, "hide": 0 },
 				placement: "bottom",
@@ -104,7 +104,6 @@
 				}, 800);
 				return false;
 			});
-			$('#back-to-top').tooltip('show');
 
 			// highlight parent of subsubmenuitem
 			$('ul .dropdown-menu').on('mouseover', function(){
@@ -123,5 +122,46 @@
 				error: function(){}
 			});
 		};
+
+		$(".navbar-nav").menuAim({
+            activate: activateSubmenu,
+            deactivate: deactivateSubmenu,
+			submenuDirection: "below",
+			exitMenu: function() {
+            	return true
+			}
+        });
+
+        $(".dropdown-menu").menuAim({
+            activate: activateSubmenu,
+            deactivate: deactivateSubmenu,
+			exitMenu: function() {
+            	return true
+			}
+        });
+
+        function activateSubmenu(row) {
+            var $row = $(row),
+                submenuId = $row.data("submenuId"),
+                $submenu = $("#" + submenuId);
+
+            // Show the submenu
+            $submenu.css({
+                display: "block",
+            });
+
+            // Keep the currently activated row's highlighted look
+            $row.find("a").addClass("maintainHover");
+        }
+
+        function deactivateSubmenu(row) {
+            var $row = $(row),
+                submenuId = $row.data("submenuId"),
+                $submenu = $("#" + submenuId);
+
+            // Hide the submenu and remove the row's highlighted look
+            $submenu.css("display", "none");
+            $row.find("a").removeClass("maintainHover");
+        }
 	</script>
 {% endblock %}

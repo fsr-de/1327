@@ -5,7 +5,7 @@
 	{{block.super}}
 	{% if not is_popup %}
 		<a role="button" href="{% add_preserved_filters recoverlist_url is_popup %}" class="btn btn-primary recoverlink">
-			<span class="glyphicon glyphicon-repeat"></span> {% blocktrans with cl.opts.verbose_name_plural|escape as name %}Recover deleted {{name}}{% endblocktrans %}
+			<span class="fa fa-repeat"></span> {% blocktrans with cl.opts.verbose_name_plural|escape as name %}Recover deleted {{name}}{% endblocktrans %}
 		</a>
 	{% endif %}
 {% endblock %}
