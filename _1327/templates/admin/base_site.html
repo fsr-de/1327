@@ -1,5 +1,5 @@
 {% extends "admin/base.html" %}
-{% load i18n %}{% load static bootstrapped_goodies_tags %}
+{% load i18n %}{% load static admin_templatetags %}
 
 {% block title %}{% block content_title %}{% render_with_template_if_exist title|lower|add:"/admin_app_name.html" title %}{% endblock %}{% endblock %}
 

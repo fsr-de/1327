@@ -2,7 +2,7 @@
 
 {% load static %}
 {% load i18n %}
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 {% load num_revisions %}
 
 {% block css %}
@@ -46,9 +46,9 @@
 
 	<h2>{% trans "Preview" %} <a id="shareText" class="hidden">Share</a></h2>
 	<div>
-		<ul class="nav nav-tabs" role="tablist">
-			<li role="presentation" class="active"><a href="#text-preview-de" aria-controls="german" role="tab" data-toggle="tab">{% trans "German" %}</a></li>
-			<li role="presentation"><a href="#text-preview-en" aria-controls="english" role="tab" data-toggle="tab">{% trans "English" %}</a></li>
+		<ul class="nav nav-tabs w-a" role="tablist">
+			<li role="presentation" class="nav-item"><a href="#text-preview-de" class="nav-link active" aria-controls="german" role="tab" data-toggle="tab">{% trans "German" %}</a></li>
+			<li role="presentation" class="nav-item"><a href="#text-preview-en" class="nav-link" aria-controls="english" role="tab" data-toggle="tab">{% trans "English" %}</a></li>
 		</ul>
 
 		<div class="tab-content">
@@ -64,10 +64,10 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
+					<div class="modal-title">{% trans "Select Image:" %}</div>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
-					<div class="modal-title">{% trans "Select Image:" %}</div>
 				</div>
 				<div class="modal-body">
 					<div class="alert alert-danger hidden" id="image-upload-error-display" role="alert">
@@ -115,10 +115,10 @@
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
+						<h4 class="modal-title" id="deleteDocumentHeader">{% trans "Do you really want to delete this document?" %}</h4>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 							<span aria-hidden="true">&times;</span>
 						</button>
-						<h4 class="modal-title" id="deleteDocumentHeader">{% trans "Do you really want to delete this document?" %}</h4>
 					</div>
 					<div class="modal-body">
 						<p>{% trans "If you delete this document you will also delete the following database items:" %}</p>
@@ -137,10 +137,10 @@
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
+						<h4 class="modal-title" id="deleteAutosaveHeader">{% trans "Do you really want to delete this autosave?" %}</h4>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 							<span aria-hidden="true">&times;</span>
 						</button>
-						<h4 class="modal-title" id="deleteAutosaveHeader">{% trans "Do you really want to delete this autosave?" %}</h4>
 					</div>
 					<div class="modal-footer">
 						<form action="{% url 'documents:delete_autosave' document.url_title %}" method="post">
@@ -160,10 +160,10 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
+					<div class="modal-title">{% trans "Select link target" %}</div>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
-					<div class="modal-title">{% trans "Select link target" %}</div>
 				</div>
 				<div class="modal-body">
 					<select class="form-control" id="selectInternalLinkModal"></select>
@@ -179,10 +179,10 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
+					<div class="modal-title">{% trans "Autosave failed" %}</div>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
-					<div class="modal-title">{% trans "Autosave failed" %}</div>
 				</div>
 				<div class="modal-body">
 					<span class="autosaveErrorDialogExplanation"></span>
@@ -237,7 +237,8 @@
 				onShow: function(e) {
 					this.onChange(e);
 				},
-				additionalButtons: getCustomButtons(textInput, efficientRender)
+				additionalButtons: getCustomButtons(textInput, efficientRender),
+				iconlibrary:"fa"
 			});
 
 			let text = textInput.val();
@@ -372,13 +373,15 @@
 		// Activate Select2 if present on page
 		$(".select2-selection").select2({
 			language: "{{ LANGUAGE_CODE }}",
-			placeholder: "{% trans 'Please select...' %}"
+			placeholder: "{% trans 'Please select...' %}",
+			minimumResultsForSearch: 6
 		});
 
 		$(".select2-selection-clearable").select2({
 			language: "{{ LANGUAGE_CODE }}",
 			placeholder: "{% trans 'Please select...' %}",
-			allowClear: true
+			allowClear: true,
+			minimumResultsForSearch: 6
 		});
 
 		$("#selectInternalLinkModal").select2({
@@ -411,7 +414,7 @@
 						name: "cmdAddImage",
 						toggle: false,
 						title: "Add Image",
-						icon: "glyphicon glyphicon-picture",
+						icon: "fa fa-picture-o",
 						callback: function (e) {
 							// get all attachments
 							$.getJSON(
@@ -511,7 +514,7 @@
                         name: "cmdAddInternalLink",
                         toggle: false,
                         title: "Add internal link",
-                        icon: "glyphicon glyphicon-circle-arrow-right",
+                        icon: "fa fa-arrow-circle-right",
                         callback: function (e) {
                             const modalItem = $('#selectInternalLinkDestination');
                             modalItem.modal();
@@ -547,7 +550,7 @@
                         name: "cmdAddEmoji",
                         toggle: false,
                         title: "Add Emoji",
-                        icon: "glyphicon glyphicon-thumbs-up emojiparent",
+                        icon: "fa fa-thumbs-up emojiparent",
                         callback: function (e) {
                             // check if we already created an emojionearea object
                             const editor = e.$editor;

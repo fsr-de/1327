@@ -101,7 +101,7 @@ class TestEditor(WebTest):
 			form.set('title_en', string)
 			response = form.submit()
 			self.assertEqual(response.status_code, 200)
-			self.assertIn('has-error', str(response.body))
+			self.assertIn('is-invalid', str(response.body))
 
 	def test_editor_slug_error(self):
 		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
@@ -110,7 +110,7 @@ class TestEditor(WebTest):
 		form.set('url_title', 'not_ALLOWED!')
 		response = form.submit()
 		self.assertEqual(response.status_code, 200)
-		self.assertIn('has-error', str(response.body))
+		self.assertIn('is-invalid', str(response.body))
 		self.assertIn('Only the following characters are allowed in the URL', str(response.body))
 
 	def test_editor_permissions_for_single_user(self):

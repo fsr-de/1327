@@ -22,8 +22,8 @@ class MenuItemForm(forms.ModelForm):
 	def clean(self):
 		if 'link' in self.cleaned_data and self.cleaned_data['link']:
 			raise ValidationError(_('You are only allowed to define a document'))
-		if 'document' not in self.cleaned_data or self.cleaned_data['document'] is None:
-			raise ValidationError(_('You must select a document'))
+		if self.instance and self.instance.children.exists() and (('link' in self.cleaned_data and self.cleaned_data['link']) or ('document' in self.cleaned_data and self.cleaned_data['document'])):
+			raise ValidationError(_('You are not allowed to enter a link or document for an item with children'))
 		return self.cleaned_data
 
 
@@ -54,9 +54,8 @@ class MenuItemAdminForm(MenuItemForm):
 		if 'link' in self.cleaned_data and self.cleaned_data['link'] and\
 			'document' in self.cleaned_data and self.cleaned_data['document']:
 			raise ValidationError(_('You are only allowed to define one of document and link'))
-		if ('link' not in self.cleaned_data or self.cleaned_data['link'] is None) and\
-			('document' not in self.cleaned_data or self.cleaned_data['document'] is None):
-			raise ValidationError(_('You must select a document or link'))
+		if self.instance and self.instance.children.exists() and (('link' in self.cleaned_data and self.cleaned_data['link']) or ('document' in self.cleaned_data and self.cleaned_data['document'])):
+			raise ValidationError(_('You are not allowed to enter a link or document for an item with children'))
 		return self.cleaned_data
 
 
@@ -84,7 +83,7 @@ class MenuItemCreationForm(MenuItemForm):
 			self.fields['group'].initial = self.user_groups[0]
 			self.fields['group'].widget = forms.HiddenInput()
 
-		self.fields['parent'].queryset = MenuItem.objects.filter(Q(pk__in=items) & Q(menu_type=MenuItem.MAIN_MENU) & (Q(parent=None) | Q(parent__parent=None))).order_by('menu_type', 'title_de')
+		self.fields['parent'].queryset = MenuItem.objects.filter(Q(pk__in=items) & Q(menu_type=MenuItem.MAIN_MENU) & (Q(parent=None) | Q(parent__parent=None)) & Q(link=None) & Q(document=None)).order_by('menu_type', 'title_de')
 
 	def clean_group(self):
 		value = self.cleaned_data['group']
@@ -103,7 +102,7 @@ class MenuItemCreationAdminForm(MenuItemAdminForm):
 	def __init__(self, user, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.user_groups = user.groups.all()
-		self.fields['parent'].queryset = MenuItem.objects.filter(Q(menu_type=MenuItem.MAIN_MENU) & (Q(parent=None) | Q(parent__parent=None))).order_by('menu_type', 'title_de')
+		self.fields['parent'].queryset = MenuItem.objects.filter(Q(menu_type=MenuItem.MAIN_MENU) & (Q(parent=None) | Q(parent__parent=None)) & Q(link=None) & Q(document=None)).order_by('menu_type', 'title_de')
 		staff = Group.objects.get(name=settings.STAFF_GROUP_NAME)
 		self.fields['group'].queryset = self.user_groups
 		if staff in self.user_groups and not self.fields['group'].initial:

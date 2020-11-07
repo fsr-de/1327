@@ -284,13 +284,13 @@ class PollViewTests(WebTest):
 	def test_result_preview_button_for_superusers(self):
 		response = self.app.get(reverse('polls:index'), user=self.user)
 		self.assertEqual(response.status_code, 200)
-		self.assertIn("glyphicon glyphicon-eye-open", response.body.decode('utf-8'))
+		self.assertIn("fa fa-eye", response.body.decode('utf-8'))
 
 		user = baker.make(UserProfile)
 		assign_perm(self.poll.vote_permission_name, user, self.poll)
 		response = self.app.get(reverse('polls:index'), user=user)
 		self.assertEqual(response.status_code, 200)
-		self.assertNotIn("glyphicon glyphicon-eye-open", response.body.decode('utf-8'))
+		self.assertNotIn("fa fa-eye", response.body.decode('utf-8'))
 
 	def test_result_preview_non_superuser(self):
 		user = baker.make(UserProfile)
