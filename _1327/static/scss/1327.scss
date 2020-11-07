@@ -295,6 +295,11 @@ div#wrapper {
 		background-color: $gray;
 	}
 }
+
+.navbar-nav {
+	flex-wrap: wrap;
+}
+
 .dropdown-menu li a {
 	display: block;
 	padding: 3px 20px;
