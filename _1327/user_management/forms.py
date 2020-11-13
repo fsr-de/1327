@@ -66,18 +66,21 @@ class GroupEditForm(forms.ModelForm):
 
 	def __init__(self, *args, **kwargs):
 		super(GroupEditForm, self).__init__(*args, **kwargs)
-		self.fields['users'] = ModelMultipleChoiceField(
-			UserProfile.objects.all(),
-			initial=self.instance.user_set.all(),
-			required=False
-		)
+		if kwargs.get('instance') is not None:
+			self.fields['users'] = ModelMultipleChoiceField(
+				UserProfile.objects.all(),
+				initial=[user_profile.pk for user_profile in kwargs['instance'].user_set.all()],
+				required=False
+			)
+
+			self.fields['add_information_document'] = BooleanField(required=False, initial=self.instance.permissions.filter(
+				codename="add_informationdocument").exists())
+			self.fields['add_minutesdocument'] = BooleanField(required=False, initial=self.instance.permissions.filter(
+				codename="add_minutesdocument").exists())
+			self.fields['add_poll'] = BooleanField(required=False, initial=self.instance.permissions.filter(
+				codename="add_poll").exists())
+
 		self.fields['users'].widget.attrs['class'] = 'select2-selection'
-		self.fields['add_information_document'] = BooleanField(required=False, initial=self.instance.permissions.filter(
-			codename="add_informationdocument").exists())
-		self.fields['add_minutesdocument'] = BooleanField(required=False, initial=self.instance.permissions.filter(
-			codename="add_minutesdocument").exists())
-		self.fields['add_poll'] = BooleanField(required=False, initial=self.instance.permissions.filter(
-			codename="add_poll").exists())
 
 	def save(self, *args, **kwargs):
 		super().save(*args, **kwargs)

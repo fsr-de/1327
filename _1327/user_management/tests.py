@@ -384,3 +384,13 @@ class GroupEditFormTests(WebTest):
 		form["users"].select_multiple(texts=[])
 		form.submit()
 		self.assertNotIn(self.group, self.user2.groups.all())
+
+	def test_add_new_group(self):
+		self.app.set_user(self.user1)
+		form = self.app.get(reverse("admin:auth_group_add")).form
+		form['name'] = "Test Group"
+		form["users"].select_multiple(texts=[self.user1.username, self.user2.username])
+		form.submit()
+		new_group = Group.objects.get(name="Test Group")
+		for user in [self.user1, self.user2]:
+			self.assertIn(new_group, user.groups.all())
