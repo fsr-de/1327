@@ -519,7 +519,7 @@ class TestMarkdownMinutesExtension(TestCase):
 	def test_break_preprocessor(self):
 		break_text = "|break|(15:15)(15:20)"
 		processed_text = self.break_preprocessor.run([self.base_text.format(break_text)])[0]
-		self.assertIn("*Meeting break: 15:15 - 15:20*", processed_text)
+		self.assertIn("*Meeting break: 15:15 – 15:20*", processed_text)
 
 	def test_quorum_preprocessor(self):
 		enough_quorum_text = "|quorum|(6/7)"
