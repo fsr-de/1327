@@ -11,8 +11,8 @@ from model_bakery import baker
 from reversion.models import Version
 
 from _1327.main.utils import slugify
-from _1327.minutes.markdown_minutes_extensions import EnterLeavePreprocessor, QuorumPrepocessor, StartEndPreprocessor, \
-	VotePreprocessor
+from _1327.minutes.markdown_minutes_extensions import BreakPreprocessor, EnterLeavePreprocessor, QuorumPrepocessor, \
+	StartEndPreprocessor, VotePreprocessor
 
 from _1327.minutes.models import MinutesDocument
 from _1327.user_management.models import UserProfile
@@ -497,6 +497,7 @@ class TestMarkdownMinutesExtension(TestCase):
 		)
 		self.vote_preprocessor = VotePreprocessor(self.md)
 		self.start_end_preprocessor = StartEndPreprocessor(self.md)
+		self.break_preprocessor = BreakPreprocessor(self.md)
 		self.quorum_preprocessor = QuorumPrepocessor(self.md)
 		self.enter_leave_preprocessor = EnterLeavePreprocessor(self.md)
 		self.base_text = "This is a nice template text, where we will add stuff that shall be preprocessed: {}"
@@ -514,6 +515,11 @@ class TestMarkdownMinutesExtension(TestCase):
 		end_text = "|end|(16:00)"
 		processed_text = self.start_end_preprocessor.run([self.base_text.format(end_text)])[0]
 		self.assertIn("*End of meeting: 16:00*", processed_text)
+
+	def test_break_preprocessor(self):
+		break_text = "|break|(15:15)(15:20)"
+		processed_text = self.break_preprocessor.run([self.base_text.format(break_text)])[0]
+		self.assertIn("*Meeting break: 15:15 – 15:20*", processed_text)
 
 	def test_quorum_preprocessor(self):
 		enough_quorum_text = "|quorum|(6/7)"
