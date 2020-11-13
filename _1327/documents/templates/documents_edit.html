@@ -408,9 +408,10 @@
 
 		function getCurrentTime() {
 			const currentDate = new Date();
-			const currentHour = currentDate.getHours().toString();
+			let currentHour = currentDate.getHours().toString();
 			let currentMinute = currentDate.getMinutes().toString();
-			if(currentMinute.length == 1) currentMinute = "0" + currentMinute;
+			if (currentMinute.length == 1) currentMinute = "0" + currentMinute;
+			if (currentHour.length == 1) currentHour = "0" + currentHour;
 
 			return currentHour + ":" + currentMinute;
 		}
@@ -420,7 +421,7 @@
 			const cursorPosition = markdownEditor[0].selectionStart;
 
 			markdownEditor[0].value = markdownText.splice(cursorPosition, markdownEditor[0].selectionEnd - cursorPosition, textToInsert);
-							
+
 			const additionalTextLength = textToInsert.length;
 			markdownEditor[0].selectionStart = cursorPosition + additionalTextLength;
 			markdownEditor[0].selectionEnd = cursorPosition + additionalTextLength;
@@ -584,57 +585,57 @@
                                 return;
                             }
 
-                            editor.find(".btn-toolbar").append("<div class='emojioneholder'></div>");
-                            emojiHolder = editor.find(".emojioneholder");
-                            const emojiArea = emojiHolder.emojioneArea({
-                                standalone: true,
-                                shortnames: true,
-                                saveEmojisAs: 'shortname',
-                                emojiPlaceholder: ":wink:",
-                                useInternalCDN: false,
-                                pickerPosition: 'bottom',
-                                autocomplete: false,
-                                events: {
-                                    'picker.hide': function (picker) {
-                                        // add the selected emoji to the correct place in our editor
-                                        const markdownEditor = picker.closest(".md-editor").find(".md-input");
-                                        const markdownText = markdownEditor.val();
-                                        const cursorPosition = markdownEditor[0].selectionStart;
-                                        const textWithEmoji = markdownText.splice(cursorPosition, 0, this.getText());
-                                        markdownEditor.val(textWithEmoji);
+							editor.find(".btn-toolbar").append("<div class='emojioneholder'></div>");
+							emojiHolder = editor.find(".emojioneholder");
+							const emojiArea = emojiHolder.emojioneArea({
+								standalone: true,
+								shortnames: true,
+								saveEmojisAs: 'shortname',
+								emojiPlaceholder: ":wink:",
+								useInternalCDN: false,
+								pickerPosition: 'bottom',
+								autocomplete: false,
+								events: {
+									'picker.hide': function (picker) {
+										// add the selected emoji to the correct place in our editor
+										const markdownEditor = picker.closest(".md-editor").find(".md-input");
+										const markdownText = markdownEditor.val();
+										const cursorPosition = markdownEditor[0].selectionStart;
+										const textWithEmoji = markdownText.splice(cursorPosition, 0, this.getText());
+										markdownEditor.val(textWithEmoji);
 
-                                        // set the cursor to the correct position, because we automatically set it to
-                                        // the end
-                                        const emojiLength = this.getText().length;
-                                        markdownEditor[0].selectionStart = cursorPosition + emojiLength;
-                                        markdownEditor[0].selectionEnd = cursorPosition + emojiLength;
+										// set the cursor to the correct position, because we automatically set it to
+										// the end
+										const emojiLength = this.getText().length;
+										markdownEditor[0].selectionStart = cursorPosition + emojiLength;
+										markdownEditor[0].selectionEnd = cursorPosition + emojiLength;
 
-                                        // rerender the preview
-                                        efficientRender();
-                                        this.setText('');
-                                    },
-                                    'picker.show': function () {
-                                        const focusElement = $('.emojionearea-picker').find('.emojionearea-search').find('input');
-                                        setTimeout(function () {
-                                            focusElement.focus();
-                                            focusElement.prop('autofocus');
-                                        }, 250);
-                                    }
-                                }
-                            });
-                            emojiArea.data("emojioneArea").showPicker();
-                        }
-                    }]
-	            },
+										// rerender the preview
+										efficientRender();
+										this.setText('');
+									},
+									'picker.show': function () {
+										const focusElement = $('.emojionearea-picker').find('.emojionearea-search').find('input');
+										setTimeout(function () {
+											focusElement.focus();
+											focusElement.prop('autofocus');
+										}, 250);
+									}
+								}
+							});
+							emojiArea.data("emojioneArea").showPicker();
+						}
+					}]
+				},
 				{
-                    name: "GeneralTextBlockGroup",
-                    data: [{
-                        name: "cmdAddStartText",
-                        toggle: false,
-                        title: "Begin or continue the meeting",
-                        icon: "glyphicon glyphicon-play",
+					name: "GeneralTextBlockGroup",
+					data: [{
+						name: "cmdAddStartText",
+						toggle: false,
+						title: "Begin or continue the meeting",
+						icon: "glyphicon glyphicon-play",
 						callback: function (e) {
-                            const markdownEditor = e.$editor.find(".md-input");
+							const markdownEditor = e.$editor.find(".md-input");
 
 							const currentTime = getCurrentTime();
 							let textToInsert;
@@ -642,13 +643,13 @@
 							const unfinishedBreak = markdownEditor[0].value.match(/\|break\|\((\d+):(\d+)\)\(\)/);
 							const startedMeeting = markdownEditor[0].value.search(/\|start\|\((\d+):(\d+)\)/);
 
-							if(unfinishedBreak) {
+							if (unfinishedBreak) {
 								const unfinishedBreakPosition = markdownEditor[0].value.search(/\|break\|\((\d+):(\d+)\)\(\)/);
 								const relativeInsertPosition = unfinishedBreak[0].search(/\(\)/) + 1;
-								
+
 								const oldSelectionStartPosition = markdownEditor[0].selectionStart;
 								const oldSelectionEndPosition = markdownEditor[0].selectionEnd;
-								
+
 								// set cursor position to absolute insert position
 								markdownEditor[0].selectionStart = unfinishedBreakPosition + relativeInsertPosition;
 								markdownEditor[0].selectionEnd = unfinishedBreakPosition + relativeInsertPosition;
@@ -660,7 +661,7 @@
 								// cursor shall stay at its old (relative) position
 								markdownEditor[0].selectionStart = oldSelectionStartPosition;
 								markdownEditor[0].selectionEnd = oldSelectionEndPosition;
-								if (oldSelectionStartPosition > currentSelectionStartPosition) {	
+								if (oldSelectionStartPosition > currentSelectionStartPosition) {
 									markdownEditor[0].selectionStart += textToInsert.length;
 									markdownEditor[0].selectionEnd += textToInsert.length;
 								}
@@ -668,83 +669,83 @@
 							} else if (startedMeeting < 0) { // meeting only needs to be started once
 								textToInsert = "|start|(" + currentTime + ")";
 								insertText(textToInsert, markdownEditor);
-							}	
-                        }
+							}
+						}
 					},
 					{
-                        name: "cmdAddBreakText",
-                        toggle: false,
-                        title: "Pause the meeting",
-                        icon: "glyphicon glyphicon-pause",
+						name: "cmdAddBreakText",
+						toggle: false,
+						title: "Pause the meeting",
+						icon: "glyphicon glyphicon-pause",
 						callback: function (e) {
 							const markdownEditor = e.$editor.find(".md-input");
 
 							const currentTime = getCurrentTime();
 							const textToInsert = "\n|break|(" + currentTime + ")()";
-							
+
 							insertText(textToInsert, markdownEditor);
 						}
 					},
 					{
-                        name: "cmdAddEndText",
-                        toggle: false,
-                        title: "End the meeting",
-                        icon: "glyphicon glyphicon-stop",
+						name: "cmdAddEndText",
+						toggle: false,
+						title: "End the meeting",
+						icon: "glyphicon glyphicon-stop",
 						callback: function (e) {
-                            const markdownEditor = e.$editor.find(".md-input");
-							
+							const markdownEditor = e.$editor.find(".md-input");
+
 							const currentTime = getCurrentTime();
 							const textToInsert = "\n|end|(" + currentTime + ")";
-							
+
 							insertText(textToInsert, markdownEditor);
-                        }
+						}
 					}]
-                },
+				},
 				{
-                    name: "PersonTextBlockGroup",
-                    data: [{
-                        name: "cmdAddQuorumText",
-                        toggle: false,
-                        title: "Add quorum text",
-                        icon: "glyphicon glyphicon-user",
-                        callback: function (e) {
-                            const markdownEditor = e.$editor.find(".md-input");
+					name: "PersonTextBlockGroup",
+					data: [{
+						name: "cmdAddQuorumText",
+						toggle: false,
+						title: "Add quorum text",
+						icon: "glyphicon glyphicon-user",
+						callback: function (e) {
+							const markdownEditor = e.$editor.find(".md-input");
 
 							const textToInsert = "\n|quorum|(/)";
 
 							insertText(textToInsert, markdownEditor);
-                        }
-                    },
+						}
+					},
 					{
-                        name: "cmdAddEnterText",
-                        toggle: false,
-                        title: "Add enter text",
-                        icon: "glyphicon glyphicon-chevron-right",
+						name: "cmdAddEnterText",
+						toggle: false,
+						title: "Add enter text",
+						icon: "glyphicon glyphicon-chevron-right",
 						callback: function (e) {
-                            const markdownEditor = e.$editor.find(".md-input");
+							const markdownEditor = e.$editor.find(".md-input");
 
 							const currentTime = getCurrentTime();
 							const textToInsert = "\n|enter|(" + currentTime + ")()";
 
 							insertText(textToInsert, markdownEditor);
-                        }
+						}
 					},
 					{
-                        name: "cmdAddLeaveText",
-                        toggle: false,
-                        title: "Add leave text",
-                        icon: "glyphicon glyphicon-chevron-left",
+						name: "cmdAddLeaveText",
+						toggle: false,
+						title: "Add leave text",
+						icon: "glyphicon glyphicon-chevron-left",
 						callback: function (e) {
-                            const markdownEditor = e.$editor.find(".md-input");
-							
+							const markdownEditor = e.$editor.find(".md-input");
+
 							const currentTime = getCurrentTime();
 							const textToInsert = "\n|leave|(" + currentTime + ")()";
 
 							insertText(textToInsert, markdownEditor);
 						}
 					}]
-                }]
-            ];
-	    }
+				}]
+			];
+		}
 	</script>
 {% endblock %}
