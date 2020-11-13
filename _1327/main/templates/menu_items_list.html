@@ -13,11 +13,11 @@
 			<div class="dd-content menu-entry">
 				{% if item|can_edit_menu_item:user %}
 					<a href="{% url 'menu_item_edit' item.pk %}">{{ item.title }}</a>
+					{% if item.link %}(<i>{% trans "Link" %}:</i> {{ item.link }}){% endif %}
+					{% if item.document %}(<i>{% trans "Document" %}:</i> {{ item.document }}){% endif %}
 				{% else %}
 					{{ item.title }}
 				{% endif %}
-				{% if item.link %}(<i>{% trans "Link" %}:</i> {{ item.link }}){% endif %}
-				{% if item.document %}(<i>{% trans "Document" %}:</i> {{ item.document }}){% endif %}
 				{% if item|can_delete_menu_item:user %}
 					<button type="button" class="close" onclick="show_delete_modal({{ item.id }});"><span>&times;</span></button>
 				{% endif %}
