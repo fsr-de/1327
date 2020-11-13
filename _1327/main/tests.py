@@ -11,7 +11,7 @@ from django.test import override_settings, RequestFactory, TestCase
 from django.urls import reverse
 from django.utils import translation
 from django_webtest import WebTest
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import assign_perm, remove_perm
 from guardian.utils import get_anonymous_user
 from model_bakery import baker
 
@@ -78,9 +78,9 @@ class MenuItemTests(WebTest):
 		cls.root_user.groups.add(cls.staff_group)
 		cls.user.groups.add(cls.staff_group)
 
-		cls.root_menu_item = baker.make(MenuItem)
-		cls.sub_item = baker.make(MenuItem, parent=cls.root_menu_item, order=3)
-		cls.sub_sub_item = baker.make(MenuItem, parent=cls.sub_item, order=4)
+		cls.root_menu_item = baker.make(MenuItem, title_en="root_menu_item")
+		cls.sub_item = baker.make(MenuItem, parent=cls.root_menu_item, title_en="sub_item", order=3)
+		cls.sub_sub_item = baker.make(MenuItem, parent=cls.sub_item, title_en="sub_sub_item", order=4)
 
 		assign_perm(cls.sub_item.change_children_permission_name, cls.user, cls.sub_item)
 		assign_perm(cls.sub_item.view_permission_name, cls.user, cls.sub_item)
@@ -303,7 +303,7 @@ class MenuItemTests(WebTest):
 		self.assertNotIn(reverse('menu_item_edit', args=[extra_sub_item.id]), response.body.decode('utf-8'))
 
 	def test_change_parent_with_edit_permission(self):
-		extra_sub_item = baker.make(MenuItem, parent=self.sub_item)
+		extra_sub_item = baker.make(MenuItem, parent=self.sub_item, title_en='extra_sub_item')
 		assign_perm(extra_sub_item.edit_permission_name, self.user, extra_sub_item)
 
 		response = self.app.get(reverse('menu_items_index'), user=self.user)
@@ -316,6 +316,21 @@ class MenuItemTests(WebTest):
 		response = self.app.get(reverse('menu_items_index'), user=self.user)
 		self.assertEqual(response.status_code, 200)
 		self.assertIn(reverse('menu_item_edit', args=[extra_sub_item.id]), response.body.decode('utf-8'))
+
+	def test_can_see_link_details(self):
+		extra_sub_item = baker.make(MenuItem, parent=self.root_menu_item, title_en="name", link="link123")
+
+		assign_perm(MenuItem.EDIT_PERMISSION_NAME, self.user, extra_sub_item)
+
+		response = self.app.get(reverse('menu_items_index'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn("(<i>Link:</i> link123)", response.body.decode('utf-8'))
+
+		remove_perm(MenuItem.EDIT_PERMISSION_NAME, self.user, extra_sub_item)
+
+		response = self.app.get(reverse('menu_items_index'), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertNotIn("(<i>Link:</i> link123)", response.body.decode('utf-8'))
 
 	def test_menu_item_ordering(self):
 		self.root_menu_item.order = 2

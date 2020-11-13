@@ -1,7 +1,10 @@
 import os
 
-from channels.asgi import get_channel_layer
+from channels.routing import get_default_application
+
+import django
+
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "_1327.settings")
-
-channel_layer = get_channel_layer()
+django.setup()
+application = get_default_application()

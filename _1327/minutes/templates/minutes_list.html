@@ -46,7 +46,7 @@
 					{% endif %}
 					<td style="width: 15%;">
 						{% for label in minute.labels.all %}
-							<span class="label {{ label.class_for_text_color }}" style="background-color: {{ label.color }};">{{ label.title }}</span>
+							<span class="badge {{ label.class_for_text_color }}" style="background-color: {{ label.color }};">{{ label.title }}</span>
 						{% endfor %}
 					</td>
 					<td style="width: 55%;">
