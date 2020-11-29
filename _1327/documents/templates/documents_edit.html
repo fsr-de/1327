@@ -704,23 +704,10 @@
 				{
 					name: "PersonTextBlockGroup",
 					data: [{
-						name: "cmdAddQuorumText",
-						toggle: false,
-						title: "Add quorum text",
-						icon: "fa fa-users",
-						callback: function (e) {
-							const markdownEditor = e.$editor.find(".md-input");
-
-							const textToInsert = "\n|quorum|(/)";
-
-							insertText(textToInsert, markdownEditor);
-						}
-					},
-					{
 						name: "cmdAddEnterText",
 						toggle: false,
 						title: "Add enter text",
-						icon: "fa fa-chevron-right",
+						icon: "fa fa-user-plus",
 						callback: function (e) {
 							const markdownEditor = e.$editor.find(".md-input");
 
@@ -734,12 +721,25 @@
 						name: "cmdAddLeaveText",
 						toggle: false,
 						title: "Add leave text",
-						icon: "fa fa-chevron-left",
+						icon: "fa fa-user-times",
 						callback: function (e) {
 							const markdownEditor = e.$editor.find(".md-input");
 
 							const currentTime = getCurrentTime();
 							const textToInsert = "\n|leave|(" + currentTime + ")()";
+
+							insertText(textToInsert, markdownEditor);
+						}
+					},
+					{
+						name: "cmdAddQuorumText",
+						toggle: false,
+						title: "Add quorum text",
+						icon: "fa fa-users",
+						callback: function (e) {
+							const markdownEditor = e.$editor.find(".md-input");
+
+							const textToInsert = "\n|quorum|(/)";
 
 							insertText(textToInsert, markdownEditor);
 						}
