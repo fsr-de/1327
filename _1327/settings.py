@@ -161,14 +161,17 @@ DATABASES = {
 	}
 }
 
+# rabbitmq config https://pypi.org/project/channels-rabbitmq/
 CHANNEL_LAYERS = {
-	'default': {
-		'BACKEND': 'channels_redis.core.RedisChannelLayer',
-		'CONFIG': {
-			"hosts": [('127.0.0.1', 6379)],
-		},
-	},
+    "default": {
+        "BACKEND": "channels_rabbitmq.core.RabbitmqChannelLayer",
+        "CONFIG": {
+            "host": "amqp://guest:guest@127.0.0.1/asgi",
+            # "ssl_context": ... (optional)
+        },
+    },
 }
+
 PREVIEW_URL = '/ws/preview'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

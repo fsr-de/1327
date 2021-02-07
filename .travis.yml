@@ -18,4 +18,4 @@ script:
 after_success:
   - coveralls
 services:
-  - redis-server
+  - rabbitmq-server

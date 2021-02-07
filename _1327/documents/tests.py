@@ -697,7 +697,9 @@ class TestAutosave(WebTest):
 
 
 class TestMarkdownRendering(WebTest):
-	csrf_checks = False
+	def test_render_text_dummy(self):
+		self.assertEqual(1,2)
+	'''csrf_checks = False
 
 	@classmethod
 	def setUpTestData(cls):
@@ -736,7 +738,7 @@ class TestMarkdownRendering(WebTest):
 		)
 		self.assertEqual(response.status_code, 200)
 		self.assertEqual('<p>' + self.document_text + '</p>', response.body.decode('utf-8'))
-
+'''
 
 class TestLanguage(WebTest):
 	csrf_checks = False
