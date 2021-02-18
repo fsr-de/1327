@@ -248,7 +248,7 @@ def render_text(request, title):
 	text, __ = convert_markdown(request.POST['text'])
 
 	channel_layer = channels.layers.get_channel_layer()
-	async_to_sync(channel_layer.group_send)(
+	channel_layer.group_send(
 		document.hash_value,
 		{
 			'type': 'update_preview',
