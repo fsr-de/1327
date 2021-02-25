@@ -465,7 +465,7 @@ class MenuItemTests(WebTest):
 		self.assertEqual(response.status_code, 200)
 
 		updated_child_item = MenuItem.objects.filter(pk=child_item.id).first()
-		self.assertEquals(new_parent_item.id, updated_child_item.parent.id)
+		self.assertEqual(new_parent_item.id, updated_child_item.parent.id)
 
 	def test_move_to_parent_with_content(self):
 		order_data = {
@@ -488,7 +488,7 @@ class MenuItemTests(WebTest):
 
 		updated_child_item = MenuItem.objects.filter(pk=child_item.id).first()
 		# it is forbidden for a MenuItem to have content and children, so it should not be moved
-		self.assertEquals(parent_item.id, updated_child_item.parent.id)
+		self.assertEqual(parent_item.id, updated_child_item.parent.id)
 
 	def test_update_order_as_non_superuser(self):
 		def test_root_menu_order(root_menu_items):

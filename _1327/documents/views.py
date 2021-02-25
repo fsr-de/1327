@@ -339,9 +339,9 @@ def revert(request):
 
 		if isinstance(field, models.ManyToManyField):
 			many_to_many_fields[key] = fields[key]
+			del new_fields[key]
 		else:
 			new_fields[field.attname] = fields[key]
-		del new_fields[key]
 
 	reverted_document = document_class(**new_fields)
 	with transaction.atomic(), revisions.create_revision():
@@ -357,7 +357,6 @@ def revert(request):
 				date=datetime.utcnow().strftime("%Y-%m-%d %H:%M"),
 			))
 		)
-
 	return HttpResponse(reverse('versions', args=[reverted_document.url_title]))
 
 
