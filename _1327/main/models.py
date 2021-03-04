@@ -3,7 +3,7 @@ from collections import namedtuple
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from guardian.shortcuts import assign_perm
 

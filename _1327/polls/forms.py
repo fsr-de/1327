@@ -3,7 +3,7 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.forms import inlineformset_factory
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from _1327.documents.forms import AtLeastNFormSet, DocumentForm
 from .models import Choice, Poll

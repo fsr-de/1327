@@ -1,7 +1,7 @@
 from django.db import models
 from django.template import loader
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from reversion import revisions
 
 from _1327.documents.models import Document
