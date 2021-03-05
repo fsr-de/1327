@@ -707,7 +707,6 @@ class TestMarkdownRendering(WebTest):
 		cls.document.set_all_permissions(baker.make(Group))
 
 	def test_render_text_no_permission(self):
-		print("render test no permission")
 		user_without_permission = baker.make(UserProfile)
 		response = self.app.post(
 			reverse('documents:render', args=[self.document.url_title]),
@@ -719,7 +718,6 @@ class TestMarkdownRendering(WebTest):
 		self.assertEqual(response.status_code, 403)
 
 	def test_render_text_wrong_method(self):
-		print("render text wrong method")
 		response = self.app.get(
 			reverse('documents:render', args=[self.document.url_title]),
 			params={'text': self.document_text},
@@ -730,7 +728,6 @@ class TestMarkdownRendering(WebTest):
 		self.assertEqual(response.status_code, 400)
 
 	def test_render_text(self):
-		print("render text")
 		response = self.app.post(
 			reverse('documents:render', args=[self.document.url_title]),
 			params={'text': self.document_text},
