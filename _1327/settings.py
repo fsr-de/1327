@@ -33,26 +33,24 @@ TESTING = 'test' in sys.argv
 ENABLE_DEBUG_TOOLBAR = False
 ENABLE_DEBUG_TOOLBAR = ENABLE_DEBUG_TOOLBAR and DEBUG and not TESTING
 
-
 ALLOWED_HOSTS = []
 
 # The page URL that is used in email templates
 PAGE_URL = "localhost:8000"
-
 
 # People who receive emails on errors
 ADMINS = [
 	# ('Your Name', 'your_email@example.com'),
 ]
 
-
 DELETE_EMPTY_PAGE_AFTER = timedelta(hours=1)
 
 FORBIDDEN_URLS = [
-	"admin", "login", "logout", "documents", "information_pages", "minutes", "polls", "list", "view_as", "abbreviation_explanation",
-	"menu_items", "menu_item_delete", "menu_item", "create", "edit", "delete", "update_order", "hijack", "unlinked", "revert", "search", "download",
-	"update", "attachment", "no-direct-download", "autosave", "publish", "render", "delete-cascade", "versions", "permissions", "attachments",
-	"shortlink", "shortlinks", "preview", "get", "change", "autosave", "ws", "oidc",
+	"abbreviation_explanation", "admin", "attachment", "attachments", "autosave", "change", "create", "delete",
+	"delete-cascade", "documents", "download", "edit", "get", "hijack", "information_pages", "list", "login", "logout",
+	"menu_item", "menu_item_delete", "menu_items", "minutes", "no-direct-download", "oidc", "permissions", "polls",
+	"preview", "publish", "render", "revert", "search", "shortlink", "shortlinks", "unlinked", "update", "update_order",
+	"versions", "view_as", "ws",
 ]
 
 ANONYMOUS_GROUP_NAME = "Anonymous"
@@ -78,7 +76,6 @@ MINUTES_PUBLISH_REMINDER_DAYS = 6
 # Emails ending on the first value will have this part replaced by the second value.
 # e.g.: [("institution.example.com", "institution.com")]
 INSTITUTION_EMAIL_REPLACEMENTS = []
-
 
 # Application definition
 
@@ -135,7 +132,7 @@ GUARDIAN_RAISE_403 = True
 
 # Hijack settings
 HIJACK_USE_BOOTSTRAP = True
-HIJACK_URL_ALLOWED_ATTRIBUTES = ('user_id', )
+HIJACK_URL_ALLOWED_ATTRIBUTES = ('user_id',)
 
 BOOTSTRAP3 = {
 	'horizontal_label_class': 'col-md-2',
@@ -161,14 +158,17 @@ DATABASES = {
 	}
 }
 
+# rabbitmq config https://pypi.org/project/channels-rabbitmq/
 CHANNEL_LAYERS = {
-	'default': {
-		'BACKEND': 'channels_redis.core.RedisChannelLayer',
-		'CONFIG': {
-			"hosts": [('127.0.0.1', 6379)],
+	"default": {
+		"BACKEND": "channels_rabbitmq.core.RabbitmqChannelLayer",
+		"CONFIG": {
+			"host": "amqp://guest:guest@127.0.0.1/%2f",
+			# "ssl_context": ... (optional)
 		},
 	},
 }
+
 PREVIEW_URL = '/ws/preview'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -176,7 +176,6 @@ EMAIL_HOST = ''
 EMAIL_PORT = '25'
 DEFAULT_FROM_EMAIL = 'noreply@example.com'
 SERVER_EMAIL = 'noreply@example.com'
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
@@ -277,7 +276,6 @@ COMPRESS_PRECOMPILERS = (
 # Set this to the ID of the document that shall be shown as Main Page
 MAIN_PAGE_ID = -1
 
-
 # OpenID Login
 # replace 'example.com', OIDC_RP_CLIENT_ID and OIDC_RP_CLIENT_SECRET with real values in localsettings when activating
 ACTIVATE_OPEN_ID_LOGIN = False
@@ -294,7 +292,6 @@ OIDC_OP_AUTHORIZATION_ENDPOINT = "https://example.com/auth"
 OIDC_OP_TOKEN_ENDPOINT = "https://example.com/token"
 OIDC_OP_USER_ENDPOINT = "https://example.com/me"
 OIDC_OP_JWKS_ENDPOINT = "https://example.com/certs"
-
 
 if TESTING:
 	DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3'}  # use sqlite to speed tests up

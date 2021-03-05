@@ -8,7 +8,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template import loader
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _, ungettext_lazy
+from django.utils.translation import gettext_lazy as _, ngettext_lazy
 from guardian.shortcuts import assign_perm
 from reversion import revisions
 
@@ -60,8 +60,8 @@ class MinutesDocument(Document):
 	VIEW_PERMISSION_NAME = MINUTES_VIEW_PERMISSION_NAME
 
 	class Meta(Document.Meta):
-		verbose_name = ungettext_lazy("Minutes", "Minutes", 1)
-		verbose_name_plural = ungettext_lazy("Minutes", "Minutes", 2)
+		verbose_name = ngettext_lazy("Minutes", "Minutes", 1)
+		verbose_name_plural = ngettext_lazy("Minutes", "Minutes", 2)
 
 	@classmethod
 	def generate_new_title(cls):

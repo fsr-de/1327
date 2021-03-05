@@ -7,7 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.forms import BaseInlineFormSet
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from guardian.shortcuts import assign_perm, get_perms, remove_perm
 
 from _1327.main.utils import slugify_and_clean_url_title

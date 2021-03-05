@@ -7,7 +7,7 @@ from django.db.models import F
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from _1327.documents.models import Document
 from _1327.main.utils import convert_markdown, document_permission_overview
