@@ -13,7 +13,7 @@ Vagrant.configure("2") do |config|
   config.vm.provider :virtualbox do |v, override|
     # disable logfile
     v.customize [ "modifyvm", :id, "--uartmode1", "disconnected" ]
-    v.customize [ "modifyvm", :id, "--cpus", "10" ]
+    v.customize [ "modifyvm", :id, "--cpus", "4" ]
     # show virtualbox gui, uncomment this to debug startup problems
     #v.gui = true
   end

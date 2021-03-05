@@ -46,13 +46,11 @@ ADMINS = [
 DELETE_EMPTY_PAGE_AFTER = timedelta(hours=1)
 
 FORBIDDEN_URLS = [
-	"admin", "login", "logout", "documents", "information_pages", "minutes", "polls", "list", "view_as",
-	"abbreviation_explanation",
-	"menu_items", "menu_item_delete", "menu_item", "create", "edit", "delete", "update_order", "hijack", "unlinked",
-	"revert", "search", "download",
-	"update", "attachment", "no-direct-download", "autosave", "publish", "render", "delete-cascade", "versions",
-	"permissions", "attachments",
-	"shortlink", "shortlinks", "preview", "get", "change", "autosave", "ws", "oidc",
+	"abbreviation_explanation", "admin", "attachment", "attachments", "autosave", "change", "create", "delete",
+	"delete-cascade", "documents", "download", "edit", "get", "hijack", "information_pages", "list", "login", "logout",
+	"menu_item", "menu_item_delete", "menu_items", "minutes", "no-direct-download", "oidc", "permissions", "polls",
+	"preview", "publish", "render", "revert", "search", "shortlink", "shortlinks", "unlinked", "update", "update_order",
+	"versions", "view_as", "ws",
 ]
 
 ANONYMOUS_GROUP_NAME = "Anonymous"
