@@ -4,7 +4,7 @@ import logging
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.core.management.base import BaseCommand
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from _1327.minutes.models import MinutesDocument
 

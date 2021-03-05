@@ -29,15 +29,17 @@ echo "alias pip=pip3" >> /home/vagrant/.bashrc
 echo "cd /vagrant" >> /home/vagrant/.bashrc
 
 # install requirements
+#required for psycopg2
+sudo apt-get install libpq-dev
 sudo -H -u vagrant pip3 install --user -r /vagrant/requirements-dev.txt
-sudo -H -u vagrant pip3 install --user psycopg2==2.7.3.1
+
 # deploy localsettings and insert random key
 cp /vagrant/deployment/localsettings.template.py /vagrant/_1327/localsettings.py
 sed -i -e "s/\${SECRET_KEY}/`sudo head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32`/" /vagrant/_1327/localsettings.py
 
-# setup redis
-cd /vagrant/deployment/redis
-sh init_redis.sh
+# setup rabbitmq
+cd /vagrant/deployment/rabbitmq
+sh init_rabbitmq.sh
 
 # setup static files
 cd /vagrant/_1327/static
