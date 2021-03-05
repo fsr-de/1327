@@ -29,9 +29,9 @@ class Command(BaseCommand):
 		group.user_set.add(user)
 
 		for permission in Permission.objects.filter(codename__in=[
-				"add_minutesdocument",
-				"add_informationdocument",
-				"add_poll"]):
+			"add_minutesdocument",
+			"add_informationdocument",
+			"add_poll"]):
 			permission.group_set.add(group)
 
 		self.stdout.write('Done.')

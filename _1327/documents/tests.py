@@ -738,6 +738,7 @@ class TestMarkdownRendering(WebTest):
 		self.assertEqual(response.status_code, 200)
 		self.assertEqual('<p>' + self.document_text + '</p>', response.body.decode('utf-8'))
 
+
 class TestLanguage(WebTest):
 	csrf_checks = False
 
