@@ -6,6 +6,9 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get -q update
 apt-get -q install -y python3-dev python3-pip gettext
 
+# install other build dependencies
+apt-get -q install pkg-config
+
 # setup Yarn
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
@@ -29,7 +32,7 @@ echo "alias pip=pip3" >> /home/vagrant/.bashrc
 echo "cd /vagrant" >> /home/vagrant/.bashrc
 
 # install requirements
-#required for psycopg2
+# required for psycopg2
 sudo apt-get install libpq-dev
 sudo -H -u vagrant pip3 install --user -r /vagrant/requirements-dev.txt
 
@@ -38,8 +41,8 @@ cp /vagrant/deployment/localsettings.template.py /vagrant/_1327/localsettings.py
 sed -i -e "s/\${SECRET_KEY}/`sudo head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32`/" /vagrant/_1327/localsettings.py
 
 # setup redis
-cd /vagrant/deployment/redis
-sudo sh init_redis.sh
+apt-get -q install -y redis:wq
+
 
 # setup static files
 cd /vagrant/_1327/static
