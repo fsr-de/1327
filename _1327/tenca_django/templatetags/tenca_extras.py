@@ -7,3 +7,6 @@ register = template.Library()
 @register.filter
 def fqdn_ize(list_id):
 	return views.connection.fqdn_ize(list_id)
+
+def deflate_attributes(attributes):
+	return
