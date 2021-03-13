@@ -30,6 +30,11 @@
 				<button type="submit" class="btn btn-primary">
 					{% trans 'Save' %}
 				</button>
+				{% if document|num_revisions == 0 and not form.autosave_id  %}
+					<button type="button" class="btn btn-danger" id="discardDocumentButton">
+						{% trans 'Discard' %}
+					</button>
+				{% endif %}
 				{% if document|num_revisions > 0 %}
 					<button type="button" class="btn btn-danger" id="deleteDocumentButton">
 						{% trans 'Delete' %}
@@ -306,6 +311,18 @@
 		$('#addImage').on('click', function (event) {
 			$('#image-upload-area').removeClass('hidden');
 		});
+
+		{% if document|num_revisions == 0 and not form.autosave_id %}
+			$('#discardDocumentButton').on('click', function (event) {
+				$.post(
+					"{% url "documents:delete_document" document.url_title %}",
+					{},
+					function (data, textStatus, jqXHR) {
+						window.location.replace("/");
+					}
+				);
+			});
+		{% endif %}
 
 		{% if document|num_revisions > 0 %}
 			function createCascadeList(cascade, domObject) {
