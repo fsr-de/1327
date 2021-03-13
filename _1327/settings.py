@@ -102,6 +102,7 @@ INSTALLED_APPS = [
 	'_1327.minutes',
 	'_1327.polls',
 	'_1327.shortlinks',
+	'_1327.tenca_django',
 	'mozilla_django_oidc',
 ]
 
