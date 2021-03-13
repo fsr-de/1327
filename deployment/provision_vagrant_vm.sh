@@ -7,8 +7,8 @@ apt-get -q update
 apt-get -q install -y python3-dev python3-pip gettext
 
 # setup Yarn
-curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 
 apt-get update
 apt-get -q install -y yarn
@@ -37,9 +37,8 @@ sudo -H -u vagrant pip3 install --user -r /vagrant/requirements-dev.txt
 cp /vagrant/deployment/localsettings.template.py /vagrant/_1327/localsettings.py
 sed -i -e "s/\${SECRET_KEY}/`sudo head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32`/" /vagrant/_1327/localsettings.py
 
-# setup redis
-apt-get -q install -y redis
-
+# setup redis as snap.redis.server.service
+snap install redis
 
 # setup static files
 cd /vagrant/_1327/static
