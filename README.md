@@ -13,12 +13,12 @@ A student representatives website. This project is live! You can see a working i
 To be able to contribute to 1327, you need to get the source code with all dependencies. Please note, that submodules for *bootstrap*, *font-awesome* and *bootstrap-markdown* are in use:
 
 ```bash
-git clone https://github.com/fsr-itse/1327.git
+git clone https://github.com/fsr-de/1327.git
 ```
 
 Freshly created code needs to be tested - besides our use of unit tests, linting and continous integration, it is possible to run the application in a non-production environment using *Vagrant* or a *Virtual Environment*.
 
-1327 runs on `Python 3.7` or higher.
+1327 requires `Python 3.6` or higher.
 
 ### Vagrant
 
@@ -46,12 +46,12 @@ To login with your local user instead of the default OpenID login, you have to v
 
 Another way of executing this django application is the use of a virtual python environment. This way bypasses the needs for a virtual machine and simplifies the life with multiple python versions installed.
 
-Before creating a virtual environment, make sure to use `Python 3.7` or higher:
+Before creating a virtual environment, make sure to use `Python 3.6` or higher:
 
 ```bash
 python --version
 # example output
-Python 3.7.0
+Python 3.6.0
 ```
 
 Now you can create a virtual environment with that python version:
@@ -75,7 +75,7 @@ via [Yarn](https://yarnpkg.com/lang/en/).
 
 | Error         | Solution    |
 | ------------- |-------------|
-| `Fatal error: Python.h: No such file or directory`      | Are you on a Debian system (e.g. Ubuntu)? Debian doesn't install development tools by default. Since some of the 1327 dependencies need to be compiled, we need those. You need to install them in your system, e.g. for Python 3.7 via `sudo apt-get install python3.7-dev`, and then recreate the virtual environment.
+| `Fatal error: Python.h: No such file or directory`      | Are you on a Debian system (e.g. Ubuntu)? Debian doesn't install development tools by default. Since some of the 1327 dependencies need to be compiled, we need those. You need to install them in your system, e.g. for Python 3.6 via `sudo apt-get install python3.6-dev`, and then recreate the virtual environment.
 
 ## Deployment
 
