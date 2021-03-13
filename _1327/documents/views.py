@@ -213,7 +213,12 @@ def publish(request, title, next_state_id):
 		raise PermissionDenied()
 
 	document.publish(next_state_id)
-	messages.success(request, _("Minutes document has been published."))
+	if isinstance(document, MinutesDocument):
+		messages.success(request, _("Minutes document has been published."))
+	elif isinstance(document, Poll):
+		messages.success(request, _("Poll has been published."))
+	else:
+		raise SuspiciousOperation
 
 	return HttpResponseRedirect(reverse(document.get_view_url_name(), args=[document.url_title]))
 

@@ -11,12 +11,15 @@ register = template.Library()
 def can_see_results(poll):
 	if poll.state == Poll.UNPUBLISHED:
 		return False
-	if poll.state == Poll.AFTER_END and poll.end_date >= datetime.date.today():
-		return False
+	elif poll.state == Poll.AFTER_END:
+		if poll.end_date >= datetime.date.today():
+			return False
+		else:
+			return True
+	elif poll.state == Poll.PUBLISHED:
+		return True
 	else:
-		return True
-	if poll.state == Poll.PUBLISHED:
-		return True
+		return False  # TODO: raise Exception?
 
 
 @register.filter
