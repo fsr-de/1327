@@ -11,50 +11,52 @@
 
 {% block sidebar %}
 	{% include document.meta_information_html %}
-	<div class="divider hidden-print"></div>
-	{% block document_nav %}
-		{% if permission_overview %}
-			<div role="tablist" class="hidden-print">
-				<a class="btn btn-sm btn-sidebar {% if active_page == 'view' %}btn-warning{% else %}btn-default{% endif %}" href="{% url document.get_view_url_name document.url_title %}" role="tab">{% trans "View" %}</a>
-				<a class="btn btn-sm btn-sidebar {% if active_page == 'edit' %}btn-warning{% else %}btn-default{% endif %}" href="{% url document.get_edit_url_name document.url_title %}" role="tab">{% trans "Edit" %}</a>
-				<a class="btn btn-sm btn-sidebar {% if active_page == 'attachments' %}btn-warning{% else %}btn-default{% endif %}" href="{% url document.get_attachments_url_name document.url_title %}" role="tab">{% trans "Attachments" %}</a>
-				<a class="btn btn-sm btn-sidebar {% if active_page == 'versions' %}btn-warning{% else %}btn-default{% endif %}" href="{% url document.get_versions_url_name document.url_title %}" role="tab">{% trans "Versions" %}</a>
-			</div>
-			<div class="divider"></div>
-			{% if document.show_permissions_editor %}<a class="btn btn-sm btn-sidebar {% if active_page == 'permissions' %}btn-warning{% else %}btn-default{% endif %}" href="{% url document.get_permissions_url_name document.url_title %}" role="tab">{% trans "Permissions" %}</a>{% endif %}
-			{% if document.show_publish_button %}
-				<div class="btn-group btn-sidebar hidden-print">
-					<a class="btn btn-sm btn-default dropdown-main-btn" href="{% url document.get_publish_url_name document.url_title 1 %}" role="tab">{% trans "Publish" %}</a>
-					<button type="button" class="btn btn-sm btn-default dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-						<span class="sr-only">Toggle Dropdown</span>
-					</button>
-					<ul class="dropdown-menu dropdown-menu-right">
-						<li><a class="default" href="{% url document.get_publish_url_name document.url_title 1 %}">{% trans "Publish for Students and University Network" %}</a></li>
-						<li><a href="{% url document.get_publish_url_name document.url_title 4 %}">{% trans "Publish for Students only" %}</a></li>
-					</ul>
+	<div class="divider d-print-none"></div>
+	<div class="d-print-none">
+		{% block document_nav %}
+			{% if permission_overview %}
+				<div role="tablist">
+					<a class="btn btn-sm btn-sidebar {% if active_page == 'view' %}btn-warning{% else %}btn-default{% endif %}" href="{% url document.get_view_url_name document.url_title %}" role="tab">{% trans "View" %}</a>
+					<a class="btn btn-sm btn-sidebar {% if active_page == 'edit' %}btn-warning{% else %}btn-default{% endif %}" href="{% url document.get_edit_url_name document.url_title %}" role="tab">{% trans "Edit" %}</a>
+					<a class="btn btn-sm btn-sidebar {% if active_page == 'attachments' %}btn-warning{% else %}btn-default{% endif %}" href="{% url document.get_attachments_url_name document.url_title %}" role="tab">{% trans "Attachments" %}</a>
+					<a class="btn btn-sm btn-sidebar {% if active_page == 'versions' %}btn-warning{% else %}btn-default{% endif %}" href="{% url document.get_versions_url_name document.url_title %}" role="tab">{% trans "Versions" %}</a>
 				</div>
+				<div class="divider"></div>
+				{% if document.show_permissions_editor %}<a class="btn btn-sm btn-sidebar {% if active_page == 'permissions' %}btn-warning{% else %}btn-default{% endif %}" href="{% url document.get_permissions_url_name document.url_title %}" role="tab">{% trans "Permissions" %}</a>{% endif %}
+				{% if document.show_publish_button %}
+					<div class="btn-group btn-sidebar">
+						<a class="btn btn-sm btn-default dropdown-main-btn" href="{% url document.get_publish_url_name document.url_title 1 %}" role="tab">{% trans "Publish" %}</a>
+						<button type="button" class="btn btn-sm btn-default dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<span class="sr-only">Toggle Dropdown</span>
+						</button>
+						<ul class="dropdown-menu dropdown-menu-right">
+							<li><a class="default" href="{% url document.get_publish_url_name document.url_title 1 %}">{% trans "Publish for Students and University Network" %}</a></li>
+							<li><a href="{% url document.get_publish_url_name document.url_title 4 %}">{% trans "Publish for Students only" %}</a></li>
+						</ul>
+					</div>
+				{% endif %}
+				{% with edit_groups=permission_overview|permission_filter:'edit'|join:', ' view_groups=permission_overview|permission_filter:'view'|join:', '%}
+					<div class="permission-icons" data-toggle="tooltip" data-placement="bottom" data-container="body" data-html="true" title="<b>{% trans 'Edit' %}:</b> {% if edit_groups %}{{ edit_groups }}{% else %}&mdash;{% endif %}</br><b>{% trans 'View' %}:</b> {% if view_groups %}{{ view_groups }}{% else %}&mdash;{% endif %}">
+						<span class="fa fa-globe permission-icon-{{ permission_overview.0.1 }}" aria-hidden="true"></span>
+						<span class="fa fa-university permission-icon-{{ permission_overview.1.1 }}" aria-hidden="true"></span>
+						<span class="fa fa-user permission-icon-{{ permission_overview.2.1 }}" aria-hidden="true"></span>
+						<span class="fa fa-briefcase permission-icon-{{ permission_overview.3.1 }}" aria-hidden="true"></span>
+						{% if permission_overview|length > 4 %}
+							<span class="fa fa-ellipsis-h permission-icon-more" aria-hidden="true"></span>
+						{% endif %}<br/>
+					</div>
+				{% endwith %}
+				<div class="divider"></div>
 			{% endif %}
-			{% with edit_groups=permission_overview|permission_filter:'edit'|join:', ' view_groups=permission_overview|permission_filter:'view'|join:', '%}
-				<div class="permission-icons" data-toggle="tooltip" data-placement="bottom" data-container="body" data-html="true" title="<b>{% trans 'Edit' %}:</b> {% if edit_groups %}{{ edit_groups }}{% else %}&mdash;{% endif %}</br><b>{% trans 'View' %}:</b> {% if view_groups %}{{ view_groups }}{% else %}&mdash;{% endif %}">
-					<span class="fa fa-globe permission-icon-{{ permission_overview.0.1 }}" aria-hidden="true"></span>
-					<span class="fa fa-university permission-icon-{{ permission_overview.1.1 }}" aria-hidden="true"></span>
-					<span class="fa fa-user permission-icon-{{ permission_overview.2.1 }}" aria-hidden="true"></span>
-					<span class="fa fa-briefcase permission-icon-{{ permission_overview.3.1 }}" aria-hidden="true"></span>
-					{% if permission_overview|length > 4 %}
-						<span class="fa fa-ellipsis-h permission-icon-more" aria-hidden="true"></span>
-					{% endif %}<br/>
-				</div>
-			{% endwith %}
-			<div class="divider"></div>
-		{% endif %}
-	{% endblock %}
+		{% endblock %}
+	</div>
 	{% if "<li>" in toc %}
-		<div class="hidden-print">
+		<div class="d-print-none">
 			<p class="toc-heading">{% trans "Table of Contents" %}</p>
 			{{ toc|safe }}
 		</div>
 		{% if attachments %}
-			<div class="toc hidden-print">
+			<div class="toc d-print-none">
 				<ul><li><a href="#attachments" title="{% trans "Attachments" %}">{% trans "Attachments" %}</a></li></ul>
 			</div>
 		{% endif %}

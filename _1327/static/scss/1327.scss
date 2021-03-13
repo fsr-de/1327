@@ -578,6 +578,8 @@ img.emoji {
 	padding-right: $grid-gutter-width * (2/3);
 	@media print {
 		border: none;
+		order: -1;
+		padding-bottom: 2rem;
 	}
 }
 
@@ -971,7 +973,7 @@ table.diff > thead th:nth-of-type(4) { width: 45%; }
   td.hidden-xs {
 	display: table-cell !important;
   }
-  .hidden-xs.hidden-print {
+  .hidden-xs.d-print-none {
 	display: none !important;
   }
   .hidden-sm {
