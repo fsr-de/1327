@@ -1,5 +1,44 @@
 {% extends "base_without_sidebar.html" %}
+{% load i18n %}
+{% load bootstrap4 %}
+{% load tenca_extras %}
+
+{% block title %}
+	List memberships
+{% endblock %}
 
 {% block content %}
-	<p>Hello World</p>
+	<h4>{% trans "Create new list" %}</h4>
+	<form method="post">
+		{% csrf_token %}
+		{% bootstrap_field form.list_name show_label=False addon_after="@lists2.myhpi.de" %}
+		{% buttons %}
+			<button type="submit" class="btn btn-primary">{% trans "Create" %}</button>
+		{% endbuttons %}
+	</form>
+
+	{% if memberships %}
+		<h4 class="title is-4">{% trans "Your Memberships" %}</h4>
+
+		{% for list_id, hash_id, is_owner in memberships %}
+			<div class="card mb-1">
+				<div class="card-body d-flex">
+					<div class="flex-fill">
+						<a class="is-family-code wrappable-list-id"
+						   href="{% url "tenca_django:tenca_manage_subscription" hash_id %}">
+							{{ list_id|fqdn_ize }}
+						</a>
+					</div>
+					{% if is_owner %}
+						<div class="">
+							<a class="tag is-black" title="Open Admin Page"
+							   href="">
+								Manage List
+							</a>
+						</div>
+					{% endif %}
+				</div>
+			</div>
+		{% endfor %}
+	{% endif %}
 {% endblock %}
