@@ -640,13 +640,27 @@ class TestAutosave(WebTest):
 	def test_autosave_delete_user_insufficient_permissions(self):
 		user = baker.make(UserProfile)
 		autosave = baker.make(TemporaryDocumentText, document=self.document, author=user)
+
+		user2 = baker.make(UserProfile)
+		response = self.app.post(
+			reverse("documents:delete_autosave", args=[self.document.url_title]),
+			user=user2,
+			expect_errors=True,
+			params={"autosave_id": autosave.id}
+		)
+		self.assertEqual(response.status_code, 403)
+
+	def test_autosave_can_be_deleted(self):
+		user = baker.make(UserProfile)
+		autosave = baker.make(TemporaryDocumentText, document=self.document, author=user)
 		response = self.app.post(
 			reverse("documents:delete_autosave", args=[self.document.url_title]),
 			user=user,
 			expect_errors=True,
 			params={"autosave_id": autosave.id}
 		)
-		self.assertEqual(response.status_code, 403)
+		self.assertEqual(response.status_code, 302)
+		self.assertEqual(TemporaryDocumentText.objects.count(), 0)
 
 	def test_autosave_delete_not_existing_autosave_id(self):
 		baker.make(TemporaryDocumentText, document=self.document, author=self.user)
@@ -1449,8 +1463,7 @@ class TestDeletion(WebTest):
 		user = baker.make(UserProfile)
 		document = baker.make(InformationDocument)
 		self.assertEqual(Document.objects.count(), 2)
-		response = self.app.post(reverse("documents:delete_document", args=[document.url_title]), user=user,
-								 expect_errors=True)
+		response = self.app.post(reverse("documents:delete_document", args=[document.url_title]), user=user, expect_errors=True)
 		self.assertEqual(response.status_code, 403)
 
 	def test_delete_document_in_creation_with_autosave(self):
@@ -1463,6 +1476,7 @@ class TestDeletion(WebTest):
 		self.assertEqual(response.status_code, 200)
 		self.assertEqual(Document.objects.count(), 1)
 		self.assertEqual(TemporaryDocumentText.objects.count(), 0)
+
 
 class TestPreview(WebTest):
 	csrf_checks = False
