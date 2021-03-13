@@ -75,7 +75,6 @@ via [Yarn](https://yarnpkg.com/lang/en/).
 
 | Error         | Solution    |
 | ------------- |-------------|
-|`ERROR: Could not find a version that satisfies the requirement channels-rabbitmq==2.0.0 [...] ERROR: No matching distribution found for channels-rabbitmq==2.0.0`      | Check the python version in your environment. Are you using a python version of 3.7 or higher? |
 | `Fatal error: Python.h: No such file or directory`      | Are you on a Debian system (e.g. Ubuntu)? Debian doesn't install development tools by default. Since some of the 1327 dependencies need to be compiled, we need those. You need to install them in your system, e.g. for Python 3.7 via `sudo apt-get install python3.7-dev`, and then recreate the virtual environment.
 
 ## Deployment
