@@ -29,8 +29,8 @@ echo "alias pip=pip3" >> /home/vagrant/.bashrc
 echo "cd /vagrant" >> /home/vagrant/.bashrc
 
 # install requirements
-# required for psycopg2
-sudo apt-get install libpq-dev
+apt-get install libpq-dev  # required for psycopg2
+sudo -H -u vagrant python3 -m pip install -U pip
 sudo -H -u vagrant pip3 install --user -r /vagrant/requirements-dev.txt
 
 # deploy localsettings and insert random key
