@@ -8,7 +8,7 @@
 
 {% block body %}
 <div class="container main-container" id="wrapper">
-	<header class="hidden-print">
+	<header class="d-print-none">
 		{% include "navbar.html" %}
 		<div class="header-line-gradient gradient"></div> {# Gradient line #}
 		<div class="header-line-subheader">{% spaceless %}
@@ -17,7 +17,7 @@
 					{% block breadcrumbs %}{% endblock %}
 				</ul>
 			</div>
-			<div class="login-area pull-right hidden-print">
+			<div class="login-area pull-right d-print-none">
 				<div class="language-info">
 					{% get_current_language as LANGUAGE_CODE %}
 					{% if LANGUAGE_CODE == "de" %}
@@ -43,22 +43,22 @@
 	{% hijack_notification %}
 
 	{% if messages %}
-	<div class="container messages hidden-print">
+	<div class="container messages d-print-none">
 		{% bootstrap_messages %}
 	</div>
 	{% endif %}
 
 	{% block rawcontent %}
 	<div class="headline">
-		<div class="headline-triangle-back hidden-print"></div>
+		<div class="headline-triangle-back d-print-none"></div>
 		<div class="headline-box-shadow">
 			<span class="headline-box">{% block title %}{% endblock title %}</span>
-			<span class="headline-box-end hidden-print"></span>
+			<span class="headline-box-end d-print-none"></span>
 		</div>
 	</div>
 	{% endblock %}
 
-	<footer class="hidden-print">
+	<footer class="d-print-none">
 		<div class="footer-line"></div> {# Top line for footer #}
 		<div class="footer-line gradient gradient-inv"></div> {# Gradient line #}
 		<div class="container footer-container">
@@ -71,7 +71,7 @@
 		</div>
 	</footer>
 </div>
-<a id="back-to-top" href="#" class="btn btn-primary back-to-top hidden-print" role="button" title="{% trans 'Return to the top of the page' %}" data-toggle="tooltip" data-placement="left"><span class="fa fa-chevron-up"></span></a>
+<a id="back-to-top" href="#" class="btn btn-primary back-to-top d-print-none" role="button" title="{% trans 'Return to the top of the page' %}" data-toggle="tooltip" data-placement="left"><span class="fa fa-chevron-up"></span></a>
 {% endblock %}
 
 
@@ -80,7 +80,7 @@
 
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$('[data-toggle="tooltip"]').not(".hidden-print").tooltip();
+			$('[data-toggle="tooltip"]').not(".d-print-none").tooltip();
 			$('.headline-box').tooltip({
 				delay: { "show": 1500, "hide": 0 },
 				placement: "bottom",

@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block sidebar %}
-	<div class="toc hidden-print">
+	<div class="toc d-print-none">
 		<ul>
 			<form class="pb-2" action="{% url 'minutes:search' group_id %}" method="post" id="text_search">
 				{% csrf_token %}

@@ -21,8 +21,8 @@
 		<dd><i>{% trans "No Guests" %}</i></dd>
 	{% endfor %}
 
-	<dt {% if document.labels.all|length == 0 %}class="hidden-print"{% endif %}>{% trans "Labels" %}</dt>
-	<dd {% if document.labels.all|length == 0 %}class="hidden-print"{% endif %}>
+	<dt {% if document.labels.all|length == 0 %}class="d-print-none"{% endif %}>{% trans "Labels" %}</dt>
+	<dd {% if document.labels.all|length == 0 %}class="d-print-none"{% endif %}>
 		{% for label in document.labels.all %}
 			<span class="badge {{ label.class_for_text_color }}" style="background-color: {{ label.color }};">{{ label.title }}</span>
 		{% endfor %}
@@ -35,7 +35,7 @@
 		{% endif %}
 	</dd>
 	{% if permission_overview %}
-		<dt class="hidden-print">{% trans "Last change" %}</dt>
-		<dd class="hidden-print">{{ document.last_change|date:"d.m.Y, H:i" }}</dd>
+		<dt class="d-print-none">{% trans "Last change" %}</dt>
+		<dd class="d-print-none">{{ document.last_change|date:"d.m.Y, H:i" }}</dd>
 	{% endif %}
 </dl>
