@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.models import Group, Permission
+from django.core.exceptions import ValidationError
+from django.core.files.base import ContentFile
 from django.test.utils import override_settings
 from django.urls import reverse
 
@@ -201,7 +203,6 @@ class UserImpersonationTests(WebTest):
 
 
 class _1327AuthenticationBackendTests(WebTest):
-
 	csrf_checks = False
 	extra_environ = {'HTTP_ACCEPT_LANGUAGE': 'en'}
 
@@ -239,7 +240,6 @@ class _1327AuthenticationBackendTests(WebTest):
 
 @override_settings(ANONYMOUS_IP_RANGE_GROUPS={'8.0.0.0/8': 'university_group'})
 class _1327AuthenticationBackendUniversityNetworkTests(WebTest):
-
 	csrf_checks = False
 	extra_environ = {'HTTP_ACCEPT_LANGUAGE': 'en'}
 
@@ -394,3 +394,38 @@ class GroupEditFormTests(WebTest):
 		new_group = Group.objects.get(name="Test Group")
 		for user in [self.user1, self.user2]:
 			self.assertIn(new_group, user.groups.all())
+
+
+class UserCSVUpdateTests(WebTest):
+
+	def setUp(self):
+		self.user1 = baker.make(UserProfile, email="user1@example.com")
+		self.user2 = baker.make(UserProfile, email="user2@internal-domain1.com")
+		self.user3 = baker.make(UserProfile, email="user3@internal-domain2.com")
+
+	@override_settings(INSTITUTION_EMAIL_REPLACEMENTS=[("external-domain1.com", "internal-domain1.com"), ("external-domain2.com", "internal-domain2.com")])
+	def test_upload_csv_changelist_fails_on_invalid_email(self):
+		content = "username,no-at"
+		csv_file = ContentFile(content)
+		with self.assertRaises(ValidationError):
+			self.client.post('/admin/user_management/userprofile/import-csv/', {'csv_file': csv_file}, format='multipart', expect_errors=True)
+
+	@override_settings(INSTITUTION_EMAIL_REPLACEMENTS=[("external-domain1.com", "internal-domain1.com"), ("external-domain2.com", "internal-domain2.com")])
+	def test_upload_csv_changelist_updates_emails(self):
+		content = "username,user1@internal-domain2.com\nusername,user2@internal-domain2.com\nusername,user3@internal-domain2.com\n"
+		csv_file = ContentFile(content)
+		response = self.client.post('/admin/user_management/userprofile/import-csv/', {'csv_file': csv_file}, format='multipart', expect_errors=True)
+		self.assertEqual(response.status_code, 302)
+
+		self.user1.refresh_from_db()
+		self.user2.refresh_from_db()
+		self.user3.refresh_from_db()
+
+		# user1's email is not changed, because it is not included in internal domains
+		self.assertEqual(self.user1.email, "user1@example.com")
+
+		# user2's email is updated
+		self.assertEqual(self.user2.email, "user2@internal-domain2.com")
+
+		# user3's email is not changed as the csv file contains the same domain
+		self.assertEqual(self.user3.email, "user3@internal-domain2.com")

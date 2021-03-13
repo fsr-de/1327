@@ -1,8 +1,9 @@
 import csv
-import re
 from io import StringIO
+import re
 
 from django import forms
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.admin import GroupAdmin, UserAdmin
@@ -15,7 +16,6 @@ from django.utils.translation import gettext_lazy as _
 
 from .forms import GroupEditForm
 from .models import UserProfile
-from .. import settings
 
 
 class UserCreationForm(forms.ModelForm):
@@ -102,7 +102,7 @@ class UserProfileAdmin(UserAdmin):
 			csv_input = csv_file.read().decode('utf-8')
 			reader = csv.reader(StringIO(csv_input), delimiter=',')
 
-			internal_domains = list(settings.INSTITUTION_EMAIL_REPLACEMENTS.map(lambda email_replacement: email_replacement[1]))
+			internal_domains = list(map(lambda email_replacement: email_replacement[1], settings.INSTITUTION_EMAIL_REPLACEMENTS))
 
 			for row in reader:
 				email = row[1]
@@ -133,6 +133,7 @@ admin.site.register(UserProfile, UserProfileAdmin)
 
 class CsvImportForm(forms.Form):
 	csv_file = forms.FileField()
+
 
 class GroupAdminForm(forms.ModelForm):
 	"""
