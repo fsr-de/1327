@@ -904,7 +904,7 @@ class TestAttachments(WebTest):
 		self.assertIn(self.attachment.displayname, response.body.decode('utf-8'))
 
 		# there should be no toc
-		self.assertNotIn("toc hidden-print", response.body.decode('utf-8'))
+		self.assertNotIn("toc d-print-none", response.body.decode('utf-8'))
 
 	def test_create_attachment(self):
 		upload_files = [
