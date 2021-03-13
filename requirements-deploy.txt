@@ -1,1 +1,2 @@
+-r requirements.txt
 asgi-ipc >= 1.4.2
