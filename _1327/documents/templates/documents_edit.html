@@ -31,7 +31,7 @@
 					{% trans 'Save' %}
 				</button>
 				{% if document|num_revisions == 0 and not form.autosave_id  %}
-					<button type="button" class="btn btn-danger" id="discardDocumentButton">
+					<button type="button" class="btn btn-danger" id="discardDocumentButton" disabled="true">
 						{% trans 'Discard' %}
 					</button>
 				{% endif %}
@@ -264,6 +264,7 @@
 							const destinationElement = $('#shareText');
 							destinationElement.attr('href', url);
 							destinationElement.removeClass('hidden');
+							$("#discardDocumentButton").attr("disabled", false);
 						},
 						error: function(jqXHR, textStatus, errorThrown) {
 							const reasonDisplay = $('.autosaveErrorDialogExplanation');
@@ -313,6 +314,7 @@
 		});
 
 		{% if document|num_revisions == 0 and not form.autosave_id %}
+			$("#discardDocumentButton").attr("disabled", true);
 			$('#discardDocumentButton').on('click', function (event) {
 				$.post(
 					"{% url "documents:delete_document" document.url_title %}",

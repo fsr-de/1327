@@ -1426,6 +1426,12 @@ class TestDeletion(WebTest):
 		self.assertEqual(response.status_code, 200)
 		self.assertNotIn("deleteDocumentButton", response.body.decode('utf-8'))
 
+	def test_discard_button_if_creating_document(self):
+		# test that the discard button exists if the document that gets edited has no revisions or autosaves
+		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
+		self.assertEqual(response.status_code, 200)
+		self.assertIn("discardDocumentButton", response.body.decode('utf-8'))
+
 	def test_delete_button_present_if_editing_already_existing_document(self):
 		# test that the delete button is visible if the document has at least one revision
 		response = self.app.get(reverse(self.document.get_edit_url_name(), args=[self.document.url_title]), user=self.user)
@@ -1439,6 +1445,24 @@ class TestDeletion(WebTest):
 		self.assertEqual(response.status_code, 200)
 		self.assertIn("deleteDocumentButton", response.body.decode('utf-8'))
 
+	def test_delete_document_in_creation_fails_without_autosave(self):
+		user = baker.make(UserProfile)
+		document = baker.make(InformationDocument)
+		self.assertEqual(Document.objects.count(), 2)
+		response = self.app.post(reverse("documents:delete_document", args=[document.url_title]), user=user,
+								 expect_errors=True)
+		self.assertEqual(response.status_code, 403)
+
+	def test_delete_document_in_creation_with_autosave(self):
+		user = baker.make(UserProfile)
+		document = baker.make(InformationDocument)
+		self.assertEqual(Document.objects.count(), 2)
+		baker.make(TemporaryDocumentText, document=document, author=user)
+		self.assertEqual(TemporaryDocumentText.objects.count(), 1)
+		response = self.app.post(reverse("documents:delete_document", args=[document.url_title]), user=user)
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(Document.objects.count(), 1)
+		self.assertEqual(TemporaryDocumentText.objects.count(), 0)
 
 class TestPreview(WebTest):
 	csrf_checks = False
