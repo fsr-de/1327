@@ -15,6 +15,7 @@ from django.utils.translation import gettext_lazy as _
 
 from .forms import GroupEditForm
 from .models import UserProfile
+from .. import settings
 
 
 class UserCreationForm(forms.ModelForm):
@@ -100,6 +101,9 @@ class UserProfileAdmin(UserAdmin):
 			csv_file = request.FILES["csv_file"]
 			csv_input = csv_file.read().decode('utf-8')
 			reader = csv.reader(StringIO(csv_input), delimiter=',')
+
+			internal_domains = list(settings.INSTITUTION_EMAIL_REPLACEMENTS.map(lambda email_replacement: email_replacement[1]))
+
 			for row in reader:
 				email = row[1]
 				if re.match(r'.*@.*', email) is None:
@@ -108,8 +112,12 @@ class UserProfileAdmin(UserAdmin):
 
 				user = UserProfile.objects.filter(email__startswith=prefix + "@").first()
 				if user.email != email:
-					user.email = email
-					user.save()
+					old_domain = user.email.split('@')[1]
+					new_domain = email.split('@')[1]
+
+					if old_domain in internal_domains and new_domain in internal_domains:
+						user.email = email
+						user.save()
 			self.message_user(request, "Your csv file has been imported")
 			return redirect("..")
 		form = CsvImportForm()
