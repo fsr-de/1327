@@ -26,18 +26,19 @@
 		{% bootstrap_form form %}
 		{% buttons %}
 			<button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+			<a class="btn btn-danger" href="{% url "tenca_django:tenca_delete_list" mailing_list.list_id %}">{% trans "Delete list" %}</a>
 		{% endbuttons %}
 	</form>
 
 	<h4 class="mt-2">{% trans "Members" %}</h4>
-	{% for address, attributes in mailing_list.get_roster %}
-		<form method="post" action="{% url "tenca_django:tenca_edit_member" mailing_list.list_id address %}">
+	{% for form, is_owner, is_blocked in members %}
+		<form method="post" action="{% url "tenca_django:tenca_edit_member" mailing_list.list_id %}">
 			{% csrf_token %}
 			<div class="card">
-				<div class="card-body d-flex">
-					<div class="flex-fill">{{ address }}</div>
+				<div class="card-body d-flex py-2">
+					<div class="flex-fill">{{ form.email }}</div>
 					<div>
-						{% if attributes.0 %}
+						{% if is_owner %}
 							<button name="demote_member"
 									class="btn btn-link"
 									type="submit">Demote from Owner
@@ -49,7 +50,7 @@
 							</button>
 						{% endif %}
 
-						{% if attributes.1 %}
+						{% if is_blocked %}
 							<button name="unblock_member"
 									class="btn btn-link"
 									type="submit">Unblock member
