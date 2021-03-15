@@ -21,6 +21,7 @@ from django.views.generic import TemplateView, FormView
 
 from _1327.tenca_django.forms import TencaSubscriptionForm, TencaNewListForm, TencaListOptionsForm, TencaMemberEditForm
 from _1327.tenca_django.mixins import TencaListAdminMixin, TencaSingleListMixin
+from _1327.tenca_django.models import LegacyAdminURL
 
 connection = connection.Connection()
 
@@ -169,3 +170,23 @@ class TencaReportView(TencaSingleListMixin, TemplateView):
 		except NoSuchRequestException:
 			pass  # We don't tell to leak no data
 		return super().get_context_data(**kwargs)
+
+
+class TencaLegacyAdminLinkView(LoginRequiredMixin, RedirectView):
+	def get_redirect_url(self, *args, **kwargs):
+		try:
+			legacy_object = LegacyAdminURL.objects.get(hash_id__hash_id=kwargs.get("hash_id"), admin_url=kwargs.get("admin_url"))
+			mailing_list = connection.get_list_by_hash_id(kwargs.get("hash_id"))
+			if mailing_list is None:
+				raise Http404
+			user_email = self.request.user.email
+			if not mailing_list.is_member(user_email):
+				mailing_list.add_member_silently(user_email)
+			if not mailing_list.is_owner(user_email):
+				mailing_list.promote_to_owner(user_email)
+				messages.success(self.request, _("You have been promoted to a list owner. From now on, you can manage this list from your dashboard. This link is obsolete."))
+			else:
+				messages.warning(self.request, _("You are already a list owner and can manage this list from you dashboard. This link will stop working in the future."))
+			return reverse("tenca_django:tenca_manage_list", kwargs=dict(list_id=mailing_list.list_id))
+		except LegacyAdminURL.DoesNotExist:
+			raise Http404
