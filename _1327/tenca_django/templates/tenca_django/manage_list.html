@@ -34,7 +34,7 @@
 	{% for form, is_owner, is_blocked in members %}
 		<form method="post" action="{% url "tenca_django:tenca_edit_member" mailing_list.list_id %}">
 			{% csrf_token %}
-			<div class="card">
+			<div class="card mb-1">
 				<div class="card-body d-flex py-2">
 					<div class="flex-fill">{{ form.email }}</div>
 					<div>
