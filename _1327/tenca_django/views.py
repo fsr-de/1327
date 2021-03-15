@@ -1,5 +1,6 @@
-from tenca import connection
 from tenca.exceptions import NoSuchRequestException
+import tenca.pipelines
+import tenca.settings
 from django.contrib import messages
 from django.http import Http404
 from django.shortcuts import render
@@ -7,7 +8,6 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView, RedirectView
 from urllib.parse import urljoin
 
-import tenca
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -16,14 +16,12 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views import View
-from tenca import connection, pipelines
 from django.views.generic import TemplateView, FormView
 
+from _1327.tenca_django.connection import connection
 from _1327.tenca_django.forms import TencaSubscriptionForm, TencaNewListForm, TencaListOptionsForm, TencaMemberEditForm
 from _1327.tenca_django.mixins import TencaListAdminMixin, TencaSingleListMixin
 from _1327.tenca_django.models import LegacyAdminURL
-
-connection = connection.Connection()
 
 
 class TencaDashboard(LoginRequiredMixin, FormView):
@@ -81,7 +79,7 @@ class TencaListAdminView(TencaListAdminMixin, LoginRequiredMixin, FormView):
 		kwargs.setdefault("mailing_list", self.mailing_list)
 		kwargs.setdefault("listname", self.mailing_list.fqdn_listname)
 		# kwargs.setdefault("invite_link", urljoin("https://" + settings.PAGE_URL, reverse("tenca_django:tenca_manage_subscription", kwargs=dict(hash_id=self.mailing_list.hash_id))))
-		kwargs.setdefault("invite_link", pipelines.call_func(tenca.settings.BUILD_INVITE_LINK, self.mailing_list))
+		kwargs.setdefault("invite_link", tenca.pipelines.call_func(tenca.settings.BUILD_INVITE_LINK, self.mailing_list))
 		kwargs.setdefault("members", [(TencaMemberEditForm(initial=dict(email=address)), is_owner, is_blocked) for (address, (is_owner, is_blocked)) in self.mailing_list.get_roster()])
 		return super().get_context_data(**kwargs)
 

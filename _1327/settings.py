@@ -102,7 +102,6 @@ INSTALLED_APPS = [
 	'_1327.minutes',
 	'_1327.polls',
 	'_1327.shortlinks',
-	'_1327.tenca_django',
 	'mozilla_django_oidc',
 ]
 
@@ -312,3 +311,6 @@ if ENABLE_DEBUG_TOOLBAR:
 	INSTALLED_APPS += ['debug_toolbar']
 	MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE
 	INTERNAL_IPS = ['127.0.0.1']
+
+if ENABLE_MAILING_LISTS:
+	INSTALLED_APPS += ['_1327.tenca_django']
