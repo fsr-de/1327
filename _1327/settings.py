@@ -33,6 +33,9 @@ TESTING = 'test' in sys.argv
 ENABLE_DEBUG_TOOLBAR = False
 ENABLE_DEBUG_TOOLBAR = ENABLE_DEBUG_TOOLBAR and DEBUG and not TESTING
 
+# wip, disabled by default
+ENABLE_MAILING_LISTS = False
+
 ALLOWED_HOSTS = []
 
 # The page URL that is used in email templates
