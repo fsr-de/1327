@@ -20,7 +20,6 @@ urlpatterns = [
 	path("" + settings.POLLS_URL_NAME + "/", include("_1327.polls.urls")),
 	path("documents/", include("_1327.documents.urls")),
 	path("information_pages/", include("_1327.information_pages.urls")),
-	path("lists/", include("_1327.tenca_django.urls")),
 	path("login", auth_views.LoginView.as_view(
 		template_name="login.html",
 		authentication_form=LoginUsernameForm,
@@ -72,3 +71,6 @@ urlpatterns.extend(custom_urlpatterns)
 if settings.ENABLE_DEBUG_TOOLBAR:
 	import debug_toolbar
 	urlpatterns = [path('__debug__/', include(debug_toolbar.urls))] + urlpatterns
+
+if settings.ENABLE_MAILING_LISTS:
+	urlpatterns = [path("lists/", include("_1327.tenca_django.urls"))] + urlpatterns
