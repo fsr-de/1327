@@ -1,13 +1,13 @@
 from django.contrib.auth.mixins import AccessMixin
 from django.http import Http404
 
-from _1327.tenca_django import views
+from _1327.tenca_django.connection import connection
 
 
 class TencaSingleListMixin:
 	def setup(self, request, *args, **kwargs):
 		super().setup(request, *args, **kwargs)
-		self.mailing_list = views.connection.get_list(kwargs["list_id"])
+		self.mailing_list = connection.get_list(kwargs["list_id"])
 		if not self.mailing_list:
 			raise Http404
 

@@ -33,9 +33,6 @@ TESTING = 'test' in sys.argv
 ENABLE_DEBUG_TOOLBAR = False
 ENABLE_DEBUG_TOOLBAR = ENABLE_DEBUG_TOOLBAR and DEBUG and not TESTING
 
-# wip, disabled by default
-ENABLE_MAILING_LISTS = False
-
 ALLOWED_HOSTS = []
 
 # The page URL that is used in email templates
@@ -79,6 +76,14 @@ MINUTES_PUBLISH_REMINDER_DAYS = 6
 # Emails ending on the first value will have this part replaced by the second value.
 # e.g.: [("institution.example.com", "institution.com")]
 INSTITUTION_EMAIL_REPLACEMENTS = []
+
+# Enables the mailman3 frontend "tenca" on this site. If you do,
+# check `tenca.settings.defaults` for available options and define at least:
+#   * TENCA_ADMIN_USER
+#   * TENCA_ADMIN_PASS
+#   * TENCA_LIST_HASH_ID_SALT
+#   * TENCA_WEB_UI_HOSTNAME
+ENABLE_MAILING_LISTS = False
 
 # Application definition
 
