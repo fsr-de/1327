@@ -317,3 +317,4 @@ if ENABLE_DEBUG_TOOLBAR:
 
 if ENABLE_MAILING_LISTS:
 	INSTALLED_APPS += ['_1327.tenca_django']
+	MIDDLEWARE += ['_1327.tenca_django.middleware.TencaNoConnectionMiddleware']
