@@ -103,7 +103,7 @@ class TencaMemberEditView(TencaListAdminMixin, LoginRequiredMixin, View):
 						func(form.cleaned_data["email"])
 						messages.success(request, success_string.format(member=form.cleaned_data["email"]))
 					except Exception as e:
-						messages.error(request, _("An Error occurred: {error}").format(error=e))
+						messages.error(request, _("An error occurred: {error}").format(error=e))
 						return redirect(reverse("tenca_django:tenca_manage_list", kwargs=dict(list_id=self.mailing_list.list_id)))
 
 			if request.user.email == form.cleaned_data["email"] and any(
@@ -129,7 +129,7 @@ class TencaListDeleteView(TencaListAdminMixin, LoginRequiredMixin, TemplateView)
 				messages.success(request, _("{list} has been deleted successfully.").format(list=self.mailing_list.fqdn_listname))
 				return redirect(reverse("tenca_django:tenca_dashboard"))
 			except Exception as e:
-				messages.error(request, _("An Error occurred: {error}").format(error=e))
+				messages.error(request, _("An error occurred: {error}").format(error=e))
 				return redirect(reverse("tenca_django:tenca_manage_list", kwargs=dict(list_id=self.mailing_list.list_id)))
 		return self.render_to_response(self.get_context_data())
 
