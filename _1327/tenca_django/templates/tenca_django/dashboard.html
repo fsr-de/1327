@@ -11,7 +11,7 @@
 	<h4>{% trans "Create new list" %}</h4>
 	<form method="post">
 		{% csrf_token %}
-		{% bootstrap_field form.list_name show_label=False addon_after="@lists2.myhpi.de" %}
+		{% bootstrap_field form.list_name show_label=False addon_after=domain_addon %}
 		{% buttons %}
 			<button type="submit" class="btn btn-primary">{% trans "Create" %}</button>
 		{% endbuttons %}
