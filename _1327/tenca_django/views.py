@@ -1,25 +1,21 @@
-from tenca.exceptions import NoSuchRequestException
-import tenca.pipelines
-import tenca.settings
-from django.contrib import messages
-from django.http import Http404
-from django.shortcuts import render
-from django.utils.translation import gettext_lazy as _
-from django.views.generic import TemplateView, RedirectView
 from urllib.parse import urljoin
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views import View
-from django.views.generic import TemplateView, FormView
+from django.views.generic import FormView, TemplateView, RedirectView
+
+import tenca.exceptions
+import tenca.pipelines
+import tenca.settings
 
 from _1327.tenca_django.connection import connection
-from _1327.tenca_django.forms import TencaSubscriptionForm, TencaNewListForm, TencaListOptionsForm, TencaMemberEditForm
+from _1327.tenca_django.forms import TencaListOptionsForm, TencaMemberEditForm, TencaNewListForm, TencaSubscriptionForm
 from _1327.tenca_django.mixins import TencaListAdminMixin, TencaSingleListMixin
 from _1327.tenca_django.models import LegacyAdminURL
 
@@ -57,7 +53,7 @@ class TencaSubscriptionView(FormView):
 		return super().get_context_data(**kwargs)
 
 	def get_initial(self):
-		return {"email": self.request.user.email}
+		return {"email": self.request.user.email if self.request.user.is_authenticated else None}
 
 	def form_valid(self, form):
 		try:
@@ -145,7 +141,7 @@ class TencaActionConfirmView(TencaSingleListMixin, TemplateView):
 		try:
 			email = self.mailing_list.pending_subscriptions().get(kwargs.get("token"))
 			self.mailing_list.confirm_subscription(kwargs.get("token"))
-		except NoSuchRequestException:
+		except tenca.exceptions.NoSuchRequestException:
 			raise Http404("This link is invalid.")
 
 		if email is not None:
@@ -165,7 +161,7 @@ class TencaReportView(TencaSingleListMixin, TemplateView):
 		try:
 			self.mailing_list.cancel_pending_subscription(kwargs.get("token"))
 			messages.success(self.request, _("The subscription of {email} onto {list} was rolled back.").format(email=email, list=self.mailing_list.fqdn_listname))
-		except NoSuchRequestException:
+		except tenca.exceptions.NoSuchRequestException:
 			pass  # We don't tell to leak no data
 		return super().get_context_data(**kwargs)
 
