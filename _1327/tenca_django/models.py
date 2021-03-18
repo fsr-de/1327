@@ -2,12 +2,19 @@ from django.db import models
 from tenca.hash_storage import HashStorage, MailmanDescriptionHashStorage, NotInStorageError, TwoLevelHashStorage
 
 
-class HashEntry(models.Model):
+class TencaModel(models.Model):
+
+	class Meta:
+		abstract = True
+		app_label = 'tenca_django'
+
+
+class HashEntry(TencaModel):
 	hash_id = models.CharField(max_length=64, unique=True, blank=False, null=False)
 	list_id = models.CharField(max_length=128, blank=False, null=False)
 
 
-class LegacyAdminURL(models.Model):
+class LegacyAdminURL(TencaModel):
 	hash_id = models.ForeignKey(HashEntry, related_name='legacy_admin_url', on_delete=models.CASCADE)
 	admin_url = models.CharField(max_length=32, blank=False, null=False)
 

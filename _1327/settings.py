@@ -320,6 +320,12 @@ if ENABLE_DEBUG_TOOLBAR:
 	MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE
 	INTERNAL_IPS = ['127.0.0.1']
 
+# The mailing lists library (Tenca) has a django-like settings module.
+# This code will read in all correctly prefixed settings from the
+# current module, e.g. `TENCA_API_USER` -> `tenca.settings.API_USER`
 if ENABLE_MAILING_LISTS:
+	import tenca.settings
+	tenca.settings.load_from_module(sys.modules[__name__])
+
 	INSTALLED_APPS += ['_1327.tenca_django']
 	MIDDLEWARE += ['_1327.tenca_django.middleware.TencaNoConnectionMiddleware']

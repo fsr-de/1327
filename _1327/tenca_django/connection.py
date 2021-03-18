@@ -1,13 +1,8 @@
 import urllib.error
 
-from django.conf import settings as django_settings
 from mailmanclient.restbase.connection import MailmanConnectionError
 
 import tenca.connection
-import tenca.settings
-
-
-tenca.settings.load_from_module(django_settings)
 
 
 class TencaNotConfiguredError(MailmanConnectionError):
