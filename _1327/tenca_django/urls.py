@@ -1,4 +1,5 @@
 from django.urls import path
+
 from _1327.tenca_django import views
 
 app_name = "tenca_django"

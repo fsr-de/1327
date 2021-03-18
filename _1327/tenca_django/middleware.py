@@ -4,6 +4,7 @@ from django.utils.translation import gettext as _
 
 from _1327.tenca_django.connection import MailmanConnectionError, TencaNotConfiguredError
 
+
 class TencaNoConnectionMiddleware:
 
 	def __init__(self, get_response):

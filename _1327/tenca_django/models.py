@@ -1,6 +1,5 @@
 from django.db import models
-from tenca.hash_storage import (HashStorage, MailmanDescriptionHashStorage,
-                                NotInStorageError, TwoLevelHashStorage)
+from tenca.hash_storage import HashStorage, MailmanDescriptionHashStorage, NotInStorageError, TwoLevelHashStorage
 
 
 class HashEntry(models.Model):
@@ -9,10 +8,7 @@ class HashEntry(models.Model):
 
 
 class LegacyAdminURL(models.Model):
-	hash_id = models.ForeignKey(HashEntry,
-		related_name='legacy_admin_url',
-		on_delete=models.CASCADE
-	)
+	hash_id = models.ForeignKey(HashEntry, related_name='legacy_admin_url', on_delete=models.CASCADE)
 	admin_url = models.CharField(max_length=32, blank=False, null=False)
 
 

@@ -1,4 +1,4 @@
-from django.forms import Form, EmailField, CharField, BooleanField, HiddenInput, EmailInput
+from django.forms import BooleanField, CharField, EmailField, EmailInput, Form
 from django.utils.translation import gettext as _
 
 
@@ -24,4 +24,3 @@ class TencaListOptionsForm(Form):
 
 class TencaMemberEditForm(Form):
 	email = EmailField(widget=EmailInput(attrs={"class": "form-control-plaintext", "readonly": True}))
-

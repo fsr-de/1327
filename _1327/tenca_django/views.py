@@ -1,14 +1,11 @@
-from urllib.parse import urljoin
-
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views import View
-from django.views.generic import FormView, TemplateView, RedirectView
+from django.views.generic import FormView, RedirectView, TemplateView
 
 import tenca.exceptions
 import tenca.pipelines
@@ -75,7 +72,7 @@ class TencaListAdminView(TencaListAdminMixin, LoginRequiredMixin, FormView):
 	def get_context_data(self, **kwargs):
 		kwargs.setdefault("mailing_list", self.mailing_list)
 		kwargs.setdefault("listname", self.mailing_list.fqdn_listname)
-		# kwargs.setdefault("invite_link", urljoin("https://" + settings.PAGE_URL, reverse("tenca_django:tenca_manage_subscription", kwargs=dict(hash_id=self.mailing_list.hash_id))))
+		# kwargs.setdefault("invite_link", urllib.parse.urljoin("https://" + settings.PAGE_URL, reverse("tenca_django:tenca_manage_subscription", kwargs=dict(hash_id=self.mailing_list.hash_id))))
 		kwargs.setdefault("invite_link", tenca.pipelines.call_func(tenca.settings.BUILD_INVITE_LINK, self.mailing_list))
 		kwargs.setdefault("members", [(TencaMemberEditForm(initial=dict(email=address)), is_owner, is_blocked) for (address, (is_owner, is_blocked)) in self.mailing_list.get_roster()])
 		return super().get_context_data(**kwargs)
@@ -170,7 +167,7 @@ class TencaReportView(TencaSingleListMixin, TemplateView):
 class TencaLegacyAdminLinkView(LoginRequiredMixin, RedirectView):
 	def get_redirect_url(self, *args, **kwargs):
 		try:
-			legacy_object = LegacyAdminURL.objects.get(hash_id__hash_id=kwargs.get("hash_id"), admin_url=kwargs.get("admin_url"))
+			LegacyAdminURL.objects.get(hash_id__hash_id=kwargs.get("hash_id"), admin_url=kwargs.get("admin_url"))
 			mailing_list = connection.get_list_by_hash_id(kwargs.get("hash_id"))
 			if mailing_list is None:
 				raise Http404
