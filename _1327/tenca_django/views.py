@@ -171,14 +171,17 @@ class TencaLegacyAdminLinkView(LoginRequiredMixin, RedirectView):
 			mailing_list = connection.get_list_by_hash_id(kwargs.get("hash_id"))
 			if mailing_list is None:
 				raise Http404
-			user_email = self.request.user.email
-			if not mailing_list.is_member(user_email):
-				mailing_list.add_member_silently(user_email)
-			if not mailing_list.is_owner(user_email):
-				mailing_list.promote_to_owner(user_email)
-				messages.success(self.request, _("You have been promoted to a list owner. From now on, you can manage this list from your dashboard. This link is obsolete."))
+			if self.request.user.is_staff:
+				messages.warning(self.request, _("Please manage this list from the admin interface. This link will stop working in the future."))
 			else:
-				messages.warning(self.request, _("You are already a list owner and can manage this list from you dashboard. This link will stop working in the future."))
+				user_email = self.request.user.email
+				if not mailing_list.is_member(user_email):
+					mailing_list.add_member_silently(user_email)
+				if not mailing_list.is_owner(user_email):
+					mailing_list.promote_to_owner(user_email)
+					messages.success(self.request, _("You have been promoted to a list owner. From now on, you can manage this list from your dashboard. This link is obsolete."))
+				else:
+					messages.warning(self.request, _("You are already a list owner and can manage this list from you dashboard. This link will stop working in the future."))
 			return reverse("tenca_django:tenca_manage_list", kwargs=dict(list_id=mailing_list.list_id))
 		except LegacyAdminURL.DoesNotExist:
 			raise Http404

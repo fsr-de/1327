@@ -14,6 +14,6 @@ class TencaSingleListMixin:
 
 class TencaListAdminMixin(AccessMixin, TencaSingleListMixin):
 	def dispatch(self, request, *args, **kwargs):
-		if not self.mailing_list.is_owner(request.user.email):
+		if not (request.user.is_staff or self.mailing_list.is_owner(request.user.email)):
 			return self.handle_no_permission()
 		return super().dispatch(request, *args, **kwargs)
