@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 18:55+0100\n"
-"PO-Revision-Date: 2021-03-17 19:16+0100\n"
+"POT-Creation-Date: 2021-03-22 21:29+0100\n"
+"PO-Revision-Date: 2021-03-22 21:29+0100\n"
 "Last-Translator: Sven Koehler\n"
 "Language-Team: Johannes Wolf (janno42)\n"
 "Language: de\n"
@@ -226,6 +226,7 @@ msgstr "Anzeigen"
 
 #: _1327/documents/templates/documents_base.html:19
 #: _1327/documents/templates/documents_base.html:38
+#: _1327/tenca_django/admin.py:20
 msgid "Edit"
 msgstr "Bearbeiten"
 
@@ -1213,6 +1214,7 @@ msgid "Models available in the %(name)s application."
 msgstr "Models in der App %(name)s."
 
 #: _1327/templates/admin/index.html:34
+#: _1327/tenca_django/admin.py:23
 msgid "Add"
 msgstr "Hinzufügen"
 
@@ -1311,6 +1313,17 @@ msgstr "Admin"
 msgid "Recover deleted %(name)s"
 msgstr "%(name)s wiederherstellen"
 
+#: _1327/tenca_django/admin.py:31
+#: _1327/tenca_django/templates/tenca_django/manage_list.html:7
+#, fuzzy
+#| msgid "Manage list"
+msgid "Manage List"
+msgstr "Liste verwalten"
+
+#: _1327/tenca_django/apps.py:7
+msgid "Mailing Lists"
+msgstr "Mailinglisten"
+
 #: _1327/tenca_django/forms.py:14
 msgid "Not subscribed users are allowed to post."
 msgstr "Nichtmitglieder dürfen an diese Liste schreiben"
@@ -1319,7 +1332,7 @@ msgstr "Nichtmitglieder dürfen an diese Liste schreiben"
 msgid "Replies are addressed to the list per default."
 msgstr "Antworten gehen immer an den Verteiler"
 
-#: _1327/tenca_django/middleware.py:18
+#: _1327/tenca_django/middleware.py:19
 #, python-brace-format
 msgid "Mailing lists misconfigured. {error}"
 msgstr "Fehler in der Mailinglistenkonfiguration. {error}"
@@ -1371,10 +1384,6 @@ msgstr ""
 "\n"
 "\t\tMöchtest du die Liste %(listname)s wirklich löschen?\n"
 "\t"
-
-#: _1327/tenca_django/templates/tenca_django/manage_list.html:7
-msgid "Manage list"
-msgstr "Liste verwalten"
 
 #: _1327/tenca_django/templates/tenca_django/manage_list.html:11
 #, python-format
@@ -1436,83 +1445,92 @@ msgstr ""
 "Entschuldige die Unannehmlichkeiten. Kontaktiere den Fachschaftsrat, falls "
 "die häufiger auftreten sollte."
 
-#: _1327/tenca_django/views.py:34
+#: _1327/tenca_django/views.py:32
 #, python-brace-format
 msgid "The list {list} has been created successfully."
 msgstr "Die Liste {list} wurde erfolgreich angelegt."
 
-#: _1327/tenca_django/views.py:37 _1327/tenca_django/views.py:64
+#: _1327/tenca_django/views.py:35 _1327/tenca_django/views.py:62
+#: _1327/tenca_django/views.py:104 _1327/tenca_django/views.py:130
 #, python-brace-format
 msgid "An error occurred: {error}"
 msgstr "Ein Fehler ist aufgetreten: {error}"
 
-#: _1327/tenca_django/views.py:61
+#: _1327/tenca_django/views.py:59
 msgid "The change has been requested. Please check your mails."
 msgstr "Änderung beantragt. Schau in deinem Postfach nach."
 
-#: _1327/tenca_django/views.py:85
+#: _1327/tenca_django/views.py:83
 msgid "List options saved successfully."
 msgstr "Listeneinstellungen gespeichert."
 
-#: _1327/tenca_django/views.py:94
+#: _1327/tenca_django/views.py:92
 #, python-brace-format
 msgid "Removed {member}"
 msgstr "{member} entfernt"
 
-#: _1327/tenca_django/views.py:95
+#: _1327/tenca_django/views.py:93
 #, python-brace-format
 msgid "Promoted {member}"
 msgstr "{member} befördert"
 
-#: _1327/tenca_django/views.py:96
+#: _1327/tenca_django/views.py:94
 #, python-brace-format
 msgid "Demoted {member}"
 msgstr "{member} degradiert"
 
-#: _1327/tenca_django/views.py:97
+#: _1327/tenca_django/views.py:95
 #, python-brace-format
 msgid "Blocked {member}"
 msgstr "{member} blockiert"
 
-#: _1327/tenca_django/views.py:98
+#: _1327/tenca_django/views.py:96
 #, python-brace-format
 msgid "Unblocked {member}"
 msgstr "{member} entsperrt"
 
-#: _1327/tenca_django/views.py:129
+#: _1327/tenca_django/views.py:127
 #, python-brace-format
 msgid "{list} has been deleted successfully."
 msgstr "{list} wurde erfolgreich gelöscht."
 
-#: _1327/tenca_django/views.py:149
+#: _1327/tenca_django/views.py:147
 #, python-brace-format
 msgid "{email} has successfully joined {list}."
 msgstr "{email} ist erfolgreich {list} beigetreten."
 
-#: _1327/tenca_django/views.py:151
+#: _1327/tenca_django/views.py:149
 #, python-brace-format
 msgid "You have successfully left {list}."
 msgstr "Du hast erfolgreich {list} verlassen."
 
-#: _1327/tenca_django/views.py:163
+#: _1327/tenca_django/views.py:161
 #, python-brace-format
 msgid "The subscription of {email} onto {list} was rolled back."
 msgstr "Die Anmeldung von {email} auf {list} wurde rückgänig gemacht."
 
-#: _1327/tenca_django/views.py:181
+#: _1327/tenca_django/views.py:175
+msgid ""
+"Please manage this list from the admin interface. This link will stop "
+"working in the future."
+msgstr ""
+"Bitte verwalte die Liste über das Admininterface. Dieser Link wird in "
+"Zukunft abgeschaltet."
+
+#: _1327/tenca_django/views.py:182
 msgid ""
 "You have been promoted to a list owner. From now on, you can manage this "
 "list from your dashboard. This link is obsolete."
 msgstr ""
-"Du wurdest zum Listenbesitzer befördert. Ab nun kannst die diese Liste "
-"von deinem Dashboard aus verwalten. Der Link ist obsolet."
+"Du wurdest zum Listenbesitzer befördert. Ab nun kannst die diese Liste von "
+"deinem Dashboard aus verwalten. Der Link ist obsolet."
 
-#: _1327/tenca_django/views.py:183
+#: _1327/tenca_django/views.py:184
 msgid ""
 "You are already a list owner and can manage this list from you dashboard. "
 "This link will stop working in the future."
 msgstr ""
-"Bu bist bereites ein Besitzer dieser Liste und kannst sie von deinem "
+"Bu bist bereits ein Besitzer dieser Liste und kannst sie von deinem "
 "Dashboard aus verwalten. Dieser Link wird in Zukunft abgeschaltet."
 
 #: _1327/user_management/admin.py:15 _1327/user_management/forms.py:20
