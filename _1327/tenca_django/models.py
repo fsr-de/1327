@@ -13,6 +13,9 @@ class HashEntry(TencaModel):
 	hash_id = models.CharField(max_length=64, unique=True, blank=False, null=False)
 	list_id = models.CharField(max_length=128, blank=False, null=False)
 
+	def __str__(self):
+		return 'HashEntry for {}'.format(self.list_id)
+
 
 class LegacyAdminURL(TencaModel):
 	hash_id = models.ForeignKey(HashEntry, related_name='legacy_admin_url', on_delete=models.CASCADE)
