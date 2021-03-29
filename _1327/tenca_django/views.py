@@ -137,16 +137,28 @@ class TencaActionConfirmView(TencaSingleListMixin, TemplateView):
 
 	def get_context_data(self, **kwargs):
 		try:
-			email = self.mailing_list.pending_subscriptions().get(kwargs.get("token"))
+			email, join = self.mailing_list.pending_subscriptions().get(kwargs.get("token")), True
+			if email is None:
+				email, join = self.mailing_list.pending_subscriptions('unsubscription').get(kwargs.get("token")), False
+				if self.mailing_list.is_owner(email):
+					self.mailing_list.demote_from_owner(email)
+
 			self.mailing_list.confirm_subscription(kwargs.get("token"))
 		except tenca.exceptions.NoSuchRequestException:
 			raise Http404("This link is invalid.")
+		except tenca.exceptions.LastOwnerException:
+			messages.error(self.request, _("{email} is the last owner of {list}. Please delegate your job first, before leaving the list.").format(email=email, list=self.mailing_list.fqdn_listname))
+			try:
+				self.mailing_list.cancel_pending_subscription(kwargs.get("token"))
+			except tenca.exceptions.NoSuchRequestException:
+				pass
+			return super().get_context_data(**kwargs)
 
-		if email is not None:
+		if join is True:
 			connection.mark_address_verified(email)
 			messages.success(self.request, _("{email} has successfully joined {list}.").format(email=email, list=self.mailing_list.fqdn_listname))
 		else:
-			messages.success(self.request, _("You have successfully left {list}.").format(list=self.mailing_list.fqdn_listname))
+			messages.success(self.request, _("{email} has successfully left {list}.").format(email=email, list=self.mailing_list.fqdn_listname))
 		kwargs.setdefault("list_id", self.mailing_list.list_id)
 		return super().get_context_data(**kwargs)
 
