@@ -34,8 +34,7 @@
 					<button type="button" class="btn btn-danger" id="discardDocumentButton" disabled="true">
 						{% trans 'Discard' %}
 					</button>
-				{% endif %}
-				{% if document|num_revisions > 0 %}
+				{% elif document|num_revisions > 0 %}
 					<button type="button" class="btn btn-danger" id="deleteDocumentButton">
 						{% trans 'Delete' %}
 					</button>
@@ -324,9 +323,7 @@
 					}
 				);
 			});
-		{% endif %}
-
-		{% if document|num_revisions > 0 %}
+		{% elif document|num_revisions > 0 %}
 			function createCascadeList(cascade, domObject) {
 				for(let i = 0; i < cascade.length; i++) {
 					const cascadeItem = cascade[i];

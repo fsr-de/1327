@@ -536,16 +536,17 @@ def delete_autosave(request, title):
 	if request.method != 'POST':
 		raise Http404
 
-	# first check that the user actually may change this document
+	# check that the user may change this document
 	document = get_object_or_404(Document, url_title=title)
 
-	# second check that the supplied autosave id matches to the document and has been created by the user
+	# check that the supplied autosave id matches to the document and has been created by the user
 	autosave_id = request.POST['autosave_id']
 	autosave = get_object_or_404(TemporaryDocumentText, id=autosave_id)
 	autosaves_for_object_and_user = TemporaryDocumentText.objects.filter(document=document, author=request.user)
 
 	# a new document does not have permissions, just check if the autosave author is correct
 	if autosave.author != request.user:
+		# if the autosave author is not correct, only proceed when the user has superuser privileges by checking permissions
 		check_permissions(document, request.user, [document.edit_permission_name])
 
 	if autosave not in autosaves_for_object_and_user:
