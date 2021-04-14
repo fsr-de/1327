@@ -4,7 +4,11 @@
 {% load tenca_extras %}
 
 {% block title %}
-	List memberships
+	{% trans "List memberships" %}
+{% endblock %}
+
+{% block breadcrumbs %}
+	<li><span class="fa fa-angle-right" aria-hidden="true"></span>&nbsp;{% trans "Mailing lists" %}</li>
 {% endblock %}
 
 {% block content %}

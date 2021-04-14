@@ -7,6 +7,11 @@
 	{% trans "Manage List" %}
 {% endblock %}
 
+{% block breadcrumbs %}
+	<li><span class="fa fa-angle-right" aria-hidden="true"></span>&nbsp;<a href="{% url "tenca_django:tenca_dashboard" %}">{% trans "Mailing lists" %}</a></li>
+	<li><span class="fa fa-angle-right" aria-hidden="true"></span>&nbsp;{% trans "Manage list" %}</li>
+{% endblock %}
+
 {% block content %}
 	<p>{% blocktrans %}
 		This is the admin view for the owners of {{ listname }}

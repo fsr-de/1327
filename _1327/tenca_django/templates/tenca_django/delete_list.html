@@ -6,6 +6,11 @@
 	{% trans "Delete list" %}
 {% endblock %}
 
+{% block breadcrumbs %}
+	<li><span class="fa fa-angle-right" aria-hidden="true"></span>&nbsp;<a href="{% url "tenca_django:tenca_dashboard" %}">{% trans "Mailing lists" %}</a></li>
+	<li><span class="fa fa-angle-right" aria-hidden="true"></span>&nbsp;{% trans "Delete list" %}</li>
+{% endblock %}
+
 {% block content %}
 	<p>{% blocktrans %}
 		Are you sure you want to delete the list {{ listname }}?

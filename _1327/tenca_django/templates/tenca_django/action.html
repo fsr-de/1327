@@ -3,6 +3,13 @@
 
 {% block title %}{% trans "Adjust membership" %}{% endblock %}
 
+{% block breadcrumbs %}
+	{% if request.user.is_authenticated %}
+		<li><span class="fa fa-angle-right" aria-hidden="true"></span>&nbsp;<a href="{% url "tenca_django:tenca_dashboard" %}">{% trans "Mailing lists" %}</a></li>
+		<li><span class="fa fa-angle-right" aria-hidden="true"></span>&nbsp;{% trans "Adjust membership" %}</li>
+	{% endif %}
+{% endblock %}
+
 {% block content %}
 	<p>{% trans "This link is now invalid. You never need to visit it again." %}</p>
 {% endblock %}
