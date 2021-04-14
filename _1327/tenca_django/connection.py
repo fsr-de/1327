@@ -1,12 +1,10 @@
 import urllib.error
 
+from django.core.exceptions import ImproperlyConfigured
+
 from mailmanclient.restbase.connection import MailmanConnectionError
 
 import tenca.connection
-
-
-class TencaNotConfiguredError(MailmanConnectionError):
-	pass
 
 
 class FakeConnection:
@@ -21,6 +19,6 @@ class FakeConnection:
 try:
 	connection = tenca.connection.Connection()
 except (MailmanConnectionError, AttributeError) as e:
-	connection = FakeConnection(TencaNotConfiguredError(*e.args))
+	connection = FakeConnection(ImproperlyConfigured(*e.args))
 except urllib.error.HTTPError as e:
-	connection = FakeConnection(TencaNotConfiguredError(str(e)))
+	connection = FakeConnection(ImproperlyConfigured(str(e)))

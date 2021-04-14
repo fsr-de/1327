@@ -1331,11 +1331,6 @@ msgstr "Nichtmitglieder dürfen an diese Liste schreiben"
 msgid "Replies are addressed to the list per default."
 msgstr "Antworten gehen immer an den Verteiler"
 
-#: _1327/tenca_django/middleware.py:19
-#, python-brace-format
-msgid "Mailing lists misconfigured. {error}"
-msgstr "Fehler in der Mailinglistenkonfiguration. {error}"
-
 #: _1327/tenca_django/templates/tenca_django/action.html:4
 msgid "Adjust membership"
 msgstr "Mitgliedschaft ändern"

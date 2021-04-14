@@ -1,8 +1,10 @@
-from django.contrib import messages
-from django.shortcuts import render
-from django.utils.translation import gettext as _
+import logging
 
-from _1327.tenca_django.connection import MailmanConnectionError, TencaNotConfiguredError
+from django.shortcuts import render
+
+from _1327.tenca_django.connection import MailmanConnectionError
+
+logger = logging.getLogger(__name__)
 
 
 class TencaNoConnectionMiddleware:
@@ -15,8 +17,7 @@ class TencaNoConnectionMiddleware:
 
 	def process_exception(self, request, exception):
 		if isinstance(exception, MailmanConnectionError):
-			if isinstance(exception, TencaNotConfiguredError):
-				messages.error(request, _("Mailing lists misconfigured. {error}").format(error=" ".join(map(str, exception.args))))
+			logger.error('An exception occurred when connecting to mailman: ' + ' '.join(map(str, exception.args)))
 			return render(request, 'tenca_django/backend_error.html')
 		else:
 			return None
