@@ -11,6 +11,7 @@ import tenca.exceptions
 import tenca.pipelines
 import tenca.settings
 
+from _1327.main.utils import alternative_emails
 from _1327.tenca_django.connection import connection
 from _1327.tenca_django.forms import TencaListOptionsForm, TencaMemberEditForm, TencaNewListForm, TencaSubscriptionForm
 from _1327.tenca_django.mixins import TencaListAdminMixin, TencaSingleListMixin
@@ -22,7 +23,8 @@ class TencaDashboard(LoginRequiredMixin, FormView):
 	form_class = TencaNewListForm
 
 	def get_context_data(self, **kwargs):
-		kwargs.setdefault("memberships", connection.get_owner_and_memberships(self.request.user.email))
+		email = self.request.user.email
+		kwargs.setdefault("memberships", connection.get_owner_and_memberships(email, *alternative_emails(email)))
 		kwargs.setdefault("domain_addon", "@" + str(connection.domain))
 		return super().get_context_data(**kwargs)
 
