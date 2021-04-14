@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404
+from django.http import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -10,6 +10,7 @@ from django.views.generic import FormView, RedirectView, TemplateView
 import tenca.exceptions
 import tenca.pipelines
 import tenca.settings
+import tenca.templates
 
 from _1327.main.utils import alternative_emails
 from _1327.tenca_django.connection import connection
@@ -199,3 +200,14 @@ class TencaLegacyAdminLinkView(LoginRequiredMixin, RedirectView):
 			return reverse("tenca_django:tenca_manage_list", kwargs=dict(list_id=mailing_list.list_id))
 		except LegacyAdminURL.DoesNotExist:
 			raise Http404
+
+
+def tenca_template_server(request, name):
+	try:
+		template = tenca.templates.templates_dict[name]
+	except KeyError:
+		return HttpResponseNotFound(name)
+	try:
+		return HttpResponse(template.substitute(request.GET))
+	except KeyError:
+		return HttpResponseBadRequest()
