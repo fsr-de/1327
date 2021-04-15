@@ -16,6 +16,10 @@ class HashEntry(TencaModel):
 	def __str__(self):
 		return 'HashEntry for {}'.format(self.list_id)
 
+	class Meta(TencaModel.Meta):
+		verbose_name = 'Invite link'
+		verbose_name_plural = 'Invite links'
+
 
 class LegacyAdminURL(TencaModel):
 	hash_id = models.ForeignKey(HashEntry, related_name='legacy_admin_url', on_delete=models.CASCADE)

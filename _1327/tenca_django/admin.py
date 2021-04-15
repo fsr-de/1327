@@ -1,3 +1,5 @@
+import urllib.parse
+
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
@@ -10,6 +12,7 @@ from _1327.tenca_django.models import HashEntry, LegacyAdminURL
 class HashEntryAdmin(admin.ModelAdmin):
 	list_display = ('list_id', 'hash_id', 'link_legacy_admin_url', 'link_manage_page')
 	search_fields = ('list_id', )
+	readonly_fields = ('list_id', )
 
 	def _link(self, text, url):
 		return format_html('<a href="{}">{}</a>'.format(url, text))
@@ -21,7 +24,10 @@ class HashEntryAdmin(admin.ModelAdmin):
 			url = reverse('admin:tenca_django_legacyadminurl_change', args=(legacy_link.id, ))
 		except LegacyAdminURL.DoesNotExist:
 			text = _('Add')
-			url = reverse('admin:tenca_django_legacyadminurl_add')
+			url = (
+				reverse('admin:tenca_django_legacyadminurl_add')
+				+ '?' + urllib.parse.urlencode({'hash_id': obj.id})
+			)
 		return self._link(text, url)
 
 	link_legacy_admin_url.short_description = 'Legacy Admin URL'
@@ -33,6 +39,9 @@ class HashEntryAdmin(admin.ModelAdmin):
 		)
 
 	link_manage_page.short_description = 'Management Page'
+
+	def has_delete_permission(self, request, obj=None):
+		return False
 
 
 @admin.register(LegacyAdminURL)

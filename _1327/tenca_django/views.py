@@ -206,7 +206,7 @@ def tenca_template_server(request, name):
 	try:
 		template = tenca.templates.templates_dict[name]
 	except KeyError:
-		return HttpResponseNotFound(name)
+		return HttpResponseNotFound()
 	try:
 		return HttpResponse(template.substitute(request.GET))
 	except KeyError:
