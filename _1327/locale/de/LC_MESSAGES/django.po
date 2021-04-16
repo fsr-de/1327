@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-29 17:13+0200\n"
-"PO-Revision-Date: 2021-03-22 21:29+0100\n"
+"POT-Creation-Date: 2021-04-16 12:12+0200\n"
+"PO-Revision-Date: 2021-04-16 12:00+0200\n"
 "Last-Translator: Sven Koehler\n"
 "Language-Team: Johannes Wolf (janno42)\n"
 "Language: de\n"
@@ -164,7 +164,7 @@ msgstr "Anhang hinzufügen"
 #: _1327/documents/templates/documents_permissions.html:38
 #: _1327/main/templates/menu_item_edit.html:47
 #: _1327/shortlinks/templates/shortlink_edit.html:21
-#: _1327/tenca_django/templates/tenca_django/manage_list.html:28
+#: _1327/tenca_django/templates/tenca_django/manage_list.html:33
 msgid "Save"
 msgstr "Speichern"
 
@@ -191,7 +191,7 @@ msgstr "Auswählen, wenn Anhang nur als eingebettetes Bild verwendet wird."
 #: _1327/main/templates/abbreviation_explanation.html:58
 #: _1327/main/templates/menu_items_index.html:41
 #: _1327/minutes/templates/minutes_edit.html:34
-#: _1327/tenca_django/templates/tenca_django/delete_list.html:16
+#: _1327/tenca_django/templates/tenca_django/delete_list.html:21
 msgid "Delete"
 msgstr "Löschen"
 
@@ -226,7 +226,7 @@ msgstr "Anzeigen"
 
 #: _1327/documents/templates/documents_base.html:19
 #: _1327/documents/templates/documents_base.html:38
-#: _1327/tenca_django/admin.py:20
+#: _1327/tenca_django/admin.py:23
 msgid "Edit"
 msgstr "Bearbeiten"
 
@@ -728,7 +728,7 @@ msgstr ""
 "ebenfalls gelöscht."
 
 #: _1327/main/templates/menu_items_index.html:42
-#: _1327/tenca_django/templates/tenca_django/delete_list.html:17
+#: _1327/tenca_django/templates/tenca_django/delete_list.html:22
 msgid "Cancel"
 msgstr "Abbrechen"
 
@@ -1213,7 +1213,7 @@ msgstr "Sortierung umschalten"
 msgid "Models available in the %(name)s application."
 msgstr "Models in der App %(name)s."
 
-#: _1327/templates/admin/index.html:34 _1327/tenca_django/admin.py:23
+#: _1327/templates/admin/index.html:34 _1327/tenca_django/admin.py:26
 msgid "Add"
 msgstr "Hinzufügen"
 
@@ -1312,7 +1312,7 @@ msgstr "Admin"
 msgid "Recover deleted %(name)s"
 msgstr "%(name)s wiederherstellen"
 
-#: _1327/tenca_django/admin.py:31
+#: _1327/tenca_django/admin.py:37
 #: _1327/tenca_django/templates/tenca_django/manage_list.html:7
 #, fuzzy
 #| msgid "Manage list"
@@ -1325,17 +1325,29 @@ msgstr "Mailinglisten"
 
 #: _1327/tenca_django/forms.py:14
 msgid "Not subscribed users are allowed to post."
-msgstr "Nichtmitglieder dürfen an diese Liste schreiben"
+msgstr "Nichtmitglieder dürfen an diese Liste schreiben."
 
 #: _1327/tenca_django/forms.py:15
 msgid "Replies are addressed to the list per default."
-msgstr "Antworten gehen immer an den Verteiler"
+msgstr "Antworten gehen immer an den Verteiler."
 
 #: _1327/tenca_django/templates/tenca_django/action.html:4
+#: _1327/tenca_django/templates/tenca_django/action.html:9
 msgid "Adjust membership"
 msgstr "Mitgliedschaft ändern"
 
-#: _1327/tenca_django/templates/tenca_django/action.html:7
+#: _1327/tenca_django/templates/tenca_django/action.html:8
+#: _1327/tenca_django/templates/tenca_django/dashboard.html:11
+#: _1327/tenca_django/templates/tenca_django/delete_list.html:10
+#: _1327/tenca_django/templates/tenca_django/manage_list.html:11
+#: _1327/tenca_django/templates/tenca_django/manage_subscription.html:11
+#: _1327/tenca_django/templates/tenca_django/report.html:8
+#, fuzzy
+#| msgid "Mailing Lists"
+msgid "Mailing lists"
+msgstr "Mailinglisten"
+
+#: _1327/tenca_django/templates/tenca_django/action.html:14
 msgid "This link is now invalid. You never need to visit it again."
 msgstr "Dieser Link ist nun ungültig. Du brauchst ihn nicht nochmal."
 
@@ -1344,31 +1356,42 @@ msgid "Mailing Lists Unavailable"
 msgstr "Mailinglisten nicht verfügbar"
 
 #: _1327/tenca_django/templates/tenca_django/backend_error.html:7
+#, fuzzy
+#| msgid ""
+#| "Sorry the inconvenience, but the mail server backend does not reply. "
+#| "Please try back later."
 msgid ""
-"Sorry the inconvenience, but the mail server backend does not reply. Please "
-"try back later."
+"Sorry for the inconvenience, but the mail server backend does not reply. "
+"Please try again later."
 msgstr ""
 "Entschuldigung, aber das Mailinglistenbackend ist nicht erreichbar. Versuche "
 "es später nochmal."
 
-#: _1327/tenca_django/templates/tenca_django/dashboard.html:11
+#: _1327/tenca_django/templates/tenca_django/dashboard.html:7
+#, fuzzy
+#| msgid "Adjust membership"
+msgid "List memberships"
+msgstr "Mitgliedschaft ändern"
+
+#: _1327/tenca_django/templates/tenca_django/dashboard.html:15
 msgid "Create new list"
 msgstr "Neue Liste anlegen"
 
-#: _1327/tenca_django/templates/tenca_django/dashboard.html:16
+#: _1327/tenca_django/templates/tenca_django/dashboard.html:20
 msgid "Create"
 msgstr "Anlegen"
 
-#: _1327/tenca_django/templates/tenca_django/dashboard.html:21
+#: _1327/tenca_django/templates/tenca_django/dashboard.html:25
 msgid "Your Memberships"
 msgstr "Deine Mitgliedschaften"
 
 #: _1327/tenca_django/templates/tenca_django/delete_list.html:6
-#: _1327/tenca_django/templates/tenca_django/manage_list.html:29
+#: _1327/tenca_django/templates/tenca_django/delete_list.html:11
+#: _1327/tenca_django/templates/tenca_django/manage_list.html:34
 msgid "Delete list"
 msgstr "Liste Löschen"
 
-#: _1327/tenca_django/templates/tenca_django/delete_list.html:10
+#: _1327/tenca_django/templates/tenca_django/delete_list.html:15
 #, python-format
 msgid ""
 "\n"
@@ -1379,7 +1402,13 @@ msgstr ""
 "\t\tMöchtest du die Liste %(listname)s wirklich löschen?\n"
 "\t"
 
-#: _1327/tenca_django/templates/tenca_django/manage_list.html:11
+#: _1327/tenca_django/templates/tenca_django/manage_list.html:12
+#, fuzzy
+#| msgid "Manage list"
+msgid "Manage list"
+msgstr "Liste verwalten"
+
+#: _1327/tenca_django/templates/tenca_django/manage_list.html:16
 #, python-format
 msgid ""
 "\n"
@@ -1390,27 +1419,28 @@ msgstr ""
 "\t\tDas ist die Ansicht für die Admins der Liste %(listname)s\n"
 "\t"
 
-#: _1327/tenca_django/templates/tenca_django/manage_list.html:15
+#: _1327/tenca_django/templates/tenca_django/manage_list.html:20
 msgid "Invite Link"
 msgstr "Einladungslink"
 
-#: _1327/tenca_django/templates/tenca_django/manage_list.html:16
+#: _1327/tenca_django/templates/tenca_django/manage_list.html:21
 msgid "Share this link to invite new members:"
 msgstr "Teile diesen Link, um neue Mitglieder einzuladen:"
 
-#: _1327/tenca_django/templates/tenca_django/manage_list.html:23
+#: _1327/tenca_django/templates/tenca_django/manage_list.html:28
 msgid "List options"
 msgstr "Listeneinstellungen"
 
-#: _1327/tenca_django/templates/tenca_django/manage_list.html:33
+#: _1327/tenca_django/templates/tenca_django/manage_list.html:38
 msgid "Members"
 msgstr "Mitglieder"
 
 #: _1327/tenca_django/templates/tenca_django/manage_subscription.html:6
+#: _1327/tenca_django/templates/tenca_django/manage_subscription.html:12
 msgid "Manage subscription"
 msgstr "Mitgliedschaft verwalten"
 
-#: _1327/tenca_django/templates/tenca_django/manage_subscription.html:10
+#: _1327/tenca_django/templates/tenca_django/manage_subscription.html:17
 #, python-format
 msgid ""
 "\n"
@@ -1423,96 +1453,97 @@ msgstr ""
 "möchtest\n"
 "\t"
 
-#: _1327/tenca_django/templates/tenca_django/manage_subscription.html:17
+#: _1327/tenca_django/templates/tenca_django/manage_subscription.html:24
 msgid "Un-/Subscribe"
 msgstr "An-/Abmelden"
 
 #: _1327/tenca_django/templates/tenca_django/report.html:4
+#: _1327/tenca_django/templates/tenca_django/report.html:9
 msgid "Report action"
 msgstr "Vorgang melden"
 
-#: _1327/tenca_django/templates/tenca_django/report.html:7
+#: _1327/tenca_django/templates/tenca_django/report.html:14
 msgid ""
 "Sorry for this inconvenience. Please contact the Student Representative "
 "Group if this should happen more often."
 msgstr ""
 "Entschuldige die Unannehmlichkeiten. Kontaktiere den Fachschaftsrat, falls "
-"die häufiger auftreten sollte."
+"diese häufiger auftreten sollte."
 
-#: _1327/tenca_django/views.py:32
+#: _1327/tenca_django/views.py:35
 #, python-brace-format
 msgid "The list {list} has been created successfully."
 msgstr "Die Liste {list} wurde erfolgreich angelegt."
 
-#: _1327/tenca_django/views.py:35 _1327/tenca_django/views.py:62
-#: _1327/tenca_django/views.py:104 _1327/tenca_django/views.py:130
+#: _1327/tenca_django/views.py:38 _1327/tenca_django/views.py:65
+#: _1327/tenca_django/views.py:107 _1327/tenca_django/views.py:133
 #, python-brace-format
 msgid "An error occurred: {error}"
 msgstr "Ein Fehler ist aufgetreten: {error}"
 
-#: _1327/tenca_django/views.py:59
+#: _1327/tenca_django/views.py:62
 msgid "The change has been requested. Please check your mails."
 msgstr "Änderung beantragt. Schau in deinem Postfach nach."
 
-#: _1327/tenca_django/views.py:83
+#: _1327/tenca_django/views.py:86
 msgid "List options saved successfully."
 msgstr "Listeneinstellungen gespeichert."
 
-#: _1327/tenca_django/views.py:92
-#, python-brace-format
-msgid "Removed {member}"
-msgstr "{member} entfernt"
-
-#: _1327/tenca_django/views.py:93
-#, python-brace-format
-msgid "Promoted {member}"
-msgstr "{member} befördert"
-
-#: _1327/tenca_django/views.py:94
-#, python-brace-format
-msgid "Demoted {member}"
-msgstr "{member} degradiert"
-
 #: _1327/tenca_django/views.py:95
 #, python-brace-format
-msgid "Blocked {member}"
-msgstr "{member} blockiert"
+msgid "Removed {member}"
+msgstr "{member} wurde entfernt"
 
 #: _1327/tenca_django/views.py:96
 #, python-brace-format
-msgid "Unblocked {member}"
-msgstr "{member} entsperrt"
+msgid "Promoted {member}"
+msgstr "{member} wurde befördert"
 
-#: _1327/tenca_django/views.py:127
+#: _1327/tenca_django/views.py:97
+#, python-brace-format
+msgid "Demoted {member}"
+msgstr "{member} wurde degradiert"
+
+#: _1327/tenca_django/views.py:98
+#, python-brace-format
+msgid "Blocked {member}"
+msgstr "{member} wurde blockiert"
+
+#: _1327/tenca_django/views.py:99
+#, python-brace-format
+msgid "Unblocked {member}"
+msgstr "{member} wurde entsperrt"
+
+#: _1327/tenca_django/views.py:130
 #, python-brace-format
 msgid "{list} has been deleted successfully."
 msgstr "{list} wurde erfolgreich gelöscht."
 
-#: _1327/tenca_django/views.py:150
+#: _1327/tenca_django/views.py:153
 #, python-brace-format
 msgid ""
 "{email} is the last owner of {list}. Please delegate your job first, before "
 "leaving the list."
 msgstr ""
-"{email} ist der letzte Admin auf {list}. Bitte delegiere deine Rolle erst, bevor "
-"du die Liste verlässt."
+"{email} ist der letzte Admin auf {list}. Bitte delegiere deine Rolle erst, "
+"bevor du die Liste verlässt."
 
-#: _1327/tenca_django/views.py:159
+#: _1327/tenca_django/views.py:162
 #, python-brace-format
 msgid "{email} has successfully joined {list}."
 msgstr "{email} ist erfolgreich {list} beigetreten."
 
-#: _1327/tenca_django/views.py:161
+#: _1327/tenca_django/views.py:164
 #, python-brace-format
 msgid "{email} has successfully left {list}."
 msgstr "{email} hat erfolgreich {list} verlassen."
 
-#: _1327/tenca_django/views.py:173
+#: _1327/tenca_django/views.py:176
 #, python-brace-format
 msgid "The subscription of {email} onto {list} was rolled back."
 msgstr "Die Anmeldung von {email} auf {list} wurde rückgänig gemacht."
 
-#: _1327/tenca_django/views.py:187
+#: _1327/tenca_django/views.py:190
 msgid ""
 "Please manage this list from the admin interface. This link will stop "
 "working in the future."
@@ -1520,7 +1551,7 @@ msgstr ""
 "Bitte verwalte die Liste über das Admininterface. Dieser Link wird in "
 "Zukunft abgeschaltet."
 
-#: _1327/tenca_django/views.py:194
+#: _1327/tenca_django/views.py:197
 msgid ""
 "You have been promoted to a list owner. From now on, you can manage this "
 "list from your dashboard. This link is obsolete."
@@ -1528,13 +1559,13 @@ msgstr ""
 "Du wurdest zum Listenadmin befördert. Ab nun kannst die diese Liste von "
 "deinem Dashboard aus verwalten. Der Link ist obsolet."
 
-#: _1327/tenca_django/views.py:196
+#: _1327/tenca_django/views.py:199
 msgid ""
 "You are already a list owner and can manage this list from you dashboard. "
 "This link will stop working in the future."
 msgstr ""
-"Bu bist bereits ein Admin dieser Liste und kannst sie von deinem "
-"Dashboard aus verwalten. Dieser Link wird in Zukunft abgeschaltet."
+"Bu bist bereits ein Admin dieser Liste und kannst sie von deinem Dashboard "
+"aus verwalten. Dieser Link wird in Zukunft abgeschaltet."
 
 #: _1327/user_management/admin.py:15 _1327/user_management/forms.py:20
 msgid "Password"
