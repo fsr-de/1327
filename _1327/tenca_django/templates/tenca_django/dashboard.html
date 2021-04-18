@@ -1,0 +1,48 @@
+{% extends "base_without_sidebar.html" %}
+{% load i18n %}
+{% load bootstrap4 %}
+{% load tenca_extras %}
+
+{% block title %}
+	{% trans "List memberships" %}
+{% endblock %}
+
+{% block breadcrumbs %}
+	<li><span class="fa fa-angle-right" aria-hidden="true"></span>&nbsp;{% trans "Mailing lists" %}</li>
+{% endblock %}
+
+{% block content %}
+	<h4>{% trans "Create new list" %}</h4>
+	<form method="post">
+		{% csrf_token %}
+		{% bootstrap_field form.list_name show_label=False addon_after=domain_addon %}
+		{% buttons %}
+			<button type="submit" class="btn btn-primary">{% trans "Create" %}</button>
+		{% endbuttons %}
+	</form>
+
+	{% if memberships %}
+		<h4 class="title is-4">{% trans "Your Memberships" %}</h4>
+
+		{% for list_id, hash_id, is_owner in memberships %}
+			<div class="card mb-1">
+				<div class="card-body d-flex">
+					<div class="flex-fill">
+						<a
+						   href="{% url "tenca_django:tenca_manage_subscription" hash_id %}">
+							{{ list_id|fqdn_ize }}
+						</a>
+					</div>
+					{% if is_owner %}
+						<div class="">
+							<a
+							   href="{% url "tenca_django:tenca_manage_list" list_id %}">
+								Manage List
+							</a>
+						</div>
+					{% endif %}
+				</div>
+			</div>
+		{% endfor %}
+	{% endif %}
+{% endblock %}

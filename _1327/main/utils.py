@@ -184,11 +184,27 @@ def document_permission_overview(user, document):
 	return permissions
 
 
+def email_belongs_to_domain(email, domain):
+	return email.rpartition('@')[2] == domain
+
+
+def replace_email_domain(email, original_domain, new_domain):
+	return email[:-len(original_domain)] + new_domain
+
+
+def alternative_emails(email):
+	for original_domain, new_domain in settings.INSTITUTION_EMAIL_REPLACEMENTS:
+		if email_belongs_to_domain(email, original_domain):
+			yield replace_email_domain(email, original_domain, new_domain)
+		if email_belongs_to_domain(email, new_domain):
+			yield replace_email_domain(email, new_domain, original_domain)
+
+
 def clean_email(email):
 	if email:
 		# Replace email domains in case there are multiple alias domains used in the organisation and all emails should
 		# have the same domain.
-		for original_domain, replaced_domain in settings.INSTITUTION_EMAIL_REPLACEMENTS:
-			if email.endswith(original_domain):
-				return email[:-len(original_domain)] + replaced_domain
+		for original_domain, new_domain in settings.INSTITUTION_EMAIL_REPLACEMENTS:
+			if email_belongs_to_domain(email, original_domain):
+				return replace_email_domain(email, original_domain, new_domain)
 	return email

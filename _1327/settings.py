@@ -77,6 +77,14 @@ MINUTES_PUBLISH_REMINDER_DAYS = 6
 # e.g.: [("institution.example.com", "institution.com")]
 INSTITUTION_EMAIL_REPLACEMENTS = []
 
+# Enables the mailman3 frontend "tenca" on this site. If you do,
+# check `tenca.settings.defaults` for available options and define at least:
+#   * TENCA_ADMIN_USER
+#   * TENCA_ADMIN_PASS
+#   * TENCA_LIST_HASH_ID_SALT
+#   * TENCA_WEB_UI_HOSTNAME
+ENABLE_MAILING_LISTS = False
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -310,3 +318,13 @@ if ENABLE_DEBUG_TOOLBAR:
 	INSTALLED_APPS += ['debug_toolbar']
 	MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE
 	INTERNAL_IPS = ['127.0.0.1']
+
+# The mailing lists library (Tenca) has a django-like settings module.
+# This code will read in all correctly prefixed settings from the
+# current module, e.g. `TENCA_API_USER` -> `tenca.settings.API_USER`
+if ENABLE_MAILING_LISTS:
+	import tenca.settings
+	tenca.settings.load_from_module(sys.modules[__name__])
+
+	INSTALLED_APPS += ['_1327.tenca_django']
+	MIDDLEWARE += ['_1327.tenca_django.middleware.TencaNoConnectionMiddleware']

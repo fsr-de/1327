@@ -1,0 +1,15 @@
+{% extends "base_without_sidebar.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Report action" %}{% endblock %}
+
+{% block breadcrumbs %}
+	{% if request.user.is_authenticated %}
+		<li><span class="fa fa-angle-right" aria-hidden="true"></span>&nbsp;<a href="{% url "tenca_django:tenca_dashboard" %}">{% trans "Mailing lists" %}</a></li>
+		<li><span class="fa fa-angle-right" aria-hidden="true"></span>&nbsp;{% trans "Report action" %}</li>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+	<p>{% trans "Sorry for this inconvenience. Please contact the Student Representative Group if this should happen more often." %}</p>
+{% endblock %}

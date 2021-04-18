@@ -1,0 +1,27 @@
+{% extends "base_without_sidebar.html" %}
+{% load i18n %}
+{% load bootstrap4 %}
+
+{% block title %}
+	{% trans "Manage subscription" %}
+{% endblock %}
+
+{% block breadcrumbs %}
+	{% if request.user.is_authenticated %}
+		<li><span class="fa fa-angle-right" aria-hidden="true"></span>&nbsp;<a href="{% url "tenca_django:tenca_dashboard" %}">{% trans "Mailing lists" %}</a></li>
+		<li><span class="fa fa-angle-right" aria-hidden="true"></span>&nbsp;{% trans "Manage subscription" %}</li>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+	{% blocktrans %}
+		Enter the e-mail address you want to un-/subscribe from/to {{ list_name }}
+	{% endblocktrans %}
+	<form method="post">
+		{% csrf_token %}
+		{% bootstrap_form form layout="horizontal" %}
+		{% buttons %}
+			<button type="submit" class="btn btn-primary">{% trans 'Un-/Subscribe' %}</button>
+		{% endbuttons %}
+	</form>
+{% endblock %}
