@@ -79,7 +79,7 @@ via [Yarn](https://yarnpkg.com/lang/en/).
 
 ## Deployment
 
-For deploying on a single machine 1327 you'll need to install all requirements from `requirements-deploy.txt`, and you can follow these [instructions](https://github.com/fsr-itse/1327/wiki/Deployment), for setting up a webserver and starting all scripts using a Process Control System, if you like.
+For deploying on a single machine 1327 you'll need to install all requirements from `requirements.txt`, and you can follow these [instructions](https://github.com/fsr-itse/1327/wiki/Deployment), for setting up a webserver and starting all scripts using a Process Control System, if you like.
 You'll also need to setup yarn, as indicated in the last section.
 
 ## License
