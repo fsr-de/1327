@@ -17,7 +17,7 @@ from model_bakery import baker
 
 from _1327.information_pages.models import InformationDocument
 from _1327.main.tools import translate
-from _1327.main.utils import find_root_menu_items
+from _1327.main.utils import alternative_emails, find_root_menu_items
 from _1327.minutes.models import MinutesDocument
 from _1327.user_management.models import UserProfile
 from .context_processors import mark_selected
@@ -669,3 +669,23 @@ class TestLogo(WebTest):
 		response = self.app.get(reverse('index'))
 		self.assertEqual(response.status_code, 200)
 		self.assertIn('<img src="/static/images/logo.png"', response.body.decode("utf-8"))
+
+
+class TestEmailReplacement(TestCase):
+
+	@override_settings(INSTITUTION_EMAIL_REPLACEMENTS=[("example.com", "institution.com")])
+	def test_alternative_emails(self):
+		email = 'name@example.com'
+		other = 'name@institution.com'
+		self.assertListEqual(
+			[email] + list(alternative_emails(email)),
+			[email, other]
+		)
+		self.assertListEqual(
+			[other] + list(alternative_emails(other)),
+			[other, email]
+		)
+		self.assertListEqual(
+			list(alternative_emails('name@somewhereelse.org')),
+			[]
+		)

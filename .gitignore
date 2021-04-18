@@ -1,4 +1,5 @@
 /env/
+/venv/
 .vagrant
 
 # Byte-compiled / optimized / DLL files

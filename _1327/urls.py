@@ -1,8 +1,9 @@
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from django.urls import include, path, register_converter
+from django.urls import include, path, register_converter, reverse_lazy
 from django.utils.module_loading import import_string
+from django.views.generic.base import RedirectView
 
 from mozilla_django_oidc import views as oidc_views
 from mozilla_django_oidc.utils import import_from_settings
@@ -71,3 +72,10 @@ urlpatterns.extend(custom_urlpatterns)
 if settings.ENABLE_DEBUG_TOOLBAR:
 	import debug_toolbar
 	urlpatterns = [path('__debug__/', include(debug_toolbar.urls))] + urlpatterns
+
+if settings.ENABLE_MAILING_LISTS:
+	urlpatterns = [
+		path("lists/", include("_1327.tenca_django.urls")),
+		# This is done manually, but shouldn't. Its all due to the ominous "problems with trailing slashes"
+		path("lists", RedirectView.as_view(url=reverse_lazy('tenca_django:tenca_dashboard')), name="tenca_index"),
+	] + urlpatterns
