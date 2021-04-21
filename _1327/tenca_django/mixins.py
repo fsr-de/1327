@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import AccessMixin
 from django.http import Http404
 
+from _1327.main.utils import alternative_emails
 from _1327.tenca_django.connection import connection
 
 
@@ -14,6 +15,10 @@ class TencaSingleListMixin:
 
 class TencaListAdminMixin(AccessMixin, TencaSingleListMixin):
 	def dispatch(self, request, *args, **kwargs):
-		if not (request.user.is_staff or self.mailing_list.is_owner(request.user.email)):
+		if not (
+			request.user.is_staff
+			or self.mailing_list.is_owner(request.user.email)
+			or any(self.mailing_list.is_owner(email) for email in alternative_emails(request.user.email))
+		):
 			return self.handle_no_permission()
 		return super().dispatch(request, *args, **kwargs)

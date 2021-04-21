@@ -54,7 +54,16 @@ class TencaSubscriptionView(FormView):
 		return super().get_context_data(**kwargs)
 
 	def get_initial(self):
-		return {"email": self.request.user.email if self.request.user.is_authenticated else None}
+		initial_mail = None
+		if self.request.user.is_authenticated:
+			try:
+				initial_mail = next(
+					test_mail for test_mail in alternative_emails(self.request.user.email)
+					if self.mailing_list.is_member(test_mail)
+				)
+			except StopIteration:
+				initial_mail = self.request.user.email
+		return {"email": initial_mail}
 
 	def form_valid(self, form):
 		try:
@@ -66,7 +75,7 @@ class TencaSubscriptionView(FormView):
 			return self.render_to_response(self.get_context_data(form=form))
 
 
-class TencaListAdminView(TencaListAdminMixin, LoginRequiredMixin, FormView):
+class TencaListAdminView(LoginRequiredMixin, TencaListAdminMixin, FormView):
 	template_name = "tenca_django/manage_list.html"
 
 	def get_form(self, form_class=None):
@@ -180,6 +189,11 @@ class TencaReportView(TencaSingleListMixin, TemplateView):
 
 
 class TencaLegacyAdminLinkView(LoginRequiredMixin, RedirectView):
+
+	def _all_mails(self, email):
+		yield email
+		yield from alternative_emails(email)
+
 	def get_redirect_url(self, *args, **kwargs):
 		try:
 			LegacyAdminURL.objects.get(hash_id__hash_id=kwargs.get("hash_id"), admin_url=kwargs.get("admin_url"))
@@ -190,8 +204,13 @@ class TencaLegacyAdminLinkView(LoginRequiredMixin, RedirectView):
 				messages.warning(self.request, _("Please manage this list from the admin interface. This link will stop working in the future."))
 			else:
 				user_email = self.request.user.email
-				if not mailing_list.is_member(user_email):
+				for test_mail in self._all_mails(user_email):
+					if mailing_list.is_member(test_mail):
+						user_email = test_mail
+						break
+				else:
 					mailing_list.add_member_silently(user_email)
+
 				if not mailing_list.is_owner(user_email):
 					mailing_list.promote_to_owner(user_email)
 					messages.success(self.request, _("You have been promoted to a list owner. From now on, you can manage this list from your dashboard. This link is obsolete."))
