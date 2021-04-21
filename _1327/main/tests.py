@@ -674,7 +674,7 @@ class TestLogo(WebTest):
 class TestEmailReplacement(TestCase):
 
 	@override_settings(INSTITUTION_EMAIL_REPLACEMENTS=[("example.com", "institution.com")])
-	def test_alternative_emails(self):
+	def test_toggle_institution(self):
 		email = 'name@example.com'
 		other = 'name@institution.com'
 		self.assertListEqual(
@@ -684,6 +684,36 @@ class TestEmailReplacement(TestCase):
 		self.assertListEqual(
 			[other] + list(alternative_emails(other)),
 			[other, email]
+		)
+		self.assertListEqual(
+			list(alternative_emails('name@somewhereelse.org')),
+			[]
+		)
+
+	@override_settings(INSTITUTION_EMAIL_REPLACEMENTS=[
+		('oldstatus.institution.example.com', 'oldstatus.institution.com'),
+		('institution.example.com', 'institution.com'),
+	])
+	@override_settings(ALUMNI_EMAIL_REPLACEMENTS=[
+		('institution.com', 'oldstatus.institution.com'),
+		('institution.example.com', 'oldstatus.institution.example.com'),
+	])
+	def test_alumni_alternatives(self):
+		newstatus_mails = ['name@institution.com', 'name@institution.example.com']
+		oldstatus_mails = ['name@oldstatus.institution.com', 'name@oldstatus.institution.example.com']
+		both_sorted = sorted(newstatus_mails + oldstatus_mails)
+
+		in_old_status = 'name@oldstatus.institution.com'
+
+		for email in newstatus_mails:
+			self.assertListEqual(
+				sorted([email] + list(alternative_emails(email))),
+				both_sorted
+			)
+
+		self.assertListEqual(
+			list(alternative_emails(in_old_status)),
+			['name@oldstatus.institution.example.com']
 		)
 		self.assertListEqual(
 			list(alternative_emails('name@somewhereelse.org')),

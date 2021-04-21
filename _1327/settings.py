@@ -77,6 +77,12 @@ MINUTES_PUBLISH_REMINDER_DAYS = 6
 # e.g.: [("institution.example.com", "institution.com")]
 INSTITUTION_EMAIL_REPLACEMENTS = []
 
+# List of tuples defining email domains that should be replaced on
+# looking for old mailing list membership, after people changed their status
+# within the institution.
+# e.g.: [("institution.com", "oldstatus.institution.com")]
+ALUMNI_EMAIL_REPLACEMENTS = []
+
 # Enables the mailman3 frontend "tenca" on this site. If you do,
 # check `tenca.settings.defaults` for available options and define at least:
 #   * TENCA_ADMIN_USER
