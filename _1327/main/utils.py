@@ -192,12 +192,21 @@ def replace_email_domain(email, original_domain, new_domain):
 	return email[:-len(original_domain)] + new_domain
 
 
-def alternative_emails(email):
+def toggle_institution(email):
 	for original_domain, new_domain in settings.INSTITUTION_EMAIL_REPLACEMENTS:
 		if email_belongs_to_domain(email, original_domain):
 			yield replace_email_domain(email, original_domain, new_domain)
-		if email_belongs_to_domain(email, new_domain):
+		elif email_belongs_to_domain(email, new_domain):
 			yield replace_email_domain(email, new_domain, original_domain)
+
+
+def alternative_emails(email):
+	yield from toggle_institution(email)
+	for current_domain, alumni_domain in settings.ALUMNI_EMAIL_REPLACEMENTS:
+		if email_belongs_to_domain(email, current_domain):
+			alumni_mail = replace_email_domain(email, current_domain, alumni_domain)
+			yield alumni_mail
+			yield from toggle_institution(alumni_mail)
 
 
 def clean_email(email):
