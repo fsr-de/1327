@@ -468,7 +468,24 @@ def change_attachment(request):
 
 def delete_document(request, title):
 	document = get_object_or_404(Document, url_title=title)
-	check_permissions(document, request.user, [document.edit_permission_name])
+
+	if document.is_in_creation:
+		try:
+			# check super user permissions
+			check_permissions(document, request.user, [document.edit_permission_name])
+		except PermissionDenied:
+			# check if an autosave has already been created
+			autosaves_for_document = TemporaryDocumentText.objects.filter(document=document)
+			if autosaves_for_document.exists():
+				# with an unsaved document, only one user can have autosaves
+				if autosaves_for_document.first().author != request.user:
+					raise PermissionDenied
+			else:
+				# no permission check possible if no autosave was saved (current behavior is not ideal)
+				raise PermissionDenied
+	else:
+		check_permissions(document, request.user, [document.edit_permission_name])
+
 	document.delete()
 
 	messages.success(request, _("Successfully deleted document: {}").format(document.title))
@@ -519,14 +536,19 @@ def delete_autosave(request, title):
 	if request.method != 'POST':
 		raise Http404
 
-	# first check that the user actually may change this document
+	# check that the user may change this document
 	document = get_object_or_404(Document, url_title=title)
-	check_permissions(document, request.user, [document.edit_permission_name])
 
-	# second check that the supplied autosave id matches to the document and has been created by the user
+	# check that the supplied autosave id matches to the document and has been created by the user
 	autosave_id = request.POST['autosave_id']
 	autosave = get_object_or_404(TemporaryDocumentText, id=autosave_id)
 	autosaves_for_object_and_user = TemporaryDocumentText.objects.filter(document=document, author=request.user)
+
+	# a new document does not have permissions, just check if the autosave author is correct
+	if autosave.author != request.user:
+		# if the autosave author is not correct, only proceed when the user has superuser privileges by checking permissions
+		check_permissions(document, request.user, [document.edit_permission_name])
+
 	if autosave not in autosaves_for_object_and_user:
 		raise SuspiciousOperation
 
