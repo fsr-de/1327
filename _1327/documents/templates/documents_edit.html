@@ -30,7 +30,11 @@
 				<button type="submit" class="btn btn-primary">
 					{% trans 'Save' %}
 				</button>
-				{% if document|num_revisions > 0 %}
+				{% if document|num_revisions == 0 and not form.autosave_id  %}
+					<button type="button" class="btn btn-danger" id="discardDocumentButton" disabled="true">
+						{% trans 'Discard' %}
+					</button>
+				{% elif document|num_revisions > 0 %}
 					<button type="button" class="btn btn-danger" id="deleteDocumentButton">
 						{% trans 'Delete' %}
 					</button>
@@ -259,6 +263,7 @@
 							const destinationElement = $('#shareText');
 							destinationElement.attr('href', url);
 							destinationElement.removeClass('hidden');
+							$("#discardDocumentButton").attr("disabled", false);
 						},
 						error: function(jqXHR, textStatus, errorThrown) {
 							const reasonDisplay = $('.autosaveErrorDialogExplanation');
@@ -307,7 +312,18 @@
 			$('#image-upload-area').removeClass('hidden');
 		});
 
-		{% if document|num_revisions > 0 %}
+		{% if document|num_revisions == 0 and not form.autosave_id %}
+			$("#discardDocumentButton").attr("disabled", true);
+			$('#discardDocumentButton').on('click', function (event) {
+				$.post(
+					"{% url "documents:delete_document" document.url_title %}",
+					{},
+					function (data, textStatus, jqXHR) {
+						window.location.replace("/");
+					}
+				);
+			});
+		{% elif document|num_revisions > 0 %}
 			function createCascadeList(cascade, domObject) {
 				for(let i = 0; i < cascade.length; i++) {
 					const cascadeItem = cascade[i];

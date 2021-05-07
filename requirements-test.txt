@@ -2,10 +2,12 @@
 
 # Unit tests
 django-webtest == 1.9.7
+django-redis == 4.12.1
+psycopg2==2.8.6
 model-bakery == 1.2.1
 
 # Coverage
-coveralls
+codecov
 
 # Lint
 flake8 == 3.7.8

@@ -1,3 +1,2 @@
 -r requirements-test.txt
 django-debug-toolbar >=2.0, <2.1
-psycopg2==2.8.6
