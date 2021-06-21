@@ -1053,7 +1053,7 @@ class TestAttachments(WebTest):
 		# test that a user with insufficient permissions is not allowed to view/download an attachment
 		# be an anonymous user
 		response = self.app.post(reverse('documents:download_attachment'), params=params, expect_errors=True)
-		self.assertEqual(response.status_code, 400, msg="Should be bad request as user used wrong request method")
+		self.assertEqual(response.status_code, 405, msg="Should be Method not allowed as user used wrong request method")
 
 		response = self.app.get(reverse('documents:download_attachment'), params=params, expect_errors=True)
 		self.assertEqual(response.status_code, 302)
