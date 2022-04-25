@@ -13,7 +13,7 @@ from django.core.exceptions import PermissionDenied, SuspiciousOperation
 from django.db import DEFAULT_DB_ALIAS, models, transaction
 from django.db.models import Q
 from django.forms import formset_factory
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
+from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, Http404, render
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
