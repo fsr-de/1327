@@ -1,5 +1,7 @@
 import re
 
+import bleach
+
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
@@ -11,6 +13,7 @@ from guardian.core import ObjectPermissionChecker
 import markdown
 from markdown.extensions import Extension
 from markdown.extensions.toc import TocExtension
+from markdown.postprocessors import Postprocessor
 
 
 URL_TITLE_REGEX = re.compile(r'^[a-zA-Z0-9-_\/]*$')
@@ -73,11 +76,39 @@ def abbreviation_explanation_markdown():
 	return "\n" + ("\n".join([str(abbr) for abbr in AbbreviationExplanation.objects.all()]))
 
 
-# see https://pythonhosted.org/Markdown/release-2.6.html#safe_mode-deprecated
+# Most of the tags / attributes are for normal markdown
+# (see here: https://daringfireball.net/projects/markdown/syntax).
+# The abbr tag and its attribute are for the `abbr` extension.
+# The div tag, its attribute, and the attributes of the h tags are for the `toc` extension.
+# The table, thead, tr, th, tbody, td tags and the attributes of td and th are for the `tables` extension.
+ALLOWED_TAGS = [
+	'p', 'br', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'ol',
+	'ul', 'li', 'code', 'pre', 'hr', 'a', 'em', 'strong', 'img',
+	'abbr', 'div',
+	'table', 'thead', 'tr', 'th', 'tbody', 'td',
+]
+ALLOWED_ATTRIBUTES = {
+	'a': ['title', 'href'],
+	'img': ['alt', 'src', 'title', 'width', 'height'],
+	'abbr': ['title'],
+	'div': ['class'],
+	'h1': ['id'], 'h2': ['id'], 'h3': ['id'], 'h4': ['id'], 'h5': ['id'], 'h6': ['id'],
+	'td': ['align'], 'th': ['align'],
+}
+ALLOWED_PROTOCOLS = ['http', 'https', 'mailto']
+
+
+class BleachPostprocessor(Postprocessor):
+	def run(self, text):
+		return bleach.clean(text, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES, protocols=ALLOWED_PROTOCOLS)
+
+
+# see https://python-markdown.github.io/change_log/release-2.6/#safe_mode-deprecated
 class EscapeHtml(Extension):
 	def extendMarkdown(self, md):
 		md.preprocessors.deregister('html_block')
 		md.inlinePatterns.deregister('html')
+		md.postprocessors.register(BleachPostprocessor(), 'bleach', -1000)
 
 
 def convert_markdown(text):
@@ -91,8 +122,10 @@ def convert_markdown(text):
 			'_1327.documents.markdown_scaled_image_extension',
 			'markdown.extensions.abbr',
 			'markdown.extensions.tables',
-		])
-	return md.convert(text + abbreviation_explanation_markdown()), md.toc
+		],
+		output_format='html5'
+	)
+	return md.convert(text + abbreviation_explanation_markdown()), bleach.clean(md.toc, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES, protocols=ALLOWED_PROTOCOLS)
 
 
 def slugify(string):
