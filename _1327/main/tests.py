@@ -17,7 +17,7 @@ from model_bakery import baker
 
 from _1327.information_pages.models import InformationDocument
 from _1327.main.tools import translate
-from _1327.main.utils import alternative_emails, find_root_menu_items
+from _1327.main.utils import alternative_emails, convert_markdown, find_root_menu_items
 from _1327.minutes.models import MinutesDocument
 from _1327.user_management.models import UserProfile
 from .context_processors import mark_selected
@@ -719,3 +719,28 @@ class TestEmailReplacement(TestCase):
 			list(alternative_emails('name@somewhereelse.org')),
 			[]
 		)
+
+
+class TestConvertMarkdown(TestCase):
+	def test_filter_tags(self):
+		text = '<script>alert(1)</script>'
+		html = convert_markdown(text)[0]
+		self.assertNotIn('<script>', html)
+		self.assertIn('&lt;script&gt;', html)
+
+	def test_filter_invalid_protocol(self):
+		text = '[Click me!](javascript:alert(1))'
+		html = convert_markdown(text)[0]
+		self.assertNotIn('javascript', html)
+		self.assertIn('<a>Click me!</a>', html)
+
+	def test_filter_valid_protocol(self):
+		text = '[Click me!](https://example.com)'
+		html = convert_markdown(text)[0]
+		self.assertIn('<a href="https://example.com">Click me!</a>', html)
+
+	def test_filter_toc(self):
+		text = '## [Click me!](javascript:alert(1))'
+		toc = convert_markdown(text)[1]
+		self.assertNotIn('javascript', toc)
+		self.assertIn('>Click me!</a>', toc)
