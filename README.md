@@ -1,12 +1,9 @@
 1327
 ====
 
-[![Build Status](https://github.com/fsr-de/1327/actions/workflows/tests.yml/badge.svg)](https://github.com/fsr-de/1327/actions/workflows/tests.yml)
-[![Requirements Status](https://requires.io/github/fsr-de/1327/requirements.svg?branch=master)](https://requires.io/github/fsr-de/1327/requirements/?branch=master)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/dbb7db2d1306434e92a947a9214671ba)](https://www.codacy.com/app/fsr-de/1327)
-[![Coverage Status](https://coveralls.io/repos/github/fsr-de/1327/badge.svg?branch=master)](https://coveralls.io/github/fsr-de/1327?branch=master)
+**THIS PROJECT IS DEPRECATED! No security updates, bugfixes or support will be provided. For the successor of myhpi.de, head to the [new project](https://github.com/fsr-de/myHPI).**
 
-A student representatives website. This project is live! You can see a working instance of 1327 [here](https://myhpi.de/home)!
+A student representatives website.
 
 ## Development
 
