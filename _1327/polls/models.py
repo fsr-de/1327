@@ -1,8 +1,13 @@
 from datetime import date, datetime
 
+from django.conf import settings
+from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import SuspiciousOperation
 from django.db import models
 from django.db.models import Sum
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.template import loader
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -21,6 +26,15 @@ POLL_VOTE_PERMISSION_NAME = 'vote_poll'
 
 
 class Poll(Document):
+	UNPUBLISHED = 0
+	PUBLISHED = 1
+	# AFTER_END is marked differently so that it does not clash with the numeration scheme minutes
+	AFTER_END = 5  # TODO: keep this numeration scheme so that it doesn't conflict with the other options?
+	PUBLISH_CHOICES = (
+		(UNPUBLISHED, _('Unpublished')),
+		(AFTER_END, _('Published After End of Poll')),
+		(PUBLISHED, _('Published')),
+	)
 
 	def can_be_changed_by(self, user):
 		permission_name = self.edit_permission_name
@@ -34,7 +48,8 @@ class Poll(Document):
 	end_date = models.DateField(default=datetime.now, verbose_name=_("End Date"))
 	max_allowed_number_of_answers = models.PositiveIntegerField(default=1)
 	participants = models.ManyToManyField(UserProfile, related_name="polls", blank=True)
-	show_results_immediately = models.BooleanField(default=True, verbose_name=_("show results immediately after vote"))
+	# show_results_immediately = models.BooleanField(default=True, verbose_name=_("show results immediately after vote"))
+	state = models.IntegerField(choices=PUBLISH_CHOICES, default=UNPUBLISHED, verbose_name=_("State"))
 
 	VIEW_PERMISSION_NAME = POLL_VIEW_PERMISSION_NAME
 	VOTE_PERMISSION_NAME = POLL_VOTE_PERMISSION_NAME
@@ -130,6 +145,17 @@ class Poll(Document):
 			if choice.description:
 				return True
 		return False
+
+	def show_publish_button(self):
+		return not self.is_in_creation and self.state == Poll.UNPUBLISHED
+
+	# TODO: publish button might be a bit ugly because it is close to permission button
+	def publish(self, next_state_id):
+		if next_state_id == Poll.PUBLISHED:
+			self.state = int(next_state_id)
+			self.save()
+		else:
+			raise SuspiciousOperation
 
 
 revisions.register(Poll, follow=["document_ptr"])
