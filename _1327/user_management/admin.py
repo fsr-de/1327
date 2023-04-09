@@ -1,9 +1,17 @@
+import csv
+from io import StringIO
+import re
+
 from django import forms
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.admin import GroupAdmin, UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.models import Group
+from django.core.exceptions import ValidationError
+from django.shortcuts import redirect, render
+from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
 from .forms import GroupEditForm
@@ -79,9 +87,52 @@ class UserProfileAdmin(UserAdmin):
 	search_fields = ('username',)
 	ordering = ('username',)
 
+	change_list_template = "entities/user_change_list.html"
+
+	def get_urls(self):
+		urls = super().get_urls()
+		my_urls = [
+			path('import-csv/', self.import_csv),
+		]
+		return my_urls + urls
+
+	def import_csv(self, request):
+		if request.method == "POST":
+			csv_file = request.FILES["csv_file"]
+			csv_input = csv_file.read().decode('utf-8')
+			reader = csv.reader(StringIO(csv_input), delimiter=',')
+
+			internal_domains = list(map(lambda email_replacement: email_replacement[1], settings.INSTITUTION_EMAIL_REPLACEMENTS))
+
+			for row in reader:
+				email = row[1]
+				if re.match(r'.*@.*', email) is None:
+					raise ValidationError(f'Error parsing email "{email}"')
+				prefix = email.split('@')[0]
+
+				user = UserProfile.objects.filter(email__startswith=prefix + "@").first()
+				if user.email != email:
+					old_domain = user.email.split('@')[1]
+					new_domain = email.split('@')[1]
+
+					if old_domain in internal_domains and new_domain in internal_domains:
+						user.email = email
+						user.save()
+			self.message_user(request, "Your csv file has been imported")
+			return redirect("..")
+		form = CsvImportForm()
+		payload = {"form": form}
+		return render(
+			request, "admin/csv_form.html", payload
+		)
+
 
 # Now register the new UserAdmin...
 admin.site.register(UserProfile, UserProfileAdmin)
+
+
+class CsvImportForm(forms.Form):
+	csv_file = forms.FileField()
 
 
 class GroupAdminForm(forms.ModelForm):

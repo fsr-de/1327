@@ -1,0 +1,7 @@
+{% extends 'admin/change_list.html' %}
+
+{% block object-tools %}
+    {{ block.super }}
+	</br>
+	<a class="btn btn-primary" href="import-csv/" style="margin-top:10px">Import CSV to update e-mails</a>
+{% endblock %}
